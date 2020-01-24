@@ -1,3 +1,3 @@
-# lake-authz
+# ace-ake-authz
 
-Lightweight authorization
+Lightweight authorization for AKE
