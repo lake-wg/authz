@@ -1,3 +1,3 @@
-# lake-fv
+# lake-authz
 
-Lightweight authorization for AKE
+Lightweight authorization
