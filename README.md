@@ -1,3 +1,3 @@
 # lake-fv
 
-Formal verification of LAKE
+Lightweight authorization for AKE
