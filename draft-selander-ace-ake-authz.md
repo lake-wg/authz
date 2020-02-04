@@ -120,7 +120,7 @@ The device is also provisioned with information about its AAA server:
 
 ## Domain Authenticator
 
-The domain authenticator has a private key and corresponding public key PK_DA used to authenticate to the device. 
+The domain authenticator has a private key and corresponding public key PK_A used to authenticate to the device. 
 
 The domain authenticator needs to be able to locate the AAA server of the device for which the Loc_S is expected to be sufficient. The communication between domain authenticator and AAA server is mutually authenticated and protected. Authentication credentials used with the AAA server is out of scope. How this communication is established and secured (typically TLS) is out of scope. 
 
@@ -141,7 +141,7 @@ We assume a Diffie-Hellman key exchange protocol complying with the LAKE require
 * Three messages
 * CBOR encoding
 * The ephemeral public Diffie-Hellman key of the device, G_X, is sent in message 1
-* The static public key of the domain authenticator, PK_DA, sent in message 2
+* The static public key of the domain authenticator, PK_A, sent in message 2
 * Support for Auxilliary Data AD1-3 in messages 1-3 as specified in section 2.5 of {{I-D.ietf-lake-reqs}}.
 * Cipher suite negotiation where the device can propose ECDH curves restricted by its available public keys of the AAA server.
 
@@ -162,7 +162,7 @@ We study each in turn, starting with the last.
    |                                 |                     |            
    |--- Message 1 incl. G_X, AD1 --->|--- Voucher req. --->|
    |                                 |                     |
-   |<-- Message 2 incl. PK_DA, AD2 --|<-- Voucher resp. ---|          
+   |<-- Message 2 incl. PK_A, AD2 --|<-- Voucher resp. ---|          
    |                                 |                     
    |--- Message 3 incl. AD3 -------->|                    
 
@@ -210,7 +210,7 @@ AD2 contains the voucher.
 The voucher is the output from the AEAD with empty plaintext and the following Additional Data:
 
 * Type - indicating kind of voucher.
-* PK_DA 
+* PK_A 
 * G_X 
 * CC 
 * ID
@@ -222,7 +222,7 @@ The AEAD Additional Data SHALL be a CBOR array as defined below:
 ~~~~~~~~~~~
 Voucher_Additional_Data = [
     voucher_type:  int,
-    PK_DA:         bstr,
+    PK_A:         bstr,
     G_X:           bstr,
     CC:            int,
     ID:            bstr,
@@ -235,7 +235,7 @@ TODO: CBOR encoding of the voucher. Consider making the voucher a CBOR Map to in
 
 ## Device <-> Authenticator {#p-r}
 
-The device and authenticator run the LAKE protocol authenticated with public keys (PK_D and PK_DA) of the device and the authenticator. The normal processing of the LAKE is omitted here.
+The device and authenticator run the LAKE protocol authenticated with public keys (PK_D and PK_A) of the device and the authenticator. The normal processing of the LAKE is omitted here.
 
 
 ### Message 1
@@ -256,15 +256,15 @@ The authenticator receives LAKE message 1 from the device, which triggers the ex
 
 #### Authenticator processing
 
-The authenticator sends LAKE message 2 to the device with the voucher (see {{p-as}}) in AD2. The public key PK_DA is included in the way public keys are included in the LAKE protocol.
+The authenticator sends LAKE message 2 to the device with the voucher (see {{p-as}}) in AD2. The public key PK_A is included in the way public keys are included in the LAKE protocol.
 
 
-TODO: Encoding of PK_DA
+TODO: Encoding of PK_A
 
  
 #### Device processing
  
-The device MUST verify the voucher using its ephemeral key G_X sent in message 1 and PK_DA received in message 2. If the voucher does not verify, the device MUST discontinue the protocol.
+The device MUST verify the voucher using its ephemeral key G_X sent in message 1 and PK_A received in message 2. If the voucher does not verify, the device MUST discontinue the protocol.
 
 
 ### Message 3
@@ -289,7 +289,7 @@ The authenticator and AAA server are assumed to have secure communication, for e
 
 The authenticator sends the voucher request to the AAA server with the following content:
 
-* PK_DA 
+* PK_A 
 * G_X 
 * CC 
 * AEAD(ID)
@@ -298,7 +298,7 @@ The voucher request SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~
 Voucher_Request = [
-    PK_DA:           bstr,
+    PK_A:           bstr,
     G_X:             bstr,
     CC:              int,
     CIPHERTEXT_ID:   bstr,
@@ -316,7 +316,7 @@ The voucher response SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~
 Voucher_Response = [
-    CERT_PK_DA:     bstr,
+    CERT_PK_D:     bstr,
     Voucher:        bstr,
 ]
 ~~~~~~~~~~~
@@ -327,7 +327,7 @@ TODO: The voucher response may contain a "Voucher-info" field as an alternative 
 
 TODO: Identity protection of device
 
-TODO: How can the AAA server attest the received PK_DA?
+TODO: How can the AAA server attest the received PK_A?
 
 TODO: Remote attestation 
 
