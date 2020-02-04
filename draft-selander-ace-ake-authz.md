@@ -248,8 +248,8 @@ plaintext =  nil
 ~~~~~~~~~~~
 external_aad = [
     voucher_type:  int,
-    PK_A:          bstr,
-    G_X:           bstr,
+    PK_A:          COSE_Key,
+    G_X:           COSE_Key,
     CC:            int,
     ID:            bstr,
 ]
@@ -325,8 +325,8 @@ The voucher request SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~
 Voucher_Request = [
-    PK_A:            bstr,
-    G_X:             bstr,
+    PK_A:            COSE_Key,
+    G_X:             COSE_Key,
     CC:              int,
     CIPHERTEXT_RQ:   bstr,
 ]
