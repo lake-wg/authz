@@ -45,6 +45,7 @@ informative:
 
   RFC3748:
   RFC7228:
+  RFC8152:
   RFC8613:
   I-D.ietf-lake-reqs:
   I-D.raza-ace-cbor-certificates:
@@ -102,7 +103,7 @@ The objective of this document is to specify such a protocol which is lightweigh
 
 
 ~~~~~~~~~~~
-{: #fig-overview title="Overview and example of message content. The voucher info and voucher are sent together with LAKE messages." artwork-align="center"}
+{: #fig-overview title="Overview and example of message content. Voucher Info and Voucher are sent together with LAKE messages." artwork-align="center"}
 
 
 # Assumptions
@@ -182,12 +183,12 @@ The communication between device and AAA server is carried out via the authentic
 
 TODO: Reference relevant ECIES scheme in {{I-D.irtf-cfrg-hpke}}.
 
-TODO: Define encryption keys for both directions
+TODO: Define derivation of encryption keys (k_rq,k_rs) and nonces (n_rq, n_rs) for both directions
 
-AD1 contains:
+AD1 contains voucher information:
 
 * Location information about the AAA server, Loc_S
-* Crypto context, CC, for the communication between device and AAA server
+* Crypto context identifier, CC, for the communication between device and AAA server
 * The encrypted identity of the device AEAD(ID), with CC as Additional Data. 
 
 AD1 SHALL be a CBOR sequence as defined below:
@@ -196,41 +197,69 @@ AD1 SHALL be a CBOR sequence as defined below:
 AD1 = (
     LOC_S:           tstr,
     CC:              int,
-    CIPHERTEXT_ID:   bstr,
+    CIPHERTEXT_RQ:   bstr,
 )
 ~~~~~~~~~~~
 
-TODO Describe how is CIPHERTEXT_ID generated
 
-AD2 contains the voucher. 
+'CIPHERTEXT_RQ' is the 'ciphertext' of COSE_Encrypt0 (Section 5.2 of {{RFC8152}}) computed from the secret key k_rq, the nonce n_rq, with the following plaintext and external_aad (Section 5.3 of {{RFC8152}}):
+
+~~~~~~~~~~~
+plaintext = (  
+    ID:              bstr,
+ )
+~~~~~~~~~~~
+
+~~~~~~~~~~~
+external_aad = (
+    CC:              int,
+ )
+~~~~~~~~~~~
+
+AD2 SHALL be a CBOR sequence of one item, the Voucher, defined in the next section.
+
+~~~~~~~~~~~
+AD2 = (
+    Voucher:        bstr,
+)
+~~~~~~~~~~~
 
 
-### Voucher
+### Voucher {#voucher}
+
 
 The voucher is the output from the AEAD with empty plaintext and the following Additional Data:
 
-* Type - indicating kind of voucher.
+* voucher-type - indicating kind of voucher.
 * PK_A 
 * G_X 
 * CC 
 * ID
 
-All parameters except 'Type' are as received from in the voucher request (see {{r-as}}). As it is the output of the AEAD, the voucher is integrity protected between AAA server and device.
+All parameters, except 'voucher-type', are as received in the voucher request (see {{r-as}}). As it is the output of the AEAD, the voucher is integrity protected between AAA server and device.
 
-The AEAD Additional Data SHALL be a CBOR array as defined below:
+'Voucher' is the 'ciphertext' of COSE_Encrypt0 (Section 5.2 of {{RFC8152}}) computed from the secret key k_rs, the nonce n_rs, with the following plaintext and external_aad (Section 5.3 of {{RFC8152}}):
+
 
 ~~~~~~~~~~~
-Voucher_Additional_Data = [
+plaintext =  nil
+~~~~~~~~~~~
+
+~~~~~~~~~~~
+external_aad = [
     voucher_type:  int,
-    PK_A:         bstr,
+    PK_A:          bstr,
     G_X:           bstr,
     CC:            int,
     ID:            bstr,
 ]
 ~~~~~~~~~~~
 
-TODO: CBOR encoding of the voucher. Consider making the voucher a CBOR Map to indicate type of voucher, to indicate the feature (cf. {{r-as}})
+PK_A is a COSE_Key containing the public authentication key of the authenticator. The public key must be an Elliptic Curve Diffie-Hellman key, COSE key type 'kty' = 'EC2' or 'OKP'.
 
+COSE_Keys of type OKP SHALL only include the parameters 1 (kty), -1 (crv), and -2 (x-coordinate). COSE_Keys of type EC2 SHALL only include the parameters 1 (kty), -1 (crv), -2 (x-coordinate), and -3 (y-coordinate). The parameters SHALL be encoded in decreasing order.
+
+TODO: Consider making the voucher a CBOR Map to indicate type of voucher, to indicate the feature (cf. {{r-as}})
 
 
 ## Device <-> Authenticator {#p-r}
@@ -256,15 +285,13 @@ The authenticator receives LAKE message 1 from the device, which triggers the ex
 
 #### Authenticator processing
 
-The authenticator sends LAKE message 2 to the device with the voucher (see {{p-as}}) in AD2. The public key PK_A is included in the way public keys are included in the LAKE protocol.
+The authenticator sends LAKE message 2 to the device with the voucher (see {{p-as}}) in AD2. The public key PK_A is encoded in the way public keys are encoded in the LAKE protocol.
 
-
-TODO: Encoding of PK_A
 
  
 #### Device processing
  
-The device MUST verify the voucher using its ephemeral key G_X sent in message 1 and PK_A received in message 2. If the voucher does not verify, the device MUST discontinue the protocol.
+The device MUST verify the Voucher using its ephemeral key G_X sent in message 1 and PK_A received in message 2. If the Voucher does not verify, the device MUST discontinue the protocol.
 
 
 ### Message 3
@@ -298,10 +325,10 @@ The voucher request SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~
 Voucher_Request = [
-    PK_A:           bstr,
+    PK_A:            bstr,
     G_X:             bstr,
     CC:              int,
-    CIPHERTEXT_ID:   bstr,
+    CIPHERTEXT_RQ:   bstr,
 ]
 ~~~~~~~~~~~
 
@@ -316,12 +343,12 @@ The voucher response SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~
 Voucher_Response = [
-    CERT_PK_D:     bstr,
+    CERT_PK_D:      bstr,
     Voucher:        bstr,
 ]
 ~~~~~~~~~~~
 
-TODO: The voucher response may contain a "Voucher-info" field as an alternative to make the voucher a CBOR Map (see {{p-as}})
+TODO: The voucher response may contain a "Voucher-info" field as an alternative to make the Voucher a CBOR Map (see {{p-as}})
 
 # Security Considerations  {#sec-cons}
 
@@ -333,9 +360,9 @@ TODO: Remote attestation
 
 # IANA Considerations  {#iana}
 
-TBD CC registry
+TODO: CC registry
 
-TBD voucher type registry
+TODO: Voucher type registry
 
 --- back
 
