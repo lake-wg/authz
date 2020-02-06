@@ -173,8 +173,8 @@ AD1 SHALL be the following CBOR sequence containing voucher information:
 ~~~~~~~~~~~
 AD1 = (
     LOC_S:           tstr,
-    CC:              int,
-    CIPHERTEXT_RQ:   bstr,
+    CC:              bstr,
+    CIPHERTEXT_RQ:   bstr
 )
 ~~~~~~~~~~~
 
@@ -184,28 +184,36 @@ where
 * CC is a crypto context identifier for the security context between the device and the AAA server
 * 'CIPHERTEXT_RQ' is the authenticated encrypted identity of the device with CC as Additional Data, more specifically:
 
-'CIPHERTEXT_RQ' is 'ciphertext' of COSE_Encrypt0 (Section 5.2 of {{RFC8152}}) computed from the secret key k_rq, the nonce n_rq, with the following 'plaintext' and 'external_aad' (Section 5.3 of {{RFC8152}}):
+'CIPHERTEXT_RQ' is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC8152}}) computed from the following:
+
+* the secret key k_rq
+* the nonce n_rq
+* 'protected' is a byte string of size 0
+* 'plaintext and 'external_aad' as below: 
 
 ~~~~~~~~~~~
 plaintext = (  
-    ID:              bstr,
+    ID:              bstr
  )
 ~~~~~~~~~~~
-
 ~~~~~~~~~~~
 external_aad = (
-    CC:              int,
+    CC:              bstr
  )
 ~~~~~~~~~~~
 
 where
-* ID is the identity of the device, for example a reference or pointer to the device certificate. 
+
+* ID is the identity of the device, for example a reference or pointer to the device certificate
+* CC is defined above.
+
+ 
 
 AD2 SHALL be a CBOR sequence of one item, the Voucher, defined in the next section.
 
 ~~~~~~~~~~~
 AD2 = (
-    Voucher:        bstr,
+    Voucher:        bstr
 )
 ~~~~~~~~~~~
 
@@ -215,28 +223,30 @@ AD2 = (
 
 The Voucher is essentially a Message Authentication Code binding the identity of the authenticator to the first message sent from the device in the LAKE protocol.
 
-More specifically 'Voucher' is the 'ciphertext' of COSE_Encrypt0 (Section 5.2 of {{RFC8152}}) computed from the secret key k_rs, the nonce n_rs, with empty 'plaintext'
+More specifically 'Voucher' is the 'ciphertext' of COSE_Encrypt0 (Section 5.2 of {{RFC8152}}) computed from the the following:
+
+* the secret key k_rs
+* the nonce n_rs
+* 'protected' is a byte string of size 0
+* 'plaintext' is empty (plaintext =  nil)
+* 'external_aad' as below: 
 
 ~~~~~~~~~~~
-plaintext =  nil
+external_aad = bstr .cbor external_aad_arr
 ~~~~~~~~~~~
-
-and the following 'external_aad' (Section 5.3 of {{RFC8152}}):
-
-
 ~~~~~~~~~~~
-external_aad = [
+external_aad_arr = [
     voucher_type:  int,
     PK_A:          bstr,
     G_X:           bstr,
-    CC:            int,
-    ID:            bstr,
+    CC:            bstr,
+    ID:            bstr
 ]
 ~~~~~~~~~~~
 
 where
 
-* voucher-type indicates the kind of voucher used
+* 'voucher-type' indicates the kind of voucher used
 * PK_A is a COSE_Key containing the public authentication key of the authenticator. The public key must be an Elliptic Curve Diffie-Hellman key, COSE key type 'kty' = 'EC2' or 'OKP'.
    * COSE_Keys of type OKP SHALL only include the parameters 1 (kty), -1 (crv), and -2 (x-coordinate). COSE_Keys of type EC2 SHALL only include the parameters 1 (kty), -1 (crv), -2 (x-coordinate), and -3 (y-coordinate). The parameters SHALL be encoded in decreasing order.
 * G_X is the ephemeral key of the device sent in the first LAKE message
@@ -307,8 +317,8 @@ The Voucher_Request SHALL be a CBOR array as defined below:
 Voucher_Request = [
     PK_A:            bstr,
     G_X:             bstr,
-    CC:              int,
-    CIPHERTEXT_RQ:   bstr,
+    CC:              bstr,
+    CIPHERTEXT_RQ:   bstr
 ]
 ~~~~~~~~~~~
 
@@ -322,7 +332,7 @@ The AAA server decrypts the identity of the device and looks up its certificate,
 ~~~~~~~~~~~
 Voucher_Response = [
     CERT_PK_D:      bstr,
-    Voucher:        bstr,
+    Voucher:        bstr
 ]
 ~~~~~~~~~~~
 
