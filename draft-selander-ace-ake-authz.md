@@ -43,9 +43,11 @@ normative:
 
 informative:
 
+  RFC2119:
   RFC3748:
   RFC7228:
   RFC8152:
+  RFC8174:
   I-D.ietf-lake-reqs:
   I-D.raza-ace-cbor-certificates:
   I-D.irtf-cfrg-hpke:
@@ -68,6 +70,10 @@ The protocol specified in this document optimizes the message count by performin
 The specification assumes a lightweight AKE protocol {{I-D.ietf-lake-reqs}} between device and authenticator, and defines the integration of a lightweight authorization procedure. This enables a secure target interaction in few message exchanges. In this document we consider the target interaction to be "enrolment", for example certificate enrolment or joining a network for the first time, but it can be applied to authorize other target interactions.
 
 This protocol is applicable in a wide variety of settings, e.g. an enterprise network using EAP {{RFC3748}}. 
+
+## Terminology   {#terminology}
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 {{RFC2119}} {{RFC8174}} when, and only when, they appear in all capitals, as shown here.
 
 # Problem Description {#prob-desc}
 
@@ -149,9 +155,9 @@ We study each in turn, starting with the last.
 ~~~~~~~~~~~
  Device                        Authenticator           AAA Server
    |                                 |                     |            
-   |--- Message 1 incl. G_X, AD1 --->|--- Voucher req. --->|
+   |--- Message 1 incl. G_X, AD1 --->|--- Voucher Req. --->|
    |                                 |                     |
-   |<-- Message 2 incl. PK_A, AD2 --|<-- Voucher resp. ---|          
+   |<-- Message 2 incl. PK_A, AD2 --|<-- Voucher Resp. ---|          
    |                                 |                     
    |--- Message 3 incl. AD3 -------->|                    
 
@@ -161,7 +167,7 @@ We study each in turn, starting with the last.
 
 ## Device <-> AAA Server {#p-as}
 
-The communication between device and AAA server is carried out via the authenticator protected using an ECIES hybrid encryption scheme (see {{I-D.irtf-cfrg-hpke}}): The device uses the private key of its ephemeral DH key G_X generated for LAKE message 1 (see {{p-r}}) together with the static public DH key of the AAA server G_S to generate a shared secret G_XS. The shared secret is used to derive AEAD encryption keys to protect data between device and AAA server exchanged in AD1 and AD2 (between device and authenticator) and in voucher request/response (between authenticator and AAA server).
+The communication between device and AAA server is carried out via the authenticator protected between the endpoints using an ECIES hybrid encryption scheme (see {{I-D.irtf-cfrg-hpke}}): The device uses the private key of its ephemeral DH key G_X generated for LAKE message 1 (see {{p-r}}) together with the static public DH key of the AAA server G_S to generate a shared secret G_XS. The shared secret is used to derive AEAD encryption keys to protect data between device and AAA server. The data is carried in AD1 and AD2 (between device and authenticator) and in voucher request/response (between authenticator and AAA server).
 
 TODO: Reference relevant ECIES scheme in {{I-D.irtf-cfrg-hpke}}.
 
@@ -267,7 +273,7 @@ The device and authenticator run the LAKE protocol authenticated with public key
 
 #### Device processing
 
-The device selects a cipher suite with an ECDH curve satisfying the static public DH key G_S of the AAA server. As part of the normal LAKE processing, the device generates the ephemeral public key G_X to be sent in LAKE message 1. This is the same ephemeral key as used in the ECIES scheme in {{p-as}}. A new G_X MUST be generated for each execution of the protocol. 
+The device selects a cipher suite with an ECDH curve satisfying the static public DH key G_S of the AAA server. As part of the normal LAKE processing, the device generates the ephemeral public key G_X to be sent in LAKE message 1. A new G_X MUST be generated for each execution of the protocol. The same ephemeral key is used in the ECIES scheme, see {{p-as}}. 
 
 The device sends LAKE message 1 with AD1 as specified in {{p-as}}.
 
