@@ -2,9 +2,9 @@
 
 This is the working area for the individual Internet-Draft, "Lightweight Authorization for Authenticated Key Exchange.".
 
-* [Editor's Copy](https://EricssonResearch.github.io/lake-fv/#go.draft-selander-ace-ake-authz.html)
+* [Editor's Copy](https://EricssonResearch.github.io/ace-ake-authz/#go.draft-selander-ace-ake-authz.html)
 * [Individual Draft](https://tools.ietf.org/html/draft-selander-ace-ake-authz)
-* [Compare Editor's Copy to Individual Draft](https://EricssonResearch.github.io/lake-fv/#go.draft-selander-ace-ake-authz.diff)
+* [Compare Editor's Copy to Individual Draft](https://EricssonResearch.github.io/ace-ake-authz/#go.draft-selander-ace-ake-authz.diff)
 
 ## Building the Draft
 
