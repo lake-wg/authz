@@ -21,4 +21,4 @@ This requires that you have the necessary software installed.  See
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/EricssonResearch/lake-fv/blob/master/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/EricssonResearch/ace-ake-authz/blob/master/CONTRIBUTING.md).
