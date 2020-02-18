@@ -87,9 +87,9 @@ The objective of this document is to specify such a protocol which is lightweigh
               LAKE  Info
 +------------+  |    |   +---------------+  Voucher  +---------------+
 |            |  |    |   |               |  Request  |               |
-|            |--|----o-->|    Domain     |---------->| Authorization |
-|   Device   |<-|---o----| Authenticator |<----------|     Server    |
-|            |--|---|--->|               |  Voucher  |               |
+|   Device   |--|----o-->|    Domain     |---------->| Authorization |
+|            |<-|---o----| Authenticator |<----------|     Server    |
+|     (U)    |--|---|--->|      (V)      |  Voucher  |       (W)     |
 |            |      |    |               |  Response |               |
 +------------+      |    +---------------+           +---------------+
                   Voucher
@@ -103,27 +103,27 @@ The objective of this document is to specify such a protocol which is lightweigh
 
 ## Device
 
-The device is pre-provisioned with an identity ID and asymmetric key credentials: a private key, a public key (PK_D), and optionally a public key certificate Cert(PK_D) issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator. The ID may be a reference or pointer to the certificate.
+The device is pre-provisioned with an identity ID and asymmetric key credentials: a private key, a public key (PK_U), and optionally a public key certificate Cert(PK_U) issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator. The ID may be a reference or pointer to the certificate.
 
 The device is also provisioned with information about its authorization server:
 
-* At least one static public DH key of the authorization server (G_S) used to ensure secure communication with the device (see {{p-as}}).
-* Location information about the authorization server (LOC_S), e.g. its domain name. This information may be available in the device certificate Cert(PK_D).
+* At least one static public DH key of the authorization server (G_W) used to ensure secure communication with the device (see {{u-w}}).
+* Location information about the authorization server (LOC_W), e.g. its domain name. This information may be available in the device certificate Cert(PK_U).
 
 
 
 ## Domain Authenticator
 
-The domain authenticator has a private key and corresponding public key PK_A used to authenticate to the device.
+The domain authenticator has a private key and corresponding public key PK_V used to authenticate to the device.
 
-The domain authenticator needs to be able to locate the authorization server of the device for which the LOC_S is expected to be sufficient. The communication between domain authenticator and authorization server is mutually authenticated and protected. Authentication credentials used with the authorization server is out of scope. How this communication is established and secured (typically TLS) is out of scope.
+The domain authenticator needs to be able to locate the authorization server of the device for which the LOC_W is expected to be sufficient. The communication between domain authenticator and authorization server is mutually authenticated and protected. Authentication credentials used with the authorization server is out of scope. How this communication is established and secured (typically TLS) is out of scope.
 
 
 ## Authorization Server
 
-The authorization server has a private DH key corresponding to G_S, which is used to secure the communication with the device (see {{p-as}}). Authentication credentials and communication security used with the domain authenticator is out of scope.
+The authorization server has a private DH key corresponding to G_W, which is used to secure the communication with the device (see {{u-w}}). Authentication credentials and communication security used with the domain authenticator is out of scope.
 
-The authorization server provides the authorization decision for enrolment to the device in the form of a CBOR encoded voucher. The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_D).
+The authorization server provides the authorization decision for enrolment to the device in the form of a CBOR encoded voucher. The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_U).
 
 The authorization server needs to be available during the execution of the protocol.
 
@@ -136,7 +136,7 @@ We assume a Diffie-Hellman key exchange protocol complying with the LAKE require
 * CBOR encoding
 * The ephemeral public Diffie-Hellman key of the device, G_X, is sent in message 1. G_X is also used as ephemeral key and nonce in the ECIES scheme between device and authorization server.
 
-* The static public key of the domain authenticator, PK_A, sent in message 2
+* The static public key of the domain authenticator, PK_V, sent in message 2
 * Support for Auxilliary Data AD1-3 in messages 1-3 as specified in section 2.5 of {{I-D.ietf-lake-reqs}}.
 * Cipher suite negotiation where the device can propose ECDH curves restricted by its available public keys of the authorization server.
 
@@ -153,12 +153,11 @@ Three security sessions are going on in parallel (see figure {{fig-protocol}}):
 We study each in turn, starting with the last.
 
 ~~~~~~~~~~~
- Device                        Authenticator           Authorization
-                                                          Server
+   U                                 V                     W
    |                                 |                     |
    |--- Message 1 incl. G_X, AD1 --->|--- Voucher Req. --->|
    |                                 |                     |
-   |<-- Message 2 incl. PK_A, AD2 ---|<-- Voucher Resp. ---|
+   |<-- Message 2 incl. PK_V, AD2 ---|<-- Voucher Resp. ---|
    |                                 |
    |--- Message 3 incl. AD3 -------->|
 
@@ -166,9 +165,9 @@ We study each in turn, starting with the last.
 {: #fig-protocol title="The Protocol" artwork-align="center"}
 
 
-## Device <-> Authorization Server {#p-as}
+## Device <-> Authorization Server {#u-w}
 
-The communication between device and authorization server is carried out via the authenticator protected between the endpoints using an ECIES hybrid encryption scheme (see {{I-D.irtf-cfrg-hpke}}): The device uses the private key of its ephemeral DH key G_X generated for LAKE message 1 (see {{p-r}}) together with the static public DH key of the authorization server G_S to generate a shared secret G_XS. The shared secret is used to derive AEAD encryption keys to protect data between device and authorization server. The data is carried in AD1 and AD2 (between device and authenticator) and in voucher request/response (between authenticator and authorization server).
+The communication between device and authorization server is carried out via the authenticator protected between the endpoints using an ECIES hybrid encryption scheme (see {{I-D.irtf-cfrg-hpke}}): The device uses the private key of its ephemeral DH key G_X generated for LAKE message 1 (see {{u-v}}) together with the static public DH key of the authorization server G_W to generate a shared secret G_XW. The shared secret is used to derive AEAD encryption keys to protect data between device and authorization server. The data is carried in AD1 and AD2 (between device and authenticator) and in voucher request/response (between authenticator and authorization server).
 
 TODO: Reference relevant ECIES scheme in {{I-D.irtf-cfrg-hpke}}.
 
@@ -179,7 +178,7 @@ AD1 SHALL be the following CBOR sequence containing voucher information:
 
 ~~~~~~~~~~~
 AD1 = (
-    LOC_S:           tstr,
+    LOC_W:           tstr,
     CC:              bstr,
     CIPHERTEXT_RQ:   bstr
 )
@@ -187,7 +186,7 @@ AD1 = (
 
 where
 
-* LOC_S is location information about the authorization server
+* LOC_W is location information about the authorization server
 * CC is a crypto context identifier for the security context between the device and the authorization server
 * 'CIPHERTEXT_RQ' is the authenticated encrypted identity of the device with CC as Additional Data, more specifically:
 
@@ -244,7 +243,7 @@ external_aad = bstr .cbor external_aad_arr
 ~~~~~~~~~~~
 external_aad_arr = [
     voucher_type:  int,
-    PK_A:          bstr,
+    PK_V:          bstr,
     G_X:           bstr,
     CC:            bstr,
     ID:            bstr
@@ -254,47 +253,47 @@ external_aad_arr = [
 where
 
 * 'voucher-type' indicates the kind of voucher used
-* PK_A is a COSE_Key containing the public authentication key of the authenticator. The public key must be an Elliptic Curve Diffie-Hellman key, COSE key type 'kty' = 'EC2' or 'OKP'.
+* PK_V is a COSE_Key containing the public authentication key of the authenticator. The public key must be an Elliptic Curve Diffie-Hellman key, COSE key type 'kty' = 'EC2' or 'OKP'.
    * COSE_Keys of type OKP SHALL only include the parameters 1 (kty), -1 (crv), and -2 (x-coordinate). COSE_Keys of type EC2 SHALL only include the parameters 1 (kty), -1 (crv), -2 (x-coordinate), and -3 (y-coordinate). The parameters SHALL be encoded in decreasing order.
 * G_X is the ephemeral key of the device sent in the first LAKE message
-* CC and ID are defined in {{p-as}}
+* CC and ID are defined in {{u-w}}
 
 
-All parameters, except 'voucher-type', are as received in the voucher request (see {{r-as}}).
+All parameters, except 'voucher-type', are as received in the voucher request (see {{v-w}}).
 
-TODO: Consider making the voucher a CBOR Map to indicate type of voucher, to indicate the feature (cf. {{r-as}})
+TODO: Consider making the voucher a CBOR Map to indicate type of voucher, to indicate the feature (cf. {{v-w}})
 
 
-## Device <-> Authenticator {#p-r}
+## Device <-> Authenticator {#u-v}
 
-The device and authenticator run the LAKE protocol authenticated with public keys (PK_D and PK_A) of the device and the authenticator. The normal processing of the LAKE is omitted here.
+The device and authenticator run the LAKE protocol authenticated with public keys (PK_U and PK_V) of the device and the authenticator. The normal processing of the LAKE is omitted here.
 
 
 ### Message 1
 
 #### Device processing
 
-The device selects a cipher suite with an ECDH curve satisfying the static public DH key G_S of the authorization server. As part of the normal LAKE processing, the device generates the ephemeral public key G_X to be sent in LAKE message 1. A new G_X MUST be generated for each execution of the protocol. The same ephemeral key is used in the ECIES scheme, see {{p-as}}.
+The device selects a cipher suite with an ECDH curve satisfying the static public DH key G_W of the authorization server. As part of the normal LAKE processing, the device generates the ephemeral public key G_X to be sent in LAKE message 1. A new G_X MUST be generated for each execution of the protocol. The same ephemeral key is used in the ECIES scheme, see {{u-w}}.
 
-The device sends LAKE message 1 with AD1 as specified in {{p-as}}.
+The device sends LAKE message 1 with AD1 as specified in {{u-w}}.
 
 
 #### Authenticator processing
 
-The authenticator receives LAKE message 1 from the device, which triggers the exchange of voucher related data with the authorization server as described in {{r-as}}.
+The authenticator receives LAKE message 1 from the device, which triggers the exchange of voucher related data with the authorization server as described in {{v-w}}.
 
 
 ### Message 2
 
 #### Authenticator processing
 
-The authenticator sends LAKE message 2 to the device with the voucher (see {{p-as}}) in AD2. The public key PK_A is encoded in the way public keys are encoded in the LAKE protocol.
+The authenticator sends LAKE message 2 to the device with the voucher (see {{u-w}}) in AD2. The public key PK_V is encoded in the way public keys are encoded in the LAKE protocol.
 
 
 
 #### Device processing
 
-The device MUST verify the Voucher using its ephemeral key G_X sent in message 1 and PK_A received in message 2. If the Voucher does not verify, the device MUST discontinue the protocol.
+The device MUST verify the Voucher using its ephemeral key G_X sent in message 1 and PK_V received in message 2. If the Voucher does not verify, the device MUST discontinue the protocol.
 
 
 ### Message 3
@@ -309,7 +308,7 @@ The device sends message 3. AD3 depends on the kind of enrolment the device is r
 The authenticator receives message 3.
 
 
-## Authenticator <-> Authorization Server {#r-as}
+## Authenticator <-> Authorization Server {#v-w}
 
 The authenticator and authorization server are assumed to have secure communication, for example based on TLS authenticated with certificates.
 
@@ -322,39 +321,39 @@ The Voucher_Request SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~
 Voucher_Request = [
-    PK_A:            bstr,
+    PK_V:            bstr,
     G_X:             bstr,
     CC:              bstr,
     CIPHERTEXT_RQ:   bstr
 ]
 ~~~~~~~~~~~
 
-where the parameters are defined in {{p-as}}.
+where the parameters are defined in {{u-w}}.
 
 
 ### Voucher Response
 
-The authorization server decrypts the identity of the device and looks up its certificate, Cert(PK_D). The authorization server sends the voucher response to the authenticator. The Voucher_Response SHALL be a CBOR array as defined below:
+The authorization server decrypts the identity of the device and looks up its certificate, Cert(PK_U). The authorization server sends the voucher response to the authenticator. The Voucher_Response SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~
 Voucher_Response = [
-    CERT_PK_D:      bstr,
+    CERT_PK_U:      bstr,
     Voucher:        bstr
 ]
 ~~~~~~~~~~~
 
 where
 
-* CERT_PK_D is the device certificate of the public key PK_D, issued by a trusted third party, intended to be verified by the authenticator. The format of this certificate is out of scope.
-* Voucher is defined in {{p-as}}
+* CERT_PK_U is the device certificate of the public key PK_U, issued by a trusted third party, intended to be verified by the authenticator. The format of this certificate is out of scope.
+* Voucher is defined in {{u-w}}
 
-TODO: The voucher response may contain a "Voucher-info" field as an alternative to make the Voucher a CBOR Map (see {{p-as}})
+TODO: The voucher response may contain a "Voucher-info" field as an alternative to make the Voucher a CBOR Map (see {{u-w}})
 
 # Security Considerations  {#sec-cons}
 
 TODO: Identity protection of device
 
-TODO: How can the authorization server attest the received PK_A?
+TODO: How can the authorization server attest the received PK_V?
 
 TODO: Use of G_X as ephemeral key between device and authenticator, and between device and authorization server
 
