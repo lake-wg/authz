@@ -63,7 +63,7 @@ This document describes a procedure for augmenting an authenticated Diffie-Hellm
 
 For constrained IoT deployments {{RFC7228}} the overhead contributed by security protocols may be significant which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see {{I-D.ietf-lake-reqs}}). This document describes a lightweight procedure for augmenting an authenticated Diffie-Hellman key exchange with third party assisted authorization.
 
-The procedure involves a device, a domain authenticator and a AAA server. The device performs mutual authentication and authorization of the authenticator, assisted by the AAA server which provides relevant authorization information to the device in the form of a "voucher".
+The procedure involves a device, a domain authenticator and an authorization server. The device performs mutual authentication and authorization of the authenticator, assisted by the authorization server which provides relevant authorization information to the device in the form of a "voucher".
 
 The protocol specified in this document optimizes the message count by performing authorization and enrolment in parallel with authentication, instead of in sequence which is common for network access. It further reuses protocol elements from the authentication protocol leading to reduced message sizes on constrained links.
 
@@ -77,7 +77,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 # Problem Description {#prob-desc}
 
-The (potentially constrained) device wants to enrol into a domain over a constrained link. The device authenticates and enforces authorization of the (non-constrained) domain authenticator with the help of a voucher, and makes the enrolment request. The domain authenticator authenticates the device and authorizes its enrolment. Authentication between device and domain authenticator is made with a lightweight authenticated Diffie-Hellman key exchange protocol (LAKE, {{I-D.ietf-lake-reqs}}). The procedure is assisted by a (non-constrained) AAA server located in a non-constrained network behind the domain authenticator providing information to the device and to the domain authenticator.
+The (potentially constrained) device wants to enrol into a domain over a constrained link. The device authenticates and enforces authorization of the (non-constrained) domain authenticator with the help of a voucher, and makes the enrolment request. The domain authenticator authenticates the device and authorizes its enrolment. Authentication between device and domain authenticator is made with a lightweight authenticated Diffie-Hellman key exchange protocol (LAKE, {{I-D.ietf-lake-reqs}}). The procedure is assisted by a (non-constrained) authorization server located in a non-constrained network behind the domain authenticator providing information to the device and to the domain authenticator.
 
 The objective of this document is to specify such a protocol which is lightweight over the constrained link and reuses elements of the LAKE. See illustration in {{fig-overview}}.
 
@@ -85,13 +85,13 @@ The objective of this document is to specify such a protocol which is lightweigh
 ~~~~~~~~~~~
                    Voucher
               LAKE  Info
-+------------+  |    |   +---------------+  Voucher  +------------+
-|            |  |    |   |               |  Request  |            |
-|            |--|----o-->|    Domain     |---------->|    AAA     |
-|   Device   |<-|---o----| Authenticator |<----------|   Server   |
-|            |--|---|--->|               |  Voucher  |            |
-|            |      |    |               |  Response |            |
-+------------+      |    +---------------+           +------------+
++------------+  |    |   +---------------+  Voucher  +---------------+
+|            |  |    |   |               |  Request  |               |
+|            |--|----o-->|    Domain     |---------->| Authorization |
+|   Device   |<-|---o----| Authenticator |<----------|     Server    |
+|            |--|---|--->|               |  Voucher  |               |
+|            |      |    |               |  Response |               |
++------------+      |    +---------------+           +---------------+
                   Voucher
 
 
@@ -105,10 +105,10 @@ The objective of this document is to specify such a protocol which is lightweigh
 
 The device is pre-provisioned with an identity ID and asymmetric key credentials: a private key, a public key (PK_D), and optionally a public key certificate Cert(PK_D) issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator. The ID may be a reference or pointer to the certificate.
 
-The device is also provisioned with information about its AAA server:
+The device is also provisioned with information about its authorization server:
 
-* At least one static public DH key of the AAA server (G_S) used to ensure secure communication with the device (see {{p-as}}).
-* Location information about the AAA server (LOC_S), e.g. its domain name. This information may be available in the device certificate Cert(PK_D).
+* At least one static public DH key of the authorization server (G_S) used to ensure secure communication with the device (see {{p-as}}).
+* Location information about the authorization server (LOC_S), e.g. its domain name. This information may be available in the device certificate Cert(PK_D).
 
 
 
@@ -116,16 +116,16 @@ The device is also provisioned with information about its AAA server:
 
 The domain authenticator has a private key and corresponding public key PK_A used to authenticate to the device.
 
-The domain authenticator needs to be able to locate the AAA server of the device for which the LOC_S is expected to be sufficient. The communication between domain authenticator and AAA server is mutually authenticated and protected. Authentication credentials used with the AAA server is out of scope. How this communication is established and secured (typically TLS) is out of scope.
+The domain authenticator needs to be able to locate the authorization server of the device for which the LOC_S is expected to be sufficient. The communication between domain authenticator and authorization server is mutually authenticated and protected. Authentication credentials used with the authorization server is out of scope. How this communication is established and secured (typically TLS) is out of scope.
 
 
-## AAA Server
+## Authorization Server
 
-The AAA server has a private DH key corresponding to G_S, which is used to secure the communication with the device (see {{p-as}}). Authentication credentials and communication security used with the domain authenticator is out of scope.
+The authorization server has a private DH key corresponding to G_S, which is used to secure the communication with the device (see {{p-as}}). Authentication credentials and communication security used with the domain authenticator is out of scope.
 
-The AAA server provides the authorization decision for enrolment to the device in the form of a CBOR encoded voucher. The AAA server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_D).
+The authorization server provides the authorization decision for enrolment to the device in the form of a CBOR encoded voucher. The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_D).
 
-The AAA server needs to be available during the execution of the protocol.
+The authorization server needs to be available during the execution of the protocol.
 
 
 ## Lightweight AKE
@@ -134,11 +134,11 @@ We assume a Diffie-Hellman key exchange protocol complying with the LAKE require
 
 * Three messages
 * CBOR encoding
-* The ephemeral public Diffie-Hellman key of the device, G_X, is sent in message 1. G_X is also used as ephemeral key and nonce in the ECIES scheme between device and AAA server.
+* The ephemeral public Diffie-Hellman key of the device, G_X, is sent in message 1. G_X is also used as ephemeral key and nonce in the ECIES scheme between device and authorization server.
 
 * The static public key of the domain authenticator, PK_A, sent in message 2
 * Support for Auxilliary Data AD1-3 in messages 1-3 as specified in section 2.5 of {{I-D.ietf-lake-reqs}}.
-* Cipher suite negotiation where the device can propose ECDH curves restricted by its available public keys of the AAA server.
+* Cipher suite negotiation where the device can propose ECDH curves restricted by its available public keys of the authorization server.
 
 
 
@@ -147,17 +147,18 @@ We assume a Diffie-Hellman key exchange protocol complying with the LAKE require
 Three security sessions are going on in parallel (see figure {{fig-protocol}}):
 
 * Between device and (domain) authenticator,
-* between authenticator and AAA server, and
-* between device and AAA server mediated by the authenticator.
+* between authenticator and authorization server, and
+* between device and authorization server mediated by the authenticator.
 
 We study each in turn, starting with the last.
 
 ~~~~~~~~~~~
- Device                        Authenticator           AAA Server
+ Device                        Authenticator           Authorization
+                                                          Server
    |                                 |                     |
    |--- Message 1 incl. G_X, AD1 --->|--- Voucher Req. --->|
    |                                 |                     |
-   |<-- Message 2 incl. PK_A, AD2 --|<-- Voucher Resp. ---|
+   |<-- Message 2 incl. PK_A, AD2 ---|<-- Voucher Resp. ---|
    |                                 |
    |--- Message 3 incl. AD3 -------->|
 
@@ -165,9 +166,9 @@ We study each in turn, starting with the last.
 {: #fig-protocol title="The Protocol" artwork-align="center"}
 
 
-## Device <-> AAA Server {#p-as}
+## Device <-> Authorization Server {#p-as}
 
-The communication between device and AAA server is carried out via the authenticator protected between the endpoints using an ECIES hybrid encryption scheme (see {{I-D.irtf-cfrg-hpke}}): The device uses the private key of its ephemeral DH key G_X generated for LAKE message 1 (see {{p-r}}) together with the static public DH key of the AAA server G_S to generate a shared secret G_XS. The shared secret is used to derive AEAD encryption keys to protect data between device and AAA server. The data is carried in AD1 and AD2 (between device and authenticator) and in voucher request/response (between authenticator and AAA server).
+The communication between device and authorization server is carried out via the authenticator protected between the endpoints using an ECIES hybrid encryption scheme (see {{I-D.irtf-cfrg-hpke}}): The device uses the private key of its ephemeral DH key G_X generated for LAKE message 1 (see {{p-r}}) together with the static public DH key of the authorization server G_S to generate a shared secret G_XS. The shared secret is used to derive AEAD encryption keys to protect data between device and authorization server. The data is carried in AD1 and AD2 (between device and authenticator) and in voucher request/response (between authenticator and authorization server).
 
 TODO: Reference relevant ECIES scheme in {{I-D.irtf-cfrg-hpke}}.
 
@@ -186,8 +187,8 @@ AD1 = (
 
 where
 
-* LOC_S is location information about the AAA server
-* CC is a crypto context identifier for the security context between the device and the AAA server
+* LOC_S is location information about the authorization server
+* CC is a crypto context identifier for the security context between the device and the authorization server
 * 'CIPHERTEXT_RQ' is the authenticated encrypted identity of the device with CC as Additional Data, more specifically:
 
 'CIPHERTEXT_RQ' is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC8152}}) computed from the following:
@@ -273,14 +274,14 @@ The device and authenticator run the LAKE protocol authenticated with public key
 
 #### Device processing
 
-The device selects a cipher suite with an ECDH curve satisfying the static public DH key G_S of the AAA server. As part of the normal LAKE processing, the device generates the ephemeral public key G_X to be sent in LAKE message 1. A new G_X MUST be generated for each execution of the protocol. The same ephemeral key is used in the ECIES scheme, see {{p-as}}.
+The device selects a cipher suite with an ECDH curve satisfying the static public DH key G_S of the authorization server. As part of the normal LAKE processing, the device generates the ephemeral public key G_X to be sent in LAKE message 1. A new G_X MUST be generated for each execution of the protocol. The same ephemeral key is used in the ECIES scheme, see {{p-as}}.
 
 The device sends LAKE message 1 with AD1 as specified in {{p-as}}.
 
 
 #### Authenticator processing
 
-The authenticator receives LAKE message 1 from the device, which triggers the exchange of voucher related data with the AAA server as described in {{r-as}}.
+The authenticator receives LAKE message 1 from the device, which triggers the exchange of voucher related data with the authorization server as described in {{r-as}}.
 
 
 ### Message 2
@@ -308,15 +309,15 @@ The device sends message 3. AD3 depends on the kind of enrolment the device is r
 The authenticator receives message 3.
 
 
-## Authenticator <-> AAA Server {#r-as}
+## Authenticator <-> Authorization Server {#r-as}
 
-The authenticator and AAA server are assumed to have secure communication, for example based on TLS authenticated with certificates.
+The authenticator and authorization server are assumed to have secure communication, for example based on TLS authenticated with certificates.
 
 
 ### Voucher Request
 
 
-The authenticator sends the voucher request to the AAA server.
+The authenticator sends the voucher request to the authorization server.
 The Voucher_Request SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~
@@ -333,7 +334,7 @@ where the parameters are defined in {{p-as}}.
 
 ### Voucher Response
 
-The AAA server decrypts the identity of the device and looks up its certificate, Cert(PK_D). The AAA server sends the voucher response to the authenticator. The Voucher_Response SHALL be a CBOR array as defined below:
+The authorization server decrypts the identity of the device and looks up its certificate, Cert(PK_D). The authorization server sends the voucher response to the authenticator. The Voucher_Response SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~
 Voucher_Response = [
@@ -353,9 +354,9 @@ TODO: The voucher response may contain a "Voucher-info" field as an alternative 
 
 TODO: Identity protection of device
 
-TODO: How can the AAA server attest the received PK_A?
+TODO: How can the authorization server attest the received PK_A?
 
-TODO: Use of G_X as ephemeral key between device and authenticator, and between device and AAA server
+TODO: Use of G_X as ephemeral key between device and authenticator, and between device and authorization server
 
 TODO: Remote attestation
 
