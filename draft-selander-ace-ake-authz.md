@@ -49,6 +49,7 @@ informative:
   RFC8152:
   RFC8174:
   I-D.ietf-lake-reqs:
+  I-D.ietf-ace-oauth-authz:
   I-D.raza-ace-cbor-certificates:
   I-D.irtf-cfrg-hpke:
 
@@ -63,13 +64,13 @@ This document describes a procedure for augmenting an authenticated Diffie-Hellm
 
 For constrained IoT deployments {{RFC7228}} the overhead contributed by security protocols may be significant which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see {{I-D.ietf-lake-reqs}}). This document describes a lightweight procedure for augmenting an authenticated Diffie-Hellman key exchange with third party assisted authorization.
 
-The procedure involves a device, a domain authenticator and an authorization server. The device performs mutual authentication and authorization of the authenticator, assisted by the authorization server which provides relevant authorization information to the device in the form of a "voucher".
+The procedure involves a device, a domain authenticator and an authorization server. The device and authenticator performs mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and the authenticator.
 
 The protocol specified in this document optimizes the message count by performing authorization and enrolment in parallel with authentication, instead of in sequence which is common for network access. It further reuses protocol elements from the authentication protocol leading to reduced message sizes on constrained links.
 
 The specification assumes a lightweight AKE protocol {{I-D.ietf-lake-reqs}} between device and authenticator, and defines the integration of a lightweight authorization procedure. This enables a secure target interaction in few message exchanges. In this document we consider the target interaction to be "enrolment", for example certificate enrolment or joining a network for the first time, but it can be applied to authorize other target interactions.
 
-This protocol is applicable in a wide variety of settings, e.g. an enterprise network using EAP {{RFC3748}}.
+This protocol is applicable in a wide variety of settings, and can be mapped to different authorization architectures. This document specifies a profile of the ACE framework {{I-D.ietf-ace-oauth-authz}}. Other settings such as EAP {{RFC3748}} are out of scope.
 
 ## Terminology   {#terminology}
 
@@ -103,7 +104,7 @@ The objective of this document is to specify such a protocol which is lightweigh
 
 ## Device
 
-The device is pre-provisioned with an identity ID and asymmetric key credentials: a private key, a public key (PK_U), and optionally a public key certificate Cert(PK_U) issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator. The ID may be a reference or pointer to the certificate.
+The device is pre-provisioned with an identity ID and asymmetric key credentials: a private key, a public key (PK_U), and optionally a public key certificate Cert(PK_U), issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator. The ID may be a reference or pointer to the certificate.
 
 The device is also provisioned with information about its authorization server:
 
@@ -116,7 +117,9 @@ The device is also provisioned with information about its authorization server:
 
 The domain authenticator has a private key and corresponding public key PK_V used to authenticate to the device.
 
-The domain authenticator needs to be able to locate the authorization server of the device for which the LOC_W is expected to be sufficient. The communication between domain authenticator and authorization server is mutually authenticated and protected. Authentication credentials used with the authorization server is out of scope. How this communication is established and secured (typically TLS) is out of scope.
+The domain authenticator needs to be able to locate the authorization server of the device for which the LOC_W is expected to be sufficient. The communication between domain authenticator and authorization server is mutually authenticated and protected. Authentication credentials used with the authorization server are out of scope. How this communication is established and secured (typically TLS) is out of scope.
+
+TODO: Need for channel binding?
 
 
 ## Authorization Server
@@ -348,6 +351,11 @@ where
 * Voucher is defined in {{U-W}}
 
 TODO: The voucher response may contain a "Voucher-info" field as an alternative to make the Voucher a CBOR Map (see {{U-W}})
+
+# ACE Profile
+
+This section defines the profile of the ACE framework (see Appendix C of {{I-D.ietf-ace-oauth-authz}}).
+
 
 # Security Considerations  {#sec-cons}
 
