@@ -87,7 +87,7 @@ The objective of this document is to specify such a protocol which is lightweigh
               LAKE  Info
 +------------+  |    |   +---------------+  Voucher  +---------------+
 |            |  |    |   |               |  Request  |               |
-|            |--|----o-->|    Domain     |---------->| Authorization |
+|            |--|----o-->|    Domain     |---------->| Authorization |
 |   Device   |<-|---o----| Authenticator |<----------|     Server    |
 |            |--|---|--->|               |  Voucher  |               |
 |            |      |    |               |  Response |               |
