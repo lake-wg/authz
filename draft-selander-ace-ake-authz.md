@@ -52,6 +52,8 @@ informative:
   I-D.ietf-ace-oauth-authz:
   I-D.raza-ace-cbor-certificates:
   I-D.irtf-cfrg-hpke:
+  I-D.ietf-ace-coap-est:
+  I-D.ietf-6tisch-minimal-security:
 
 --- abstract
 
@@ -73,7 +75,7 @@ It further reuses protocol elements from the authentication protocol leading to 
 
 The specification assumes a lightweight AKE protocol {{I-D.ietf-lake-reqs}} between device and authenticator, and defines the integration of a lightweight authorization procedure.
 This enables a secure target interaction in few message exchanges.
-In this document we consider the target interaction to be "enrolment", for example certificate enrolment or joining a network for the first time, but it can be applied to authorize other target interactions.
+In this document we consider the target interaction to be "enrolment", for example certificate enrolment (such as {{I-D.ietf-ace-coap-est}}) or joining a network for the first time (e.g. {{I-D.ietf-6tisch-minimal-security}}), but it can be applied to authorize other target interactions.
 
 This protocol is applicable in a wide variety of settings, and can be mapped to different authorization architectures.
 This document specifies a profile of the ACE framework {{I-D.ietf-ace-oauth-authz}}.
