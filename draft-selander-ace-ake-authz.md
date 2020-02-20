@@ -99,13 +99,13 @@ The objective of this document is to specify such a protocol which is lightweigh
 ~~~~~~~~~~~
                    Voucher
               LAKE  Info
-+------------+  |    |   +---------------+  Voucher  +--------------+
-|            |  |    |   |               |  Request  |              |
-|   Device   |--|----o-->|    Domain     |---------->|Authorization |
-|            |<-|---o----| Authenticator |<----------|    Server    |
-|     (U)    |--|---|--->|      (V)      |  Voucher  |      (W)     |
-|            |      |    |               |  Response |              |
-+------------+      |    +---------------+           +--------------+
++----------+  |    |   +---------------+  Voucher  +---------------+
+|          |  |    |   |               |  Request  |               |
+|  Device  |--|----o-->|    Domain     |---------->| Authorization |
+|          |<-|---o----| Authenticator |<----------|     Server    |
+|    (U)   |--|---|--->|      (V)      |  Voucher  |       (W)     |
+|          |      |    |               |  Response |               |
++----------+      |    +---------------+           +---------------+
                   Voucher
 
 
