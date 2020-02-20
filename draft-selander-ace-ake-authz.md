@@ -62,15 +62,22 @@ This document describes a procedure for augmenting an authenticated Diffie-Hellm
 # Introduction  {#intro}
 
 
-For constrained IoT deployments {{RFC7228}} the overhead contributed by security protocols may be significant which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see {{I-D.ietf-lake-reqs}}). This document describes a lightweight procedure for augmenting an authenticated Diffie-Hellman key exchange with third party assisted authorization.
+For constrained IoT deployments {{RFC7228}} the overhead contributed by security protocols may be significant which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see {{I-D.ietf-lake-reqs}}).
+This document describes a lightweight procedure for augmenting an authenticated Diffie-Hellman key exchange with third party assisted authorization.
 
-The procedure involves a device, a domain authenticator and an authorization server. The device and authenticator performs mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and the authenticator.
+The procedure involves a device, a domain authenticator and an authorization server.
+The device and authenticator performs mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and the authenticator.
 
-The protocol specified in this document optimizes the message count by performing authorization and enrolment in parallel with authentication, instead of in sequence which is common for network access. It further reuses protocol elements from the authentication protocol leading to reduced message sizes on constrained links.
+The protocol specified in this document optimizes the message count by performing authorization and enrolment in parallel with authentication, instead of in sequence which is common for network access.
+It further reuses protocol elements from the authentication protocol leading to reduced message sizes on constrained links.
 
-The specification assumes a lightweight AKE protocol {{I-D.ietf-lake-reqs}} between device and authenticator, and defines the integration of a lightweight authorization procedure. This enables a secure target interaction in few message exchanges. In this document we consider the target interaction to be "enrolment", for example certificate enrolment or joining a network for the first time, but it can be applied to authorize other target interactions.
+The specification assumes a lightweight AKE protocol {{I-D.ietf-lake-reqs}} between device and authenticator, and defines the integration of a lightweight authorization procedure.
+This enables a secure target interaction in few message exchanges.
+In this document we consider the target interaction to be "enrolment", for example certificate enrolment or joining a network for the first time, but it can be applied to authorize other target interactions.
 
-This protocol is applicable in a wide variety of settings, and can be mapped to different authorization architectures. This document specifies a profile of the ACE framework {{I-D.ietf-ace-oauth-authz}}. Other settings such as EAP {{RFC3748}} are out of scope.
+This protocol is applicable in a wide variety of settings, and can be mapped to different authorization architectures.
+This document specifies a profile of the ACE framework {{I-D.ietf-ace-oauth-authz}}.
+Other settings such as EAP {{RFC3748}} are out of scope.
 
 ## Terminology   {#terminology}
 
@@ -78,7 +85,11 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 # Problem Description {#prob-desc}
 
-The (potentially constrained) device wants to enrol into a domain over a constrained link. The device authenticates and enforces authorization of the (non-constrained) domain authenticator with the help of a voucher, and makes the enrolment request. The domain authenticator authenticates the device and authorizes its enrolment. Authentication between device and domain authenticator is made with a lightweight authenticated Diffie-Hellman key exchange protocol (LAKE, {{I-D.ietf-lake-reqs}}). The procedure is assisted by a (non-constrained) authorization server located in a non-constrained network behind the domain authenticator providing information to the device and to the domain authenticator.
+The (potentially constrained) device wants to enrol into a domain over a constrained link.
+The device authenticates and enforces authorization of the (non-constrained) domain authenticator with the help of a voucher, and makes the enrolment request.
+The domain authenticator authenticates the device and authorizes its enrolment.
+Authentication between device and domain authenticator is made with a lightweight authenticated Diffie-Hellman key exchange protocol (LAKE, {{I-D.ietf-lake-reqs}}).
+The procedure is assisted by a (non-constrained) authorization server located in a non-constrained network behind the domain authenticator providing information to the device and to the domain authenticator.
 
 The objective of this document is to specify such a protocol which is lightweight over the constrained link and reuses elements of the LAKE. See illustration in {{fig-overview}}.
 
