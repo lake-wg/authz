@@ -174,22 +174,23 @@ Three security sessions are going on in parallel (see figure {{fig-protocol}}):
 We study each in turn, starting with the last.
 
 ~~~~~~~~~~~
-  U                                                                                                   V                                                   W
-  |                          TYPE, SUITES_U, G_X, C_U, CC, AEAD(K_WX; ID_U)                           |                                                   |
-  +-------------------------------------------------------------------------------------------------->|                                                   |
-  |                                             message 1                                             |          G_X, PK_V, CC, AEAD(K_WX; ID_U)          |
-  |                                                                                                   +-------------------------------------------------->|
-  |                                                                                                   |                  voucher request                  |
-  |                                                                                                   |                                                   |
-  |                                                                                                   |  CERT_PK_U, AEAD(K_UW?; V_TYPE, PK_V, G_X, ID_U)  |
-  |                                                                                                   |<--------------------------------------------------+
-  |  C_U, G_Y, C_V, AEAD(K_2; ID_CRED_V, SIG(V; CRED_V, TH_2), AEAD(K_UW?; V_TYPE, PK_V, G_X, ID_U))  |                 voucher response                  |
-  |<--------------------------------------------------------------------------------------------------+
-  |                                             message 2                                             |                                     
-  |                                                                                                   |
-  |                        C_V, AEAD(K_3; ID_CRED_U, SIG(U; CRED_U, TH3), AD_3)                       |
-  +-------------------------------------------------------------------------------------------------->|
-  |                                             message 3                                             |
+U                                V                                 W
+|   (G_X), CC, AEAD(K_WX; ID_U)  |                                 |
++------------------------------->|                                 |
+|        EDHOC message 1         | G_X, PK_V, CC, AEAD(K_WX; ID_U) |
+|                                +-------------------------------->|
+|                                |    Voucher Request (VREQ)       |
+|                                |                                 |
+|                                |      CERT_PK_U, Voucher         |
+|                                |<--------------------------------+
+|   (Enc(ID_CRED_V)), Voucher    |    Voucher Response (VRES)      |
+|<-------------------------------+                                 |
+|        EDHOC message 2         |                                 |
+|                                |                                 |
++------------------------------->|                                 |
+|        EDHOC message 3         |                                 |
+
+where Voucher = AEAD(K_UW?; V_TYPE, PK_V, G_X, ID_U)
 ~~~~~~~~~~~
 {: #fig-protocol title="The Protocol" artwork-align="center"}
 
