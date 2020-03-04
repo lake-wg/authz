@@ -360,7 +360,7 @@ Voucher_Request = [
 where the parameters are defined in {{U-W}}.
 
 
-### Voucher Response {{#voucher_response}}
+### Voucher Response {#voucher_response}
 
 The authorization server decrypts the identity of the device and looks up its certificate, Cert(PK_U). The authorization server sends the voucher response to the authenticator. The Voucher_Response SHALL be a CBOR array as defined below:
 
