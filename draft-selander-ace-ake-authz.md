@@ -144,7 +144,7 @@ TODO: Need for channel binding?
 
 The authorization server has a private DH key corresponding to G_W, which is used to secure the communication with the device (see {{U-W}}). Authentication credentials and communication security used with the domain authenticator is out of scope.
 
-The authorization server provides the authorization decision for enrollment to the device in the form of a CBOR encoded voucher. The authorization server provides information to the domain authenticator about the device, such as the the device's certificate CERT_PK_U.
+The authorization server provides the authorization decision for enrollment to the device in the form of a CBOR encoded voucher. The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_U).
 
 The authorization server needs to be available during the execution of the protocol.
 
@@ -157,7 +157,7 @@ We assume a Diffie-Hellman key exchange protocol complying with the LAKE require
 * CBOR encoding
 * The ephemeral public Diffie-Hellman key of the device, G_X, is sent in message 1. G_X is also used as ephemeral key and nonce in the ECIES scheme between device and authorization server.
 
-* The static public key of the domain authenticator, PK_V, sent in message 2
+* The public authentication key of the domain authenticator, PK_V, is sent in message 2.
 * Support for Auxilliary Data AD1-3 in messages 1-3 as specified in section 2.5 of {{I-D.ietf-lake-reqs}}.
 * Cipher suite negotiation where the device can propose ECDH curves restricted by its available public keys of the authorization server.
 
@@ -167,33 +167,37 @@ We assume a Diffie-Hellman key exchange protocol complying with the LAKE require
 
 Three security sessions are going on in parallel (see figure {{fig-protocol}}):
 
-* Between device and (domain) authenticator,
-* between authenticator and authorization server, and
+* Between device (U) and (domain) authenticator (V),
+* between authenticator and authorization server (W), and
 * between device and authorization server mediated by the authenticator.
 
 We study each in turn, starting with the last.
 
 ~~~~~~~~~~~
-U                                V                                 W
-|   (G_X), CC, AEAD(K_WX; ID_U)  |                                 |
-+------------------------------->|                                 |
-|        EDHOC message 1         | G_X, PK_V, CC, AEAD(K_WX; ID_U) |
-|                                +-------------------------------->|
-|                                |    Voucher Request (VREQ)       |
-|                                |                                 |
-|                                |      CERT_PK_U, Voucher         |
-|                                |<--------------------------------+
-|   (Enc(ID_CRED_V)), Voucher    |    Voucher Response (VRES)      |
-|<-------------------------------+                                 |
-|        EDHOC message 2         |                                 |
-|                                |                                 |
-+------------------------------->|                                 |
-|        EDHOC message 3         |                                 |
+U                                     V                               W
+|                (G_X)                |                               |
+|  AD1=(LOC_W, CC, AEAD(K_1; ID_U))   |                               |
++------------------------------------>|                               |
+|           EDHOC message 1           |G_X, PK_V, CC, AEAD(K_1; ID_U) |
+|                                     +------------------------------>|
+|                                     |    Voucher Request (VREQ)     |
+|                                     |                               |
+|                                     |      CERT_PK_U, Voucher       |
+|                                     |<------------------------------+
+|(Enc(ID_CRED_V, Sig(V; CRED_V, TH2)))|    Voucher Response (VRES)    |
+|             AD2=Voucher             |                               |
+|<------------------------------------+                               |
+|           EDHOC message 2           |                               |
+|                                     |                               |
+|     (Enc(Sig(U; CRED_U, TH3)))      |                               |
++------------------------------------>|                               |
+|           EDHOC message 3           |                               |
 
-where Voucher = AEAD(K_UW?; V_TYPE, PK_V, G_X, ID_U)
+where Voucher = AEAD(K_2; V_TYPE, PK_V, G_X, ID_U)
 ~~~~~~~~~~~
 {: #fig-protocol title="The Protocol" artwork-align="center"}
 
+TODO: explain that notations in brackets are part of the EDHOC message which are actively used in this document
 
 ## Device <-> Authorization Server {#U-W}
 
@@ -335,7 +339,7 @@ The device sends message 3. AD3 depends on the kind of enrollment the device is 
 
 #### Authenticator processing
 
-The authenticator MUST NOT verfiy the signature in message 3 with the PK_U included in message 3. The signature MUST be verified with the public key included in CERT_PK_U (see {{voucher_response}}) instead. This way, the authenticator can make sure that message 3 is signed by the rigth entity trusted by W.
+The authenticator MUST NOT verfiy the signature Sig(U; CRED_U, TH3) in message 3 with the PK_U included in message 3. The signature MUST be verified with the public key included in Cert(PK_U) (see {{voucher_response}}) instead. This way, the authenticator can make sure that message 3 is signed by the rigth entity trusted by the authorization server.
 
 
 ## Authenticator <-> Authorization Server {#V-W}
@@ -374,7 +378,7 @@ Voucher_Response = [
 
 where
 
-* CERT_PK_U is the device certificate of the public key PK_U, issued by a trusted third party, intended to be verified by the authenticator. The format of this certificate is out of scope.
+* CERT_PK_U is the device certificate of the public key PK_U, Cert(PK_U), issued by a trusted third party, intended to be verified by the authenticator. The format of this certificate is out of scope.
 * Voucher is defined in {{U-W}}
 
 TODO: The voucher response may contain a "Voucher-info" field as an alternative to make the Voucher a CBOR Map (see {{U-W}})
