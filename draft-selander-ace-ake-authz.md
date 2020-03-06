@@ -369,6 +369,113 @@ TODO: The voucher response may contain a "Voucher-info" field as an alternative 
 
 This section defines the profile of the ACE framework (see Appendix C of {{I-D.ietf-ace-oauth-authz}}).
 
+U plays the role of the ACE Resource Server (RS).
+V plays the role of the ACE Client (C).
+W plays the role of the ACE Authorization Server (AS).
+
+C and RS use the Auxiliary Data in the LAKE protocol to communicate.
+C and RS use the LAKE protocol to protect their communication.
+LAKE also provides mutual authentication of C and RS, assisted by the AS.
+
+## Protocol Overview
+
+~~~~~~~~~~~
+   RS                                C                     AS
+   |          LAKE Message 1         |                     |
+   |  AD1=AS Request Creation Hints  |                     |
+   |-------------------------------->|     POST /token     |
+   |                                 |-------------------->|
+   |                                 |                     |
+   |                                 | Access Token +      |
+   |           LAKE Message 2        |  Access Information |
+   |          AD2=Access Token       |<--------------------|
+   |<--------------------------------|                     |
+   |           LAKE Message 3        |                     |
+   |-------------------------------->|                     |
+
+~~~~~~~~~~~
+{: #fig-mapping-ace title="Overview of the protocol mapping to ACE" artwork-align="center"}
+
+RS proactively sends the AS Request Creation Hints message to C to signal the information on where C can reach the AS.
+RS piggybacks the AS Request Creation Hints message using Auxiliary Data of the LAKE message 1.
+Before continuing the LAKE handshake, based on the AS Request Creation Hints information, C sends a POST request to the token endpoint at the AS requesting the access token.
+The AS issues to C a Bearer token that is cryptographically protected based on the secret shared between the AS and RS.
+C presents this token to RS in the Auxiliary Data of the LAKE message 2.
+RS verifies the token based on the possession of the shared secret with the AS and authenticates C.
+
+## AS Request Creation Hints
+
+Parameters that can appear in the AS Request Creation Hints message are specified in Section 5.1.2. of {{I-D.ietf-ace-oauth-authz}}.
+RS MUST use the "AS" parameter to transport LOC_W, i.e. an absolute URI where C can reach the AS.
+RS MUST use the "audience" parameter to transport the CBOR sequence consisting of two elements: CC, the crypto context; CIPHERTEXT_RQ, the authenticated encrypted identity of the RS.
+The "cnonce" parameter MUST be implied to G^X, i.e. the ephemeral public key of the RS in the underlying LAKE exchange.
+The "cnonce" parameter is not carried in the AS Request Creation Hints message for byte saving reasons.
+AS Request Creation Hints MUST be carried within Auxiliary Data of the LAKE message 1 (AD1).
+
+An example AD1 value in CBOR diagnostic notation is shown below:
+
+~~~~~~~~~~~
+AD1:
+{
+    "AS" : "coaps://as.example.com/token",
+    "audience": << h'73',h'737570657273...' >>
+}
+~~~~~~~~~~~
+
+## Client-to-AS Request
+
+Protocol that provides the secure channel between C and the AS is out-of-scope.
+This can, for example, be TLS or DTLS.
+What is important is that the two peers are mutually authenticated, and that the secure channel provides message integrity, confidentiality and freshness.
+It is also necessary for the AS to be able to extract the public key of C used in the underlying security handshake.
+
+C sends the POST request to the token endpoint at the AS following Section 5.6.1. of {{I-D.ietf-ace-oauth-authz}}.
+C MUST set the "audience" parameter to the value received in AS Request Creation Hints.
+C MUST set the "cnonce" parameter to G^X, the ephemeral public key of RS in the LAKE handshake.
+
+An example exchange using CoAP and CBOR diagnostic notation is shown below:
+
+~~~~~~~~~~~
+    Header: POST (Code=0.02)
+    Uri-Host: "as.example.com"
+    Uri-Path: "token"
+    Content-Format: "application/ace+cbor"
+    Payload:
+    {
+        "audience" : << h'73',h'737570657273...' >>
+        "cnonce" : h'756E73686172...'
+    }
+~~~~~~~~~~~
+
+## AS-to-Client Response
+
+Given successful authorization of C at the AS, the AS responds by issuing a Bearer token and retrieves the certificate of RS on behalf of C.
+The access token and the certificate are passed back to C, who uses it to complete the LAKE handshake.
+This document extends the ACE framework by registering a new Access Information parameter:
+
+rsp_ad:
+     OPTIONAL. Carries additional information from the AS to C associated with the access token.
+
+When responding to C, the AS MUST set the "ace_profile" parameter to "lake".
+The AS MUST set the "token_type" parameter to "Bearer".
+The access token MUST be formatted as specified in {{voucher}}.
+The AS MUST set the "rsp_ad" parameter to the certificate of RS.
+To be able to do so, AS first needs to decrypt the audience value, and based on it retrieve the corresponding RS certificate.
+
+An example AS response to C is shown below:
+
+~~~~~~~~~~~
+    2.01 Created
+    Content-Format: application/ace+cbor
+    Max-Age: 3600
+    Payload:
+    {
+        "ace_profile" : "lake",
+        "token_type" : "Bearer",
+        "access_token" : h'666F726571756172746572...',
+        "rsp_ad" : h'61726973746F64656D6F637261746963616C...'
+    }
+~~~~~~~~~~~
 
 # Security Considerations  {#sec-cons}
 
@@ -385,6 +492,8 @@ TODO: Remote attestation
 TODO: CC registry
 
 TODO: Voucher type registry
+
+TODO: register rsp_ad ACE parameter
 
 --- back
 
