@@ -59,6 +59,7 @@ informative:
   I-D.irtf-cfrg-hpke:
   I-D.ietf-ace-coap-est:
   I-D.ietf-6tisch-minimal-security:
+  I-D.selander-ace-cose-ecdhe:
 
 --- abstract
 
@@ -171,33 +172,38 @@ Three security sessions are going on in parallel (see figure {{fig-protocol}}):
 * between authenticator and authorization server (W), and
 * between device and authorization server mediated by the authenticator.
 
+The content of the EDHOC messages which are actively reused by LAKE are highlightet with brackets in the figure below ({{fig-protocol}}). These content include:
+
+* G_X: the x-coordinate of the ephemeral public Diffie-Hellman key of party U
+* ID_CRED_V: data enabling the party U to obtail the credentials containing the public authentication key of V
+* Sig(V;): a signature made with the private authentication key of V
+* Sig(U;): a signature made with the private authentication key of U
+
 We study each in turn, starting with the last.
 
 ~~~~~~~~~~~
-U                                     V                               W
-|                (G_X)                |                               |
-|  AD1=(LOC_W, CC, AEAD(K_1; ID_U))   |                               |
-+------------------------------------>|                               |
-|           EDHOC message 1           |G_X, PK_V, CC, AEAD(K_1; ID_U) |
-|                                     +------------------------------>|
-|                                     |    Voucher Request (VREQ)     |
-|                                     |                               |
-|                                     |      CERT_PK_U, Voucher       |
-|                                     |<------------------------------+
-|(Enc(ID_CRED_V, Sig(V; CRED_V, TH2)))|    Voucher Response (VRES)    |
-|             AD2=Voucher             |                               |
-|<------------------------------------+                               |
-|           EDHOC message 2           |                               |
-|                                     |                               |
-|     (Enc(Sig(U; CRED_U, TH3)))      |                               |
-+------------------------------------>|                               |
-|           EDHOC message 3           |                               |
+U                                    V                              W
+|                (G_X)               |                              |
+|  AD1=(LOC_W, CC, AEAD(K_1; ID_U))  |                              |
++----------------------------------->|                              |
+|           EDHOC message 1          |G_X, PK_V, CC, AEAD(K_1; ID_U)|
+|                                    +----------------------------->|
+|                                    |    Voucher Request (VREQ)    |
+|                                    |                              |
+|                                    |      CERT_PK_U, Voucher      |
+|                                    |<-----------------------------+
+|        (ID_CRED_V, Sig(V;))        |    Voucher Response (VRES)   |
+|             AD2=Voucher            |                              |
+|<-----------------------------------+                              |
+|           EDHOC message 2          |                              |
+|                                    |                              |
+|              (Sig(U;))             |                              |
++----------------------------------->|                              |
+|           EDHOC message 3          |                              |
 
 where Voucher = AEAD(K_2; V_TYPE, PK_V, G_X, ID_U)
 ~~~~~~~~~~~
 {: #fig-protocol title="The Protocol" artwork-align="center"}
-
-TODO: explain that notations in brackets are part of the EDHOC message which are actively used in this document
 
 ## Device <-> Authorization Server {#U-W}
 
@@ -339,7 +345,7 @@ The device sends message 3. AD3 depends on the kind of enrollment the device is 
 
 #### Authenticator processing
 
-The authenticator MUST NOT verfiy the signature Sig(U; CRED_U, TH3) in message 3 with the PK_U included in message 3. The signature MUST be verified with the public key included in Cert(PK_U) (see {{voucher_response}}) instead. This way, the authenticator can make sure that message 3 is signed by the rigth entity trusted by the authorization server.
+The authenticator MUST NOT verfiy the signature Sig(U;) (see {{fig-protocol}}) in EDHOC message 3 with the PK_U included in message 3. The signature MUST be verified with the public key included in Cert(PK_U) (see {{voucher_response}}) instead. This way, the authenticator can make sure that message 3 is signed by the rigth entity trusted by the authorization server.
 
 
 ## Authenticator <-> Authorization Server {#V-W}
