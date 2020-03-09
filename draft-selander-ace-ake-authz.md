@@ -16,12 +16,12 @@ pi: # can use array (if all yes) or hash here
 author:
       -
         ins: G. Selander
-        name: Göran Selander
+        name: Goeran Selander
         org: Ericsson AB
         email: goran.selander@ericsson.com
       -
         ins: J. Mattsson
-        name: John Mattsson
+        name: John Preuss Mattsson
         org: Ericsson AB
         email: john.mattsson@ericsson.com
       -
