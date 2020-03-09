@@ -34,6 +34,11 @@ author:
         name: Michael Richardson
         org: Sandelman Software Works
         email: mcr+ietf@sandelman.ca
+      -
+        ins: A. Schellenbaum
+        name: Aurelio Schellenbaum
+        org: Institute of Embedded Systems, ZHAW
+        email: aureliorubendario.schellenbaum@zhaw.ch
 
 
 
@@ -54,6 +59,7 @@ informative:
   I-D.irtf-cfrg-hpke:
   I-D.ietf-ace-coap-est:
   I-D.ietf-6tisch-minimal-security:
+  I-D.selander-ace-cose-ecdhe:
 
 --- abstract
 
@@ -70,12 +76,12 @@ This document describes a lightweight procedure for augmenting an authenticated 
 The procedure involves a device, a domain authenticator and an authorization server.
 The device and authenticator performs mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and the authenticator.
 
-The protocol specified in this document optimizes the message count by performing authorization and enrolment in parallel with authentication, instead of in sequence which is common for network access.
+The protocol specified in this document optimizes the message count by performing authorization and enrollment in parallel with authentication, instead of in sequence which is common for network access.
 It further reuses protocol elements from the authentication protocol leading to reduced message sizes on constrained links.
 
 The specification assumes a lightweight AKE protocol {{I-D.ietf-lake-reqs}} between device and authenticator, and defines the integration of a lightweight authorization procedure.
 This enables a secure target interaction in few message exchanges.
-In this document we consider the target interaction to be "enrolment", for example certificate enrolment (such as {{I-D.ietf-ace-coap-est}}) or joining a network for the first time (e.g. {{I-D.ietf-6tisch-minimal-security}}), but it can be applied to authorize other target interactions.
+In this document we consider the target interaction to be "enrollment", for example certificate enrollment (such as {{I-D.ietf-ace-coap-est}}) or joining a network for the first time (e.g. {{I-D.ietf-6tisch-minimal-security}}), but it can be applied to authorize other target interactions.
 
 This protocol is applicable in a wide variety of settings, and can be mapped to different authorization architectures.
 This document specifies a profile of the ACE framework {{I-D.ietf-ace-oauth-authz}}.
@@ -87,9 +93,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 # Problem Description {#prob-desc}
 
-The (potentially constrained) device wants to enrol into a domain over a constrained link.
-The device authenticates and enforces authorization of the (non-constrained) domain authenticator with the help of a voucher, and makes the enrolment request.
-The domain authenticator authenticates the device and authorizes its enrolment.
+The (potentially constrained) device wants to enroll into a domain over a constrained link.
+The device authenticates and enforces authorization of the (non-constrained) domain authenticator with the help of a voucher, and makes the enrollment request.
+The domain authenticator authenticates the device and authorizes its enrollment.
 Authentication between device and domain authenticator is made with a lightweight authenticated Diffie-Hellman key exchange protocol (LAKE, {{I-D.ietf-lake-reqs}}).
 The procedure is assisted by a (non-constrained) authorization server located in a non-constrained network behind the domain authenticator providing information to the device and to the domain authenticator.
 
@@ -139,7 +145,7 @@ TODO: Need for channel binding?
 
 The authorization server has a private DH key corresponding to G_W, which is used to secure the communication with the device (see {{U-W}}). Authentication credentials and communication security used with the domain authenticator is out of scope.
 
-The authorization server provides the authorization decision for enrolment to the device in the form of a CBOR encoded voucher. The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_U).
+The authorization server provides the authorization decision for enrollment to the device in the form of a CBOR encoded voucher. The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_U).
 
 The authorization server needs to be available during the execution of the protocol.
 
@@ -152,7 +158,7 @@ We assume a Diffie-Hellman key exchange protocol complying with the LAKE require
 * CBOR encoding
 * The ephemeral public Diffie-Hellman key of the device, G_X, is sent in message 1. G_X is also used as ephemeral key and nonce in the ECIES scheme between device and authorization server.
 
-* The static public key of the domain authenticator, PK_V, sent in message 2
+* The public authentication key of the domain authenticator, PK_V, is sent in message 2.
 * Support for Auxilliary Data AD1-3 in messages 1-3 as specified in section 2.5 of {{I-D.ietf-lake-reqs}}.
 * Cipher suite negotiation where the device can propose ECDH curves restricted by its available public keys of the authorization server.
 
@@ -162,24 +168,42 @@ We assume a Diffie-Hellman key exchange protocol complying with the LAKE require
 
 Three security sessions are going on in parallel (see figure {{fig-protocol}}):
 
-* Between device and (domain) authenticator,
-* between authenticator and authorization server, and
+* Between device (U) and (domain) authenticator (V),
+* between authenticator and authorization server (W), and
 * between device and authorization server mediated by the authenticator.
+
+The content of the EDHOC messages which are actively reused by LAKE are highlightet with brackets in the figure below ({{fig-protocol}}). These content include:
+
+* G_X: the x-coordinate of the ephemeral public Diffie-Hellman key of party U
+* ID_CRED_V: data enabling the party U to obtail the credentials containing the public authentication key of V
+* Sig(V;): a signature made with the private authentication key of V
+* Sig(U;): a signature made with the private authentication key of U
 
 We study each in turn, starting with the last.
 
 ~~~~~~~~~~~
-   U                                 V                     W
-   |                                 |                     |
-   |--- Message 1 incl. G_X, AD1 --->|--- Voucher Req. --->|
-   |                                 |                     |
-   |<-- Message 2 incl. PK_V, AD2 ---|<-- Voucher Resp. ---|
-   |                                 |
-   |--- Message 3 incl. AD3 -------->|
+U                                    V                              W
+|                (G_X)               |                              |
+|  AD1=(LOC_W, CC, AEAD(K_1; ID_U))  |                              |
++----------------------------------->|                              |
+|           EDHOC message 1          |G_X, PK_V, CC, AEAD(K_1; ID_U)|
+|                                    +----------------------------->|
+|                                    |    Voucher Request (VREQ)    |
+|                                    |                              |
+|                                    |      CERT_PK_U, Voucher      |
+|                                    |<-----------------------------+
+|        (ID_CRED_V, Sig(V;))        |    Voucher Response (VRES)   |
+|             AD2=Voucher            |                              |
+|<-----------------------------------+                              |
+|           EDHOC message 2          |                              |
+|                                    |                              |
+|              (Sig(U;))             |                              |
++----------------------------------->|                              |
+|           EDHOC message 3          |                              |
 
+where Voucher = AEAD(K_2; V_TYPE, PK_V, G_X, ID_U)
 ~~~~~~~~~~~
 {: #fig-protocol title="The Protocol" artwork-align="center"}
-
 
 ## Device <-> Authorization Server {#U-W}
 
@@ -317,11 +341,11 @@ The device MUST verify the Voucher using its ephemeral key G_X sent in message 1
 #### Device processing
 
 
-The device sends message 3. AD3 depends on the kind of enrolment the device is requesting. It may e.g. be a CBOR encoded Certificate Signing Request, see {{I-D.raza-ace-cbor-certificates}}.
+The device sends message 3. AD3 depends on the kind of enrollment the device is requesting. It may e.g. be a CBOR encoded Certificate Signing Request, see {{I-D.raza-ace-cbor-certificates}}.
 
 #### Authenticator processing
 
-The authenticator receives message 3.
+The authenticator MUST NOT verfiy the signature Sig(U;) (see {{fig-protocol}}) in EDHOC message 3 with the PK_U included in message 3. The signature MUST be verified with the public key included in Cert(PK_U) (see {{voucher_response}}) instead. This way, the authenticator can make sure that message 3 is signed by the rigth entity trusted by the authorization server.
 
 
 ## Authenticator <-> Authorization Server {#V-W}
@@ -347,7 +371,7 @@ Voucher_Request = [
 where the parameters are defined in {{U-W}}.
 
 
-### Voucher Response
+### Voucher Response {#voucher_response}
 
 The authorization server decrypts the identity of the device and looks up its certificate, Cert(PK_U). The authorization server sends the voucher response to the authenticator. The Voucher_Response SHALL be a CBOR array as defined below:
 
@@ -360,7 +384,7 @@ Voucher_Response = [
 
 where
 
-* CERT_PK_U is the device certificate of the public key PK_U, issued by a trusted third party, intended to be verified by the authenticator. The format of this certificate is out of scope.
+* CERT_PK_U is the device certificate of the public key PK_U, Cert(PK_U), issued by a trusted third party, intended to be verified by the authenticator. The format of this certificate is out of scope.
 * Voucher is defined in {{U-W}}
 
 TODO: The voucher response may contain a "Voucher-info" field as an alternative to make the Voucher a CBOR Map (see {{U-W}})
