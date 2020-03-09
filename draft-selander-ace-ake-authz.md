@@ -75,7 +75,7 @@ For constrained IoT deployments {{RFC7228}} the overhead contributed by security
 This document describes a lightweight procedure for augmenting an authenticated Diffie-Hellman key exchange with third party assisted authorization.
 
 The procedure involves a device, a domain authenticator and an authorization server.
-The device and authenticator performs mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and the authenticator.
+The device and authenticator perform mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and the authenticator.
 
 The protocol specified in this document optimizes the message count by performing authorization and enrollment in parallel with authentication, instead of in sequence which is common for network access.
 It further reuses protocol elements from the authentication protocol leading to reduced message sizes on constrained links.
@@ -84,7 +84,7 @@ The specification assumes a lightweight AKE protocol {{I-D.ietf-lake-reqs}} betw
 This enables a secure target interaction in few message exchanges.
 In this document we consider the target interaction to be "enrollment", for example certificate enrollment (such as {{I-D.ietf-ace-coap-est}}) or joining a network for the first time (e.g. {{I-D.ietf-6tisch-minimal-security}}), but it can be applied to authorize other target interactions.
 
-This protocol is applicable in a wide variety of settings, and can be mapped to different authorization architectures.
+This protocol is applicable to a wide variety of settings, and can be mapped to different authorization architectures.
 This document specifies a profile of the ACE framework {{I-D.ietf-ace-oauth-authz}}.
 Other settings such as EAP {{RFC3748}} are out of scope for this specification.
 
@@ -135,7 +135,7 @@ The device is also provisioned with information about its authorization server:
 
 ## Domain Authenticator {#domain-auth}
 
-The domain authenticator has a private key and corresponding public key PK_V used to authenticate to the device.
+The domain authenticator has a private key and a corresponding public key PK_V used to authenticate to the device.
 
 The domain authenticator needs to be able to locate the authorization server of the device for which the LOC_W is expected to be sufficient. The communication between domain authenticator and authorization server is mutually authenticated and protected. Authentication credentials and communication security used with the domain authenticator is out of scope, except for as specified below in this section.
 
@@ -150,7 +150,8 @@ The authorization server has a private DH key corresponding to G_W, which is use
 
 Authentication credentials and communication security used with the domain authenticator is out of scope, except for the need to verify the possession of the private key of PK_V as specified in {{domain-auth}}.
 
-The authorization server provides to the device the authorization decision for enrollment with the domain authenticator in the form of a CBOR encoded voucher. The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_U).
+The authorization server provides to the device the authorization decision for enrollment with the domain authenticator in the form of a voucher.
+The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_U).
 
 The authorization server needs to be available during the execution of the protocol.
 
@@ -350,15 +351,13 @@ The device sends message 3. AD3 depends on the kind of enrollment the device is 
 
 #### Authenticator processing
 
-The authenticator MUST NOT verify the signature Sig(U;) (see {{fig-protocol}}) in LAKE message 3 with the PK_U included in message 3. The signature MUST be verified with the public key included in Cert(PK_U) (see {{voucher_response}}) instead. This way, the authenticator can make sure that message 3 is signed by the right entity trusted by the authorization server.
-
+The authenticator MUST NOT verify the signature Sig(U;) (see {{fig-protocol}}) in LAKE message 3 with the PK_U included in message 3.
+Instead, the signature MUST be verified with the public key included in Cert(PK_U) (see {{voucher_response}}) received from the authorization server.
+This way, the authenticator can make sure that message 3 is signed by the right entity trusted by the authorization server.
 
 ## Authenticator <-> Authorization Server {#V-W}
 
-
-
 The authenticator and authorization server are assumed to have secure communication, for example TLS 1.3 authenticated with certificates, protecting the Voucher Request/Response Protocol (see protocol between V and W in {{fig-protocol}}).
-
 
 ### Voucher Request
 
