@@ -59,7 +59,7 @@ informative:
   I-D.irtf-cfrg-hpke:
   I-D.ietf-ace-coap-est:
   I-D.ietf-6tisch-minimal-security:
-  I-D.selander-ace-cose-ecdhe:
+  I-D.selander-lake-edhoc:
 
 --- abstract
 
@@ -85,7 +85,7 @@ In this document we consider the target interaction to be "enrollment", for exam
 
 This protocol is applicable in a wide variety of settings, and can be mapped to different authorization architectures.
 This document specifies a profile of the ACE framework {{I-D.ietf-ace-oauth-authz}}.
-Other settings such as EAP {{RFC3748}} are out of scope.
+Other settings such as EAP {{RFC3748}} are out of scope for this specification.
 
 ## Terminology   {#terminology}
 
@@ -136,14 +136,18 @@ The device is also provisioned with information about its authorization server:
 
 The domain authenticator has a private key and corresponding public key PK_V used to authenticate to the device.
 
-The domain authenticator needs to be able to locate the authorization server of the device for which the LOC_W is expected to be sufficient. The communication between domain authenticator and authorization server is mutually authenticated and protected. Authentication credentials used with the authorization server are out of scope. How this communication is established and secured (typically TLS) is out of scope.
+The domain authenticator needs to be able to locate the authorization server of the device for which the LOC_W is expected to be sufficient. The communication between domain authenticator and authorization server is mutually authenticated and protected. Authentication credentials and communication security used with the domain authenticator is out of scope, except for as noted below.
 
-TODO: Need for channel binding?
+The domain authenticator may in principle use differents credentials for authenticating to the authorization server than to the device, for which PK_V is used. However, the domain authenticator MUST prove possession of private key of PK_V to authorization server since the authorization server is asserting with the voucher to the device that this credential belongs to the domain authenticator.
+
+In this version of the draft it is assumed that the domain authenticator authenticates to the authorization server with PK_V using some authentication protocol providing proof of possession of the private key, for example TLS 1.3. A future version of this draft may specify explicit proof of possession of the private key of PK_V in the voucher request, e.g. by including a signature of the voucher request with the private key of PK_V.
 
 
 ## Authorization Server
 
-The authorization server has a private DH key corresponding to G_W, which is used to secure the communication with the device (see {{U-W}}). Authentication credentials and communication security used with the domain authenticator is out of scope.
+The authorization server has a private DH key corresponding to G_W, which is used to secure the communication with the device (see {{U-W}}).
+
+Authentication credentials and communication security used with the domain authenticator is out of scope, except for that the need to verify the possession of PK_V as noted above.
 
 The authorization server provides the authorization decision for enrollment to the device in the form of a CBOR encoded voucher. The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_U).
 
@@ -172,7 +176,7 @@ Three security sessions are going on in parallel (see figure {{fig-protocol}}):
 * between authenticator and authorization server (W), and
 * between device and authorization server mediated by the authenticator.
 
-The content of the EDHOC messages which are actively reused by LAKE are highlightet with brackets in the figure below ({{fig-protocol}}). These content include:
+The content of the EDHOC {{I-D.selander-lake-edhoc}} messages which are actively reused by LAKE are highlighted with brackets in the figure below ({{fig-protocol}}). These content include:
 
 * G_X: the x-coordinate of the ephemeral public Diffie-Hellman key of party U
 * ID_CRED_V: data enabling the party U to obtail the credentials containing the public authentication key of V
@@ -345,7 +349,7 @@ The device sends message 3. AD3 depends on the kind of enrollment the device is 
 
 #### Authenticator processing
 
-The authenticator MUST NOT verfiy the signature Sig(U;) (see {{fig-protocol}}) in EDHOC message 3 with the PK_U included in message 3. The signature MUST be verified with the public key included in Cert(PK_U) (see {{voucher_response}}) instead. This way, the authenticator can make sure that message 3 is signed by the rigth entity trusted by the authorization server.
+The authenticator MUST NOT verify the signature Sig(U;) (see {{fig-protocol}}) in EDHOC message 3 with the PK_U included in message 3. The signature MUST be verified with the public key included in Cert(PK_U) (see {{voucher_response}}) instead. This way, the authenticator can make sure that message 3 is signed by the rigth entity trusted by the authorization server.
 
 
 ## Authenticator <-> Authorization Server {#V-W}
