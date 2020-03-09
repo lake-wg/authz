@@ -399,7 +399,8 @@ LAKE also provides mutual authentication of C and RS, assisted by the AS.
 RS proactively sends the AS Request Creation Hints message to C to signal the information on where C can reach the AS.
 RS piggybacks the AS Request Creation Hints message using Auxiliary Data of the LAKE message 1.
 Before continuing the LAKE handshake, based on the AS Request Creation Hints information, C sends a POST request to the token endpoint at the AS requesting the access token.
-The AS issues to C a Bearer token that is cryptographically protected based on the secret shared between the AS and RS.
+The AS issues an assertion to C that is cryptographically protected based on the secret shared between the AS and RS.
+In this profile, the assertion is encoded as a Bearer Token.
 C presents this token to RS in the Auxiliary Data of the LAKE message 2.
 RS verifies the token based on the possession of the shared secret with the AS and authenticates C.
 
@@ -424,7 +425,7 @@ AD1:
 
 ## Client-to-AS Request
 
-Protocol that provides the secure channel between C and the AS is out-of-scope.
+The protocol that provides the secure channel between C and the AS is out-of-scope.
 This can, for example, be TLS or DTLS.
 What is important is that the two peers are mutually authenticated, and that the secure channel provides message integrity, confidentiality and freshness.
 It is also necessary for the AS to be able to extract the public key of C used in the underlying security handshake.
