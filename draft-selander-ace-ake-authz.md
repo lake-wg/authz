@@ -53,6 +53,7 @@ informative:
   RFC7228:
   RFC8152:
   RFC8174:
+  RFC8446:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
   I-D.raza-ace-cbor-certificates:
@@ -132,35 +133,35 @@ The device is also provisioned with information about its authorization server:
 
 
 
-## Domain Authenticator
+## Domain Authenticator {#domain-auth}
 
 The domain authenticator has a private key and corresponding public key PK_V used to authenticate to the device.
 
-The domain authenticator needs to be able to locate the authorization server of the device for which the LOC_W is expected to be sufficient. The communication between domain authenticator and authorization server is mutually authenticated and protected. Authentication credentials and communication security used with the domain authenticator is out of scope, except for as noted below.
+The domain authenticator needs to be able to locate the authorization server of the device for which the LOC_W is expected to be sufficient. The communication between domain authenticator and authorization server is mutually authenticated and protected. Authentication credentials and communication security used with the domain authenticator is out of scope, except for as specified below in this section.
 
-The domain authenticator may in principle use differents credentials for authenticating to the authorization server than to the device, for which PK_V is used. However, the domain authenticator MUST prove possession of private key of PK_V to authorization server since the authorization server is asserting with the voucher to the device that this credential belongs to the domain authenticator.
+The domain authenticator may in principle use differents credentials for authenticating to the authorization server and to the device, for which PK_V is used. However, the domain authenticator MUST prove possession of private key of PK_V to the authorization server since the authorization server is asserting (by means of the voucher to the device) that this credential belongs to the domain authenticator.
 
-In this version of the draft it is assumed that the domain authenticator authenticates to the authorization server with PK_V using some authentication protocol providing proof of possession of the private key, for example TLS 1.3. A future version of this draft may specify explicit proof of possession of the private key of PK_V in the voucher request, e.g. by including a signature of the voucher request with the private key of PK_V.
+In this version of the draft it is assumed that the domain authenticator authenticates to the authorization server with PK_V using some authentication protocol providing proof of possession of the private key, for example TLS 1.3 {{RFC8446}}. A future version of this draft may specify explicit proof of possession of the private key of PK_V in the voucher request, e.g., by including a signature of the voucher request with the private key of PK_V.
 
 
 ## Authorization Server
 
 The authorization server has a private DH key corresponding to G_W, which is used to secure the communication with the device (see {{U-W}}).
 
-Authentication credentials and communication security used with the domain authenticator is out of scope, except for that the need to verify the possession of PK_V as noted above.
+Authentication credentials and communication security used with the domain authenticator is out of scope, except for the need to verify the possession of the private key of PK_V as specified in {{domain-auth}}.
 
-The authorization server provides the authorization decision for enrollment to the device in the form of a CBOR encoded voucher. The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_U).
+The authorization server provides to the device the authorization decision for enrollment with the domain authenticator in the form of a CBOR encoded voucher. The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_U).
 
 The authorization server needs to be available during the execution of the protocol.
 
 
-## Lightweight AKE
+## Lightweight AKE {#LAKE}
 
 We assume a Diffie-Hellman key exchange protocol complying with the LAKE requirements {{I-D.ietf-lake-reqs}}. Specifically we assume for the LAKE:
 
 * Three messages
 * CBOR encoding
-* The ephemeral public Diffie-Hellman key of the device, G_X, is sent in message 1. G_X is also used as ephemeral key and nonce in the ECIES scheme between device and authorization server.
+* The ephemeral public Diffie-Hellman key of the device, G_X, is sent in message 1. G_X is also used as ephemeral key and nonce in an ECIES scheme between device and authorization server.
 
 * The public authentication key of the domain authenticator, PK_V, is sent in message 2.
 * Support for Auxilliary Data AD1-3 in messages 1-3 as specified in section 2.5 of {{I-D.ietf-lake-reqs}}.
@@ -170,27 +171,27 @@ We assume a Diffie-Hellman key exchange protocol complying with the LAKE require
 
 # The Protocol
 
-Three security sessions are going on in parallel (see figure {{fig-protocol}}):
+Three security sessions are going on in parallel (see {{fig-protocol}}):
 
 * Between device (U) and (domain) authenticator (V),
 * between authenticator and authorization server (W), and
 * between device and authorization server mediated by the authenticator.
 
-The content of the EDHOC {{I-D.selander-lake-edhoc}} messages which are actively reused by LAKE are highlighted with brackets in the figure below ({{fig-protocol}}). These content include:
+The content of the LAKE messages (see {{LAKE}}) is highlighted with brackets in the figure below ({{fig-protocol}}) using the notation of EDHOC {{I-D.selander-lake-edhoc}}. The content includes:
 
 * G_X: the x-coordinate of the ephemeral public Diffie-Hellman key of party U
-* ID_CRED_V: data enabling the party U to obtail the credentials containing the public authentication key of V
+* ID_CRED_V: data enabling the party U to obtain the credentials containing the public authentication key of V
 * Sig(V;): a signature made with the private authentication key of V
 * Sig(U;): a signature made with the private authentication key of U
 
-We study each in turn, starting with the last.
+We study each security session in turn, starting with the last.
 
 ~~~~~~~~~~~
 U                                    V                              W
 |                (G_X)               |                              |
 |  AD1=(LOC_W, CC, AEAD(K_1; ID_U))  |                              |
 +----------------------------------->|                              |
-|           EDHOC message 1          |G_X, PK_V, CC, AEAD(K_1; ID_U)|
+|           LAKE message 1           |G_X, PK_V, CC, AEAD(K_1; ID_U)|
 |                                    +----------------------------->|
 |                                    |    Voucher Request (VREQ)    |
 |                                    |                              |
@@ -199,23 +200,23 @@ U                                    V                              W
 |        (ID_CRED_V, Sig(V;))        |    Voucher Response (VRES)   |
 |             AD2=Voucher            |                              |
 |<-----------------------------------+                              |
-|           EDHOC message 2          |                              |
+|           LAKE message 2           |                              |
 |                                    |                              |
 |              (Sig(U;))             |                              |
 +----------------------------------->|                              |
-|           EDHOC message 3          |                              |
+|           LAKE message 3           |                              |
 
 where Voucher = AEAD(K_2; V_TYPE, PK_V, G_X, ID_U)
 ~~~~~~~~~~~
-{: #fig-protocol title="The Protocol" artwork-align="center"}
+{: #fig-protocol title="W-assisted authorization of AKE between U and V. Relevant content from the LAKE protocol between U and V with auxiliary data AD1 and AD2. The Voucher Request/Response Protocol between V and W." artwork-align="center"}
 
 ## Device <-> Authorization Server {#U-W}
 
-The communication between device and authorization server is carried out via the authenticator protected between the endpoints using an ECIES hybrid encryption scheme (see {{I-D.irtf-cfrg-hpke}}): The device uses the private key of its ephemeral DH key G_X generated for LAKE message 1 (see {{U-V}}) together with the static public DH key of the authorization server G_W to generate a shared secret G_XW. The shared secret is used to derive AEAD encryption keys to protect data between device and authorization server. The data is carried in AD1 and AD2 (between device and authenticator) and in voucher request/response (between authenticator and authorization server).
+The communication between device and authorization server is carried out via the authenticator protected between the endpoints (protocol between U and W in {{fig-protocol}}) using an ECIES hybrid encryption scheme (see {{I-D.irtf-cfrg-hpke}}): The device uses the private key corresponding to its ephemeral DH key G_X generated for LAKE message 1 (see {{U-V}}) together with the static public DH key of the authorization server G_W to generate a shared secret G_XW. The shared secret is used to derive AEAD encryption keys to protect data between device and authorization server. The data is carried in AD1 and AD2 (between device and authenticator) and in Voucher Request/Response (between authenticator and authorization server).
 
 TODO: Reference relevant ECIES scheme in {{I-D.irtf-cfrg-hpke}}.
 
-TODO: Define derivation of encryption keys (k_rq, k_rs) and nonces (n_rq, n_rs) for both directions
+TODO: Define derivation of encryption keys (K_1, K_2) and nonces (N_1, N_2) for the both directions
 
 
 AD1 SHALL be the following CBOR sequence containing voucher information:
@@ -236,8 +237,8 @@ where
 
 'CIPHERTEXT_RQ' is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC8152}}) computed from the following:
 
-* the secret key k_rq
-* the nonce n_rq
+* the secret key K_1
+* the nonce N_1
 * 'protected' is a byte string of size 0
 * 'plaintext and 'external_aad' as below:
 
@@ -259,7 +260,7 @@ where
 
 
 
-AD2 SHALL be a CBOR sequence of one item, the Voucher, defined in the next section.
+AD2 SHALL be the Voucher, defined in the next section.
 
 ~~~~~~~~~~~
 AD2 = (
@@ -273,19 +274,19 @@ AD2 = (
 
 The Voucher is essentially a Message Authentication Code binding the identity of the authenticator to the first message sent from the device in the LAKE protocol.
 
-More specifically 'Voucher' is the 'ciphertext' of COSE_Encrypt0 (Section 5.2 of {{RFC8152}}) computed from the the following:
+More specifically 'Voucher' is the 'ciphertext' of COSE_Encrypt0 (Section 5.2 of {{RFC8152}}) computed from the following:
 
-* the secret key k_rs
-* the nonce n_rs
+* the secret key K_2
+* the nonce N_2
 * 'protected' is a byte string of size 0
 * 'plaintext' is empty (plaintext =  nil)
 * 'external_aad' as below:
 
 ~~~~~~~~~~~
-external_aad = bstr .cbor external_aad_arr
+external_aad = bstr .cbor external_aad_array
 ~~~~~~~~~~~
 ~~~~~~~~~~~
-external_aad_arr = [
+external_aad_array = [
     voucher_type:  int,
     PK_V:          bstr,
     G_X:           bstr,
@@ -310,14 +311,14 @@ TODO: Consider making the voucher a CBOR Map to indicate type of voucher, to ind
 
 ## Device <-> Authenticator {#U-V}
 
-The device and authenticator run the LAKE protocol authenticated with public keys (PK_U and PK_V) of the device and the authenticator. The normal processing of the LAKE is omitted here.
+The device and authenticator run the LAKE protocol authenticated with public keys (PK_U and PK_V) of the device and the authenticator, see protocol between U and V in {{fig-protocol}}. The normal processing of the LAKE is omitted here.
 
 
 ### Message 1
 
 #### Device processing
 
-The device selects a cipher suite with an ECDH curve satisfying the static public DH key G_W of the authorization server. As part of the normal LAKE processing, the device generates the ephemeral public key G_X to be sent in LAKE message 1. A new G_X MUST be generated for each execution of the protocol. The same ephemeral key is used in the ECIES scheme, see {{U-W}}.
+The device selects a cipher suite with an ECDH curve satisfying the static public DH key G_W of the authorization server. As part of the normal LAKE processing, the device generates the ephemeral public key G_X to be sent in LAKE message 1. A new G_X MUST be generated for each execution of the protocol. The ephemeral key G_X is reused in the ECIES scheme, see {{U-W}}.
 
 The device sends LAKE message 1 with AD1 as specified in {{U-W}}.
 
@@ -349,12 +350,14 @@ The device sends message 3. AD3 depends on the kind of enrollment the device is 
 
 #### Authenticator processing
 
-The authenticator MUST NOT verify the signature Sig(U;) (see {{fig-protocol}}) in EDHOC message 3 with the PK_U included in message 3. The signature MUST be verified with the public key included in Cert(PK_U) (see {{voucher_response}}) instead. This way, the authenticator can make sure that message 3 is signed by the rigth entity trusted by the authorization server.
+The authenticator MUST NOT verify the signature Sig(U;) (see {{fig-protocol}}) in LAKE message 3 with the PK_U included in message 3. The signature MUST be verified with the public key included in Cert(PK_U) (see {{voucher_response}}) instead. This way, the authenticator can make sure that message 3 is signed by the right entity trusted by the authorization server.
 
 
 ## Authenticator <-> Authorization Server {#V-W}
 
-The authenticator and authorization server are assumed to have secure communication, for example based on TLS authenticated with certificates.
+
+
+The authenticator and authorization server are assumed to have secure communication, for example TLS 1.3 authenticated with certificates, protecting the Voucher Request/Response Protocol (see protocol between V and W in {{fig-protocol}}).
 
 
 ### Voucher Request
@@ -389,7 +392,7 @@ Voucher_Response = [
 where
 
 * CERT_PK_U is the device certificate of the public key PK_U, Cert(PK_U), issued by a trusted third party, intended to be verified by the authenticator. The format of this certificate is out of scope.
-* Voucher is defined in {{U-W}}
+* The voucher is defined in {{U-W}}
 
 TODO: The voucher response may contain a "Voucher-info" field as an alternative to make the Voucher a CBOR Map (see {{U-W}})
 
@@ -509,8 +512,6 @@ An example AS response to C is shown below:
 # Security Considerations  {#sec-cons}
 
 TODO: Identity protection of device
-
-TODO: How can the authorization server attest the received PK_V?
 
 TODO: Use of G_X as ephemeral key between device and authenticator, and between device and authorization server
 
