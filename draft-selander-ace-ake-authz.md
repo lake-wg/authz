@@ -56,11 +56,11 @@ informative:
   RFC8446:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
-  I-D.raza-ace-cbor-certificates:
+  I-D.mattsson-cose-cbor-cert-compress:
   I-D.irtf-cfrg-hpke:
   I-D.ietf-ace-coap-est:
   I-D.ietf-6tisch-minimal-security:
-  I-D.selander-lake-edhoc:
+  I-D.ietf-lake-edhoc:
 
 --- abstract
 
@@ -178,7 +178,7 @@ Three security sessions are going on in parallel (see {{fig-protocol}}):
 * between authenticator and authorization server (W), and
 * between device and authorization server mediated by the authenticator.
 
-The content of the LAKE messages (see {{LAKE}}) is highlighted with brackets in the figure below ({{fig-protocol}}) using the notation of EDHOC {{I-D.selander-lake-edhoc}}. The content includes:
+The content of the LAKE messages (see {{LAKE}}) is highlighted with brackets in the figure below ({{fig-protocol}}) using the notation of EDHOC {{I-D.ietf-lake-edhoc}}. The content includes:
 
 * G_X: the x-coordinate of the ephemeral public Diffie-Hellman key of party U
 * ID_CRED_V: data enabling the party U to obtain the credentials containing the public authentication key of V
@@ -347,7 +347,7 @@ The device MUST verify the Voucher using its ephemeral key G_X sent in message 1
 #### Device processing
 
 
-The device sends message 3. AD3 depends on the kind of enrollment the device is requesting. It may e.g. be a CBOR encoded Certificate Signing Request, see {{I-D.raza-ace-cbor-certificates}}.
+The device sends message 3. AD3 depends on the kind of enrollment the device is requesting. It may e.g. be a CBOR encoded Certificate Signing Request, see {{I-D.mattsson-cose-cbor-cert-compress}}.
 
 #### Authenticator processing
 
