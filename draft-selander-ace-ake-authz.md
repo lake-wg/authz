@@ -58,13 +58,13 @@ informative:
   I-D.ietf-ace-oauth-authz:
   I-D.mattsson-cose-cbor-cert-compress:
   I-D.irtf-cfrg-hpke:
-  I-D.ietf-ace-coap-est:
+  I-D.selander-ace-coap-est-oscore:
   I-D.ietf-6tisch-minimal-security:
   I-D.ietf-lake-edhoc:
 
 --- abstract
 
-This document describes a procedure for augmenting an authenticated Diffie-Hellman key exchange with third party assisted authorization targeting constrained IoT deployments (RFC 7228).
+This document describes a procedure for augmenting the authenticated Diffie-Hellman key exchange EDHOC with third party assisted authorization targeting constrained IoT deployments (RFC 7228).
 
 --- middle
 
@@ -72,17 +72,17 @@ This document describes a procedure for augmenting an authenticated Diffie-Hellm
 
 
 For constrained IoT deployments {{RFC7228}} the overhead contributed by security protocols may be significant which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see {{I-D.ietf-lake-reqs}}).
-This document describes a lightweight procedure for augmenting an authenticated Diffie-Hellman key exchange with third party assisted authorization.
+This document describes a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC {{I-D.ietf-lake-edhoc}} with third party assisted authorization.
 
 The procedure involves a device, a domain authenticator and an authorization server.
-The device and authenticator perform mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and the authenticator.
+The device and authenticator perform mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and to the authenticator.
 
-The protocol specified in this document optimizes the message count by performing authorization and enrollment in parallel with authentication, instead of in sequence which is common for network access.
-It further reuses protocol elements from the authentication protocol leading to reduced message sizes on constrained links.
+The protocol assumes that authentication between device and authenticator is performed with EDHOC, and defines the integration of a lightweight authorization procedure using the Auxiliary Data defined in EDHOC.
 
-The specification assumes a lightweight AKE protocol {{I-D.ietf-lake-reqs}} between device and authenticator, and defines the integration of a lightweight authorization procedure.
-This enables a secure target interaction in few message exchanges.
-In this document we consider the target interaction to be "enrollment", for example certificate enrollment (such as {{I-D.ietf-ace-coap-est}}) or joining a network for the first time (e.g. {{I-D.ietf-6tisch-minimal-security}}), but it can be applied to authorize other target interactions.
+In this document we consider the target interaction to be "enrollment", for example certificate enrollment (such as {{I-D.selander-ace-coap-est-oscore}}) or joining a network for the first time (e.g. {{I-D.ietf-6tisch-minimal-security}}), but it can be applied to authorize other target interactions.
+
+The protocol enables a low message count by performing authorization and enrollment in parallel with authentication, instead of in sequence which is common for network access.
+It further reuses protocol elements from EDHOC leading to reduced message sizes on constrained links.
 
 This protocol is applicable to a wide variety of settings, and can be mapped to different authorization architectures.
 This document specifies a profile of the ACE framework {{I-D.ietf-ace-oauth-authz}}.
