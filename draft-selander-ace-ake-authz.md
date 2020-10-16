@@ -155,20 +155,6 @@ The authorization server provides information to the domain authenticator about 
 The authorization server needs to be available during the execution of the protocol.
 
 
-## Lightweight AKE {#LAKE}
-
-We assume a Diffie-Hellman key exchange protocol complying with the LAKE requirements {{I-D.ietf-lake-reqs}}. Specifically we assume for the LAKE:
-
-* Three messages
-* CBOR encoding
-* The ephemeral public Diffie-Hellman key of the device, G_X, is sent in message 1. G_X is also used as ephemeral key and nonce in an ECIES scheme between device and authorization server.
-
-* The public authentication key of the domain authenticator, PK_V, is sent in message 2.
-* Support for Auxilliary Data AD1-3 in messages 1-3 as specified in section 2.5 of {{I-D.ietf-lake-reqs}}.
-* Cipher suite negotiation where the device can propose ECDH curves restricted by its available public keys of the authorization server.
-
-
-
 # The Protocol
 
 Three security sessions are going on in parallel (see {{fig-protocol}}):
@@ -177,7 +163,7 @@ Three security sessions are going on in parallel (see {{fig-protocol}}):
 * between authenticator and authorization server (W), and
 * between device and authorization server mediated by the authenticator.
 
-The content of the LAKE messages (see {{LAKE}}) is highlighted with brackets in the figure below ({{fig-protocol}}) using the notation of EDHOC {{I-D.ietf-lake-edhoc}}. The content includes:
+The content of the EDHOC messages is highlighted with brackets in the figure below ({{fig-protocol}}) using the notation of EDHOC {{I-D.ietf-lake-edhoc}}. The content includes:
 
 * G_X: the x-coordinate of the ephemeral public Diffie-Hellman key of party U
 * ID_CRED_V: data enabling the party U to obtain the credentials containing the public authentication key of V
