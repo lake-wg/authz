@@ -123,7 +123,7 @@ The objective of this document is to specify such a protocol which is lightweigh
 
 ## Device
 
-The device is pre-provisioned with an identity ID and asymmetric key credentials: a private key, a public key (PK_U), and optionally a public key certificate Cert(PK_U), issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator. The ID may be a reference or pointer to the certificate.
+The device is pre-provisioned with an identity ID_U and asymmetric key credentials: a private key, a public key (PK_U), and optionally a public key certificate Cert(PK_U), issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator. The ID_U may be a reference or pointer to the certificate.
 
 The device is also provisioned with information about its authorization server:
 
@@ -244,7 +244,7 @@ where
 
 ~~~~~~~~~~~
 plaintext = (
-    ID:              bstr
+    ID_U:            bstr
  )
 ~~~~~~~~~~~
 ~~~~~~~~~~~
@@ -255,7 +255,7 @@ external_aad = (
 
 where
 
-* ID is the identity of the device, for example a reference or pointer to the device certificate
+* ID_U is the identity of the device, for example a reference or pointer to the device certificate
 * CC is defined above.
 
 
@@ -291,7 +291,7 @@ external_aad_array = [
     PK_V:          bstr,
     G_X:           bstr,
     CC:            bstr,
-    ID:            bstr
+    ID_U:          bstr
 ]
 ~~~~~~~~~~~
 
@@ -301,7 +301,7 @@ where
 * PK_V is a COSE_Key containing the public authentication key of the authenticator. The public key must be an Elliptic Curve Diffie-Hellman key, COSE key type 'kty' = 'EC2' or 'OKP'.
    * COSE_Keys of type OKP SHALL only include the parameters 1 (kty), -1 (crv), and -2 (x-coordinate). COSE_Keys of type EC2 SHALL only include the parameters 1 (kty), -1 (crv), -2 (x-coordinate), and -3 (y-coordinate). The parameters SHALL be encoded in decreasing order.
 * G_X is the ephemeral key of the device sent in the first LAKE message
-* CC and ID are defined in {{U-W}}
+* CC and ID_U are defined in {{U-W}}
 
 
 All parameters, except 'voucher-type', are as received in the voucher request (see {{V-W}}).
