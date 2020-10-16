@@ -97,15 +97,15 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 The (potentially constrained) device wants to enroll into a domain over a constrained link.
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator with the help of a voucher, and makes the enrollment request.
 The domain authenticator authenticates the device and authorizes its enrollment.
-Authentication between device and domain authenticator is made with a lightweight authenticated Diffie-Hellman key exchange protocol (LAKE, {{I-D.ietf-lake-reqs}}).
-The procedure is assisted by a (non-constrained) authorization server located in a non-constrained network behind the domain authenticator providing information to the device and to the domain authenticator.
+Authentication between device and domain authenticator is made with the lightweight authenticated Diffie-Hellman key exchange protocol EDHOC  {{I-D.ietf-lake-edhoc}}.
+The procedure is assisted by a (non-constrained) authorization server located in a non-constrained network behind the domain authenticator providing information to the device and to the domain authenticator as part of the protocol.
 
-The objective of this document is to specify such a protocol which is lightweight over the constrained link and reuses elements of the LAKE. See illustration in {{fig-overview}}.
+The objective of this document is to specify such a protocol which is lightweight over the constrained link and reuses elements of EDHOC. See illustration in {{fig-overview}}.
 
 
 ~~~~~~~~~~~
                    Voucher
-              LAKE  Info
+             EDHOC  Info
 +----------+  |    |   +---------------+  Voucher  +---------------+
 |          |  |    |   |               |  Request  |               |
 |  Device  |--|----o-->|    Domain     |---------->| Authorization |
@@ -115,9 +115,8 @@ The objective of this document is to specify such a protocol which is lightweigh
 +----------+      |    +---------------+           +---------------+
                   Voucher
 
-
 ~~~~~~~~~~~
-{: #fig-overview title="Overview and example of message content. Voucher Info and Voucher are sent together with LAKE messages." artwork-align="center"}
+{: #fig-overview title="Overview of message flow. Link between U anv V is constrained but link between V and W is not. Voucher Info and Voucher are sent in EDHOC Auxiliary Data." artwork-align="center"}
 
 
 # Assumptions
