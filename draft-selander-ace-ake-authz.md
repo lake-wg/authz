@@ -274,13 +274,13 @@ where
 
 * T1 is the Auxiliary Data Type (TBD in relevant IANA registry)
 
-and Voucher is defined in {{voucher}}.
+and 'Voucher' is defined in {{voucher}}.
 
 
 ### Voucher {#voucher}
 
 
-The Voucher is an assertion by the authorization server to the device that the authorization server has performed the relevant verifications and that the device is authorized to continue the protocol with the authenticator. The Voucher consists essentially of a message authentication code which binds the identity of the authenticator to message_1 of EDHOC.
+The voucher is an assertion by the authorization server to the device that the authorization server has performed the relevant verifications and that the device is authorized to continue the protocol with the authenticator. The voucher consists essentially of a message authentication code which binds the identity of the authenticator to message_1 of EDHOC.
 
 More specifically 'Voucher' is the 'ciphertext' of COSE_Encrypt0 (Section 5.2 of {{RFC8152}}) computed from the following:
 
@@ -345,14 +345,15 @@ The authenticator sends EDHOC message_2 to the device with the voucher (see {{U-
 
 #### Device processing
 
-In addition to normal EDHOC verifications, the device MUST verify the Voucher by calculating the same message authentication code as when it was generated (see {{voucher}}) and compare with the what was received in message_2.
+In addition to normal EDHOC verifications, the device MUST verify the voucher by calculating the same message authentication code as when it was generated (see {{voucher}}) and compare with what was received in message_2.
 
 The input in this calculation includes:
+
 * The ephemeral key G_X, sent in message_1.
 * The identity ID_U, sent in message_1.
-* The public key of the authenticator, PK_V, received in message_2.
+* The public key of the authenticator PK_V, received in message_2.
 
-If the Voucher does not verify, the device MUST discontinue the protocol.
+If the voucher does not verify, the device MUST discontinue the protocol.
 
 ### Message 3
 
@@ -361,6 +362,7 @@ If the Voucher does not verify, the device MUST discontinue the protocol.
 If all verifications are passed, the device sends EDHOC message_3.
 
 The message field ID_CRED_I contains data enabling the authenticator to retrieve the public key of the device, PK_U. Since the authenticator before sending message_2 received a certificate of PK_U from the authorization server (see {{V-W}}), ID_CRED_I SHALL be a COSE header_map of type 'kid' with the empty byte string as value:
+
 ~~~~~~~~~~~
 ID_CRED_I =
 {
