@@ -279,7 +279,7 @@ and Voucher is defined in {{voucher}}.
 ### Voucher {#voucher}
 
 
-The Voucher is essentially a Message Authentication Code binding the identity of the authenticator to the first message sent from the device in the LAKE protocol.
+The Voucher is an assertion by the authorization server to the device that the authorization server has performed the relevant verifications and that the device is authorized to continue the protocol with the authenticator. The Voucher consists essentially of a message authentication code which binds the identity of the authenticator to message_1 of EDHOC. 
 
 More specifically 'Voucher' is the 'ciphertext' of COSE_Encrypt0 (Section 5.2 of {{RFC8152}}) computed from the following:
 
@@ -294,7 +294,7 @@ external_aad = bstr .cbor external_aad_array
 ~~~~~~~~~~~
 ~~~~~~~~~~~
 external_aad_array = [
-    voucher_type:  int,
+    V_TYPE:        int,
     PK_V:          bstr,
     G_X:           bstr,
     CC:            bstr,
@@ -304,16 +304,16 @@ external_aad_array = [
 
 where
 
-* 'voucher-type' indicates the kind of voucher used
-* PK_V is a COSE_Key containing the public authentication key of the authenticator. The public key must be an Elliptic Curve Diffie-Hellman key, COSE key type 'kty' = 'EC2' or 'OKP'.
+* 'V_TYPE' indicates the type of voucher used
+* PK_V is a COSE_Key containing the public authentication key of the authenticator. The public key MUST be an Elliptic Curve Diffie-Hellman key, COSE key type 'kty' = 'EC2' or 'OKP'.
    * COSE_Keys of type OKP SHALL only include the parameters 1 (kty), -1 (crv), and -2 (x-coordinate). COSE_Keys of type EC2 SHALL only include the parameters 1 (kty), -1 (crv), -2 (x-coordinate), and -3 (y-coordinate). The parameters SHALL be encoded in decreasing order.
-* G_X is the ephemeral key of the device sent in the first LAKE message
+* G_X is the ephemeral key of the device sent in EDHOC message_1
 * CC and ID_U are defined in {{U-W}}
 
 
-All parameters, except 'voucher-type', are as received in the voucher request (see {{V-W}}).
+All parameters, except 'V_TYPE', are as received in the voucher request (see {{V-W}}).
 
-TODO: Consider making the voucher a CBOR Map to indicate type of voucher, to indicate the feature (cf. {{V-W}})
+TODO: Consider making the voucher a CBOR Map to indicate type of voucher, to indicate the feature (cf. {{V-W}}). Alternatively, include V_TYPE in 'unprotected'.
 
 
 ## Device <-> Authenticator {#U-V}
