@@ -280,7 +280,7 @@ and Voucher is defined in {{voucher}}.
 ### Voucher {#voucher}
 
 
-The Voucher is an assertion by the authorization server to the device that the authorization server has performed the relevant verifications and that the device is authorized to continue the protocol with the authenticator. The Voucher consists essentially of a message authentication code which binds the identity of the authenticator to message_1 of EDHOC. 
+The Voucher is an assertion by the authorization server to the device that the authorization server has performed the relevant verifications and that the device is authorized to continue the protocol with the authenticator. The Voucher consists essentially of a message authentication code which binds the identity of the authenticator to message_1 of EDHOC.
 
 More specifically 'Voucher' is the 'ciphertext' of COSE_Encrypt0 (Section 5.2 of {{RFC8152}}) computed from the following:
 
