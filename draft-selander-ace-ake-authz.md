@@ -207,17 +207,18 @@ Voucher = AEAD(K_2; V_TYPE, PK_V, G_X, ID_U)
 
 ## Device <-> Authorization Server {#U-W}
 
-The communication between device and authorization server is carried out via the authenticator protected between the endpoints (protocol between U and W in {{fig-protocol}}) using an ECIES hybrid encryption scheme (see {{I-D.irtf-cfrg-hpke}}): The device uses the private key corresponding to its ephemeral DH key G_X generated for LAKE message 1 (see {{U-V}}) together with the static public DH key of the authorization server G_W to generate a shared secret G_XW. The shared secret is used to derive AEAD encryption keys to protect data between device and authorization server. The data is carried in AD1 and AD2 (between device and authenticator) and in Voucher Request/Response (between authenticator and authorization server).
+The communication between device and authorization server is carried out via the authenticator protected between the endpoints (protocol between U and W in {{fig-protocol}}) using an ECIES hybrid encryption scheme (see {{I-D.irtf-cfrg-hpke}}): The device uses the private key corresponding to its ephemeral DH key G_X generated for EDHOC message_1 (see {{U-V}}) together with the static public DH key of the authorization server G_W to generate a shared secret G_XW. The shared secret is used to derive AEAD encryption keys to protect data between device and authorization server. The data is carried in AD_1 and AD_2 (between device and authenticator) and in Voucher Request/Response (between authenticator and authorization server).
 
 TODO: Reference relevant ECIES scheme in {{I-D.irtf-cfrg-hpke}}.
 
 TODO: Define derivation of encryption keys (K_1, K_2) and nonces (N_1, N_2) for the both directions
 
 
-AD1 SHALL be the following CBOR sequence containing voucher information:
+AD_1 SHALL be the following CBOR sequence:
 
 ~~~~~~~~~~~
-AD1 = (
+AD_1 = (
+    T0:              int,
     LOC_W:           tstr,
     CC:              bstr,
     CIPHERTEXT_RQ:   bstr
@@ -225,6 +226,10 @@ AD1 = (
 ~~~~~~~~~~~
 
 where
+
+* T0 is the Auxiliary Data Type (TBD in relevant IANA registry)
+
+and the rest is Voucher Info:
 
 * LOC_W is location information about the authorization server
 * CC is a crypto context identifier for the security context between the device and the authorization server
@@ -255,13 +260,20 @@ where
 
 
 
-AD2 SHALL be the Voucher, defined in the next section.
+AD_2 SHALL be the following CBOR sequence:
 
 ~~~~~~~~~~~
-AD2 = (
+AD_2 = (
+    T1:             int,
     Voucher:        bstr
 )
 ~~~~~~~~~~~
+
+where
+
+* T1 is the Auxiliary Data Type (TBD in relevant IANA registry)
+
+and Voucher is defined in {{voucher}}.
 
 
 ### Voucher {#voucher}
