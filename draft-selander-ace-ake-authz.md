@@ -123,12 +123,12 @@ The objective of this document is to specify such a protocol which is lightweigh
 
 ## Device
 
-The device is pre-provisioned with an identity ID_U and asymmetric key credentials: a private key, a public key (PK_U), and optionally a public key certificate Cert(PK_U), issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator. ID_U may be a reference or pointer to the certificate.
+The device is pre-provisioned with an identity ID_U and asymmetric key credentials: a private key, a public key (PK_U), and optionally a public key certificate (Cert_PK_U), issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator. ID_U may be a reference or pointer to the certificate.
 
 The device is also provisioned with information about its authorization server:
 
 * At least one static public DH key of the authorization server (G_W) used to ensure secure communication with the device (see {{U-W}}).
-* Location information about the authorization server (LOC_W), e.g. its domain name. This information may be available in the device certificate Cert(PK_U).
+* Location information about the authorization server (LOC_W), e.g. its domain name. This information may be available in the device certificate Cert_PK_U.
 
 
 
@@ -150,51 +150,60 @@ The authorization server has the private DH key corresponding to G_W, which is u
 Authentication credentials and communication security used with the domain authenticator is out of scope, except for the need to verify the possession of the private key of PK_V as specified in {{domain-auth}}.
 
 The authorization server provides to the device the authorization decision for enrollment with the domain authenticator in the form of a voucher.
-The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert(PK_U).
+The authorization server provides information to the domain authenticator about the device, such as the the device's certificate Cert_PK_U.
 
 The authorization server needs to be available during the execution of the protocol.
 
 
 # The Protocol
 
-Three security sessions are going on in parallel (see {{fig-protocol}}):
+Three security sessions are going on in parallel (as detailed in the subsections):
 
 * Between device (U) and (domain) authenticator (V),
 * between authenticator and authorization server (W), and
 * between device and authorization server mediated by the authenticator.
 
-The content of the EDHOC messages is highlighted with brackets in the figure below ({{fig-protocol}}) using the notation of EDHOC {{I-D.ietf-lake-edhoc}}. The content includes:
+
+The most relevant message fields of EDHOC {{I-D.ietf-lake-edhoc}} in this specification are shown within brackets \{ ... \} (see {{fig-protocol}}):
 
 * G_X: the x-coordinate of the ephemeral public Diffie-Hellman key of party U
-* ID_CRED_V: data enabling the party U to obtain the credentials containing the public authentication key of V
-* Sig(V;): a signature made with the private authentication key of V
-* Sig(U;): a signature made with the private authentication key of U
+* AD_1: Auxiliary Data of message_1
+* AD_2: Auxiliary Data of message_2
+* ID_CRED_R: data enabling the party U to obtain the credentials containing the public authentication key of the responder V
+* ID_CRED_I: data enabling the party V to obtain the credentials containing the public authentication key of the initiator U
+* Sig_or_MAC_2: a signature or MAC made by party V with use of the private key of V
+* Sig_or_MAC_3: a signature or MAC made by party U with use of the private key of U
 
-We study each security session in turn, starting with the last.
+
 
 ~~~~~~~~~~~
+
 U                                    V                              W
-|                (G_X)               |                              |
-|  AD1=(LOC_W, CC, AEAD(K_1; ID_U))  |                              |
+|                                    |                              |
+|            {G_X, AD_1}             |                              |
 +----------------------------------->|                              |
-|           LAKE message 1           |G_X, PK_V, CC, AEAD(K_1; ID_U)|
+|          EDHOC message_1           |G_X, PK_V, CC, AEAD(K_1; ID_U)|
 |                                    +----------------------------->|
 |                                    |    Voucher Request (VREQ)    |
 |                                    |                              |
 |                                    |      CERT_PK_U, Voucher      |
 |                                    |<-----------------------------+
-|        (ID_CRED_V, Sig(V;))        |    Voucher Response (VRES)   |
-|             AD2=Voucher            |                              |
+|                                    |    Voucher Response (VRES)   |
+|  {ID_CRED_R, Sig_or_MAC_2, AD_2}   |                              |
 |<-----------------------------------+                              |
-|           LAKE message 2           |                              |
+|          EDHOC message_2           |                              |
 |                                    |                              |
-|              (Sig(U;))             |                              |
+|      {ID_CRED_I, Sig_or_MAC_3}     |                              |
 +----------------------------------->|                              |
-|           LAKE message 3           |                              |
+|          EDHOC message_3           |                              |
 
-where Voucher = AEAD(K_2; V_TYPE, PK_V, G_X, ID_U)
+where
+AD_1 = (T0, LOC_W, CC, AEAD(K1; ID_U))
+AD_2 = (T1, Voucher)
+Voucher = AEAD(K_2; V_TYPE, PK_V, G_X, ID_U)
+
 ~~~~~~~~~~~
-{: #fig-protocol title="W-assisted authorization of AKE between U and V. Relevant content from the LAKE protocol between U and V with auxiliary data AD1 and AD2. The Voucher Request/Response Protocol between V and W." artwork-align="center"}
+{: #fig-protocol title="W-assisted authorization of AKE between U and V: EDHOC between U and V, and Voucher Request/Response between V and W." artwork-align="center"}
 
 ## Device <-> Authorization Server {#U-W}
 
@@ -337,7 +346,7 @@ The device sends message 3. AD3 depends on the kind of enrollment the device is 
 #### Authenticator processing
 
 The authenticator MUST NOT verify the signature Sig(U;) (see {{fig-protocol}}) in LAKE message 3 with the PK_U included in message 3.
-Instead, the signature MUST be verified with the public key included in Cert(PK_U) (see {{voucher_response}}) received from the authorization server.
+Instead, the signature MUST be verified with the public key included in Cert_PK_U (see {{voucher_response}}) received from the authorization server.
 This way, the authenticator can make sure that message 3 is signed by the right entity trusted by the authorization server.
 
 ## Authenticator <-> Authorization Server {#V-W}
@@ -364,7 +373,7 @@ where the parameters are defined in {{U-W}}.
 
 ### Voucher Response {#voucher_response}
 
-The authorization server decrypts the identity of the device and looks up its certificate, Cert(PK_U). The authorization server sends the voucher response to the authenticator. The Voucher_Response SHALL be a CBOR array as defined below:
+The authorization server decrypts the identity of the device and looks up its certificate, Cert_PK_U. The authorization server sends the voucher response to the authenticator. The Voucher_Response SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~
 Voucher_Response = [
@@ -375,7 +384,7 @@ Voucher_Response = [
 
 where
 
-* CERT_PK_U is the device certificate of the public key PK_U, Cert(PK_U), issued by a trusted third party, intended to be verified by the authenticator. The format of this certificate is out of scope.
+* CERT_PK_U is the device certificate of the public key PK_U, issued by a trusted third party, intended to be verified by the authenticator. The format of this certificate is out of scope.
 * The voucher is defined in {{U-W}}
 
 TODO: The voucher response may contain a "Voucher-info" field as an alternative to make the Voucher a CBOR Map (see {{U-W}})
