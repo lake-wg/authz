@@ -61,6 +61,7 @@ informative:
   I-D.selander-ace-coap-est-oscore:
   I-D.ietf-6tisch-minimal-security:
   I-D.ietf-lake-edhoc:
+  I-D.palombini-core-oscore-edhoc:
 
 --- abstract
 
@@ -318,48 +319,65 @@ TODO: Consider making the voucher a CBOR Map to indicate type of voucher, to ind
 
 ## Device <-> Authenticator {#U-V}
 
-The device and authenticator run the LAKE protocol authenticated with public keys (PK_U and PK_V) of the device and the authenticator, see protocol between U and V in {{fig-protocol}}. The normal processing of the LAKE is omitted here.
+The device and authenticator run the EDHOC protocol authenticated with public keys (PK_U and PK_V) of the device and the authenticator, see protocol between U and V in {{fig-protocol}}. The normal EDHOC processing is omitted here.
 
 
 ### Message 1
 
 #### Device processing
 
-The device selects a cipher suite with an ECDH curve satisfying the static public DH key G_W of the authorization server. As part of the normal LAKE processing, the device generates the ephemeral public key G_X to be sent in LAKE message 1. A new G_X MUST be generated for each execution of the protocol. The ephemeral key G_X is reused in the ECIES scheme, see {{U-W}}.
+The device composes EDHOC message_1 with specific parameters pre-configured, such as EDHOC method. The correlation properties (see Section 3.1 of {{I-D.ietf-lake-edhoc}}) are defined by the transport of the messages. The static public DH key G_W of the authorization server defines the ECDH curve of the selected cipher suite in SUITES_I. As part of the normal EDHOC processing, the device generates the ephemeral public key G_X. A new G_X MUST be generated for each execution of the protocol. The ephemeral key G_X is reused in the ECIES scheme, see {{U-W}}.
 
-The device sends LAKE message 1 with AD1 as specified in {{U-W}}.
+The device sends EDHOC message_1 with AD_1 as specified in {{U-W}}.
 
 
 #### Authenticator processing
 
-The authenticator receives LAKE message 1 from the device, which triggers the exchange of voucher related data with the authorization server as described in {{V-W}}.
+The authenticator receives EDHOC message_1 from the device, which triggers the exchange of voucher related data with the authorization server as described in {{V-W}}.
 
 
 ### Message 2
 
 #### Authenticator processing
 
-The authenticator sends LAKE message 2 to the device with the voucher (see {{U-W}}) in AD2. The public key PK_V is encoded in the way public keys are encoded in the LAKE protocol.
-
+The authenticator sends EDHOC message_2 to the device with the voucher (see {{U-W}}) in AD_2. The public key PK_V is carried in ID_CRED_R of message_2 encoded as a COSE header_map, see Section 4.1 of {{I-D.ietf-lake-edhoc}}. The Sig_or_MAC_2 field calculated using the private key corresponding to PK_V is either signature or MAC depending on method.
 
 
 #### Device processing
 
-The device MUST verify the Voucher using its ephemeral key G_X sent in message 1 and PK_V received in message 2. If the Voucher does not verify, the device MUST discontinue the protocol.
+In addition to normal EDHOC verifications, the device MUST verify the Voucher by calculating the same message authentication code as when it was generated (see {{voucher}}) and compare with the what was received in message_2.
 
+The input in this calculation includes:
+* The ephemeral key G_X, sent in message_1.
+* The identity ID_U, sent in message_1.
+* The public key of the authenticator, PK_V, received in message_2.
+
+If the Voucher does not verify, the device MUST discontinue the protocol.
 
 ### Message 3
 
 #### Device processing
 
+If all verifications are passed, the device sends EDHOC message_3.
 
-The device sends message 3. AD3 depends on the kind of enrollment the device is requesting. It may e.g. be a CBOR encoded Certificate Signing Request, see {{I-D.mattsson-cose-cbor-cert-compress}}.
+The message field ID_CRED_I contains data enabling the authenticator to retrieve the public key of the device, PK_U. Since the authenticator before sending message_2 received a certificate of PK_U from the authorization server (see {{V-W}}), ID_CRED_I SHALL be a COSE header_map of type 'kid' with the empty byte string as value:
+~~~~~~~~~~~
+ID_CRED_I =
+{
+  4 : h''
+}
+~~~~~~~~~~~
+
+AD_3 MAY contain an enrolment request, see {{I-D.mattsson-cose-cbor-cert-compress}}, or other request which the device is now authorized to make.
+
+EDHOC message_3 may be combined with an OSCORE request, see {{I-D.palombini-core-oscore-edhoc}}.
 
 #### Authenticator processing
 
-The authenticator MUST NOT verify the signature Sig(U;) (see {{fig-protocol}}) in LAKE message 3 with the PK_U included in message 3.
-Instead, the signature MUST be verified with the public key included in Cert_PK_U (see {{voucher_response}}) received from the authorization server.
-This way, the authenticator can make sure that message 3 is signed by the right entity trusted by the authorization server.
+The authenticator performs the normal EDHOC verifications of message_3, with the exception that the Sig_or_MAC_3 field MUST be verified using the public key included in Cert_PK_U (see {{voucher_response}}) received from the authorization server. The authenticator MUST ignore any key related information obtained in ID_CRED_I.
+
+This enables the authenticator to verify that message_3 was generated by the device which was authorized by the authorization server as part of the associated Voucher Request/Response procedure (see {{V-W}}).
+
 
 ## Authenticator <-> Authorization Server {#V-W}
 
