@@ -574,7 +574,6 @@ TODO: Identity protection of device
 
 TODO: Use of G_X as ephemeral key between device and authenticator, and between device and authorization server
 
-TODO: Remote attestation
 
 # IANA Considerations  {#iana}
 
