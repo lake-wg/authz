@@ -455,7 +455,7 @@ TODO: The voucher response may contain a "Voucher-info" field as an alternative 
 
 # ACE Profile
 
-This section defines an embedding of the protocol as a profile of the ACE framework (see Appendix C of {{I-D.ietf-ace-oauth-authz}}).
+The protocol messages as specified in this document may be carried between the endpoints in various protocols. This section defines an embedding of the protocol as a profile of the ACE framework (see Appendix C of {{I-D.ietf-ace-oauth-authz}}).
 
 U plays the role of the ACE Resource Server (RS).
 V plays the role of the ACE Client (C).
