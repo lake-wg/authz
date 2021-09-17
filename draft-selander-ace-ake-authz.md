@@ -105,8 +105,8 @@ The objective of this document is to specify such a protocol which is lightweigh
 
 
 ~~~~~~~~~~~
-                   Voucher
-             EDHOC  Info
+                  Voucher
+            EDHOC Info
 +----------+  |    |   +---------------+  Voucher  +---------------+
 |          |  |    |   |               |  Request  |               |
 |  Device  |--|----o-->|    Domain     |---------->| Authorization |
@@ -158,6 +158,59 @@ The authorization server needs to be available during the execution of the proto
 
 # The Protocol
 
+## Overview
+
+Three security sessions are going on in parallel (as detailed in the subsections):
+
+* EDHOC between device (U) and (domain) authenticator (V)
+* Voucher Request/Response between authenticator (V) and authorization server (W)
+* A third session between device (U) and authorization server (W) mediated by the authenticator carrying the Voucher Info from U to W, and the Voucher from W to U.
+
+
+The most relevant message fields of EDHOC {{I-D.ietf-lake-edhoc}} in this specification are shown within brackets \{ ... \} (see {{fig-protocol}}):
+
+* G_X: the 'x' parameter of the ephemeral public Diffie-Hellman key of party U
+
+* EAD_1: External Authorization Data of message_1
+* EAD_2: External Authorization Data of message_2
+* ID_CRED_R: data enabling the party U to obtain the credentials containing the public authentication key of the responder V
+* ID_CRED_I: data enabling the party V to obtain the credentials containing the public authentication key of the initiator U
+* Sig_or_MAC_2: a signature or MAC made by party V with use of the private key of V
+* Sig_or_MAC_3: a signature or MAC made by party U with use of the private key of U
+
+
+
+~~~~~~~~~~~
+
+U                                    V                              W
+|                                    |                              |
+|      {G_X, SUITES_I, EAD_1}        |                              |
++----------------------------------->|                              |
+|          EDHOC message_1           |    G_X, SS, AEAD(K_1; ID_U)  |
+|                                    +----------------------------->|
+|                                    |    Voucher Request (VREQ)    |
+|                                    |                              |
+|                                    |    G_X, CERT_PK_U, Voucher   |
+|                                    |<-----------------------------+
+|                                    |    Voucher Response (VRES)   |
+|  {ID_CRED_R, Sig_or_MAC_2, EAD_2}  |                              |
+|<-----------------------------------+                              |
+|          EDHOC message_2           |                              |
+|                                    |                              |
+|      {ID_CRED_I, Sig_or_MAC_3}     |                              |
++----------------------------------->|                              |
+|          EDHOC message_3           |                              |
+
+where
+EAD_1 = (L0, Voucher Info)
+Voucher Info = (LOC_W, SS, AEAD(K1; ID_U))
+EAD_2 = (L1, Voucher)
+Voucher = AEAD(K_2; V_TYPE, PK_V, G_X, ID_U)
+
+~~~~~~~~~~~
+{: #fig-protocol title="W-assisted authorization of AKE between U and V: EDHOC between U and V, and Voucher Request/Response between V and W." artwork-align="center"}
+
+
 ## EDHOC Reuse
 
 The protocol between device (U) and domain authenticator (V) is EDHOC with External Authorization Data (EAD) in message_1 and message_2. The following components of EDHOC are reused for other parts of the protocol:
@@ -206,67 +259,13 @@ For calculation of  K_1
 * context is CBOR bstr encoding of ( )
 * length is length of key in the EDHOC AEAD algorithm
 
-For calculation of shared secret N_1
+For calculation of N_1
 
 * edhoc_aead_id is the EDHOC AEAD algorithm
 * transcript_hash =
 * label is "AKE_AUTHZ_N_1"
 * context is CBOR bstr encoding of ( )
 * length is length of nonce in the EDHOC AEAD algorithm
-
-
-
-## Overview
-
-Three security sessions are going on in parallel (as detailed in subsections):
-
-* Between device (U) and (domain) authenticator (V),
-* between authenticator and authorization server (W), and
-* between device and authorization server mediated by the authenticator.
-
-
-The most relevant message fields of EDHOC {{I-D.ietf-lake-edhoc}} in this specification are shown within brackets \{ ... \} (see {{fig-protocol}}):
-
-* G_X: the 'x' parameter of the ephemeral public Diffie-Hellman key of party U
-* EAD_1: External Authorization Data of message_1
-* EAD_2: External Authorization Data of message_2
-* ID_CRED_R: data enabling the party U to obtain the credentials containing the public authentication key of the responder V
-* ID_CRED_I: data enabling the party V to obtain the credentials containing the public authentication key of the initiator U
-* Sig_or_MAC_2: a signature or MAC made by party V with use of the private key of V
-* Sig_or_MAC_3: a signature or MAC made by party U with use of the private key of U
-
-
-
-~~~~~~~~~~~
-
-U                                    V                              W
-|                                    |                              |
-|      {G_X, SUITES_I, EAD_1}        |                              |
-+----------------------------------->|                              |
-|          EDHOC message_1           |    G_X, SS, AEAD(K_1; ID_U)  |
-|                                    +----------------------------->|
-|                                    |    Voucher Request (VREQ)    |
-|                                    |                              |
-|                                    |    G_X, CERT_PK_U, Voucher   |
-|                                    |<-----------------------------+
-|                                    |    Voucher Response (VRES)   |
-|  {ID_CRED_R, Sig_or_MAC_2, EAD_2}  |                              |
-|<-----------------------------------+                              |
-|          EDHOC message_2           |                              |
-|                                    |                              |
-|      {ID_CRED_I, Sig_or_MAC_3}     |                              |
-+----------------------------------->|                              |
-|          EDHOC message_3           |                              |
-
-where
-EAD_1 = (L0, LOC_W, SS, AEAD(K1; ID_U))
-EAD_2 = (L1, Voucher)
-Voucher = AEAD(K_2; V_TYPE, PK_V, G_X, ID_U)
-
-~~~~~~~~~~~
-{: #fig-protocol title="W-assisted authorization of AKE between U and V: EDHOC between U and V, and Voucher Request/Response between V and W." artwork-align="center"}
-
-
 
 
 ## Device <-> Authorization Server {#U-W}
