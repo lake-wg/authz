@@ -53,6 +53,7 @@ informative:
   RFC8152:
   RFC8174:
   RFC8446:
+  RFC8949:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
   I-D.mattsson-cose-cbor-cert-compress:
@@ -161,15 +162,17 @@ The authorization server needs to be available during the execution of the proto
 
 The protocol between device (U) and domain authenticator (V) is EDHOC with External Authorization Data (EAD) in message_1 and message_2. The following components of EDHOC are reused for other parts of the protocol:
 
-* The ephemeral key G_X is used as nonce between U and W.
-* The selected cipher suite in SUITES_I, denoted SS when sent between V and W, decides also the algorithms used between U and W:
+* The ephemeral key G_X, see section 3.7 of {{I-D.ietf-lake-edhoc}}.
+    * G_X is used as nonce between U and W; sent in VREQ
+* The selected cipher suite of SUITES_I, denoted SS
+    * decides also the algorithms used between U and W; sent in VREQ
    * EDHOC AEAD algorithm, used to encrypt the identity of U
    * EDHOC hash algorithm, used to for key derivation and to calculate the voucher
    * EDHOC MAC length in bytes, length of the voucher
    * EDHOC key exchange algorithm, used to calculated the shared secret
 * Calculation of shared secret:
    * IKM is the ECDH shared secret G_XW (calculated from G_X and W or G_W and X) as defined in Section 6.3.1 of [I-D.ietf-cose-rfc8152bis-algs].
-* Key derivation uses Extract and Expand:
+* Key derivation uses Extract and Expand as in {{I-D.ietf-lake-edhoc}}:
    * PRK = Extract( salt, IKM )
       * where salt = 0x (the empty byte string)
    * shared secret = Expand( PRK, info, length )
@@ -180,7 +183,9 @@ The protocol between device (U) and domain authenticator (V) is EDHOC with Exter
       Expand( PRK, info, length ) = KMAC128( PRK, info, L, "" )
       * if the EDHOC hash algorithm is SHAKE256 then
       Expand( PRK, info, length ) = KMAC256( PRK, info, L, "" )
-      where L = 8*length, the output length in bits and where
+      where L = 8*length, the output length in bits
+
+      where
 
 ~~~~~~~~~
 info = (
@@ -192,12 +197,23 @@ info = (
 )
 ~~~~~~~~~~
 
-   where
+
+For calculation of  K_1
 
 * edhoc_aead_id is the EDHOC AEAD algorithm
-* transcript_hash
-* label
-* length
+* transcript_hash =
+* label is "AKE_AUTHZ_K_1"
+* context is CBOR bstr encoding of ( )
+* length is length of key in the EDHOC AEAD algorithm
+
+For calculation of shared secret N_1
+
+* edhoc_aead_id is the EDHOC AEAD algorithm
+* transcript_hash =
+* label is "AKE_AUTHZ_N_1"
+* context is CBOR bstr encoding of ( )
+* length is length of nonce in the EDHOC AEAD algorithm
+
 
 
 ## Overview
@@ -211,7 +227,7 @@ Three security sessions are going on in parallel (as detailed in subsections):
 
 The most relevant message fields of EDHOC {{I-D.ietf-lake-edhoc}} in this specification are shown within brackets \{ ... \} (see {{fig-protocol}}):
 
-* G_X: the x-coordinate of the ephemeral public Diffie-Hellman key of party U
+* G_X: the 'x' parameter of the ephemeral public Diffie-Hellman key of party U
 * EAD_1: External Authorization Data of message_1
 * EAD_2: External Authorization Data of message_2
 * ID_CRED_R: data enabling the party U to obtain the credentials containing the public authentication key of the responder V
@@ -353,9 +369,9 @@ external_aad_array = [
 where
 
 * 'V_TYPE' indicates the type of voucher used
-* PK_V is a COSE_Key containing the public authentication key of the authenticator. The public key MUST be an Elliptic Curve Diffie-Hellman key, COSE key type 'kty' = 'EC2' or 'OKP'.
-   * COSE_Keys of type OKP SHALL only include the parameters 1 (kty), -1 (crv), and -2 (x-coordinate). COSE_Keys of type EC2 SHALL only include the parameters 1 (kty), -1 (crv), -2 (x-coordinate), and -3 (y-coordinate). The parameters SHALL be encoded in decreasing order.
-* G_X is the ephemeral key of the device sent in EDHOC message_1
+* PK_V is a UCCS containing the public authentication key of the authenticator encoded as a COSE_Key in the 'cnf' claim. The public key MUST be an Elliptic Curve Diffie-Hellman key, COSE key type 'kty' = 'EC2' or 'OKP'.
+   * COSE_Keys of type OKP SHALL only include the parameters 1 (kty), -1 (crv), and -2 (x-coordinate). COSE_Keys of type EC2 SHALL only include the parameters 1 (kty), -1 (crv), -2 (x-coordinate), and -3 (y-coordinate). The parameters SHALL be encoded using deterministic encoding as specified in Section 4.2.1 of {{RFC8949}}.
+* G_X is encoded as in EDHOC message_1, see Section 3.7 of {{I-D.ietf-lake-edhoc}}
 * SS and ID_U are defined in {{U-W}}
 
 
@@ -373,7 +389,7 @@ The device and authenticator run the EDHOC protocol authenticated with public ke
 
 #### Device processing
 
-The device composes EDHOC message_1 with specific parameters pre-configured, such as EDHOC method. The correlation properties (see Section 3.1 of {{I-D.ietf-lake-edhoc}}) are defined by the transport of the messages. The static public DH key G_W of the authorization server defines the ECDH curve of the selected cipher suite in SUITES_I. As part of the normal EDHOC processing, the device generates the ephemeral public key G_X. A new G_X MUST be generated for each execution of the protocol. The ephemeral key G_X is reused in the ECIES scheme, see {{U-W}}.
+The device composes EDHOC message_1 with specific parameters pre-configured, such as EDHOC method. The correlation properties (see Section 3.1 of {{I-D.ietf-lake-edhoc}}) are defined by the transport of the messages. The static public DH key G_W of the authorization server defines the ECDH curve of the selected cipher suite in SUITES_I. As part of the normal EDHOC processing, the device generates the ephemeral public key G_X. The ephemeral key G_X is reused in the ECIES scheme, see {{U-W}}.
 
 The device sends EDHOC message_1 with EAD_1 as specified in {{U-W}}.
 
