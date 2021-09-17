@@ -157,7 +157,52 @@ The authorization server needs to be available during the execution of the proto
 
 # The Protocol
 
-Three security sessions are going on in parallel (as detailed in the subsections):
+## EDHOC Reuse
+
+The protocol between device (U) and domain authenticator (V) is EDHOC with External Authorization Data (EAD) in message_1 and message_2. The following components of EDHOC are reused for other parts of the protocol:
+
+* The ephemeral key G_X is used as nonce between U and W.
+* The selected cipher suite in SUITES_I, denoted SS when sent between V and W, decides also the algorithms used between U and W:
+   * EDHOC AEAD algorithm, used to encrypt the identity of U
+   * EDHOC hash algorithm, used to for key derivation and to calculate the voucher
+   * EDHOC MAC length in bytes, length of the voucher
+   * EDHOC key exchange algorithm, used to calculated the shared secret
+* Calculation of shared secret:
+   * IKM is the ECDH shared secret G_XW (calculated from G_X and W or G_W and X) as defined in Section 6.3.1 of [I-D.ietf-cose-rfc8152bis-algs].
+* Key derivation uses Extract and Expand:
+   * PRK = Extract( salt, IKM )
+      * where salt = 0x (the empty byte string)
+   * shared secret = Expand( PRK, info, length )
+   where Expand( ) depends on the EDHOC hash algorithm of SS:
+      * if the EDHOC hash algorithm is SHA-2 then
+      Expand( PRK, info, length ) = HKDF-Expand( PRK, info, length ) [RFC5869]
+      * if the EDHOC hash algorithm is SHAKE128 then
+      Expand( PRK, info, length ) = KMAC128( PRK, info, L, "" )
+      * if the EDHOC hash algorithm is SHAKE256 then
+      Expand( PRK, info, length ) = KMAC256( PRK, info, L, "" )
+      where L = 8*length, the output length in bits and where
+
+~~~~~~~~~
+info = (
+   edhoc_aead_id : int / tstr,
+   transcript_hash : bstr,
+   label : tstr,
+   context : bstr,
+   length : uint,
+)
+~~~~~~~~~~
+
+   where
+
+* edhoc_aead_id is the EDHOC AEAD algorithm
+* transcript_hash
+* label
+* length
+
+
+## Overview
+
+Three security sessions are going on in parallel (as detailed in subsections):
 
 * Between device (U) and (domain) authenticator (V),
 * between authenticator and authorization server (W), and
@@ -204,6 +249,9 @@ Voucher = AEAD(K_2; V_TYPE, PK_V, G_X, ID_U)
 
 ~~~~~~~~~~~
 {: #fig-protocol title="W-assisted authorization of AKE between U and V: EDHOC between U and V, and Voucher Request/Response between V and W." artwork-align="center"}
+
+
+
 
 ## Device <-> Authorization Server {#U-W}
 
