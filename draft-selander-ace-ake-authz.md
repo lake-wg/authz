@@ -162,28 +162,16 @@ The authorization server needs to be available during the execution of the proto
 
 Three security sessions are going on in parallel:
 
-* EDHOC between device (U) and (domain) authenticator (V)
-* Voucher Request/Response between authenticator (V) and authorization server (W)
-* A third session between device (U) and authorization server (W) mediated by the authenticator.
+1. EDHOC {{I-D.ietf-lake-edhoc}} between device (U) and (domain) authenticator (V)
+2. Voucher Request/Response between authenticator (V) and authorization server (W)
+3. An exchange of voucher-related information, including the voucher itself, between device (U) and authorization server (W), mediated by the authenticator.
 
-{{fig-protocol}} provides an overview of the message flow with more details provided in the subsections. The most relevant message fields of EDHOC {{I-D.ietf-lake-edhoc}} used in this specification are shown within brackets \{ ... \}:
-
-* G_X: the 'x' parameter of the ephemeral public Diffie-Hellman key of party U
-* SUITES_I: the relevant cipher suites of U including the selected cipher suite for the EDHOC session
-* EAD_1: External Authorization Data of message_1
-* EAD_2: External Authorization Data of message_2
-* ID_CRED_R: data enabling the party U to obtain the credentials containing the public authentication key of the responder V
-* ID_CRED_I: data enabling the party V to obtain the credentials containing the public authentication key of the initiator U
-* Sig_or_MAC_2 (Signature_or_MAC_2): a signature or MAC made by party V with use of the private key of V
-* Sig_or_MAC_3 (Signature_or_MAC_3): a signature or MAC made by party U with use of the private key of U
-
-
+{{fig-protocol}} provides an overview of the message flow. Only selected message fields of EDHOC are shown, for more details see Section 3.1 of {{I-D.ietf-lake-edhoc}}.
 
 ~~~~~~~~~~~
-
 U                                    V                              W
 |                                    |                              |
-|      {G_X, SUITES_I, EAD_1}        |                              |
+|        G_X, SUITES_I, EAD_1        |                              |
 +----------------------------------->|                              |
 |          EDHOC message_1           |  G_X, SS, AEAD(ID_U) ?PoP_V  |
 |                                    +----------------------------->|
@@ -192,56 +180,58 @@ U                                    V                              W
 |                                    |    G_X, CERT_PK_U, Voucher   |
 |                                    |<-----------------------------+
 |                                    |    Voucher Response (VRES)   |
-|  {ID_CRED_R, Sig_or_MAC_2, EAD_2}  |                              |
+|   ID_CRED_R, Sig_or_MAC_2, EAD_2   |                              |
 |<-----------------------------------+                              |
 |          EDHOC message_2           |                              |
 |                                    |                              |
-|      {ID_CRED_I, Sig_or_MAC_3}     |                              |
+|       ID_CRED_I, Sig_or_MAC_3      |                              |
 +----------------------------------->|                              |
 |          EDHOC message_3           |                              |
 
 where
 EAD_1 = (L0, Voucher Info)
-Voucher Info = (LOC_W, AEAD(ID_U))
+Voucher Info = [LOC_W, AEAD(ID_U)]
 EAD_2 = (L1, Voucher)
 Voucher = MAC(V_TYPE, PK_V, G_X, ID_U)
 
 ~~~~~~~~~~~
-{: #fig-protocol title="W-assisted authorization of AKE between U and V: EDHOC between U and V, and Voucher Request/Response between V and W." artwork-align="center"}
+{: #fig-protocol title="W-assisted authorization of AKE between U and V: EDHOC between U and V (only selected message fields shown), and Voucher Request/Response between V and W." artwork-align="center"}
 
 
-## EDHOC Reuse {#edhoc-reuse}
+## Reuse of EDHOC {#key-der}
 
-The protocol between device (U) and domain authenticator (V) is EDHOC with External Authorization Data (EAD) in message_1 and message_2. The following components of EDHOC are reused for other parts of the protocol:
+The protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
 
-* The ephemeral key G_X, see section 3.7 of {{I-D.ietf-lake-edhoc}}.
-    * G_X is used as nonce between U and W; sent in VREQ
-* The selected cipher suite of SUITES_I, denoted SS
-    * decides also the algorithms used between U and W; sent in VREQ
-   * EDHOC AEAD algorithm, used to encrypt the identity of U
-   * EDHOC hash algorithm, used to for key derivation and to calculate the voucher
-   * EDHOC MAC length in bytes, length of the voucher
-   * EDHOC key exchange algorithm, used to calculated the shared secret
-* Calculation of shared secret:
-   * IKM is the ECDH shared secret G_XW (calculated from G_X and W or G_W and X) as defined in Section 6.3.1 of [I-D.ietf-cose-rfc8152bis-algs].
-* Key derivation uses Extract and Expand as in {{I-D.ietf-lake-edhoc}}:
-   * PRK = Extract( salt, IKM )
-      * where salt = 0x (the empty byte string)
-   * shared secret = Expand( PRK, info, length )
-   where Expand( ) depends on the EDHOC hash algorithm of SS:
-      * if the EDHOC hash algorithm is SHA-2 then
-      Expand( PRK, info, length ) = HKDF-Expand( PRK, info, length ) [RFC5869]
-      * if the EDHOC hash algorithm is SHAKE128 then
-      Expand( PRK, info, length ) = KMAC128( PRK, info, L, "" )
-      * if the EDHOC hash algorithm is SHAKE256 then
-      Expand( PRK, info, length ) = KMAC256( PRK, info, L, "" )
-      where L = 8*length, the output length in bits
+* G_X, the 'x' parameter of the ephemeral public Diffie-Hellman key of party U, is also used in the protocol between U and W, as ephemeral key and nonce.
 
-      where
+* SUITES_I, the cipher suites relevant to U, which includes the selected suite (here denoted SS) also defines the algorithms used between U and W. In particular (see Section 3.6 of {{I-D.ietf-lake-edhoc}}): 
 
+    * EDHOC AEAD algorithm: used to encrypt the identity of U
+    * EDHOC hash algorithm: used for key derivation and to calculate the voucher
+    * EDHOC MAC length in bytes: length of the voucher
+    * EDHOC key exchange algorithm: used to calculate the shared secret between U and W
+
+* EAD_1, EAD_2 are the External Authorization Data of message_1 and message_2 for which special content is defined in this document. 
+
+* ID_CRED_I and ID_CRED_R are used to identify the public authentication keys of U and V. In this protocol ID_CRED_I can be empty since V obtains the certificate of U from W, whereas ID_CRED_R contains the public authentication key of V.
+
+* Signature_or_MAC_2 and Signature_or_MAC_3 (abbreviated in the figure), containing data generated using the private key of V and U, respectively, are shown here just to be able to reason about the use of credentials.
+
+The protocol also reuses the Extract and Expand key derivation from EDHOC, see Section 4 of {{I-D.ietf-lake-edhoc}}): 
+
+* The intermediate pseudo-random key PRK is derived using Extract():
+    * PRK = Extract( salt, IKM )
+         * where salt = 0x (the zero-length byte string)
+         * IKM is the ECDH shared secret G_XW (calculated from G_X and W or G_W and X) as defined in Section 6.3.1 of [I-D.ietf-cose-rfc8152bis-algs].
+         
+The shared secret is derived using Expand() which is defined in terms of the EDHOC hash algorithm of SS, see Section 4.2. of {{I-D.ietf-lake-edhoc}}:
+
+* shared secret = Expand( PRK, info, length )
+
+  where
+  
 ~~~~~~~~~
 info = (
-   edhoc_aead_id : int / tstr,
    transcript_hash : bstr,
    label : tstr,
    context : bstr,
@@ -249,27 +239,24 @@ info = (
 )
 ~~~~~~~~~~
 
+For calculation of  K_1:
 
-For calculation of  K_1
-
-* edhoc_aead_id is the EDHOC AEAD algorithm
-* transcript_hash =
+* transcript_hash = h''
 * label is "AKE_AUTHZ_K_1"
-* context is CBOR bstr encoding of ( )
-* length is length of key in the EDHOC AEAD algorithm
+* context  = h''
+* length is length of key of the EDHOC AEAD algorithm
 
 For calculation of N_1
 
-* edhoc_aead_id is the EDHOC AEAD algorithm
-* transcript_hash =
+* transcript_hash = h''
 * label is "AKE_AUTHZ_N_1"
-* context is CBOR bstr encoding of ( )
-* length is length of nonce in the EDHOC AEAD algorithm
+* context = h''
+* length is length of nonce of the EDHOC AEAD algorithm
 
 
 ## Device <-> Authorization Server {#U-W}
 
-The communication between device and authorization server is carried out via the authenticator protected between the endpoints (protocol between U and W in {{fig-protocol}}) using the equivalent of a hybrid encryption scheme (see e.g. {{I-D.irtf-cfrg-hpke}}): The device uses the private key corresponding to its ephemeral DH key G_X generated for EDHOC message_1 (see {{U-V}}) together with the static public DH key of the authorization server G_W to generate a shared secret G_XW. The shared secret is used to derive secret keys to protect data between U and W. The data is carried in EAD_1 and EAD_2 (between U and V) and in Voucher Request/Response (between V and W).
+The communication between device and authorization server is carried out via the authenticator protected between the endpoints (protocol between U and W in {{fig-protocol}}) using the equivalent of a hybrid encryption scheme (see, e.g., {{I-D.irtf-cfrg-hpke}}): The device uses the private key corresponding to its ephemeral DH key G_X generated for EDHOC message_1 (see {{U-V}}), together with the static public DH key of the authorization server G_W to generate a shared secret G_XW (see {{key-der}}). The shared secret is used to derive secret keys to protect data between U and W (see {{key-der}}). The data is carried in EAD_1 and EAD_2 (between U and V) and in Voucher Request/Response (between V and W).
 
 ### EAD_1
 
@@ -289,8 +276,8 @@ where
 
 'CIPHERTEXT_RQ' is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC8152}}) computed from the following:
 
-* the secret key K_1 derived as in {{edhoc-reuse}}
-* the nonce N_1 derived as in {{edhoc-reuse}}
+* the secret key K_1 derived as in {{key-der}}
+* the nonce N_1 derived as in {{key-der}}
 * 'protected' is a byte string of size 0
 * 'plaintext and 'external_aad' as below:
 
@@ -308,7 +295,7 @@ external_aad = (
 where
 
 * ID_U is the identity of the device, for example a reference or pointer to the device certificate
-* SS is defined above.
+* SS is the selected cipher suite in EDHOC.
 
 ### EAD_2
 
@@ -316,7 +303,6 @@ EAD_2 = (L1, Voucher) where L1 is the External Auxiliary Data Label (IANA regist
 
 
 ### Voucher {#voucher}
-
 
 The voucher is an assertion by the authorization server to the device that the authorization server has performed the relevant verifications and that the device is authorized to continue the protocol with the authenticator. The voucher consists essentially of a message authentication code which binds the identity of the authenticator to message_1 of EDHOC.
 
