@@ -52,6 +52,7 @@ informative:
   RFC7228:
   RFC8152:
   RFC8174:
+  RFC8392:
   RFC8446:
   RFC8949:
   I-D.ietf-lake-reqs:
@@ -204,32 +205,32 @@ The protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
 
 * G_X, the 'x' parameter of the ephemeral public Diffie-Hellman key of party U, is also used in the protocol between U and W, as ephemeral key and nonce.
 
-* SUITES_I, the cipher suites relevant to U, which includes the selected suite (here denoted SS) also defines the algorithms used between U and W. In particular (see Section 3.6 of {{I-D.ietf-lake-edhoc}}): 
+* SUITES_I, the cipher suites relevant to U, which includes the selected suite (here denoted SS) also defines the algorithms used between U and W. In particular (see Section 3.6 of {{I-D.ietf-lake-edhoc}}):
 
     * EDHOC AEAD algorithm: used to encrypt the identity of U
     * EDHOC hash algorithm: used for key derivation and to calculate the voucher
     * EDHOC MAC length in bytes: length of the voucher
     * EDHOC key exchange algorithm: used to calculate the shared secret between U and W
 
-* EAD_1, EAD_2 are the External Authorization Data of message_1 and message_2 for which special content is defined in this document. 
+* EAD_1, EAD_2 are the External Authorization Data of message_1 and message_2 for which special content is defined in this document.
 
 * ID_CRED_I and ID_CRED_R are used to identify the public authentication keys of U and V. In this protocol ID_CRED_I can be empty since V obtains the certificate of U from W, whereas ID_CRED_R contains the public authentication key of V.
 
 * Signature_or_MAC_2 and Signature_or_MAC_3 (abbreviated in the figure), containing data generated using the private key of V and U, respectively, are shown here just to be able to reason about the use of credentials.
 
-The protocol also reuses the Extract and Expand key derivation from EDHOC, see Section 4 of {{I-D.ietf-lake-edhoc}}): 
+The protocol also reuses the Extract and Expand key derivation from EDHOC, see Section 4 of {{I-D.ietf-lake-edhoc}}):
 
 * The intermediate pseudo-random key PRK is derived using Extract():
     * PRK = Extract( salt, IKM )
          * where salt = 0x (the zero-length byte string)
          * IKM is the ECDH shared secret G_XW (calculated from G_X and W or G_W and X) as defined in Section 6.3.1 of [I-D.ietf-cose-rfc8152bis-algs].
-         
+
 The shared secret is derived using Expand() which is defined in terms of the EDHOC hash algorithm of SS, see Section 4.2. of {{I-D.ietf-lake-edhoc}}:
 
 * shared secret = Expand( PRK, info, length )
 
   where
-  
+
 ~~~~~~~~~
 info = (
    transcript_hash : bstr,
@@ -242,16 +243,25 @@ info = (
 For calculation of  K_1:
 
 * transcript_hash = h''
-* label is "AKE_AUTHZ_K_1"
+* label is "EDHOC_EAD_LABEL_0_K_1"
 * context  = h''
 * length is length of key of the EDHOC AEAD algorithm
 
-For calculation of N_1
+For calculation of IV_1:
 
 * transcript_hash = h''
-* label is "AKE_AUTHZ_N_1"
+* label is "EDHOC_EAD_LABEL_0_IV_1"
 * context = h''
 * length is length of nonce of the EDHOC AEAD algorithm
+
+For calculation of Voucher:
+
+* transcript_hash = h''
+* label is "EDHOC_EAD_LABEL_1"
+* context  = bstr .cbor voucher_input
+* length is EDHOC MAC length in bytes
+
+where context is a CBOR bstr wrapping of voucher_input, see {{voucher}}.
 
 
 ## Device <-> Authorization Server {#U-W}
@@ -277,7 +287,7 @@ where
 'CIPHERTEXT_RQ' is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC8152}}) computed from the following:
 
 * the secret key K_1 derived as in {{key-der}}
-* the nonce N_1 derived as in {{key-der}}
+* the nonce IV_1 derived as in {{key-der}}
 * 'protected' is a byte string of size 0
 * 'plaintext and 'external_aad' as below:
 
@@ -306,31 +316,22 @@ EAD_2 = (L1, Voucher) where L1 is the External Auxiliary Data Label (IANA regist
 
 The voucher is an assertion by the authorization server to the device that the authorization server has performed the relevant verifications and that the device is authorized to continue the protocol with the authenticator. The voucher consists essentially of a message authentication code which binds the identity of the authenticator to message_1 of EDHOC.
 
-More specifically 'Voucher' is the 'ciphertext' of COSE_Encrypt0 (Section 5.2 of {{RFC8152}}) computed from the following:
-
-* the secret key K_2
-* the nonce N_2
-* 'protected' is a byte string of size 0
-* 'plaintext' is empty (plaintext =  nil)
-* 'external_aad' as below:
+More specifically 'Voucher' is the output of Expand() as defined in {{key-der}} using the following context:
 
 ~~~~~~~~~~~
-external_aad = bstr .cbor external_aad_array
-~~~~~~~~~~~
-~~~~~~~~~~~
-external_aad_array = [
+voucher_input = (
     V_TYPE:        int,
     PK_V:          bstr,
     G_X:           bstr,
     SS:            int,
     ID_U:          bstr
-]
+)
 ~~~~~~~~~~~
 
 where
 
 * 'V_TYPE' indicates the type of voucher used
-* PK_V is a UCCS containing the public authentication key of the authenticator encoded as a COSE_Key in the 'cnf' claim. The public key MUST be an Elliptic Curve Diffie-Hellman key, COSE key type 'kty' = 'EC2' or 'OKP'.
+* PK_V is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of the authenticator encoded as a COSE_Key in the 'cnf' claim. The public key MUST be an Elliptic Curve Diffie-Hellman key, COSE key type 'kty' = 'EC2' or 'OKP'.
    * COSE_Keys of type OKP SHALL only include the parameters 1 (kty), -1 (crv), and -2 (x-coordinate). COSE_Keys of type EC2 SHALL only include the parameters 1 (kty), -1 (crv), -2 (x-coordinate), and -3 (y-coordinate). The parameters SHALL be encoded using deterministic encoding as specified in Section 4.2.1 of {{RFC8949}}.
 * G_X is encoded as in EDHOC message_1, see Section 3.7 of {{I-D.ietf-lake-edhoc}}
 * SS and ID_U are defined in {{U-W}}
@@ -338,7 +339,7 @@ where
 
 All parameters, except 'V_TYPE', are as received in the voucher request (see {{V-W}}).
 
-TODO: Consider making the voucher a CBOR Map to indicate type of voucher, to indicate the feature (cf. {{V-W}}). Alternatively, include V_TYPE in 'unprotected'.
+TODO: Consider making the voucher a CBOR Map to indicate type of voucher, to indicate the feature (cf. {{V-W}}).
 
 
 ## Device <-> Authenticator {#U-V}
@@ -357,7 +358,7 @@ The device sends EDHOC message_1 with EAD_1 as specified in {{U-W}}.
 
 #### Authenticator processing
 
-The authenticator receives EDHOC message_1 from the device, which triggers the voucher request to the authorization server as described in {{V-W}}.
+The authenticator receives EDHOC message_1 from the device and processes as specified in Section 5.2.3 of {{I-D.ietf-lake-edhoc}}, with the additional step that the presence of EAD with label 0 triggers the voucher request to the authorization server as described in {{V-W}}. The excxhange with V needs to be complete successfully for the EDHOC exchange to be continued.
 
 
 ### Message 2
