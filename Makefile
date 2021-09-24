@@ -1,7 +1,7 @@
 LIBDIR := lib
-include $(LIBDIR)/master.mk
+include $(LIBDIR)/main.mk
 
-$(LIBDIR)/master.mk:
+$(LIBDIR)/main.mk:
 ifneq (,$(shell grep "path *= *$(LIBDIR)" .gitmodules 2>/dev/null))
 	git submodule sync
 	git submodule update $(CLONE_ARGS) --init
