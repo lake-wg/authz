@@ -14,33 +14,33 @@ pi: # can use array (if all yes) or hash here
   tocdepth: 2
 
 author:
-      -
-        ins: G. Selander
-        name: Goeran Selander
-        org: Ericsson AB
-        email: goran.selander@ericsson.com
-      -
-        ins: J. Mattsson
-        name: John Preuss Mattsson
-        org: Ericsson AB
-        email: john.mattsson@ericsson.com
-      -
-        ins: M. Vucinic
-        name: Malisa Vucinic
-        org: INRIA
-        email: malisa.vucinic@inria.fr
-      -
-        ins: M. Richardson
-        name: Michael Richardson
-        org: Sandelman Software Works
-        email: mcr+ietf@sandelman.ca
-      -
-        ins: A. Schellenbaum
-        name: Aurelio Schellenbaum
-        org: Institute of Embedded Systems, ZHAW
-        email: aureliorubendario.schellenbaum@zhaw.ch
-
-
+- name: Göran Selander
+  surname: Selander
+  org: Ericsson AB
+  country: Sweden
+  email: goran.selander@ericsson.com
+- name: John Preuß Mattsson
+  initials: J
+  surname: Preuß Mattsson
+  org: Ericsson AB
+  country: Sweden
+  email: john.mattsson@ericsson.com
+- name: Mališa Vučinić
+  surname: Vučinić
+  org: INRIA
+  country: France
+  email: malisa.vucinic@inria.fr
+- name: Michael Richardson
+  surname: Richardson
+  org: Sandelman Software Works
+  country: Canada
+  email: mcr+ietf@sandelman.ca
+- name: Aurelio Schellenbaum
+  surname: Schellenbaum
+  org: Institute of Embedded Systems, ZHAW
+  abbrev: ZHAW
+  country: Switzerland
+  email: aureliorubendario.schellenbaum@zhaw.ch
 
 
 normative:
