@@ -174,7 +174,7 @@ U                                    V                              W
 |                                    |                              |
 |        SUITES_I, G_X, EAD_1        |                              |
 +----------------------------------->|                              |
-|          EDHOC message_1           |   SS, G_X, Enc_ID_U, ?PoP_V  |
+|          EDHOC message_1           |   SS, G_X, ENC_ID_U, ?PoP_V  |
 |                                    +----------------------------->|
 |                                    |    Voucher Request (VREQ)    |
 |                                    |                              |
@@ -417,18 +417,18 @@ The authenticator sends the voucher request to the authorization server. The Vou
 
 ~~~~~~~~~~~
 Voucher_Request = [
-    G_X:             bstr,
     SS:              int,
-    CIPHERTEXT_RQ:   bstr
+    G_X:             bstr,
+    ENC_ID_U:        bstr,
+    ?PoP_V:          bstr,
 ]
 ~~~~~~~~~~~
 
-where the parameters are defined in {{U-W}}.
+where all parameters are defined in {{U-W}}, except
 
-* SS is the selected cipher suite contained in the SUITES_I parameter of EDHOC message_1
+* PoP_V is a proof-of-possession of public key PK_V using the corresponding private key 
 
-TODO: Add in VREQ the optional parameters ?PK_V:bstr, and ?PoP:bstr to support the case when V uses different keys to authenticate to U and W.
-One case to study is when V authenticates to U with static DH and to W with signature.
+Editor's note: Define PoP_V (include G_X, ENC_ID_U in the calculation for binding to this EDHOC session). One case to study is when V authenticates to U with static DH and to W with signature.
 
 
 #### Authorization Server processing
@@ -443,7 +443,7 @@ If G_X is not unique among nonces associated to this identity, the protocol SHAL
 
 The authorization server uses the identity of the device, ID_U, to look up the device certificate, Cert_PK_U.
 
-The authorization server retrieves the public key of V used to authenticate the secure connection with the authenticator, and constructs the corresponding COSE_Key as defined in {{voucher}}.
+The authorization server retrieves the public key of V used to authenticate the secure connection with the authenticator, and constructs the CWT Claims Set and the Voucher as defined in {{voucher}}.
 
 The authorization server generates the voucher response and sends it to the authenticator over the secure connection. The Voucher_Response SHALL be a CBOR array as defined below:
 
@@ -459,15 +459,13 @@ where
 
 * G_X is copied from the associated voucher request.
 * CERT_PK_U is the device certificate of the public key PK_U, issued by a trusted third party. The format of this certificate is out of scope.
-* The voucher is defined in {{voucher}}.
+* The Voucher is defined in {{voucher}}.
 
 #### Authenticator processing
 
 The authenticator receives the voucher response from the authorization server over the secure connection. If the received G_X does not match the value of the nonce associated to the secure connection, the protocol SHALL be discontinued.
 
-The authenticator verifies the certificate CERT_PK_U.
-
-TODO: The voucher response may contain a "Voucher-info" field as an alternative to make the Voucher a CBOR Map (see {{U-W}})
+The authenticator verifies the certificate CERT_PK_U and that U is an admissible device, or else discontinues the protocol.
 
 # ACE Profile
 
