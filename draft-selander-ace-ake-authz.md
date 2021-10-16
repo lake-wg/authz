@@ -500,13 +500,18 @@ EDHOC also provides mutual authentication of C and RS, assisted by the AS.
 ~~~~~~~~~~~
 {: #fig-mapping-ace title="Overview of the protocol mapping to ACE" artwork-align="center"}
 
-RS proactively sends the AS Request Creation Hints message to C to signal the information on where C can reach the AS.
-RS piggybacks the AS Request Creation Hints message using Auxiliary Data of EDHOC message_1.
-Before continuing the EDHOC exchange, based on the AS Request Creation Hints information, C sends a POST request to the token endpoint at the AS requesting the access token.
-The AS issues an assertion to C that is cryptographically protected based on the secret shared between the AS and RS.
-In this profile, the assertion is encoded as a Bearer Token.
-C presents this token to RS in the Auxiliary Data of the EDHOC message_2.
-RS verifies the token based on the possession of the shared secret with the AS and authenticates C.
+1. RS proactively sends the AS Request Creation Hints message to C to signal the information on
+where C can reach the AS.
+
+2. RS piggybacks the AS Request Creation Hints message using Auxiliary Data of EDHOC message_1.
+
+3. Before continuing the EDHOC exchange, based on the AS Request Creation Hints information, C sends a POST request to the token endpoint at the AS requesting the access token.
+
+4. The AS issues an assertion to C that is cryptographically protected based on the secret shared between the AS and RS. In this profile, the assertion is encoded as a Bearer Token.
+
+5. C presents this token to RS in the Auxiliary Data of the EDHOC message_2.
+
+6. RS verifies the token based on the possession of the shared secret with the AS and authenticates C.
 
 ## AS Request Creation Hints
 
