@@ -471,9 +471,11 @@ The authenticator verifies the certificate CERT_PK_U and that U is an admissible
 
 The messages specified in this document may be carried between the endpoints in various protocols. This section defines an embedding as a profile of the ACE framework (see Appendix C of {{I-D.ietf-ace-oauth-authz}}).
 
-U plays the role of the ACE Resource Server (RS).
-V plays the role of the ACE Client (C).
-W plays the role of the ACE Authorization Server (AS).
+* U plays the role of the ACE Resource Server (RS).
+
+* V plays the role of the ACE Client (C).
+
+* W plays the role of the ACE Authorization Server (AS).
 
 C and RS use the Auxiliary Data in the EDHOC protocol to communicate.
 C and RS use the EDHOC protocol to protect their communication.
@@ -482,7 +484,7 @@ EDHOC also provides mutual authentication of C and RS, assisted by the AS.
 ## Protocol Overview
 
 ~~~~~~~~~~~
-   RS                                C                     AS
+  RS(U)                              C(U)                  AS(W)
    |          EDHOC message_1        |                     |
    |  AD1=AS Request Creation Hints  |                     |
    |-------------------------------->|     POST /token     |
