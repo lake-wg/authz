@@ -488,7 +488,7 @@ EDHOC also provides mutual authentication of C and RS, assisted by the AS.
 ## Protocol Overview
 
 ~~~~~~~~~~~
-  RS (U)                              C (V)                  AS(W)
+  RS (U)                             C (V)                 AS (W)
    |          EDHOC message_1        |                     |
    |  AD1=AS Request Creation Hints  |                     |
    |-------------------------------->|     POST /token     |
