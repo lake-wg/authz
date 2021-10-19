@@ -474,9 +474,15 @@ The authenticator verifies the certificate CERT_PK_U and that U is an admissible
 
 The messages specified in this document may be carried between the endpoints in various protocols. This section defines an embedding as a profile of the ACE framework (see Appendix C of {{I-D.ietf-ace-oauth-authz}}).
 
-U plays the role of the ACE Resource Server (RS).
-V plays the role of the ACE Client (C).
-W plays the role of the ACE Authorization Server (AS).
+* U plays the role of the ACE Resource Server (RS).
+
+* V plays the role of the ACE Client (C).
+
+* W plays the role of the ACE Authorization Server (AS).
+
+Many readers who are used to the diagram having the Client on the left may be surprised at the cast of characters.
+The "resource" which C (V) is trying to access is the "ownership" of U.
+The AS (W) is the manufacturer (or previous owner) of RS (U), and is therefore in a position to grant C (V) ownership of RS (U).
 
 C and RS use the Auxiliary Data in the EDHOC protocol to communicate.
 C and RS use the EDHOC protocol to protect their communication.
@@ -485,7 +491,7 @@ EDHOC also provides mutual authentication of C and RS, assisted by the AS.
 ## Protocol Overview
 
 ~~~~~~~~~~~
-   RS                                C                     AS
+  RS (U)                             C (V)                 AS (W)
    |          EDHOC message_1        |                     |
    |  AD1=AS Request Creation Hints  |                     |
    |-------------------------------->|     POST /token     |
@@ -501,13 +507,18 @@ EDHOC also provides mutual authentication of C and RS, assisted by the AS.
 ~~~~~~~~~~~
 {: #fig-mapping-ace title="Overview of the protocol mapping to ACE" artwork-align="center"}
 
-RS proactively sends the AS Request Creation Hints message to C to signal the information on where C can reach the AS.
-RS piggybacks the AS Request Creation Hints message using Auxiliary Data of EDHOC message_1.
-Before continuing the EDHOC exchange, based on the AS Request Creation Hints information, C sends a POST request to the token endpoint at the AS requesting the access token.
-The AS issues an assertion to C that is cryptographically protected based on the secret shared between the AS and RS.
-In this profile, the assertion is encoded as a Bearer Token.
-C presents this token to RS in the Auxiliary Data of the EDHOC message_2.
-RS verifies the token based on the possession of the shared secret with the AS and authenticates C.
+1. RS proactively sends the AS Request Creation Hints message to C to signal the information on
+where C can reach the AS.
+
+2. RS piggybacks the AS Request Creation Hints message using Auxiliary Data of EDHOC message_1.
+
+3. Before continuing the EDHOC exchange, based on the AS Request Creation Hints information, C sends a POST request to the token endpoint at the AS requesting the access token.
+
+4. The AS issues an assertion to C that is cryptographically protected based on the secret shared between the AS and RS. In this profile, the assertion is encoded as a Bearer Token.
+
+5. C presents this token to RS in the Auxiliary Data of the EDHOC message_2.
+
+6. RS verifies the token based on the possession of the shared secret with the AS and authenticates C.
 
 ## AS Request Creation Hints
 
