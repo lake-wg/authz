@@ -478,8 +478,8 @@ The messages specified in this document may be carried between the endpoints in 
 * W plays the role of the ACE Authorization Server (AS).
 
 Many readers who are used to the diagram having the Client on the left may be surprised at the cast of characters.
-The "resource" which C (U) is trying to access is the ownership of U.
-The AS(W) is the manufacturer (or previous owner) of RS(U), and is therefore in a position to grant  C(U) ownership of RS(U).
+The "resource" which C (V) is trying to access is the "ownership" of U.
+The AS (W) is the manufacturer (or previous owner) of RS (U), and is therefore in a position to grant C (V) ownership of RS (U).
 
 C and RS use the Auxiliary Data in the EDHOC protocol to communicate.
 C and RS use the EDHOC protocol to protect their communication.
@@ -488,7 +488,7 @@ EDHOC also provides mutual authentication of C and RS, assisted by the AS.
 ## Protocol Overview
 
 ~~~~~~~~~~~
-  RS(U)                              C(U)                  AS(W)
+  RS (U)                              C (V)                  AS(W)
    |          EDHOC message_1        |                     |
    |  AD1=AS Request Creation Hints  |                     |
    |-------------------------------->|     POST /token     |
