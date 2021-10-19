@@ -94,6 +94,9 @@ Other settings such as EAP {{RFC3748}} are out of scope for this specification.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 {{RFC2119}} {{RFC8174}} when, and only when, they appear in all capitals, as shown here.
 
+Readers are expected to have some understanding of CBOR {{RFC8949}} and EDHOC {{I-D.ietf-lake-edhoc}}. (Appendix C.1 of {{I-D.ietf-lake-edhoc}} contains some basic info about CBOR.)
+
+
 # Problem Description {#prob-desc}
 
 The (potentially constrained) device wants to enroll into a domain over a constrained link.
