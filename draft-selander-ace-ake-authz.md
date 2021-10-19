@@ -584,15 +584,22 @@ TODO: Add cnonce = G_X to this message to match the current version of the vouch
 
 # Security Considerations  {#sec-cons}
 
-TODO: Identity protection of device
+This specification builds on and reuses many of the security constructions of EDHOC, e.g. shared secret calculation and key derivation. The security considerations of EDHOC {{I-D.ietf-lake-edhoc}} apply with modifications discussed here.
 
-TODO: Use of G_X as ephemeral key between device and authenticator, and between device and authorization server
+EDHOC provides identity protection of the Initiator, disclosed in message_3. The sending of the certificate of U in the Voucher Response provides information about the identity of the device already before message_2, which changes the identity protection properties and thus needs to be validated against a given use case. The authorization server authenticates the authenticator, receives the Voucher Request, and can perform potential other verifications before sending the Voucher Response. This allows the authorization server to restrict information about the identity of U to parties which are authorized to have that. However, if there are multiple authorized authenticators, the authorization server is not able to distinguish between the authenticator which the device is in contact with and a misbehaving authorized authenticator playing a Voucher Request built from message_1 to another authenticator.
+
+For use cases where this early disclosure of identity of U is an issue, the certificate must not be sent in the Voucher Response, and instead the device certificate could be retrieved from the authorization server or other certificate repository by the authenticator after message_3 using the identifier of U provided in ID_CRED_I. This would require the identity of U to be transported in both message_1 (in EAD_1) and message_3 but would make the protocol comply with the default identity protection provided by EDHOC.
+
+The encryption of the device identity in the first message should consider potential information leaking from the length of the identifier ID_U, either by making all identifiers having the same length or the use of a padding scheme.
+
+ As noted Section 8.2 of {{I-D.ietf-lake-edhoc}} an ephemeral key may be used to calculate several ECDH shared secrets. In this specification the ephemeral key G_X is also used to calculated G_XW, the shared secret with the authorization server.
+
+The private ephemeral key is thus used in the device for calculations of key material relating to both the authenticator and the authorization server. There are different options for where to implement these calculations, one option is as an addition to EDHOC, i.e., to extend the EDHOC API in the device w with input of public key of W (G_W) and identifier of U (ID_U), and produce the encryption of ID_U which is included in the external authorization data EAD_1.
+
 
 
 # IANA Considerations  {#iana}
 
-
-TODO: Voucher type registry
 
 TODO: register rsp_ad ACE parameter
 
