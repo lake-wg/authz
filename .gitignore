@@ -9,9 +9,8 @@
 .tags
 .targets.mk
 /*-[0-9][0-9].xml
-issues.json
-pulls.json
+archive.json
+draft-selander-ace-ake-authz.xml
+lib
 report.xml
 venv/
-lib
-draft-selander-ace-ake-authz.xml

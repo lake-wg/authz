@@ -1,4 +1,7 @@
-<note title="Note to Readers">
+<note title="Discussion Venues" removeInRFC="true">
+<t>Discussion of this document takes place on the
+    Authentication and Authorization for Constrained Environments Working Group mailing list (ace@ietf.org),
+    which is archived at <eref target="https://mailarchive.ietf.org/arch/browse/ace/"/>.</t>
 <t>Source for this draft and an issue tracker can be found at
-  <eref target="https://github.com/EricssonResearch/ace-ake-authz">https://github.com/EricssonResearch/ace-ake-authz</eref>.</t>
+    <eref target="https://github.com/EricssonResearch/ace-ake-authz"/>.</t>
 </note>
