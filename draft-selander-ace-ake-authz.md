@@ -74,12 +74,12 @@ This document describes a procedure for augmenting the lightweight authenticated
 
 
 For constrained IoT deployments {{RFC7228}} the overhead and processing contributed by security protocols may be significant which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see {{I-D.ietf-lake-reqs}}).
-This document describes a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC {{I-D.ietf-lake-edhoc}} with third party assisted authorization.
+This document describes a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC {{I-D.ietf-lake-edhoc}} with third party-assisted authorization.
 
 The procedure involves a device, a domain authenticator and an authorization server.
 The device and authenticator perform mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and to the authenticator.
 
-The protocol assumes that authentication between device and authenticator is performed with EDHOC, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) defined in EDHOC.
+The protocol assumes that authentication between device and authenticator is performed with EDHOC, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) field defined in EDHOC.
 
 In this document we consider the target interaction for which authorization is needed to be "enrollment", for example joining a network for the first time (e.g. {{RFC9031}}), or certificate enrollment (such as {{I-D.selander-ace-coap-est-oscore}}), but it can be applied to authorize other target interactions.
 
@@ -94,19 +94,19 @@ Other settings such as EAP {{RFC3748}} are out of scope for this specification.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 {{RFC2119}} {{RFC8174}} when, and only when, they appear in all capitals, as shown here.
 
-Readers are expected to have some understanding of CBOR {{RFC8949}} and EDHOC {{I-D.ietf-lake-edhoc}}. (Appendix C.1 of {{I-D.ietf-lake-edhoc}} contains some basic info about CBOR.)
-
+Readers are expected to have some understanding of CBOR {{RFC8949}} and EDHOC {{I-D.ietf-lake-edhoc}}.
+Appendix C.1 of {{I-D.ietf-lake-edhoc}} contains some basic info about CBOR.
 
 # Problem Description {#prob-desc}
 
 The (potentially constrained) device wants to enroll into a domain over a constrained link.
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator with the help of a voucher, and makes the enrollment request.
 The domain authenticator authenticates the device and authorizes its enrollment.
-Authentication between device and domain authenticator is made with the lightweight authenticated Diffie-Hellman key exchange protocol EDHOC  {{I-D.ietf-lake-edhoc}}.
+Authentication between device and domain authenticator is made with the lightweight authenticated Diffie-Hellman key exchange protocol EDHOC {{I-D.ietf-lake-edhoc}}.
 The procedure is assisted by a (non-constrained) authorization server located in a non-constrained network behind the domain authenticator providing information to the device and to the domain authenticator as part of the protocol.
 
-The objective of this document is to specify such a protocol which is lightweight over the constrained link and reuses elements of EDHOC. See illustration in {{fig-overview}}.
-
+The objective of this document is to specify such a protocol which is lightweight over the constrained link and reuses elements of EDHOC.
+See illustration in {{fig-overview}}.
 
 ~~~~~~~~~~~
                   Voucher
@@ -128,25 +128,26 @@ The objective of this document is to specify such a protocol which is lightweigh
 
 ## Device
 
-The device is pre-provisioned with an identity ID_U and asymmetric key credentials: a private key, a public key (PK_U), and optionally a public key certificate (Cert_PK_U), issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator. ID_U may be a reference or pointer to the certificate.
+The device is pre-provisioned with an identity ID_U and asymmetric key credentials: a private key, a public key (PK_U), and optionally a public key certificate (Cert_PK_U), issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator.
+ID_U may be a reference or pointer to the certificate.
 
 The device is also provisioned with information about its authorization server:
 
 * At least one static public DH key of the authorization server (G_W) used to ensure secure communication with the device (see {{U-W}}).
 * Location information about the authorization server (LOC_W), e.g. its domain name. This information may be available in the device certificate Cert_PK_U.
 
-
-
 ## Domain Authenticator {#domain-auth}
 
 The domain authenticator has a private key and a corresponding public key PK_V used to authenticate to the device.
 
-The domain authenticator needs to be able to locate the authorization server of the device for which LOC_W is expected to be sufficient. The communication between domain authenticator and authorization server is assumed to be mutually authenticated and protected; authentication credentials and communication security is out of scope, except for as specified below in this section.
+The domain authenticator needs to be able to locate the authorization server of the device for which LOC_W is expected to be sufficient.
+The communication between domain authenticator and authorization server is assumed to be mutually authenticated and protected; authentication credentials and communication security is out of scope, except for as specified below in this section.
 
-The domain authenticator may in principle use differents credentials for authenticating to the authorization server and to the device, for which PK_V is used. However, the domain authenticator MUST prove possession of private key of PK_V to the authorization server since the authorization server is asserting (by means of the voucher to the device) that this credential belongs to the domain authenticator.
+The domain authenticator may in principle use differents credentials for authenticating to the authorization server and to the device, for which PK_V is used.
+However, the domain authenticator MUST prove possession of private key of PK_V to the authorization server since the authorization server is asserting (by means of the voucher to the device) that this credential belongs to the domain authenticator.
 
-In this version of the draft it is assumed that the domain authenticator authenticates to the authorization server with PK_V using some authentication protocol providing proof of possession of the private key, for example TLS 1.3 {{RFC8446}}. A future version of this draft may specify explicit proof of possession of the private key of PK_V in the voucher request, e.g., by including a signature of the voucher request with the private key corresponding to PK_V.
-
+In this version of the draft it is assumed that the domain authenticator authenticates to the authorization server with PK_V using some authentication protocol providing proof of possession of the private key, for example TLS 1.3 {{RFC8446}}.
+A future version of this draft may specify explicit proof of possession of the private key of PK_V in the voucher request, e.g., by including a signature of the voucher request with the private key corresponding to PK_V.
 
 ## Authorization Server
 
@@ -158,7 +159,6 @@ The authorization server provides to the device the authorization decision for e
 The authorization server provides information to the domain authenticator about the device, such as the device's certificate Cert_PK_U.
 
 The authorization server needs to be available during the execution of the protocol.
-
 
 # The Protocol
 
@@ -177,7 +177,7 @@ U                                    V                              W
 |                                    |                              |
 |        SUITES_I, G_X, EAD_1        |                              |
 +----------------------------------->|                              |
-|          EDHOC message_1           |   SS, G_X, ENC_ID_U, ?PoP_V  |
+|          EDHOC message_1           |   SS, G_X, ENC_ID, ?PoP_V    |
 |                                    +----------------------------->|
 |                                    |    Voucher Request (VREQ)    |
 |                                    |                              |
@@ -194,13 +194,12 @@ U                                    V                              W
 
 where
 EAD_1 = (L0, Voucher Info)
-Voucher Info = [LOC_W, ENC_ID_U]
+Voucher Info = [LOC_W, ENC_ID]
 EAD_2 = (L1, Voucher)
 Voucher = MAC(V_TYPE, SS, G_X, ID_U, PK_V)
 
 ~~~~~~~~~~~
 {: #fig-protocol title="W-assisted authorization of AKE between U and V: EDHOC between U and V (only selected message fields shown), and Voucher Request/Response between V and W." artwork-align="center"}
-
 
 ## Reuse of EDHOC {#reuse}
 
@@ -245,27 +244,29 @@ info = (
 
 ## Device <-> Authorization Server {#U-W}
 
-The protocol between device and authorization server (U and W in {{fig-protocol}}) is carried out via the authenticator (V) with certain data protected between the endpoints using the equivalent of a hybrid encryption scheme (see, e.g., {{I-D.irtf-cfrg-hpke}}). The device uses the public DH key of the authorization server G_W together with the private DH key corresponding to ephemeral key G_X in EDHOC message_1, and vice versa for the authorization server. The endpoints calculate a shared secret G_XW (see {{reuse}}), which is used to derive secret keys to protect data between U and W, as detailed in this section. 
+The protocol between device and authorization server (U and W in {{fig-protocol}}) is carried out via the authenticator (V) with certain data protected between the endpoints using the equivalent of a hybrid encryption scheme (see, e.g., {{I-D.irtf-cfrg-hpke}}).
+The device uses the public DH key of the authorization server G_W together with the private DH key corresponding to ephemeral key G_X in EDHOC message_1, and vice versa for the authorization server.
+The endpoints calculate a shared secret G_XW (see {{reuse}}), which is used to derive secret keys to protect data between U and W, as detailed in this section.
 
 The data exchanged betweeen U and W is carried between U and V in EAD_1 and EAD_2 ({{U-V}}), and between V and W in Voucher Request/Response ({{V-W}}).
 
 ### Voucher_Info
- 
+
 The external authorization data EAD_1 of EDHOC message_1 includes Voucher_Info which is information for V and information pase, which is the following CBOR sequence:
 
 ~~~~~~~~~~~
 Voucher_Info = (
     LOC_W:      tstr,
-    ENC_ID_U:   bstr
+    ENC_ID:     bstr
 )
 ~~~~~~~~~~~
 
 where
 
 * LOC_W is location information about the authorization server, used by the authenticator
-* ENC_ID_U is the encrypted identity of the device, passed on from the authenticator to the authorization server, calculated as follows:
+* ENC_ID is the encrypted blob carrying the identity of the device and an optional identity of the authenticator, passed on from the authenticator to the authorization server, calculated as follows:
 
-ENC_ID_U is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC8152}}) computed from the following:
+ENC_ID is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC8152}}) computed from the following:
 
 * The encryption key K_1 and nonce IV_1 are derived as specified in {{reuse}}.
 * 'protected' is a byte string of size 0
@@ -274,6 +275,7 @@ ENC_ID_U is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC8152}}) comp
 ~~~~~~~~~~~
 plaintext = (
     ID_U:            bstr,
+  ? ID_V:            bstr,
  )
 ~~~~~~~~~~~
 ~~~~~~~~~~~
@@ -285,6 +287,7 @@ external_aad = (
 where
 
 * ID_U is the identity of the device, for example a reference or pointer to the device certificate
+* ID_V is the identity of the authenticator as presented to the authorization server. This may be a name in a name space agreed out-of-band and managed by a party trusted by the authorization server, for example a common name of an X.509 certificate signed by a CA trusted by the authorization server. The value may be obtained by the device through out-of-band means, possibly through secure network discovery.
 * SS is the selected cipher suite in SUITES_I.
 
 The derivation of K_1 = Expand(PRK, info, length) uses the following input to the info struct ({{reuse}}):
@@ -301,10 +304,9 @@ The derivation of IV_1 = Expand(PRK, info, length) uses the following input to t
 * context = h''
 * length is length of nonce of the EDHOC AEAD algorithm
 
-
 ### Voucher {#voucher}
 
-The voucher is an assertion by the authorization server to the device that the authorization server has performed the relevant verifications and that the device is authorized to continue the protocol with the authenticator. The Voucher is essentially of a message authentication code which binds the identity of the authenticator to message_1 of EDHOC, integrity protected with the shared secret context between U and W.
+The voucher is an assertion by the authorization server to the device that the authorization server has performed the relevant verifications and that the device is authorized to continue the protocol with the authenticator. The Voucher is essentially a message authentication code which binds the identity of the authenticator to message_1 of EDHOC, integrity protected with the shared secret context between U and W.
 
 The calculation of Voucher = Expand(PRK, info, length) uses the following input to the info struct ({{reuse}}):
 
@@ -320,7 +322,7 @@ voucher_input = (
     V_TYPE:        int,
     SS:            int,
     G_X:           bstr,
-    ID_U:          bstr
+    ID_U:          bstr,
     PK_V:          bstr,
 )
 ~~~~~~~~~~~
@@ -332,7 +334,6 @@ where
 * PK_V is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of the authenticator encoded as a COSE_Key in the 'cnf' claim, see Section 3.5.3 of {{I-D.ietf-lake-edhoc}}.
 * G_X is encoded as in EDHOC message_1, see Section 3.7 of {{I-D.ietf-lake-edhoc}}
 * ID_U is defined in {{U-W}}
-
 
 Editor's note: With the current definition of EAD as (ead_label, ead_value), do we need to redefine the voucher to be a CBOR map? Do we even need the V_TYPE?
 
@@ -354,14 +355,13 @@ The device sends EDHOC message_1 with EAD_1 = (L0, Voucher_Info) where L0 is the
 
 The authenticator receives EDHOC message_1 from the device and processes as specified in Section 5.2.3 of {{I-D.ietf-lake-edhoc}}, with the additional step that the presence of EAD with label 0 triggers the voucher request to the authorization server as described in {{V-W}}. The exchange with V needs to be completed successfully for the EDHOC exchange to be continued.
 
-
 ### Message 2
 
 #### Authenticator processing
 
 The authenticator receives the voucher response from the authorization server as described in {{V-W}}.
 
-The authenticator sends EDHOC message_2 to the device with EAD_2 = (L1, Voucher) where L1 is the External Auxiliary Data Label (IANA registry created in Section 9.5 of {{I-D.ietf-lake-edhoc}}) and the Voucher is specificed in {{U-W}}. 
+The authenticator sends EDHOC message_2 to the device with EAD_2 = (L1, Voucher) where L1 is the External Auxiliary Data Label (IANA registry created in Section 9.5 of {{I-D.ietf-lake-edhoc}}) and the Voucher is specificed in {{U-W}}.
 
 CRED_R is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of the authenticator PK_V encoded as a COSE_Key in the 'cnf' claim, see Section 3.5.3 of {{I-D.ietf-lake-edhoc}}.
 
@@ -401,7 +401,6 @@ The authenticator performs the normal EDHOC verifications of message_3, with the
 
 This enables the authenticator to verify that message_3 was generated by the device authorized by the authorization server as part of the associated Voucher Request/Response procedure (see {{V-W}}).
 
-
 ## Authenticator <-> Authorization Server {#V-W}
 
 The authenticator and authorization server are assumed to have, or to be able to, set up a secure connection, for example TLS 1.3 authenticated with certificates. The authenticator is assumed to authenticate with the public key PK_V, see {{domain-auth}}.
@@ -422,23 +421,24 @@ The authenticator sends the voucher request to the authorization server. The Vou
 Voucher_Request = [
     SS:              int,
     G_X:             bstr,
-    ENC_ID_U:        bstr,
-    ?PoP_V:          bstr,
+    ENC_ID:          bstr,
+  ? PoP_V:           bstr,
 ]
 ~~~~~~~~~~~
 
 where all parameters are defined in {{U-W}}, except
 
-* PoP_V is a proof-of-possession of public key PK_V using the corresponding private key 
+* PoP_V is a proof-of-possession of public key PK_V using the corresponding private key
 
-Editor's note: Define PoP_V (include G_X, ENC_ID_U in the calculation for binding to this EDHOC session). One case to study is when V authenticates to U with static DH and to W with signature.
+Editor's note: Define PoP_V (include G_X, ENC_ID in the calculation for binding to this EDHOC session). One case to study is when V authenticates to U with static DH and to W with signature.
 
 
 #### Authorization Server processing
 
 The authorization server receives the voucher request, verifies and decrypts the identity ID_U of the device, and associates the nonce G_X to ID_U.
 If G_X is not unique among nonces associated to this identity, the protocol SHALL be discontinued.
-
+If ENC_ID also included the identity of V, ID_V, then the authorization server performs an additional check to verify that the identity of the authenticator who sent the voucher request over a secure session between V-W matches the identity of the authenticator as observed by U.
+If the identities of V as observed by U, and as observed by W, do not match, the protocol SHALL be discontinued.
 
 ### Voucher Response {#voucher_response}
 
@@ -484,7 +484,7 @@ Many readers who are used to the diagram having the Client on the left may be su
 The "resource" which C (V) is trying to access is the "ownership" of U.
 The AS (W) is the manufacturer (or previous owner) of RS (U), and is therefore in a position to grant C (V) ownership of RS (U).
 
-C and RS use the Auxiliary Data in the EDHOC protocol to communicate.
+C and RS use EDHOC's EAD to communicate.
 C and RS use the EDHOC protocol to protect their communication.
 EDHOC also provides mutual authentication of C and RS, assisted by the AS.
 
@@ -516,18 +516,18 @@ where C can reach the AS.
 
 4. The AS issues an assertion to C that is cryptographically protected based on the secret shared between the AS and RS. In this profile, the assertion is encoded as a Bearer Token.
 
-5. C presents this token to RS in the Auxiliary Data of the EDHOC message_2.
+5. C presents this token to RS in EAD_2.
 
 6. RS verifies the token based on the possession of the shared secret with the AS and authenticates C.
 
 ## AS Request Creation Hints
 
-Parameters that can appear in the AS Request Creation Hints message are specified in Section 5.1.2. of {{I-D.ietf-ace-oauth-authz}}.
+Parameters that can appear in the AS Request Creation Hints message are specified in Section 5.3 of {{I-D.ietf-ace-oauth-authz}}.
 RS MUST use the "AS" parameter to transport LOC_W, i.e. an absolute URI where C can reach the AS.
-RS MUST use the "audience" parameter to transport the CBOR sequence consisting of two elements: SS, the crypto context; CIPHERTEXT_RQ, the authenticated encrypted identity of the RS.
+RS MUST use the "audience" parameter to transport the CBOR sequence consisting of two elements: SS, the selected cipher suite; ENC_ID, the AEAD encrypted blob containing identities.
 The "cnonce" parameter MUST be implied to G_X, i.e. the ephemeral public key of the RS in the underlying EDHOC exchange.
 The "cnonce" parameter is not carried in the AS Request Creation Hints message for byte saving reasons.
-AS Request Creation Hints MUST be carried within Auxiliary Data of the EDHOC message_1 (EAD_1).
+AS Request Creation Hints MUST be carried within EAD_1.
 
 An example EAD_1 value in CBOR diagnostic notation is shown below:
 
@@ -546,7 +546,7 @@ This can, for example, be TLS 1.3.
 What is important is that the two peers are mutually authenticated, and that the secure connection provides message integrity, confidentiality and freshness.
 It is also necessary for the AS to be able to extract the public key of C used in the underlying security handshake.
 
-C sends the POST request to the token endpoint at the AS following Section 5.6.1. of {{I-D.ietf-ace-oauth-authz}}.
+C sends the POST request to the token endpoint at the AS following Section 5.8.1. of {{I-D.ietf-ace-oauth-authz}}.
 C MUST set the "audience" parameter to the value received in AS Request Creation Hints.
 C MUST set the "cnonce" parameter to G_X, the ephemeral public key of RS in the EDHOC exchange.
 
@@ -573,11 +573,24 @@ This document extends the ACE framework by registering a new Access Information 
 rsp_ad:
      OPTIONAL. Carries additional information from the AS to C associated with the access token.
 
-When responding to C, the AS MUST set the "ace_profile" parameter to "edhoc-authz".
-The AS MUST set the "token_type" parameter to "Bearer".
-The access token MUST be formatted as specified in {{voucher}}.
-The AS MUST set the "rsp_ad" parameter to the certificate of RS.
-To be able to do so, AS first needs to decrypt the audience value, and based on it retrieve the corresponding RS certificate.
+
+The AS-to-Client responsE MUST contain:
+
+* ace_profileparameter set to "edhoc-authz"
+* token_type parameter set to "Bearer"
+* access_token as specified in {{voucher}}
+* rsp_ad = bstr .cbor cert_gx
+
+~~~~~~~~~~~
+cert_gx = (
+    CERT_PK_U:        bstr,
+    G_X:	      bstr
+)
+~~~~~~~~~~~
+where:
+
+* CERT_PK_U is the RS's certificate, as discussed in {{voucher_response}}. To be able to retrieve this certificate, the AS first needs to decrypt the audience value and obtain the RS's identity.
+* G_X is the ephemeral key generated by RS in EDHOC message_1.
 
 An example AS response to C is shown below:
 
@@ -594,30 +607,23 @@ An example AS response to C is shown below:
     }
 ~~~~~~~~~~~
 
-TODO: Add cnonce = G_X to this message to match the current version of the voucher response.
-
 # Security Considerations  {#sec-cons}
 
 This specification builds on and reuses many of the security constructions of EDHOC, e.g. shared secret calculation and key derivation. The security considerations of EDHOC {{I-D.ietf-lake-edhoc}} apply with modifications discussed here.
 
-EDHOC provides identity protection of the Initiator, disclosed in message_3. The sending of the certificate of U in the Voucher Response provides information about the identity of the device already before message_2, which changes the identity protection properties and thus needs to be validated against a given use case. The authorization server authenticates the authenticator, receives the Voucher Request, and can perform potential other verifications before sending the Voucher Response. This allows the authorization server to restrict information about the identity of U to parties which are authorized to have that. However, if there are multiple authorized authenticators, the authorization server is not able to distinguish between the authenticator which the device is in contact with and a misbehaving authorized authenticator playing a Voucher Request built from message_1 to another authenticator.
+EDHOC provides identity protection of the Initiator, disclosed to the Responder in message_3. The sending of the certificate of U in the Voucher Response provides information about the identity of the device already before message_2, which changes the identity protection properties and thus needs to be validated against a given use case. The authorization server authenticates the authenticator, receives the Voucher Request, and can perform potential other verifications before sending the Voucher Response. This allows the authorization server to restrict information about the identity of the device to parties which are authorized to have that. However, if there are multiple authorized authenticators, the authorization server may not be able to distinguish between the authenticator which the device is connecting to with and a misbehaving authorized authenticator playing a Voucher Request built from message_1 to another authenticator.
+A mitigation for this kind of misbehaving authenticator is that the device discovers the identity of the authenticator through out-of-bands means before attempting to enroll, and include the optional ID_V in the ENC_ID encrypted blob. For example, the network's discovery mechanism can carry asserted information on the associated identity of the authenticator. The use of ID_V also changes the identity protection assumptions since it requires U to know the identity of V before the protocol starts. The identity of V is still protected against passive adversaries, unless disclosed by the out-of-band mechanism by which U acquires information about the identity of V. The privacy considerations whether the identity of the device or of the authenticator is more sensitive need to be studied depending on a specific use case.
 
-For use cases where this early disclosure of identity of U is an issue, the certificate must not be sent in the Voucher Response, and instead the device certificate could be retrieved from the authorization server or other certificate repository by the authenticator after message_3 using the identifier of U provided in ID_CRED_I. This would require the identity of U to be transported in both message_1 (in EAD_1) and message_3 but would make the protocol comply with the default identity protection provided by EDHOC.
+For use cases where neither the early disclosure of the device nor of the authenticator identities are deemed acceptable, the device certificate must not be sent in the Voucher Response, and the identity of V must be omitted. Instead, the device certificate could be retrieved from the authorization server or other certificate repository by the authenticator after message_3 using the device identifier provided in ID_CRED_I. This would require the device identity to be transported in both message_1 (in EAD_1) and message_3 but would make the protocol comply with the default identity protection provided by EDHOC.
 
 The encryption of the device identity in the first message should consider potential information leaking from the length of the identifier ID_U, either by making all identifiers having the same length or the use of a padding scheme.
 
  As noted Section 8.2 of {{I-D.ietf-lake-edhoc}} an ephemeral key may be used to calculate several ECDH shared secrets. In this specification the ephemeral key G_X is also used to calculated G_XW, the shared secret with the authorization server.
 
-The private ephemeral key is thus used in the device for calculations of key material relating to both the authenticator and the authorization server. There are different options for where to implement these calculations, one option is as an addition to EDHOC, i.e., to extend the EDHOC API in the device w with input of public key of W (G_W) and identifier of U (ID_U), and produce the encryption of ID_U which is included in the external authorization data EAD_1.
-
-
+The private ephemeral key is thus used in the device for calculations of key material relating to both the authenticator and the authorization server. There are different options for where to implement these calculations, one option is as an addition to EDHOC, i.e., to extend the EDHOC API in the device with input of public key of W (G_W) and identifier of U (ID_U), and produce the encryption of ID_U which is included in the external authorization data EAD_1.
 
 # IANA Considerations  {#iana}
-
 
 TODO: register rsp_ad ACE parameter
 
 --- back
-
-
-
