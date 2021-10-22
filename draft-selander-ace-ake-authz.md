@@ -74,7 +74,7 @@ This document describes a procedure for augmenting the lightweight authenticated
 
 
 For constrained IoT deployments {{RFC7228}} the overhead and processing contributed by security protocols may be significant which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see {{I-D.ietf-lake-reqs}}).
-This document describes a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC {{I-D.ietf-lake-edhoc}} with third party -assisted authorization.
+This document describes a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC {{I-D.ietf-lake-edhoc}} with third party-assisted authorization.
 
 The procedure involves a device, a domain authenticator and an authorization server.
 The device and authenticator perform mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and to the authenticator.
@@ -287,7 +287,7 @@ external_aad = (
 where
 
 * ID_U is the identity of the device, for example a reference or pointer to the device certificate
-* ID_V is the value of the 'sub' claim in CWT Claims Set (CCS, {{RFC8392}}) that is used to carry the authenticator's public key (see {{voucher}}). The value is optionally obtained by the device through out-of-band means, possibly through network discovery.
+* ID_V is the identity of the authenticator as presented to the authorization server. This may be a name in a name space agreed out-of-band and managed by a party trusted by the authorization server, for example a common name of an X.509 certificate signed by a CA trusted by the authorization server. The value may be obtained by the device through out-of-band means, possibly through secure network discovery.
 * SS is the selected cipher suite in SUITES_I.
 
 The derivation of K_1 = Expand(PRK, info, length) uses the following input to the info struct ({{reuse}}):
@@ -331,7 +331,7 @@ where
 
 * V_TYPE indicates the type of voucher used (TBD)
 * SS is the selected cipher suite of the EDHOC protocol, see {{reuse}}
-* PK_V is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of the authenticator encoded as a COSE_Key in the 'cnf' claim, see Section 3.5.3 of {{I-D.ietf-lake-edhoc}}, and the identity of the authenticator encoded as a text string in the 'sub' claim.
+* PK_V is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of the authenticator encoded as a COSE_Key in the 'cnf' claim, see Section 3.5.3 of {{I-D.ietf-lake-edhoc}}.
 * G_X is encoded as in EDHOC message_1, see Section 3.7 of {{I-D.ietf-lake-edhoc}}
 * ID_U is defined in {{U-W}}
 
@@ -611,9 +611,10 @@ An example AS response to C is shown below:
 
 This specification builds on and reuses many of the security constructions of EDHOC, e.g. shared secret calculation and key derivation. The security considerations of EDHOC {{I-D.ietf-lake-edhoc}} apply with modifications discussed here.
 
-EDHOC provides identity protection of the Initiator, disclosed in message_3. The sending of the certificate of U in the Voucher Response provides information about the identity of the device already before message_2, which changes the identity protection properties and thus needs to be validated against a given use case. The authorization server authenticates the authenticator, receives the Voucher Request, and can perform potential other verifications before sending the Voucher Response. This allows the authorization server to restrict information about the identity of the device to parties which are authorized to have that. However, if there are multiple authorized authenticators, the authorization server may not be able to distinguish between the authenticator which the device is in contact with and a misbehaving authorized authenticator playing a Voucher Request built from message_1 to another authenticator. A mitigation is for the device to discover the identity of the authenticator through out-of-bands means before attempting to enroll, and include ID_V in ENC_ID encrypted blob. This could be done through the network's discovery mechanism which can carry the information on the associated identity of the authenticator. In turn, this mechanism violates the identity protection of the authenticator, which is protected by the EDHOC and SIGMA-I construct against passive adversaries. The privacy considerations whether the identity of the device or of the authenticator is more sensitive need to be studied depending on a specific use case.
+EDHOC provides identity protection of the Initiator, disclosed to the Responder in message_3. The sending of the certificate of U in the Voucher Response provides information about the identity of the device already before message_2, which changes the identity protection properties and thus needs to be validated against a given use case. The authorization server authenticates the authenticator, receives the Voucher Request, and can perform potential other verifications before sending the Voucher Response. This allows the authorization server to restrict information about the identity of the device to parties which are authorized to have that. However, if there are multiple authorized authenticators, the authorization server may not be able to distinguish between the authenticator which the device is connecting to with and a misbehaving authorized authenticator playing a Voucher Request built from message_1 to another authenticator.
+A mitigation for this kind of misbehaving authenticator is that the device discovers the identity of the authenticator through out-of-bands means before attempting to enroll, and include the optional ID_V in the ENC_ID encrypted blob. For example, the network's discovery mechanism can carry asserted information on the associated identity of the authenticator. The use of ID_V also changes the identity protection assumptions since it requires U to know the identity of V before the protocol starts. The identity of V is still protected against passive adversaries, unless disclosed by the out-of-band mechanism by which U acquires information about the identity of V. The privacy considerations whether the identity of the device or of the authenticator is more sensitive need to be studied depending on a specific use case.
 
-For use cases where neither the early disclosure of the device or of the authenticator identities are deemed acceptable, the device certificate must not be sent in the Voucher Response, and the identity of V must not be disclosed as part of the network discovery mechanism. Instead, the device certificate could be retrieved from the authorization server or other certificate repository by the authenticator after message_3 using the device identifier provided in ID_CRED_I. This would require the device identity to be transported in both message_1 (in EAD_1) and message_3 but would make the protocol comply with the default identity protection provided by EDHOC.
+For use cases where neither the early disclosure of the device nor of the authenticator identities are deemed acceptable, the device certificate must not be sent in the Voucher Response, and the identity of V must be omitted. Instead, the device certificate could be retrieved from the authorization server or other certificate repository by the authenticator after message_3 using the device identifier provided in ID_CRED_I. This would require the device identity to be transported in both message_1 (in EAD_1) and message_3 but would make the protocol comply with the default identity protection provided by EDHOC.
 
 The encryption of the device identity in the first message should consider potential information leaking from the length of the identifier ID_U, either by making all identifiers having the same length or the use of a padding scheme.
 
