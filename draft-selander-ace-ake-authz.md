@@ -193,9 +193,9 @@ U                                    V                              W
 |          EDHOC message_3           |                              |
 
 where
-EAD_1 = (L0, Voucher Info)
-Voucher Info = [LOC_W, ENC_ID]
-EAD_2 = (L1, Voucher)
+EAD_1 = (L, Voucher_Info)
+Voucher_Info = [LOC_W, ENC_ID]
+EAD_2 = (L, Voucher)
 Voucher = MAC(V_TYPE, SS, G_X, ID_U, PK_V)
 
 ~~~~~~~~~~~
@@ -250,9 +250,9 @@ The endpoints calculate a shared secret G_XW (see {{reuse}}), which is used to d
 
 The data exchanged betweeen U and W is carried between U and V in EAD_1 and EAD_2 ({{U-V}}), and between V and W in Voucher Request/Response ({{V-W}}).
 
-### Voucher_Info
+### Voucher Info
 
-The external authorization data EAD_1 of EDHOC message_1 includes Voucher_Info which is information for V and information pase, which is the following CBOR sequence:
+The external authorization data EAD_1 of EDHOC message_1 includes Voucher Info, which is the following CBOR sequence:
 
 ~~~~~~~~~~~
 Voucher_Info = (
@@ -268,7 +268,7 @@ where
 
 ENC_ID is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC8152}}) computed from the following:
 
-* The encryption key K_1 and nonce IV_1 are derived as specified in {{reuse}}.
+* The encryption key K_1 and nonce IV_1 are derived as specified below.
 * 'protected' is a byte string of size 0
 * 'plaintext and 'external_aad' as below:
 
@@ -293,14 +293,14 @@ where
 The derivation of K_1 = Expand(PRK, info, length) uses the following input to the info struct ({{reuse}}):
 
 * transcript_hash = h''
-* label is "EDHOC_EAD_LABEL_0_K_1"
+* label is "EDHOC_ACE_AKE_AUTHZ_K_1"
 * context  = h''
 * length is length of key of the EDHOC AEAD algorithm
 
 The derivation of IV_1 = Expand(PRK, info, length) uses the following input to the info struct ({{reuse}}):
 
 * transcript_hash = h''
-* label is "EDHOC_EAD_LABEL_0_IV_1"
+* label is "EDHOC_ACE_AKE_AUTHZ_IV_1"
 * context = h''
 * length is length of nonce of the EDHOC AEAD algorithm
 
@@ -311,7 +311,7 @@ The voucher is an assertion by the authorization server to the device that the a
 The calculation of Voucher = Expand(PRK, info, length) uses the following input to the info struct ({{reuse}}):
 
 * transcript_hash = h''
-* label is "EDHOC_EAD_LABEL_1"
+* label is "EDHOC_ACE_AKE_AUTHZ_MAC"
 * context  = bstr .cbor voucher_input
 * length is EDHOC MAC length in bytes
 
@@ -348,12 +348,12 @@ The device and authenticator run the EDHOC protocol authenticated with their pub
 
 The device composes EDHOC message_1 using authentication method, identifiers, etc. according to the applicability statement, see Section 3.9 of {{I-D.ietf-lake-edhoc}}. The selected cipher suite SS applies also to the interaction with the authorization server as detailed in {{reuse}}, in particular, the key agreement algorithm which is used with the static public DH key G_W of the authorization server. As part of the normal EDHOC processing, the device generates the ephemeral public key G_X which is reused in the interaction with the authorization server, see {{U-W}}.
 
-The device sends EDHOC message_1 with EAD_1 = (L0, Voucher_Info) where L0 is the External Auxiliary Data Label (IANA registry created in Section 9.5 of {{I-D.ietf-lake-edhoc}}), and Voucher_Info is specified in {{U-W}}.
+The device sends EDHOC message_1 with EAD_1 = (L, Voucher_Info) where L is the External Auxiliary Data Label for this protocol (IANA registry created in Section 9.5 of {{I-D.ietf-lake-edhoc}}), and Voucher_Info is specified in {{U-W}}.
 
 
 #### Authenticator processing
 
-The authenticator receives EDHOC message_1 from the device and processes as specified in Section 5.2.3 of {{I-D.ietf-lake-edhoc}}, with the additional step that the presence of EAD with label 0 triggers the voucher request to the authorization server as described in {{V-W}}. The exchange with V needs to be completed successfully for the EDHOC exchange to be continued.
+The authenticator receives EDHOC message_1 from the device and processes as specified in Section 5.2.3 of {{I-D.ietf-lake-edhoc}}, with the additional step that the presence of EAD with label L triggers the voucher request to the authorization server as described in {{V-W}}. The exchange with V needs to be completed successfully for the EDHOC exchange to be continued.
 
 ### Message 2
 
@@ -361,7 +361,7 @@ The authenticator receives EDHOC message_1 from the device and processes as spec
 
 The authenticator receives the voucher response from the authorization server as described in {{V-W}}.
 
-The authenticator sends EDHOC message_2 to the device with EAD_2 = (L1, Voucher) where L1 is the External Auxiliary Data Label (IANA registry created in Section 9.5 of {{I-D.ietf-lake-edhoc}}) and the Voucher is specificed in {{U-W}}.
+The authenticator sends EDHOC message_2 to the device with EAD_2 = (L, Voucher) where L is the External Auxiliary Data Label for this protocol (IANA registry created in Section 9.5 of {{I-D.ietf-lake-edhoc}}) and the Voucher is specified in {{U-W}}.
 
 CRED_R is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of the authenticator PK_V encoded as a COSE_Key in the 'cnf' claim, see Section 3.5.3 of {{I-D.ietf-lake-edhoc}}.
 
@@ -415,7 +415,7 @@ The ephemeral public key G_X sent in EDHOC message_1 from device to authenticato
 
 Unless already in place, the authenticator and the authorization server establish a secure connection. The autenticator uses G_X received from the device as a nonce associated to this connection with the authorization server. If the same value of the nonce G_X is already used for a connection with this or other authorization server, the protocol SHALL be discontinued.
 
-The authenticator sends the voucher request to the authorization server. The Voucher_Request SHALL be a CBOR array as defined below:
+The authenticator sends the voucher request to the authorization server. The Voucher Request SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~
 Voucher_Request = [
