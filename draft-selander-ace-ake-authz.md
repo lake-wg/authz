@@ -121,7 +121,7 @@ See illustration in {{fig-overview}}.
                   Voucher
 
 ~~~~~~~~~~~
-{: #fig-overview title="Overview of message flow. Link between U anv V is constrained but link between V and W is not. Voucher Info and Voucher are sent in EDHOC External Authorization Data." artwork-align="center"}
+{: #fig-overview title="Overview of message flow. Link between U anv V is constrained but link between V and W is not. Voucher_Info and Voucher are sent in EDHOC External Authorization Data." artwork-align="center"}
 
 
 # Assumptions
@@ -248,11 +248,11 @@ The protocol between device and authorization server (U and W in {{fig-protocol}
 The device uses the public DH key of the authorization server G_W together with the private DH key corresponding to ephemeral key G_X in EDHOC message_1, and vice versa for the authorization server.
 The endpoints calculate a shared secret G_XW (see {{reuse}}), which is used to derive secret keys to protect data between U and W, as detailed in this section.
 
-The data exchanged betweeen U and W is carried between U and V in EAD_1 and EAD_2 ({{U-V}}), and between V and W in Voucher Request/Response ({{V-W}}).
+The data exchanged between U and W is carried between U and V in message_1 and message_2 ({{U-V}}), and between V and W in Voucher Request/Response ({{V-W}}).
 
 ### Voucher Info
 
-The external authorization data EAD_1 of EDHOC message_1 includes Voucher Info, which is the following CBOR sequence:
+The external authorization data EAD_1 of EDHOC message_1 includes Voucher_Info, which is the following CBOR sequence:
 
 ~~~~~~~~~~~
 Voucher_Info = (
@@ -335,7 +335,7 @@ where
 * G_X is encoded as in EDHOC message_1, see Section 3.7 of {{I-D.ietf-lake-edhoc}}
 * ID_U is defined in {{U-W}}
 
-Editor's note: With the current definition of EAD as (ead_label, ead_value), do we need to redefine the voucher to be a CBOR map? Do we even need the V_TYPE?
+Editor's note: Do we need the V_TYPE?
 
 
 ## Device <-> Authenticator {#U-V}
@@ -348,12 +348,12 @@ The device and authenticator run the EDHOC protocol authenticated with their pub
 
 The device composes EDHOC message_1 using authentication method, identifiers, etc. according to the applicability statement, see Section 3.9 of {{I-D.ietf-lake-edhoc}}. The selected cipher suite SS applies also to the interaction with the authorization server as detailed in {{reuse}}, in particular, the key agreement algorithm which is used with the static public DH key G_W of the authorization server. As part of the normal EDHOC processing, the device generates the ephemeral public key G_X which is reused in the interaction with the authorization server, see {{U-W}}.
 
-The device sends EDHOC message_1 with EAD_1 = (L, Voucher_Info) where L is the External Auxiliary Data Label for this protocol (IANA registry created in Section 9.5 of {{I-D.ietf-lake-edhoc}}), and Voucher_Info is specified in {{U-W}}.
+The device sends EDHOC message_1 with (L, Voucher_Info) included in EAD_1, where L is the ead-label for this protocol, see {{iana-ead}}), and Voucher_Info is specified in {{U-W}}.
 
 
 #### Authenticator processing
 
-The authenticator receives EDHOC message_1 from the device and processes as specified in Section 5.2.3 of {{I-D.ietf-lake-edhoc}}, with the additional step that the presence of EAD with label L triggers the voucher request to the authorization server as described in {{V-W}}. The exchange with V needs to be completed successfully for the EDHOC exchange to be continued.
+The authenticator receives EDHOC message_1 from the device and processes as specified in Section 5.2.3 of {{I-D.ietf-lake-edhoc}}, with the additional step that the content of EAD_1 with label L triggers the voucher request to the authorization server as described in {{V-W}}. The exchange between V and W needs to be completed successfully for the EDHOC exchange to be continued.
 
 ### Message 2
 
@@ -361,7 +361,7 @@ The authenticator receives EDHOC message_1 from the device and processes as spec
 
 The authenticator receives the voucher response from the authorization server as described in {{V-W}}.
 
-The authenticator sends EDHOC message_2 to the device with EAD_2 = (L, Voucher) where L is the External Auxiliary Data Label for this protocol (IANA registry created in Section 9.5 of {{I-D.ietf-lake-edhoc}}) and the Voucher is specified in {{U-W}}.
+The authenticator sends EDHOC message_2 to the device with (L, Voucher) included in EAD_2, where L is the ead-label for this protocol, see {{iana-ead}}), and the Voucher is specified in {{U-W}}.
 
 CRED_R is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of the authenticator PK_V encoded as a COSE_Key in the 'cnf' claim, see Section 3.5.3 of {{I-D.ietf-lake-edhoc}}.
 
@@ -620,10 +620,27 @@ The encryption of the device identity in the first message should consider poten
 
  As noted Section 8.2 of {{I-D.ietf-lake-edhoc}} an ephemeral key may be used to calculate several ECDH shared secrets. In this specification the ephemeral key G_X is also used to calculate G_XW, the shared secret with the authorization server.
 
-The private ephemeral key is thus used in the device for calculations of key material relating to both the authenticator and the authorization server. There are different options for where to implement these calculations, one option is as an addition to EDHOC, i.e., to extend the EDHOC API in the device with input of public key of W (G_W) and identifier of U (ID_U), and produce the encryption of ID_U which is included in the external authorization data EAD_1.
+The private ephemeral key is thus used in the device for calculations of key material relating to both the authenticator and the authorization server. There are different options for where to implement these calculations, one option is as an addition to EDHOC, i.e., to extend the EDHOC API in the device with input of public key of W (G_W) and identifier of U (ID_U), and produce the encryption of ID_U which is included in Voucher_Info in EAD_1.
 
 # IANA Considerations  {#iana}
 
 TODO: register rsp_ad ACE parameter
+
+## EDHOC External Authorization Data Registry {#iana-ead}
+
+IANA has registered the following entry in the "EDHOC External Authorization Data" registry under the group name "Ephemeral Diffie-
+   Hellman Over COSE (EDHOC)". The Label and Value Type correspond to the (ead_label, ead_value) which are defined in this document: (L, Voucher_Info) in EAD_1, and (L, Voucher) in EAD_2.
+
+~~~~~~~~~~~
++-------+------------+-----------------+
+| Label | Value Type | Description     |
++-------+------------+-----------------+
+|  TBD  |    bstr    | Voucher related |
+|       |            | information     |
++-------+------------+-----------------+
+~~~~~~~~~~~
+
+
+
 
 --- back
