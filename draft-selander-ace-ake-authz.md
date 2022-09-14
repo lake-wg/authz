@@ -143,7 +143,7 @@ The domain authenticator has a private key and a corresponding public key PK_V u
 The domain authenticator needs to be able to locate the authorization server of the device for which LOC_W is expected to be sufficient.
 The communication between domain authenticator and authorization server is assumed to be mutually authenticated and protected; authentication credentials and communication security is out of scope, except for as specified below in this section.
 
-The domain authenticator may in principle use differents credentials for authenticating to the authorization server and to the device, for which PK_V is used.
+The domain authenticator may in principle use different credentials for authenticating to the authorization server and to the device, for which PK_V is used.
 However, the domain authenticator MUST prove possession of private key of PK_V to the authorization server since the authorization server is asserting (by means of the voucher to the device) that this credential belongs to the domain authenticator.
 
 In this version of the draft it is assumed that the domain authenticator authenticates to the authorization server with PK_V using some authentication protocol providing proof of possession of the private key, for example TLS 1.3 {{RFC8446}}.
@@ -640,7 +640,16 @@ IANA has registered the following entry in the "EDHOC External Authorization Dat
 +-------+------------+-----------------+
 ~~~~~~~~~~~
 
-
-
-
 --- back
+
+# Use with Constrained Join Protocol (CoJP)
+
+## TODO:
+
+* Draw a figure with CoJP exchange following authz flow
+* Map U and V to the pledge and JRC
+* Map ID_U to pledge identifier
+* Map EDHOC PRK_out to PSK in RFC 9031
+* discuss how the network identifier is obtained
+
+--- fluff
