@@ -62,7 +62,7 @@ informative:
   I-D.irtf-cfrg-hpke:
   I-D.selander-ace-coap-est-oscore:
   I-D.ietf-lake-edhoc:
-  I-D.palombini-core-oscore-edhoc:
+  I-D.ietf-core-oscore-edhoc:
 
 --- abstract
 
@@ -393,7 +393,7 @@ The Sig_or_MAC_3 field calculated using the private key corresponding to PK_U is
 
 EAD_3 MAY contain an enrolment request, see e.g. CSR specified in {{I-D.mattsson-cose-cbor-cert-compress}}, or other request which the device is now authorized to make.
 
-EDHOC message_3 may be combined with an OSCORE request, see {{I-D.palombini-core-oscore-edhoc}}.
+EDHOC message_3 may be combined with an OSCORE request, see {{I-D.ietf-core-oscore-edhoc}}.
 
 #### Authenticator processing
 
@@ -644,9 +644,46 @@ IANA has registered the following entry in the "EDHOC External Authorization Dat
 
 # Use with Constrained Join Protocol (CoJP)
 
-## TODO:
+## TODO
 
-* Draw a figure with CoJP exchange following authz flow
+~~~~~~~~~~~
+U                                    V                              W
+|                                    |                              |
+|                                    |                              |
++- - - - - - - - - - - - - - - - - ->|                              |
+|    Optional network solicitation   |                              |
+|<-----------------------------------+                              |
+|          Network discovery         |                              |
+|                                    |                              |
++----------------------------------->|                              |
+|          EDHOC message_1           |                              |
+|                                    +----------------------------->|
+|                                    |    Voucher Request (VREQ)    |
+|                                    |<-----------------------------+
+|                                    |    Voucher Response (VRES)   |
+|<-----------------------------------+                              |
+|          EDHOC message_2           |                              |
+|                                    |                              |
+|                                    |                              |
++----------------------------------->|                              |
+|   EDHOC message_3 + CoJP request   |                              |
+|                                    |                              |
++<-----------------------------------|                              |
+|            CoJP response           |                              |
+|
+~~~~~~~~~~~
+{: #fig-cojp title="Use of draft-selander-ace-ake-authz with CoJP." artwork-align="center"}
+
+
+* TODO1: Discuss network discovery in:
+
+1. 802.15.4 TSCH
+1. 802.15.4 non-TSCH
+
+* TODO2: Processing of EDHOC messages follows Section {{U-V}}
+* TODO3: CoJP is piggybacked on EDHOC message 3
+    * reference {{I-D.ietf-core-oscore-edhoc}}
+
 * Map U and V to the pledge and JRC
 * Map ID_U to pledge identifier
 * Map EDHOC PRK_out to PSK in RFC 9031
