@@ -63,6 +63,10 @@ informative:
   I-D.selander-ace-coap-est-oscore:
   I-D.ietf-lake-edhoc:
   I-D.ietf-core-oscore-edhoc:
+  IEEE802.15.4:
+    title: "IEEE Std 802.15.4 Standard for Low-Rate Wireless Networks"
+    author:
+      ins: "IEEE standard for Information Technology"
 
 --- abstract
 
@@ -644,7 +648,8 @@ IANA has registered the following entry in the "EDHOC External Authorization Dat
 
 # Use with Constrained Join Protocol (CoJP)
 
-## TODO
+We outline how the protocol is used for network enrollment and parameter provisioning.
+We use IEEE 802.15.4 network as an example of how a new device (U) is enrolled into the domain managed by the domain authenticator (V).
 
 ~~~~~~~~~~~
 U                                    V                              W
@@ -675,12 +680,77 @@ U                                    V                              W
 {: #fig-cojp title="Use of draft-selander-ace-ake-authz with CoJP." artwork-align="center"}
 
 
-* TODO1: Discuss network discovery in:
+## Network discovery
 
-1. 802.15.4 TSCH
-1. 802.15.4 non-TSCH
+When a device first boots, it needs to discover the network it attempts to join.
+The network discovery procedure is defined by the link-layer technology in use.
+In case of Time-slotted Channel Hopping (TSCH) networks, a mode of {{IEEE802.15.4}}, the device scans the radio channels for Enhanced Beacon (EB) frames, a procedure known as passive scan.
+EBs carry the information about the network, and particularly the network identifier.
+Based on the EB, the network identifier, the information pre-configured into the device, the device makes the decision on whether it should join the network advertised by the received EB frame.
+This process is described in Section 4.1. of {{RFC9031}}.
+In case of other, non-TSCH modes of IEEE 802.15.4 it is possible to use the active scan procedure and send solicitation frames.
+These solicitation frames trigger the nearest network coordinator to respond by emitting a beacon frame.
+The network coordinator emitting beacons may be multiple link-layer hops away from the domain authenticator (V), in which case it plays the role of a Join Proxy (see {{RFC9031}}).
+Join Proxy does not participate in the protocol and acts as a transparent router between the device and the domain authenticator.
+For simplicity, {{fig-cojp}} illustrates the case when the device and the domain authenticator are a single hop away and can communicate directly.
 
-* TODO2: Processing of EDHOC messages follows Section {{U-V}}
+## The enrollment protocol with parameter provisioning
+
+### Message 1
+
+Once the device has discovered the network it wants to join, it constructs the EDHOC message_1, as described in {{U-V}}.
+The device SHALL map the message to a CoAP request:
+
+* The request method is POST.
+* The type is Confirmable (CON).
+* The Proxy-Scheme option is set to "coap".
+* The Uri-Host option is set to "ake-authz.arpa". This is an anycast type of identifier of the domain authenticator (V) that is resolved to its IPv6 address by the Join Proxy.
+* The Uri-Path option is set to ".well-known/edhoc".
+* The Content-Format option is set to "application/cid-edhoc+cbor-seq"
+* The payload is the (true, EDHOC message_1) CBOR sequence, where EDHOC message_1 is constructed as defined in {{U-V}}.
+
+### Message 2
+
+The domain authenticator receives the message 1 and processes it as described in {{U-V}}.
+The message triggers the exchange with the authorization server, as described in {{V-W}}.
+If the exchange between V and W completes successfully, the domain authenticator prepares EDHOC message_2, as described in {{U-V}}.
+The authenticator SHALL map the message to a CoAP response:
+
+* The response code is 2.04 Changed.
+* The Content-Format option is set to "application/edhoc+cbor-seq"
+* The payload is the EDHOC message_2, as defined in {{U-V}}.
+
+### Message 3
+
+The device receives the message 2 and processes it as described in {{U-V}}}.
+Upon successful processing of message 2, the device prepares message 3, which is a combination of EDHOC message_3 and OSCORE-protected CoJP request.
+EDHOC message_3 is prepared as described in {{U-V}}.
+OSCORE-protected payload is the CoJP Join Request object specified in Section 8.4.1. of {{RFC9031}}.
+OSCORE protection leverages the OSCORE Security Context derived from the EDHOC exchange, as specified in Appendix A of {{I-D.ietf-lake-edhoc}}.
+To that end, {{I-D.ietf-core-oscore-edhoc}} specifies that the Sender ID of the client (device) must be set to the connection identifier selected by the domain authenticator, C_R.
+OSCORE includes the Sender ID as the kid in the OSCORE option.
+In addition, following {{RFC9031}} the ID Context MUST be set to the pledge identifier, ID_U.
+The network identifier in the CoJP Join Request object is set to the network identifier obtained from the network discovery phase.
+In case of IEEE 802.15.4 networks, this is the PAN ID.
+
+The device SHALL map the message to a CoAP request:
+
+* The request method is POST.
+* The type is Confirmable (CON).
+* The Proxy-Scheme option is set to "coap".
+* The Uri-Host option is set to "ake-authz.arpa".
+* The Uri-Path option is set to ".well-known/edhoc".
+* The EDHOC option {{I-D.ietf-core-oscore-edhoc}} is set and is empty.
+* The payload is prepared as described in Section 3.2. of {{I-D.ietf-core-oscore-edhoc}}, with EDHOC message_3 and the CoJP Join Request object as the OSCORE-protected payload.
+
+### Message 4
+
+The authenticator processes message 3 as per Section 3.3. of {{I-D.ietf-core-oscore-edhoc}}.
+
+
+
+## CoJP exchange
+
 * TODO3: CoJP is piggybacked on EDHOC message 3
     * reference {{I-D.ietf-core-oscore-edhoc}}
 
