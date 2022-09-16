@@ -729,7 +729,6 @@ OSCORE-protected payload is the CoJP Join Request object specified in Section 8.
 OSCORE protection leverages the OSCORE Security Context derived from the EDHOC exchange, as specified in Appendix A of {{I-D.ietf-lake-edhoc}}.
 To that end, {{I-D.ietf-core-oscore-edhoc}} specifies that the Sender ID of the client (device) must be set to the connection identifier selected by the domain authenticator, C_R.
 OSCORE includes the Sender ID as the kid in the OSCORE option.
-In addition, following {{RFC9031}} the ID Context MUST be set to the pledge identifier, ID_U.
 The network identifier in the CoJP Join Request object is set to the network identifier obtained from the network discovery phase.
 In case of IEEE 802.15.4 networks, this is the PAN ID.
 
@@ -743,20 +742,14 @@ The device SHALL map the message to a CoAP request:
 * The EDHOC option {{I-D.ietf-core-oscore-edhoc}} is set and is empty.
 * The payload is prepared as described in Section 3.2. of {{I-D.ietf-core-oscore-edhoc}}, with EDHOC message_3 and the CoJP Join Request object as the OSCORE-protected payload.
 
+Note that the OSCORE Sender IDs are derived from the connection identifiers of the EDHOC exchange.
+This is in contrast with {{RFC9031}} where ID Context of the OSCORE Security Context is set to the device identifier (pledge identifier).
+Since the device identity is exchanged during the EDHOC handshake, and the certificate of the device is communicated to the authenticator as part of the Voucher Response message, there is no need to transport the device identity in OSCORE messages.
+The authenticator playing the role of the {{RFC9031}} JRC obtains the device identity from the execution of the authorization protocol.
+
 ### Message 4
 
-The authenticator processes message 3 as per Section 3.3. of {{I-D.ietf-core-oscore-edhoc}}.
-
-
-
-## CoJP exchange
-
-* TODO3: CoJP is piggybacked on EDHOC message 3
-    * reference {{I-D.ietf-core-oscore-edhoc}}
-
-* Map U and V to the pledge and JRC
-* Map ID_U to pledge identifier
-* Map EDHOC PRK_out to PSK in RFC 9031
-* discuss how the network identifier is obtained
+Message 4 is the OSCORE response carrying CoJP response message.
+The message is processed as specified in Section 8.4.2. of {{RFC9031}}.
 
 --- fluff
