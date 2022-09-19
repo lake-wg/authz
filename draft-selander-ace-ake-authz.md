@@ -648,8 +648,8 @@ IANA has registered the following entry in the "EDHOC External Authorization Dat
 
 # Use with Constrained Join Protocol (CoJP)
 
-We outline how the protocol is used for network enrollment and parameter provisioning.
-We use IEEE 802.15.4 network as an example of how a new device (U) is enrolled into the domain managed by the domain authenticator (V).
+This section outlines how the protocol is used for network enrollment and parameter provisioning.
+An IEEE 802.15.4 network is used as an example of how a new device (U) can be enrolled into the domain managed by the domain authenticator (V).
 
 ~~~~~~~~~~~
 U                                    V                              W
