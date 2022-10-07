@@ -131,15 +131,17 @@ See illustration in {{fig-overview}}.
 
 # Assumptions
 
-## Device
+## Device (U)
 
-The device is pre-provisioned with an identity ID_U and asymmetric key credentials: a private key, a public key (PK_U), and optionally a public key certificate (Cert_PK_U), issued by a trusted third party such as e.g. the device manufacturer, used to authenticate to the domain authenticator.
-ID_U may be a reference or pointer to the certificate.
+U takes the role as EDHOC Initiator with authentication credential CRED_I, identified in EDHOC message_3 by ID_CRED_I.
+CRED_I may for example be an X.509 certificate or a CBOR Web Token (CWT, {{RFC8392}}).
+For identification to W, U is provisioned with an identifier ID_U, from which W shall be able to retrieve CRED_I.
+ID_U may or may not coincide with ID_CRED_I, it may for example be a reference to a certificate, or an identifier from a separate name space.
 
-The device is also provisioned with information about its authorization server:
+U is also provisioned with information about W:
 
-* At least one static public DH key of the authorization server (G_W) used to ensure secure communication with the device (see {{U-W}}).
-* Location information about the authorization server (LOC_W), e.g. its domain name. This information may be available in the device certificate Cert_PK_U.
+* A static public DH key of W (G_W) used to protect communication  between device and authorization server (see {{U-W}}).
+* Location information about the authorization server (LOC_W) that can be used by V. This is typically a URI but may be optimized, e.g. only the domain name.
 
 ## Domain Authenticator {#domain-auth}
 
