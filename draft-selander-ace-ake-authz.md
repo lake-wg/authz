@@ -50,12 +50,12 @@ informative:
   RFC2119:
   RFC3748:
   RFC7228:
-  RFC8152:
   RFC8174:
   RFC8392:
   RFC8446:
   RFC8949:
   RFC9031:
+  RFC9052:
   RFC9053:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
@@ -267,7 +267,7 @@ where
 * LOC_W is location information about the authorization server, used by the authenticator
 * ENC_ID is the encrypted blob carrying the identity of the device and an optional identity of the authenticator, passed on from the authenticator to the authorization server, calculated as follows:
 
-ENC_ID is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC8152}}) computed from the following:
+ENC_ID is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC9052}}) computed from the following:
 
 * The encryption key K_1 and nonce IV_1 are derived as specified below.
 * 'protected' is a byte string of size 0
