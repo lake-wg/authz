@@ -5,7 +5,7 @@ docname: draft-selander-ace-ake-authz-latest
 
 ipr: trust200902
 cat: info
-
+submissiontype: IETF
 coding: utf-8
 pi: # can use array (if all yes) or hash here
   toc: yes
@@ -56,6 +56,7 @@ informative:
   RFC8446:
   RFC8949:
   RFC9031:
+  RFC9053:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
   I-D.mattsson-cose-cbor-cert-compress:
@@ -225,7 +226,7 @@ The protocol also reuses the Extract and Expand key derivation from EDHOC (Secti
 * The intermediate pseudo-random key PRK is derived using Extract():
     * PRK = Extract(salt, IKM)
          * where salt = 0x (the zero-length byte string)
-         * IKM is the ECDH shared secret G_XW (calculated from G_X and W or G_W and X) as defined in Section 6.3.1 of [I-D.ietf-cose-rfc8152bis-algs].
+         * IKM is the ECDH shared secret G_XW (calculated from G_X and W or G_W and X) as defined in Section 6.3.1 of {{RFC9053}}.
 
 The shared secret is derived using Expand() which is defined in terms of the EDHOC hash algorithm of the selected cipher suite, see Section 4.2. of {{I-D.ietf-lake-edhoc}}:
 
