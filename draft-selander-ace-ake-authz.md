@@ -696,7 +696,7 @@ For simplicity, {{fig-cojp}} illustrates the case when the device and the domain
 
 ## The enrollment protocol with parameter provisioning
 
-### Message 1
+### Flight 1
 
 Once the device has discovered the network it wants to join, it constructs the EDHOC message_1, as described in {{U-V}}.
 The device SHALL map the message to a CoAP request:
@@ -709,9 +709,9 @@ The device SHALL map the message to a CoAP request:
 * The Content-Format option is set to "application/cid-edhoc+cbor-seq"
 * The payload is the (true, EDHOC message_1) CBOR sequence, where EDHOC message_1 is constructed as defined in {{U-V}}.
 
-### Message 2
+### Flight 2
 
-The domain authenticator receives the message 1 and processes it as described in {{U-V}}.
+The domain authenticator receives message_1 and processes it as described in {{U-V}}.
 The message triggers the exchange with the authorization server, as described in {{V-W}}.
 If the exchange between V and W completes successfully, the domain authenticator prepares EDHOC message_2, as described in {{U-V}}.
 The authenticator SHALL map the message to a CoAP response:
@@ -720,12 +720,12 @@ The authenticator SHALL map the message to a CoAP response:
 * The Content-Format option is set to "application/edhoc+cbor-seq"
 * The payload is the EDHOC message_2, as defined in {{U-V}}.
 
-### Message 3
+### Flight 3
 
-The device receives the message 2 and processes it as described in {{U-V}}}.
-Upon successful processing of message 2, the device prepares message 3, which is a combination of EDHOC message_3 and OSCORE-protected CoJP request.
+The device receives EDHOC message_2 and processes it as described in {{U-V}}}.
+Upon successful processing of message_2, the device prepares flight 3, which is an OSCORE-protected CoJP request containing an EDHOC message_3, as described in {{I-D.ietf-core-oscore-edhoc}}.
 EDHOC message_3 is prepared as described in {{U-V}}.
-OSCORE-protected payload is the CoJP Join Request object specified in Section 8.4.1. of {{RFC9031}}.
+The OSCORE-protected payload is the CoJP Join Request object specified in Section 8.4.1. of {{RFC9031}}.
 OSCORE protection leverages the OSCORE Security Context derived from the EDHOC exchange, as specified in Appendix A of {{I-D.ietf-lake-edhoc}}.
 To that end, {{I-D.ietf-core-oscore-edhoc}} specifies that the Sender ID of the client (device) must be set to the connection identifier selected by the domain authenticator, C_R.
 OSCORE includes the Sender ID as the kid in the OSCORE option.
@@ -747,9 +747,9 @@ This is in contrast with {{RFC9031}} where ID Context of the OSCORE Security Con
 Since the device identity is exchanged during the EDHOC handshake, and the certificate of the device is communicated to the authenticator as part of the Voucher Response message, there is no need to transport the device identity in OSCORE messages.
 The authenticator playing the role of the {{RFC9031}} JRC obtains the device identity from the execution of the authorization protocol.
 
-### Message 4
+### Flight 4
 
-Message 4 is the OSCORE response carrying CoJP response message.
+Flight 4 is the OSCORE response carrying CoJP response message.
 The message is processed as specified in Section 8.4.2. of {{RFC9031}}.
 
 --- fluff
