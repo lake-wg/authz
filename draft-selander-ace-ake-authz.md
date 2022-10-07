@@ -152,21 +152,21 @@ V needs to establish secure communication with W based on information in LOC_W.
 The communication between V and W is assumed to be mutually authenticated and protected; authentication credentials and communication security is out of scope, except for as specified below in this section.
 
 V may in principle use different credentials for authenticating to U and to W (CRED_R is used for the former).
-However, V MUST prove possession of private key of PK_V to W, since W is asserting (by means of the voucher sent to U in EDHOC message_2) that this credential belongs to V.
+However, V MUST prove possession of private key of PK_V to W, since W is asserting (by means of a voucher sent to U) that this credential belongs to V.
 
 In this version of the draft is assumed that V authenticates to W with PK_V using some authentication protocol providing proof of possession of the private key, for example TLS 1.3 {{RFC8446}}.
 A future version of this draft may specify explicit proof of possession of the private key of PK_V in VREQ, e.g., by including a signature of the contents of the voucher request made with the private key corresponding to PK_V.
 
 ## Authorization Server (W)
 
-The authorization server has the private DH key corresponding to G_W, which is used to secure the communication with the device (see {{U-W}}).
+W has the private DH key corresponding to G_W, which is used to secure the communication with U (see {{U-W}}).
 
-Authentication credentials and communication security used with the domain authenticator is out of scope, except for the need to verify the possession of the private key of PK_V as specified in {{domain-auth}}.
+Authentication credentials and communication security used with V is out of scope, except for the need to verify the possession of the private key of PK_V as specified in {{domain-auth}}.
 
-The authorization server provides to the device the authorization decision for enrollment with the domain authenticator in the form of a voucher.
-The authorization server provides information to the domain authenticator about the device, such as the device's certificate Cert_PK_U.
+W provides to U the authorization decision for enrollment with V in the form of a voucher, see {{voucher}}.
+W provides information to V about U, such as the CRED_I.
 
-The authorization server needs to be available during the execution of the protocol.
+W needs to be available during the execution of the protocol.
 
 # The Protocol
 
