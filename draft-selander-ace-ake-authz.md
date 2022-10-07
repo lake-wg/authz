@@ -99,18 +99,18 @@ Other settings such as EAP {{RFC3748}} are out of scope for this specification.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 {{RFC2119}} {{RFC8174}} when, and only when, they appear in all capitals, as shown here.
 
-Readers are expected to have some understanding of CBOR {{RFC8949}} and EDHOC {{I-D.ietf-lake-edhoc}}.
+Readers are expected to have an understanding of CBOR {{RFC8949}} and EDHOC {{I-D.ietf-lake-edhoc}}.
 Appendix C.1 of {{I-D.ietf-lake-edhoc}} contains some basic info about CBOR.
 
 # Problem Description {#prob-desc}
 
-The (potentially constrained) device wants to enroll into a domain over a constrained link.
-The device authenticates and enforces authorization of the (non-constrained) domain authenticator with the help of a voucher, and makes the enrollment request.
-The domain authenticator authenticates the device and authorizes its enrollment.
+The (potentially constrained) device (U) wants to enroll into a domain over a constrained link.
+The device authenticates and enforces authorization of the (non-constrained) domain authenticator (V) with the help of a voucher, and makes the enrollment request.
+The domain authenticator (W) authenticates the device and authorizes its enrollment.
 Authentication between device and domain authenticator is made with the lightweight authenticated Diffie-Hellman key exchange protocol EDHOC {{I-D.ietf-lake-edhoc}}.
 The procedure is assisted by a (non-constrained) authorization server located in a non-constrained network behind the domain authenticator providing information to the device and to the domain authenticator as part of the protocol.
 
-The objective of this document is to specify such a protocol which is lightweight over the constrained link and reuses elements of EDHOC.
+The objective of this document is to specify such a protocol which is lightweight over the constrained link by reusing elements of EDHOC.
 See illustration in {{fig-overview}}.
 
 ~~~~~~~~~~~
@@ -133,30 +133,31 @@ See illustration in {{fig-overview}}.
 
 ## Device (U)
 
-U takes the role as EDHOC Initiator with authentication credential CRED_I, identified in EDHOC message_3 by ID_CRED_I.
+U takes the role as EDHOC Initiator with authentication credential CRED_I.
 CRED_I may for example be an X.509 certificate or a CBOR Web Token (CWT, {{RFC8392}}).
 For identification to W, U is provisioned with an identifier ID_U, from which W shall be able to retrieve CRED_I.
-ID_U may or may not coincide with ID_CRED_I, it may for example be a reference to a certificate, or an identifier from a separate name space.
+ID_U may for example be a reference to a certificate, or an identifier from a separate name space.
 
 U is also provisioned with information about W:
 
 * A static public DH key of W (G_W) used to protect communication  between device and authorization server (see {{U-W}}).
 * Location information about the authorization server (LOC_W) that can be used by V. This is typically a URI but may be optimized, e.g. only the domain name.
 
-## Domain Authenticator {#domain-auth}
+## Domain Authenticator (V) {#domain-auth}
 
-The domain authenticator has a private key and a corresponding public key PK_V used to authenticate to the device.
+V takes the role as EDHOC Responder with authentication credential CRED_R.
+CRED_R is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of V, PK_V, see {{V_2}}
 
-The domain authenticator needs to be able to locate the authorization server of the device for which LOC_W is expected to be sufficient.
-The communication between domain authenticator and authorization server is assumed to be mutually authenticated and protected; authentication credentials and communication security is out of scope, except for as specified below in this section.
+V needs to establish secure communication with W based on information in LOC_W.
+The communication between V and W is assumed to be mutually authenticated and protected; authentication credentials and communication security is out of scope, except for as specified below in this section.
 
-The domain authenticator may in principle use different credentials for authenticating to the authorization server and to the device, for which PK_V is used.
-However, the domain authenticator MUST prove possession of private key of PK_V to the authorization server since the authorization server is asserting (by means of the voucher to the device) that this credential belongs to the domain authenticator.
+V may in principle use different credentials for authenticating to U and to W (CRED_R is used for the former).
+However, V MUST prove possession of private key of PK_V to W, since W is asserting (by means of the voucher sent to U in EDHOC message_2) that this credential belongs to V.
 
-In this version of the draft it is assumed that the domain authenticator authenticates to the authorization server with PK_V using some authentication protocol providing proof of possession of the private key, for example TLS 1.3 {{RFC8446}}.
-A future version of this draft may specify explicit proof of possession of the private key of PK_V in the voucher request, e.g., by including a signature of the voucher request with the private key corresponding to PK_V.
+In this version of the draft is assumed that V authenticates to W with PK_V using some authentication protocol providing proof of possession of the private key, for example TLS 1.3 {{RFC8446}}.
+A future version of this draft may specify explicit proof of possession of the private key of PK_V in VREQ, e.g., by including a signature of the contents of the voucher request made with the private key corresponding to PK_V.
 
-## Authorization Server
+## Authorization Server (W)
 
 The authorization server has the private DH key corresponding to G_W, which is used to secure the communication with the device (see {{U-W}}).
 
@@ -364,7 +365,7 @@ The authenticator receives EDHOC message_1 from the device and processes as spec
 
 ### Message 2
 
-#### Authenticator processing
+#### Authenticator processing  {#V_2}
 
 The authenticator receives the voucher response from the authorization server as described in {{V-W}}.
 
