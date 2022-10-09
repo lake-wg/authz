@@ -181,24 +181,24 @@ Three security sessions are going on in parallel:
 {{fig-protocol}} provides an overview of the message flow detailed in this section. Only selected message fields of EDHOC are shown, for more details see Section 3.1 of {{I-D.ietf-lake-edhoc}}.
 
 ~~~~~~~~~~~
-U                                    V                              W
-|                                    |                              |
-|        SUITES_I, G_X, EAD_1        |                              |
-+----------------------------------->|                              |
-|          EDHOC message_1           |   SS, G_X, ENC_ID, ?PoP_V    |
-|                                    +----------------------------->|
-|                                    |    Voucher Request (VREQ)    |
-|                                    |                              |
-|                                    |    G_X, CERT_PK_U, Voucher   |
-|                                    |<-----------------------------+
-|                                    |    Voucher Response (VRES)   |
-|   ID_CRED_R, Sig_or_MAC_2, EAD_2   |                              |
-|<-----------------------------------+                              |
-|          EDHOC message_2           |                              |
-|                                    |                              |
-|       ID_CRED_I, Sig_or_MAC_3      |                              |
-+----------------------------------->|                              |
-|          EDHOC message_3           |                              |
+U                                         V                            W
+|                                         |                            |
+|            SUITES_I, G_X, EAD_1         |                            |
++---------------------------------------->|                            |
+|              EDHOC message_1            |  SS, G_X, ENC_ID, ?PoP_V   |
+|                                         +--------------------------->|
+|                                         |   Voucher Request (VREQ)   |
+|                                         |                            |
+|                                         |   G_X, CERT_PK_U, Voucher  |
+|                                         |<---------------------------+
+|                                         |   Voucher Response (VRES)  |
+|   Enc(ID_CRED_R, Sig_or_MAC_2, EAD_2)   |                            |
+|<----------------------------------------+                            |
+|             EDHOC message_2             |                            |
+|                                         |                            |
+|       Enc(ID_CRED_I, Sig_or_MAC_3)      |                            |
++---------------------------------------->|                            |
+|             EDHOC message_3             |                            |
 
 where
 EAD_1 = (L, Voucher_Info)
@@ -207,7 +207,7 @@ EAD_2 = (L, Voucher)
 Voucher = MAC(V_TYPE, SS, G_X, ID_U, PK_V)
 
 ~~~~~~~~~~~
-{: #fig-protocol title="W-assisted authorization of AKE between U and V: EDHOC between U and V (only selected message fields shown), and Voucher Request/Response between V and W." artwork-align="center"}
+{: #fig-protocol title="W-assisted authorization of EDHOC between U and V: Simplified EDHOC between U and V (only selected message fields shown), and Voucher Request/Response between V and W." artwork-align="center"}
 
 ## Reuse of EDHOC {#reuse}
 
