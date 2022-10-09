@@ -222,11 +222,11 @@ The protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
     * EDHOC MAC length in bytes: length of the voucher
     * EDHOC key exchange algorithm: used to calculate the shared secret between U and W
 
-* EAD_1, EAD_2 are the External Authorization Data of message_1 and message_2, respectively, for which dedicated content is defined in this document.
+* EAD_1, EAD_2 are the External Authorization Data of message_1 and message_2, respectively, for which dedicated EAD items is defined in this document (see Section 3.8 of {{I-D.ietf-lake-edhoc}}).
 
-* ID_CRED_I and ID_CRED_R are used to identify the public authentication keys of U and V. In this protocol ID_CRED_I can be empty since V obtains the certificate of U from W, whereas ID_CRED_R contains the public authentication key of V.
+* ID_CRED_I and ID_CRED_R are used to identify the public authentication keys of U and V. In this protocol ID_CRED_I is empty since V obtains the authentication credential of U from W, whereas ID_CRED_R = CRED_R (see Section 3.5.3 of {{I-D.ietf-lake-edhoc}}).
 
-* Signature_or_MAC_2 and Signature_or_MAC_3 (abbreviated in {{fig-protocol}}), containing data generated using the private key of V and U, respectively, are shown here just to be able to reason about the use of credentials.
+* Signature_or_MAC_2 and Signature_or_MAC_3 (abbreviated in {{fig-protocol}}), containing data generated using the private key of V and U, respectively, are shown here just to be able to reason about the use of credentials. The definition of these fields depend on EDHOC method, see Section 5 of {{I-D.ietf-lake-edhoc}}).
 
 The protocol also reuses the Extract and Expand key derivation from EDHOC (Section 4 of {{I-D.ietf-lake-edhoc}}).
 
@@ -243,8 +243,7 @@ The shared secret is derived using Expand() which is defined in terms of the EDH
 
 ~~~~~~~~~
 info = (
-   transcript_hash : bstr,
-   label : tstr,
+   label : int,
    context : bstr,
    length : uint,
 )
