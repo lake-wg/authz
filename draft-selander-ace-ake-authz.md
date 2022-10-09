@@ -205,7 +205,7 @@ EAD_1 contains Voucher_Info = [LOC_W, ENC_ID]
 EAD_2 contains Voucher = MAC(V_TYPE, SS, G_X, ID_U, CRED_R)
 
 ~~~~~~~~~~~
-{: #fig-protocol title="W-assisted authorization of EDHOC between U and V: Simplified EDHOC between U and V (only selected message fields shown), and Voucher Request/Response between V and W." artwork-align="center"}
+{: #fig-protocol title="W-assisted authorization of EDHOC between U and V: EDHOC between U and V (only selected message fields shown for simplicity), and Voucher Request/Response between V and W." artwork-align="center"}
 
 ## Reuse of EDHOC {#reuse}
 
