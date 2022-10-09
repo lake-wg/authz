@@ -220,7 +220,7 @@ The protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
     * EDHOC MAC length in bytes: length of the voucher
     * EDHOC key exchange algorithm: used to calculate the shared secret between U and W
 
-* EAD_1, EAD_2 are the External Authorization Data message fields of message_1 and message_2, respectively, see Section 3.8 of {{I-D.ietf-lake-edhoc}}. This document specifies EAD items with ead_label = TBD1.
+* EAD_1, EAD_2 are the External Authorization Data message fields of message_1 and message_2, respectively, see Section 3.8 of {{I-D.ietf-lake-edhoc}}. This document specifies EAD items with ead_label = TBD1, see {{iana-ead}}).
 
 * ID_CRED_I and ID_CRED_R are used to identify the authentication credentials of U and V. In this protocol ID_CRED_I is empty since V obtains CRED_I, the authentication credential of U, from W; whereas ID_CRED_R = CRED_R (see Section 3.5.3 of {{I-D.ietf-lake-edhoc}}).
 
@@ -340,47 +340,47 @@ where
 
 ## Device <-> Authenticator (U <-> V) {#U-V}
 
-U and V run the EDHOC protocol using their authentication credentials {{fig-protocol}}. Normal EDHOC processing is omitted here.
+This section describes the processing in U and V, which execute the EDHOC protocol using their respective authentication credentials, see {{fig-protocol}}. Normal EDHOC processing is omitted here.
 
 ### Message 1
 
-#### Device processing
+#### Processing in U
 
-The device composes EDHOC message_1 using authentication method, identifiers, etc. according to the applicability statement, see Section 3.9 of {{I-D.ietf-lake-edhoc}}. The selected cipher suite SS applies also to the interaction with the authorization server as detailed in {{reuse}}, in particular, the key agreement algorithm which is used with the static public DH key G_W of the authorization server. As part of the normal EDHOC processing, the device generates the ephemeral public key G_X which is reused in the interaction with the authorization server, see {{U-W}}.
+U composes EDHOC message_1 using authentication method, identifiers, etc. according to an agreed application profile, see Section 3.9 of {{I-D.ietf-lake-edhoc}}. The selected cipher suite, in this document denoted SS, applies also to the interaction with W as detailed in {{reuse}}, in particular, to the key agreement algorithm which is used with the static public DH key G_W of W. As part of the normal EDHOC processing, U generates the ephemeral public key G_X which is reused in the interaction with W, see {{U-W}}.
 
-The device sends EDHOC message_1 with (L, Voucher_Info) included in EAD_1, where L is the ead-label for this protocol, see {{iana-ead}}), and Voucher_Info is specified in {{U-W}}.
+The device sends EDHOC message_1 with EAD item (TBD1, Voucher_Info) included in EAD_1, where Voucher_Info is specified in {{U-W}}.
 
 
-#### Authenticator processing
+#### Processing in V
 
-The authenticator receives EDHOC message_1 from the device and processes as specified in Section 5.2.3 of {{I-D.ietf-lake-edhoc}}, with the additional step that the content of EAD_1 with label L triggers the voucher request to the authorization server as described in {{V-W}}. The exchange between V and W needs to be completed successfully for the EDHOC exchange to be continued.
+V receives EDHOC message_1 from U and processes it as specified in Section 5.2.3 of {{I-D.ietf-lake-edhoc}}, with the additional step that the content of EAD_1 with ead_label TBD1 triggers the voucher request to W as described in {{V-W}}. The exchange between V and W needs to be completed successfully for the EDHOC exchange to be continued.
 
 ### Message 2
 
-#### Authenticator processing  {#V_2}
+#### Processing in V  {#V_2}
 
-The authenticator receives the voucher response from the authorization server as described in {{V-W}}.
+V receives the voucher response from W as described in {{V-W}}.
 
-The authenticator sends EDHOC message_2 to the device with (L, Voucher) included in EAD_2, where L is the ead-label for this protocol, see {{iana-ead}}), and the Voucher is specified in {{U-W}}.
+V sends EDHOC message_2 to U with the EAD item (TBD1, Voucher) included in EAD_2, where the Voucher is specified in {{U-W}}.
 
 CRED_R is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of the authenticator PK_V encoded as a COSE_Key in the 'cnf' claim, see Section 3.5.2 of {{I-D.ietf-lake-edhoc}}.
 
 ID_CRED_R contains the CCS with 'kccs' as COSE header_map, see Section 9.6 of {{I-D.ietf-lake-edhoc}}. The Sig_or_MAC_2 field calculated using the private key corresponding to PK_V is either signature or MAC depending on EDHOC method.
 
 
-#### Device processing
+#### Processing in U
 
-In addition to normal EDHOC verifications, the device MUST verify the Voucher by performing the same calculation as in {{voucher}} using the SS, G_X and ID_U carried in message_1 and PK_V received in message_2. If the voucher calculated in this way is not identical to what was received in message_2, then the device MUST discontinue the protocol.
+In addition to normal EDHOC verifications, U MUST verify the Voucher by performing the same calculation as in {{voucher}} using the SS, G_X and ID_U sent in message_1 and CRED_R received in ID_CRED_R of message_2. If the voucher calculated in this way is not identical to what was received in message_2, then U MUST discontinue the protocol.
 
 Editor's note: Consider replace SS, G_X, ID_U in Voucher with H(message_1), since that is already required by EDHOC to be cached by the initiator. H(message_1) needs to be added to VREQ message in that case.
 
 ### Message 3
 
-#### Device processing
+#### Processing in U
 
-If all verifications are passed, then the device sends EDHOC message_3.
+If all verifications are passed, then U sends EDHOC message_3.
 
-The message field ID_CRED_I contains data enabling the authenticator to retrieve the public key of the device, PK_U. Since the authenticator before sending message_2 received a certificate of PK_U from the authorization server (see {{V-W}}), ID_CRED_I SHALL be a COSE header_map of type 'kid' with the empty byte string as value:
+Since V before sending message_2 already received the authentication credential CRED_I from W (see {{V-W}}), ID_CRED_I SHALL be a COSE header_map of type 'kid' with the empty byte string as value:
 
 ~~~~~~~~~~~
 ID_CRED_I =
@@ -395,11 +395,11 @@ EAD_3 MAY contain an enrolment request, see e.g. CSR specified in {{I-D.mattsson
 
 EDHOC message_3 may be combined with an OSCORE request, see {{I-D.ietf-core-oscore-edhoc}}.
 
-#### Authenticator processing
+#### Processing in V
 
-The authenticator performs the normal EDHOC verifications of message_3, with the exception that the Sig_or_MAC_3 field MUST be verified using the public key included in CRED_I (see {{voucher_response}}) received from the authorization server. The authenticator MUST ignore any key related information obtained in ID_CRED_I.
+V performs the normal EDHOC verifications of message_3, with the exception that the Sig_or_MAC_3 field MUST be verified using the public key included in CRED_I (see {{voucher_response}}) received from W. V MUST ignore any key related information obtained in ID_CRED_I.
 
-This enables the authenticator to verify that message_3 was generated by the device authorized by the authorization server as part of the associated Voucher Request/Response procedure (see {{V-W}}).
+This enables V to verify that message_3 was generated by U authorized by W as part of the associated Voucher Request/Response procedure (see {{V-W}}).
 
 ## Authenticator <-> Authorization Server (V <-> W) {#V-W}
 
@@ -629,13 +629,13 @@ TODO: register rsp_ad ACE parameter
 ## EDHOC External Authorization Data Registry {#iana-ead}
 
 IANA has registered the following entry in the "EDHOC External Authorization Data" registry under the group name "Ephemeral Diffie-
-   Hellman Over COSE (EDHOC)". The Label and Value Type correspond to the (ead_label, ead_value) which are defined in this document: (L, Voucher_Info) in EAD_1, and (L, Voucher) in EAD_2.
+   Hellman Over COSE (EDHOC)". The Label and Value Type correspond to the (ead_label, ead_value) which are defined in this document: (TBD1, Voucher_Info) in EAD_1, and (TBD1, Voucher) in EAD_2.
 
 ~~~~~~~~~~~
 +-------+------------+-----------------+
 | Label | Value Type | Description     |
 +-------+------------+-----------------+
-|  TBD  |    bstr    | Voucher related |
+|  TBD1 |    bstr    | Voucher related |
 |       |            | information     |
 +-------+------------+-----------------+
 ~~~~~~~~~~~
