@@ -44,25 +44,25 @@ author:
 
 
 normative:
-
+  RFC8392:
+  RFC8949:
+  RFC9052:
+  RFC9053:
+  I-D.ietf-lake-edhoc:
+    
 informative:
 
   RFC2119:
   RFC3748:
   RFC7228:
   RFC8174:
-  RFC8392:
   RFC8446:
-  RFC8949:
   RFC9031:
-  RFC9052:
-  RFC9053:
   RFC9180:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
   I-D.mattsson-cose-cbor-cert-compress:
   I-D.selander-ace-coap-est-oscore:
-  I-D.ietf-lake-edhoc:
   I-D.ietf-core-oscore-edhoc:
   IEEE802.15.4:
     title: "IEEE Std 802.15.4 Standard for Low-Rate Wireless Networks"
