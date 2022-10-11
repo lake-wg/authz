@@ -327,9 +327,7 @@ where context is a CBOR bstr wrapping of the following CBOR sequence:
 ~~~~~~~~~~~
 voucher_input = (
     V_TYPE:        int,
-    SS:            int,
-    G_X:           bstr,
-    ID_U:          bstr,
+    H(message_1)   bstr,
     CRED_R:        bstr,
 )
 ~~~~~~~~~~~
@@ -337,9 +335,7 @@ voucher_input = (
 where
 
 * V_TYPE indicates the type of voucher used (TBD)
-* SS is the selected cipher suite of the EDHOC protocol, see {{reuse}}
-* G_X is encoded as in EDHOC message_1, see Section 3.7 of {{I-D.ietf-lake-edhoc}}
-* ID_U is defined in {{U-W}}
+* H(message_1) is copied from the associated voucher request.
 * CRED_R is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of V, PK_V, see {{V_2}}
 
 ## Device <-> Authenticator (U <-> V) {#U-V}
@@ -375,8 +371,6 @@ ID_CRED_R contains the CCS with 'kccs' as COSE header_map, see Section 9.6 of {{
 #### Processing in U
 
 In addition to normal EDHOC verifications, U MUST verify the Voucher by performing the same calculation as in {{voucher}} using the SS, G_X and ID_U sent in message_1 and CRED_R received in ID_CRED_R of message_2. If the voucher calculated in this way is not identical to what was received in message_2, then U MUST discontinue the protocol.
-
-Editor's note: Consider replace SS, G_X, ID_U in Voucher with H(message_1), since that is already required by EDHOC to be cached by the initiator. H(message_1) needs to be added to VREQ message in that case.
 
 ### Message 3
 
@@ -426,6 +420,7 @@ Voucher_Request = [
     SS:              int,
     G_X:             bstr,
     ENC_ID:          bstr,
+    H(message_1)     bstr,
   ? PoP_V:           bstr,
 ]
 ~~~~~~~~~~~
