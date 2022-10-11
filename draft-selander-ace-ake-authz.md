@@ -527,7 +527,6 @@ The private ephemeral key is thus used in the device for calculations of key mat
 
 # IANA Considerations  {#iana}
 
-TODO: register rsp_ad ACE parameter
 TODO: register "ake-authz" well-known HTTP path
 
 ## EDHOC External Authorization Data Registry {#iana-ead}
