@@ -158,7 +158,7 @@ The communication between V and W is assumed to be mutually authenticated and pr
 V may in principle use different credentials for authenticating to U and to W (CRED_R is used for the former).
 However, V MUST prove possession of private key of PK_V to W, since W is asserting (by means of a voucher sent to U) that this credential belongs to V.
 
-In this version of the draft is assumed that V authenticates to W with PK_V using some authentication protocol providing proof of possession of the private key, for example TLS 1.3 {{RFC8446}}.
+In this version of the draft is assumed that V authenticates to W with the public key PK_V using some authentication protocol providing proof of possession of the private key, for example TLS 1.3 {{RFC8446}}.
 A future version of this draft may specify explicit proof of possession of the private key of PK_V in VREQ, e.g., by including a signature of the contents of the voucher request made with the private key corresponding to PK_V.
 
 ## Authorization Server (W)
@@ -253,7 +253,7 @@ info = (
 
 ## Device <-> Authorization Server (U <-> W) {#U-W}
 
-The protocol between U and W is carried out via V with certain data protected between the endpoints using the equivalent of a hybrid encryption scheme (see, e.g., {{RFC9180}}).
+The protocol between U and W is carried out via V with certain data protected between the endpoints using the equivalent of a hybrid public key encryption scheme such as {{RFC9180}}.
 U uses the public DH key of the W, G_W, together with the private DH key corresponding to ephemeral key G_X in EDHOC message_1, and vice versa for W.
 The endpoints calculate a shared secret G_XW (see {{reuse}}), which is used to derive secret keys to protect data between U and W, as detailed in this section.
 
@@ -443,6 +443,8 @@ W receives the voucher request, verifies and decrypts Enc_ID, and associates the
 If G_X is not unique among nonces associated to this identity, the protocol SHALL be discontinued.
 If ENC_ID also includes the identity of V, ID_V, then W performs an additional check to verify that this matches the identity used by V when establishing the in the secure connection.
 If the identities of V as indicated by U, and as observed by W, do not match, the protocol SHALL be discontinued.
+
+W uses the identity of the device, ID_U, to look up and verify the associated authorization policies for U. This is out of scope for the specification.
 
 ### Voucher Response {#voucher_response}
 
