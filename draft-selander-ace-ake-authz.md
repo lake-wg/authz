@@ -64,7 +64,6 @@ informative:
   RFC9031:
   RFC9180:
   RFC5785:
-  RFC4648:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
   I-D.mattsson-cose-cbor-cert-compress:
@@ -489,16 +488,15 @@ V MUST use the TLS client authentication to authenticate to W, using the certifi
 W MUST support the use of the path-prefix "/.well-known/", as defined in {{RFC5785}}, and the registered name "ake-authz".
 A valid URI thus begins with "https://www.example.com/.well-known/ake-authz".
 Each operation specified in the following is indicated by a path-suffix.
-Since payloads carry CBOR binary strings, they MUST be base64-encoded, as specified in Section 4 of {{RFC4648}}.
 
 ## Voucher Request (/voucherrequest)
 
 To request a voucher, V MUST issue an HTTP request:
 
 * Method is POST
-* Payload is the base64-encoded serialization of the Voucher Request object, as specified in {{voucher_request}}.
+* Payload is the serialization of the Voucher Request object, as specified in {{voucher_request}}.
 
-In case of successful processing at W, W MUST issue a 200 OK response with payload containing base64-encoded Voucher Response object, as specified in {{voucher_response}}.
+In case of successful processing at W, W MUST issue a 200 OK response with payload containing the serialized Voucher Response object, as specified in {{voucher_response}}.
 
 ## Certificate Request (/certrequest)
 
@@ -506,9 +504,9 @@ V requests the public key certificate of U from W through the "/certrequest" pat
 To request the U's certificate, V MUST issue an HTTP request:
 
 * Method is POST
-* Payload is the base64-encoded serialization of the ID_CRED_I object, as received in EDHOC message_3.
+* Payload is the serialization of the ID_CRED_I object, as received in EDHOC message_3.
 
-In case of a successful lookup of the certificate at W, W MUST issue 200 OK response with payload containing the base64-encoded CRED_I certificate.
+In case of a successful lookup of the certificate at W, W MUST issue 200 OK response with payload containing the serialized CRED_I certificate.
 
 # Security Considerations  {#sec-cons}
 
