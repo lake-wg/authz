@@ -63,6 +63,8 @@ informative:
   RFC8446:
   RFC9031:
   RFC9180:
+  RFC5785:
+  RFC4648:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
   I-D.mattsson-cose-cbor-cert-compress:
@@ -413,7 +415,7 @@ This secure connection protects the Voucher Request/Response Protocol (see proto
 
 The ephemeral public key G_X sent in EDHOC message_1 from U to W acts as challenge/response nonce for the Voucher Request/Response Protocol, and binds together instances of the two protocols (U<->V and V<->W).
 
-### Voucher Request
+### Voucher Request {#voucher_request}
 
 #### Processing in V
 
@@ -476,6 +478,38 @@ V receives the voucher response from W over the secure connection. If the receiv
 
 V verifies CRED_I and that U is an admissible device and then continues the EDHOC processing, or else discontinues the protocol.
 
+# REST Interface at W
+
+The interaction between V and W is enabled through a RESTful HTTPS interface exposed by W.
+V MUST perform a TLS handshake with W, reachable at the URI specified in LOC_W.
+V MUST use the TLS client authentication to authenticate to W, using the certificate containing the PK_V public key.
+
+## HTTP URIs
+
+W MUST support the use of the path-prefix "/.well-known/", as defined in {{RFC5785}}, and the registered name "ake-authz".
+A valid URI thus begins with "https://www.example.com/.well-known/ake-authz".
+Each operation specified in the following is indicated by a path-suffix.
+Since payloads carry CBOR binary strings, they MUST be base64-encoded, as specified in Section 4 of {{RFC4648}}.
+
+## Voucher Request (/voucherrequest)
+
+To request a voucher, V MUST issue an HTTP request:
+
+* Method is POST
+* Payload is the base64-encoded serialization of the Voucher Request object, as specified in {{voucher_request}}.
+
+In case of successful processing at W, W MUST issue a 200 OK response with payload containing base64-encoded Voucher Response object, as specified in {{voucher_response}}.
+
+## Certificate Request (/certrequest)
+
+V requests the public key certificate of U from W through the "/certrequest" path-suffix.
+To request the U's certificate, V MUST issue an HTTP request:
+
+* Method is POST
+* Payload is the base64-encoded serialization of the ID_CRED_I object, as received in EDHOC message_3.
+
+In case of a successful lookup of the certificate at W, W MUST issue 200 OK response with payload containing the base64-encoded CRED_I certificate.
+
 # Security Considerations  {#sec-cons}
 
 This specification builds on and reuses many of the security constructions of EDHOC, e.g. shared secret calculation and key derivation. The security considerations of EDHOC {{I-D.ietf-lake-edhoc}} apply with modifications discussed here.
@@ -494,6 +528,7 @@ The private ephemeral key is thus used in the device for calculations of key mat
 # IANA Considerations  {#iana}
 
 TODO: register rsp_ad ACE parameter
+TODO: register "ake-authz" well-known HTTP path
 
 ## EDHOC External Authorization Data Registry {#iana-ead}
 
