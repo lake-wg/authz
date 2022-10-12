@@ -1,13 +1,13 @@
 ---
 title: Lightweight Authorization for EDHOC
 abbrev: Lightweight Authorization for EDHOC
-docname: draft-selander-ace-ake-authz-latest
+docname: draft-selander-lake-authz-latest
 
 ipr: trust200902
 cat: std
 submissiontype: IETF
 area: Security
-workgroup: ACE Working Group
+workgroup: LAKE Working Group
 keyword: Internet-Draft
 coding: utf-8
 pi: # can use array (if all yes) or hash here
