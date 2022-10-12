@@ -186,32 +186,32 @@ Three security sessions are going on in parallel:
 {{fig-protocol}} provides an overview of the message flow detailed in this section. Only selected message fields of EDHOC are shown, for more details see Section 3.1 of {{I-D.ietf-lake-edhoc}}.
 
 ~~~~~~~~~~~
-U                                         V                            W
-|                                         |                            |
-|            SUITES_I, G_X, EAD_1         |                            |
-+---------------------------------------->|                            |
-|              EDHOC message_1            |  SS, G_X, ENC_ID, ?PoP_V   |
-|                                         +--------------------------->|
-|                                         |   Voucher Request (VREQ)   |
-|                                         |                            |
-|                                         |        G_X, Voucher        |
-|                                         |<---------------------------+
-|                                         |   Voucher Response (VRES)  |
-|   Enc(ID_CRED_R, Sig_or_MAC_2, EAD_2)   |                            |
-|<----------------------------------------+                            |
-|             EDHOC message_2             |                            |
-|                                         |                            |
-|       Enc(ID_CRED_I, Sig_or_MAC_3)      |                            |
-+---------------------------------------->|                            |
-|             EDHOC message_3             |    (Credential lookup:)    |
-|                                         |         ID_CRED_I          |
-|                                         |--------------------------->|
-|                                         |<---------------------------|
-|                                         |           CRED_I           |
-|                                         |                            |
-
+U                                         V                                  W
+|                                         |                                  |
+|            SUITES_I, G_X, EAD_1         |                                  |
++---------------------------------------->|                                  |
+|              EDHOC message_1            |  H(m1), SS, G_X, ENC_ID, ?PoP_V  |
+|                                         +--------------------------------->|
+|                                         |      Voucher Request (VREQ)      |
+|                                         |                                  |
+|                                         |           H(m1), Voucher         |
+|                                         |<---------------------------------+
+|                                         |      Voucher Response (VRES)     |
+|   Enc(ID_CRED_R, Sig_or_MAC_2, EAD_2)   |                                  |
+|<----------------------------------------+                                  |
+|             EDHOC message_2             |                                  |
+|                                         |                                  |
+|       Enc(ID_CRED_I, Sig_or_MAC_3)      |                                  |
++---------------------------------------->|                                  |
+|             EDHOC message_3             |       (Credential lookup:)       |
+|                                         |            ID_CRED_I             |
+|                                         |--------------------------------->|
+|                                         |<---------------------------------|
+|                                         |              CRED_I              |
+|                                         |                                  |
 
 where
+H(m1) = H(message_1)
 EAD_1 contains Voucher_Info = [LOC_W, ENC_ID]
 EAD_2 contains Voucher = MAC(V_TYPE, SS, G_X, ID_U, CRED_R)
 
@@ -332,9 +332,7 @@ where context is a CBOR bstr wrapping of the following CBOR sequence:
 ~~~~~~~~~~~
 voucher_input = (
     V_TYPE:        int,
-    SS:            int,
-    G_X:           bstr,
-    ID_U:          bstr,
+    H(message_1):  bstr,
     CRED_R:        bstr,
 )
 ~~~~~~~~~~~
@@ -342,9 +340,7 @@ voucher_input = (
 where
 
 * V_TYPE indicates the type of voucher used (TBD)
-* SS is the selected cipher suite of the EDHOC protocol, see {{reuse}}
-* G_X is encoded as in EDHOC message_1, see Section 3.7 of {{I-D.ietf-lake-edhoc}}
-* ID_U is defined in {{U-W}}
+* H(message_1) is copied from the associated voucher request.
 * CRED_R is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of V, PK_V, see {{V_2}}
 
 ## Device <-> Authenticator (U <-> V) {#U-V}
@@ -381,8 +377,6 @@ ID_CRED_R contains the CCS with 'kccs' as COSE header_map, see Section 9.6 of {{
 
 In addition to normal EDHOC verifications, U MUST verify the Voucher by performing the same calculation as in {{voucher}} using the SS, G_X and ID_U sent in message_1 and CRED_R received in ID_CRED_R of message_2. If the voucher calculated in this way is not identical to what was received in message_2, then U MUST discontinue the protocol.
 
-Editor's note: Consider replace SS, G_X, ID_U in Voucher with H(message_1), since that is already required by EDHOC to be cached by the initiator. H(message_1) needs to be added to VREQ message in that case.
-
 ### Message 3
 
 #### Processing in U
@@ -417,6 +411,7 @@ V sends the voucher request to W. The Voucher Request SHALL be a CBOR array as d
 
 ~~~~~~~~~~~
 Voucher_Request = [
+    H(message_1):    bstr,
     SS:              int,
     G_X:             bstr,
     ENC_ID:          bstr,
