@@ -1,11 +1,11 @@
-# Lightweight Authorization for Authenticated Key Exchange.
+# Lightweight Authorization for EDHOC.
 
-This is the working area for the individual Internet-Draft, "Lightweight Authorization for Authenticated Key Exchange.".
+This is the working area for the individual Internet-Draft, "Lightweight Authorization for EDHOC.".
 
-* [Editor's Copy](https://EricssonResearch.github.io/ace-ake-authz/#go.draft-selander-ace-ake-authz.html)
+* [Editor's Copy](https://EricssonResearch.github.io/ace-ake-authz/#go.draft-selander-lake-authz.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-selander-ace-ake-authz)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-selander-ace-ake-authz)
-* [Compare Editor's Copy to Individual Draft](https://EricssonResearch.github.io/ace-ake-authz/#go.draft-selander-ace-ake-authz.diff)
+* [Compare Editor's Copy to Individual Draft](https://EricssonResearch.github.io/ace-ake-authz/#go.draft-selander-lake-authz.diff)
 
 
 ## Contributing
