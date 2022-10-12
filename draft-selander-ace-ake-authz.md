@@ -222,7 +222,7 @@ EAD_2 contains Voucher = MAC(V_TYPE, SS, G_X, ID_U, CRED_R)
 
 The protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
 
-* G_X, the 'x' parameter of the ephemeral public Diffie-Hellman key of party U, is also used in the protocol between U and W, as ephemeral key and nonce.
+* G_X, the 'x' parameter of the ephemeral public Diffie-Hellman key of party U, is also used in the protocol between U and W.
 
 * SUITES_I, the cipher suites relevant to U, which includes the selected cipher suite - here denoted SS, also defines the algorithms used between U and W. In particular SS contains information about (see Section 3.6 of {{I-D.ietf-lake-edhoc}}):
 
@@ -399,13 +399,13 @@ V and W are assumed to be able to authenticate and set up a secure connection, o
 
 This secure connection protects the Voucher Request/Response Protocol (see protocol between V and W in {{fig-protocol}}).
 
-The ephemeral public key G_X sent in EDHOC message_1 from U to W acts as challenge/response nonce for the Voucher Request/Response Protocol, and binds together instances of the two protocols (U<->V and V<->W).
+The hash of EDHOC message_1, H(message_1), acts as session identifier of the Voucher Request/Response protocol, and binds together instances of the two protocols (U<->V and V<->W).
 
 ### Voucher Request {#voucher_request}
 
 #### Processing in V
 
-Unless already in place, V and W establish a secure connection. V uses G_X received from the device as a nonce associated to this connection with W. If the same value of the nonce G_X is already used for a connection with this or other W, the protocol SHALL be discontinued.
+Unless already in place, V and W establish a secure connection. V uses H(message_1) as a session identifier associated to this connection with W. If the same value of H(message_1) is already used for a connection with this or other W, the protocol SHALL be discontinued.
 
 V sends the voucher request to W. The Voucher Request SHALL be a CBOR array as defined below:
 
@@ -428,8 +428,7 @@ Editor's note: Define PoP_V (include G_X, ENC_ID in the calculation for binding 
 
 #### Processing in W
 
-W receives the voucher request, verifies and decrypts ENC_ID, and associates the nonce G_X to ID_U.
-If G_X is not unique among nonces associated to this identity, the protocol SHALL be discontinued.
+W receives the voucher request, verifies and decrypts ENC_ID, and associates the session identifier H(message_1) to ID_U. If H(message_1) is not unique among session identifiers associated to this identity, the protocol SHALL be discontinued.
 
 W uses the identity of the device, ID_U, to look up and verify the associated authorization policies for U. This is out of scope for the specification.
 
@@ -457,7 +456,7 @@ where
 
 #### Processing in V
 
-V receives the voucher response from W over the secure connection. If the received G_X does not match the value of the nonce associated to the secure connection, the protocol SHALL be discontinued.
+V receives the voucher response from W over the secure connection. If the received session identifier does not match the session identifier H(message_1) associated to the secure connection, the protocol SHALL be discontinued.
 
 # REST Interface at W
 
