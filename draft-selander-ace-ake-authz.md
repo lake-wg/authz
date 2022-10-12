@@ -63,6 +63,7 @@ informative:
   RFC8446:
   RFC9031:
   RFC9180:
+  RFC5785:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
   I-D.mattsson-cose-cbor-cert-compress:
@@ -168,7 +169,7 @@ W has the private DH key corresponding to G_W, which is used to secure the commu
 Authentication credentials and communication security used with V is out of scope, except for the need to verify the possession of the private key of PK_V as specified in {{domain-auth}}.
 
 W provides to U the authorization decision for enrollment with V in the form of a voucher, see {{voucher}}.
-W provides information to V about U, such as CRED_I.
+W may provide the authorization credentialy of U, CRED_I, when V has learnt the identity of U.
 
 W needs to be available during the execution of the protocol.
 
@@ -193,7 +194,7 @@ U                                         V                                  W
 |                                         +--------------------------------->|
 |                                         |      Voucher Request (VREQ)      |
 |                                         |                                  |
-|                                         |       H(m1), CRED_I, Voucher     |
+|                                         |           H(m1), Voucher         |
 |                                         |<---------------------------------+
 |                                         |      Voucher Response (VRES)     |
 |   Enc(ID_CRED_R, Sig_or_MAC_2, EAD_2)   |                                  |
@@ -202,7 +203,12 @@ U                                         V                                  W
 |                                         |                                  |
 |       Enc(ID_CRED_I, Sig_or_MAC_3)      |                                  |
 +---------------------------------------->|                                  |
-|             EDHOC message_3             |                                  |
+|             EDHOC message_3             |       (Credential lookup:)       |
+|                                         |            ID_CRED_I             |
+|                                         |--------------------------------->|
+|                                         |<---------------------------------|
+|                                         |              CRED_I              |
+|                                         |                                  |
 
 where
 H(m1) = H(message_1)
@@ -227,7 +233,7 @@ The protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
 
 * EAD_1, EAD_2 are the External Authorization Data message fields of message_1 and message_2, respectively, see Section 3.8 of {{I-D.ietf-lake-edhoc}}. This document specifies EAD items with ead_label = TBD1, see {{iana-ead}}).
 
-* ID_CRED_I and ID_CRED_R are used to identify the authentication credentials of U and V. In this protocol ID_CRED_I is empty since V obtains CRED_I, the authentication credential of U, from W; whereas ID_CRED_R = CRED_R (see Section 3.5.3 of {{I-D.ietf-lake-edhoc}}).
+* ID_CRED_I and ID_CRED_R are used to identify the authentication credentials of U and V. As shown at the bottom of {{fig-protocol}}, V may use W to obtain CRED_I, the authentication credential of U. The authentication credential of V, CRED_R, is transported in ID_CRED_R in message_2, see {{V_2}}.
 
 * Signature_or_MAC_2 and Signature_or_MAC_3 (abbreviated in {{fig-protocol}}), containing data generated using the private key of V and U, respectively, are shown here just to be able to reason about the use of credentials. The definition of these fields depend on EDHOC method, see Section 5 of {{I-D.ietf-lake-edhoc}}).
 
@@ -274,7 +280,7 @@ Voucher_Info = (
 where
 
 * LOC_W is location information of W, used by V
-* ENC_ID is the encrypted blob carrying an identifier of U and an optional identifier of V, passed on from V to W, calculated as follows:
+* ENC_ID is the encrypted blob carrying an identifier of U passed on from V to W, calculated as follows:
 
 ENC_ID is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC9052}}) computed from the following:
 
@@ -285,7 +291,6 @@ ENC_ID is 'ciphertext' of COSE_Encrypt0 (Section 5.2-5.3 of {{RFC9052}}) comput
 ~~~~~~~~~~~
 plaintext = (
     ID_U:            bstr,
-  ? ID_V:            bstr,
  )
 ~~~~~~~~~~~
 ~~~~~~~~~~~
@@ -298,7 +303,6 @@ where
 
 * ID_U is an identity of the device, for example a reference to the device authentication credential, see {{device}}.
 
-* ID_V is the intended identity of the authenticator, as provided by the device to the authorization server. This may be a name in a name space agreed out-of-band and managed by a party trusted by the authorization server, for example a common name of an X.509 certificate signed by a CA trusted by the authorization server. The value may be obtained by the device through out-of-band means, possibly through secure network discovery. ID_V is optional, but if ID_V is present then W is expected to enforce that ID_V matches the authenticator from which VREQ was received.
 * SS is the selected cipher suite in SUITES_I.
 
 The derivation of K_1 = Expand(PRK, info, length) uses the following input to the info struct ({{reuse}}):
@@ -379,26 +383,15 @@ In addition to normal EDHOC verifications, U MUST verify the Voucher by performi
 
 If all verifications are passed, then U sends EDHOC message_3.
 
-Since V before sending message_2 already received the authentication credential CRED_I from W (see {{V-W}}), ID_CRED_I SHALL be a COSE header_map of type 'kid' with the empty byte string as value:
-
-~~~~~~~~~~~
-ID_CRED_I =
-{
-  4 : h''
-}
-~~~~~~~~~~~
-
 The Sig_or_MAC_3 field calculated using the private key corresponding to PK_U is either signature or MAC depending on EDHOC method.
 
-EAD_3 MAY contain an enrolment request, see e.g. CSR specified in {{I-D.mattsson-cose-cbor-cert-compress}}, or other request which the device is now authorized to make.
+EAD_3 MAY contain a certificate enrollment request, see e.g. CSR specified in {{I-D.mattsson-cose-cbor-cert-compress}}, or other request which the device is now authorized to make.
 
 EDHOC message_3 may be combined with an OSCORE request, see {{I-D.ietf-core-oscore-edhoc}}.
 
 #### Processing in V
 
-V performs the normal EDHOC verifications of message_3, with the exception that the Sig_or_MAC_3 field MUST be verified using the public key included in CRED_I (see {{voucher_response}}) received from W. V MUST ignore any key related information obtained in ID_CRED_I.
-
-This enables V to verify that message_3 was generated by U authorized by W as part of the associated Voucher Request/Response procedure (see {{V-W}}).
+V performs the normal EDHOC verifications of message_3. V may retrieve of CRED_I from W, after V learnt ID_CRED_I from U.
 
 ## Authenticator <-> Authorization Server (V <-> W) {#V-W}
 
@@ -408,7 +401,7 @@ This secure connection protects the Voucher Request/Response Protocol (see proto
 
 The ephemeral public key G_X sent in EDHOC message_1 from U to W acts as challenge/response nonce for the Voucher Request/Response Protocol, and binds together instances of the two protocols (U<->V and V<->W).
 
-### Voucher Request
+### Voucher Request {#voucher_request}
 
 #### Processing in V
 
@@ -435,18 +428,14 @@ Editor's note: Define PoP_V (include G_X, ENC_ID in the calculation for binding 
 
 #### Processing in W
 
-W receives the voucher request, verifies and decrypts Enc_ID, and associates the nonce G_X to ID_U.
+W receives the voucher request, verifies and decrypts ENC_ID, and associates the nonce G_X to ID_U.
 If G_X is not unique among nonces associated to this identity, the protocol SHALL be discontinued.
-If ENC_ID also includes the identity of V, ID_V, then W performs an additional check to verify that this matches the identity used by V when establishing the in the secure connection.
-If the identities of V as indicated by U, and as observed by W, do not match, the protocol SHALL be discontinued.
 
 W uses the identity of the device, ID_U, to look up and verify the associated authorization policies for U. This is out of scope for the specification.
 
 ### Voucher Response {#voucher_response}
 
 #### Processing in W
-
-W uses the identity of the device, ID_U, to look up the device authentication credential, CRED_I.
 
 W retrieves the public key of V, PK_V, used to authenticate the secure connection with V, and constructs the CCS (see {{V_2}}) and the Voucher (see {{voucher}}).
 
@@ -457,7 +446,6 @@ W generates the voucher response and sends it to V over the secure connection. T
 ~~~~~~~~~~~
 Voucher_Response = [
     G_X:            bstr,
-    CRED_I:         bstr,
     Voucher:        bstr
 ]
 ~~~~~~~~~~~
@@ -465,162 +453,52 @@ Voucher_Response = [
 where
 
 * G_X is copied from the associated voucher request.
-* CRED_I is the EDHOC authentication credential of U. The format of this credential is out of scope.
 * The Voucher is defined in {{voucher}}.
 
 #### Processing in V
 
 V receives the voucher response from W over the secure connection. If the received G_X does not match the value of the nonce associated to the secure connection, the protocol SHALL be discontinued.
 
-V verifies CRED_I and that U is an admissible device and then continues the EDHOC processing, or else discontinues the protocol.
+# REST Interface at W
 
-# ACE Profile
+The interaction between V and W is enabled through a RESTful interface exposed by W.
+V SHOULD access the resources exposed by W through the protocol indicated by the scheme in LOC_W URI.
+In case the scheme indicates "https", V SHOULD perform a TLS handshake with W and use HTTP.
+In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the same resources using CoAP.
+In both cases, V MUST use the client authentication to authenticate to W, using the certificate containing the PK_V public key.
 
-The messages specified in this document may be carried between the endpoints in various protocols. This section defines an embedding as a profile of the ACE framework (see Appendix C of {{I-D.ietf-ace-oauth-authz}}).
+## HTTP URIs
 
-* U plays the role of the ACE Resource Server (RS).
+W MUST support the use of the path-prefix "/.well-known/", as defined in {{RFC5785}}, and the registered name "ake-authz".
+A valid URI thus begins with "https://www.example.com/.well-known/ake-authz".
+Each operation specified in the following is indicated by a path-suffix.
 
-* V plays the role of the ACE Client (C).
+## Voucher Request (/voucherrequest)
 
-* W plays the role of the ACE Authorization Server (AS).
+To request a voucher, V MUST issue an HTTP request:
 
-Many readers who are used to the diagram having the Client on the left may be surprised at the cast of characters.
-The "resource" which C (V) is trying to access is the "ownership" of U.
-The AS (W) is the manufacturer (or previous owner) of RS (U), and is therefore in a position to grant C (V) ownership of RS (U).
+* Method is POST
+* Payload is the serialization of the Voucher Request object, as specified in {{voucher_request}}.
 
-C and RS use EDHOC's EAD to communicate.
-C and RS use the EDHOC protocol to protect their communication.
-EDHOC also provides mutual authentication of C and RS, assisted by the AS.
+In case of successful processing at W, W MUST issue a 200 OK response with payload containing the serialized Voucher Response object, as specified in {{voucher_response}}.
 
-## Protocol Overview
+## Certificate Request (/certrequest)
 
-~~~~~~~~~~~
-  RS (U)                             C (V)                 AS (W)
-   |          EDHOC message_1        |                     |
-   |  AD1=AS Request Creation Hints  |                     |
-   |-------------------------------->|     POST /token     |
-   |                                 |-------------------->|
-   |                                 |                     |
-   |                                 | Access Token +      |
-   |          EDHOC message_2        |  Access Information |
-   |          AD2=Access Token       |<--------------------|
-   |<--------------------------------|                     |
-   |          EDHOC message_3        |                     |
-   |-------------------------------->|                     |
+V requests the public key certificate of U from W through the "/certrequest" path-suffix.
+To request the U's certificate, V MUST issue an HTTP request:
 
-~~~~~~~~~~~
-{: #fig-mapping-ace title="Overview of the protocol mapping to ACE" artwork-align="center"}
+* Method is POST
+* Payload is the serialization of the ID_CRED_I object, as received in EDHOC message_3.
 
-1. RS proactively sends the AS Request Creation Hints message to C to signal the information on
-where C can reach the AS.
-
-2. RS piggybacks the AS Request Creation Hints message using Auxiliary Data of EDHOC message_1.
-
-3. Before continuing the EDHOC exchange, based on the AS Request Creation Hints information, C sends a POST request to the token endpoint at the AS requesting the access token.
-
-4. The AS issues an assertion to C that is cryptographically protected based on the secret shared between the AS and RS. In this profile, the assertion is encoded as a Bearer Token.
-
-5. C presents this token to RS in EAD_2.
-
-6. RS verifies the token based on the possession of the shared secret with the AS and authenticates C.
-
-## AS Request Creation Hints
-
-Parameters that can appear in the AS Request Creation Hints message are specified in Section 5.3 of {{I-D.ietf-ace-oauth-authz}}.
-RS MUST use the "AS" parameter to transport LOC_W, i.e. an absolute URI where C can reach the AS.
-RS MUST use the "audience" parameter to transport the CBOR sequence consisting of two elements: SS, the selected cipher suite; ENC_ID, the AEAD encrypted blob containing identities.
-The "cnonce" parameter MUST be implied to G_X, i.e. the ephemeral public key of the RS in the underlying EDHOC exchange.
-The "cnonce" parameter is not carried in the AS Request Creation Hints message for byte saving reasons.
-AS Request Creation Hints MUST be carried within EAD_1.
-
-An example EAD_1 value in CBOR diagnostic notation is shown below:
-
-~~~~~~~~~~~
-EAD_1:
-{
-    "AS" : "coaps://as.example.com/token",
-    "audience": << h'73',h'737570657273...' >>
-}
-~~~~~~~~~~~
-
-## Client-to-AS Request
-
-The protocol that provides the secure connection between C and the AS is out-of-scope.
-This can, for example, be TLS 1.3.
-What is important is that the two peers are mutually authenticated, and that the secure connection provides message integrity, confidentiality and freshness.
-It is also necessary for the AS to be able to extract the public key of C used in the underlying security handshake.
-
-C sends the POST request to the token endpoint at the AS following Section 5.8.1. of {{I-D.ietf-ace-oauth-authz}}.
-C MUST set the "audience" parameter to the value received in AS Request Creation Hints.
-C MUST set the "cnonce" parameter to G_X, the ephemeral public key of RS in the EDHOC exchange.
-
-An example exchange using CoAP and CBOR diagnostic notation is shown below:
-
-~~~~~~~~~~~
-    Header: POST (Code=0.02)
-    Uri-Host: "as.example.com"
-    Uri-Path: "token"
-    Content-Format: "application/ace+cbor"
-    Payload:
-    {
-        "audience" : << h'73',h'737570657273...' >>
-        "cnonce" : h'756E73686172...'
-    }
-~~~~~~~~~~~
-
-## AS-to-Client Response
-
-Given successful authorization of C at the AS, the AS responds by issuing a Bearer token and retrieves the certificate of RS on behalf of C.
-The access token and the certificate are passed back to C, who uses it to complete the EDHOC exchange.
-This document extends the ACE framework by registering a new Access Information parameter:
-
-rsp_ad:
-     OPTIONAL. Carries additional information from the AS to C associated with the access token.
-
-
-The AS-to-Client responsE MUST contain:
-
-* ace_profileparameter set to "edhoc-authz"
-* token_type parameter set to "Bearer"
-* access_token as specified in {{voucher}}
-* rsp_ad = bstr .cbor cert_gx
-
-~~~~~~~~~~~
-cert_gx = (
-    CERT_PK_U:        bstr,
-    G_X:	      bstr
-)
-~~~~~~~~~~~
-where:
-
-* CERT_PK_U is the RS's certificate, as discussed in {{voucher_response}}. To be able to retrieve this certificate, the AS first needs to decrypt the audience value and obtain the RS's identity.
-* G_X is the ephemeral key generated by RS in EDHOC message_1.
-
-An example AS response to C is shown below:
-
-~~~~~~~~~~~
-    2.01 Created
-    Content-Format: application/ace+cbor
-    Max-Age: 3600
-    Payload:
-    {
-        "ace_profile" : "edhoc-authz",
-        "token_type" : "Bearer",
-        "access_token" : h'666F726571756172746572...',
-        "rsp_ad" : h'61726973746F64656D6F637261746963616C...'
-    }
-~~~~~~~~~~~
+In case of a successful lookup of the certificate at W, W MUST issue 200 OK response with payload containing the serialized CRED_I certificate.
 
 # Security Considerations  {#sec-cons}
 
 This specification builds on and reuses many of the security constructions of EDHOC, e.g. shared secret calculation and key derivation. The security considerations of EDHOC {{I-D.ietf-lake-edhoc}} apply with modifications discussed here.
 
-EDHOC provides identity protection of the Initiator, disclosed to the Responder in message_3. The sending of the authentication credential, CRED_I, of U in the Voucher Response provides information about the identity of the device already before message_2, which changes the identity protection properties and thus needs to be validated against a given use case. The authorization server authenticates the authenticator, receives the Voucher Request, and can perform potential other verifications before sending the Voucher Response. This allows the authorization server to restrict information about the identity of the device to parties which are authorized to have that. However, if there are multiple authorized authenticators, the authorization server may not be able to distinguish between  authenticator V which the device is connecting to and a misbehaving but authorized authenticator V' constructing a Voucher Request built from an eavesdropped message_1.
-A mitigation for this kind of misbehaving authenticator is that the device discovers the identity of the authenticator through out-of-bands means before attempting to enroll, and include the optional ID_V in the ENC_ID encrypted blob. For example, the network's discovery mechanism can carry asserted information on the associated identity of the authenticator. The use of ID_V also changes the identity protection assumptions since it requires U to know the identity of V before the protocol starts. The identity of V is still protected against passive adversaries, unless disclosed by the out-of-band mechanism by which U acquires information about the identity of V. The privacy considerations whether the identity of the device or of the authenticator is more sensitive need to be studied depending on a specific use case.
+EDHOC provides identity protection of the Initiator, here the device. The encryption of the device identity in the first message should consider potential information leaking from the length of the identifier ID_U, either by making all identifiers having the same length or the use of a padding scheme.
 
-For use cases where neither the early disclosure of the device nor of the authenticator identities are deemed acceptable, the device certificate must not be sent in the Voucher Response, and the identity of V must be omitted. Instead, the device certificate could be retrieved from the authorization server or other certificate repository after message_3 is received by the authenticator, using the device identifier provided in ID_CRED_I as lookup. This would require the device identity to be transported in both message_1 (in EAD_1) and message_3 but would make the protocol comply with the default identity protection provided by EDHOC.
-
-The encryption of the device identity in the first message should consider potential information leaking from the length of the identifier ID_U, either by making all identifiers having the same length or the use of a padding scheme.
+Although W learns about the identity of U after receiving VREQ, this information must not be disclosed to V, until U has revealed its identity to V with ID_CRED_I in message_3. W may be used for lookup of CRED_I from ID_CRED_I, or this credential lookup function may be separate from the authorization function of W. The trust model used here is that U decides to which V it reveals its identity. In an alternative trust model where U trusts W to decide to which V it reveal's U's identity, CRED_I could be sent in Voucher Response.
 
  As noted Section 8.2 of {{I-D.ietf-lake-edhoc}} an ephemeral key may be used to calculate several ECDH shared secrets. In this specification the ephemeral key G_X is also used to calculate G_XW, the shared secret with the authorization server.
 
@@ -628,7 +506,7 @@ The private ephemeral key is thus used in the device for calculations of key mat
 
 # IANA Considerations  {#iana}
 
-TODO: register rsp_ad ACE parameter
+TODO: register "ake-authz" well-known HTTP path
 
 ## EDHOC External Authorization Data Registry {#iana-ead}
 
