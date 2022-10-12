@@ -63,6 +63,7 @@ informative:
   RFC8446:
   RFC9031:
   RFC9180:
+  RFC5785:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
   I-D.mattsson-cose-cbor-cert-compress:
@@ -406,7 +407,7 @@ This secure connection protects the Voucher Request/Response Protocol (see proto
 
 The ephemeral public key G_X sent in EDHOC message_1 from U to W acts as challenge/response nonce for the Voucher Request/Response Protocol, and binds together instances of the two protocols (U<->V and V<->W).
 
-### Voucher Request
+### Voucher Request {#voucher_request}
 
 #### Processing in V
 
@@ -463,142 +464,38 @@ where
 
 V receives the voucher response from W over the secure connection. If the received G_X does not match the value of the nonce associated to the secure connection, the protocol SHALL be discontinued.
 
-# ACE Profile
+# REST Interface at W
 
-The messages specified in this document may be carried between the endpoints in various protocols. This section defines an embedding as a profile of the ACE framework (see Appendix C of {{I-D.ietf-ace-oauth-authz}}).
+The interaction between V and W is enabled through a RESTful interface exposed by W.
+V SHOULD access the resources exposed by W through the protocol indicated by the scheme in LOC_W URI.
+In case the scheme indicates "https", V SHOULD perform a TLS handshake with W and use HTTP.
+In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the same resources using CoAP.
+In both cases, V MUST use the client authentication to authenticate to W, using the certificate containing the PK_V public key.
 
-* U plays the role of the ACE Resource Server (RS).
+## HTTP URIs
 
-* V plays the role of the ACE Client (C).
+W MUST support the use of the path-prefix "/.well-known/", as defined in {{RFC5785}}, and the registered name "ake-authz".
+A valid URI thus begins with "https://www.example.com/.well-known/ake-authz".
+Each operation specified in the following is indicated by a path-suffix.
 
-* W plays the role of the ACE Authorization Server (AS).
+## Voucher Request (/voucherrequest)
 
-Many readers who are used to the diagram having the Client on the left may be surprised at the cast of characters.
-The "resource" which C (V) is trying to access is the "ownership" of U.
-The AS (W) is the manufacturer (or previous owner) of RS (U), and is therefore in a position to grant C (V) ownership of RS (U).
+To request a voucher, V MUST issue an HTTP request:
 
-C and RS use EDHOC's EAD to communicate.
-C and RS use the EDHOC protocol to protect their communication.
-EDHOC also provides mutual authentication of C and RS, assisted by the AS.
+* Method is POST
+* Payload is the serialization of the Voucher Request object, as specified in {{voucher_request}}.
 
-## Protocol Overview
+In case of successful processing at W, W MUST issue a 200 OK response with payload containing the serialized Voucher Response object, as specified in {{voucher_response}}.
 
-~~~~~~~~~~~
-  RS (U)                             C (V)                 AS (W)
-   |          EDHOC message_1        |                     |
-   |  AD1=AS Request Creation Hints  |                     |
-   |-------------------------------->|     POST /token     |
-   |                                 |-------------------->|
-   |                                 |                     |
-   |                                 | Access Token +      |
-   |          EDHOC message_2        |  Access Information |
-   |          AD2=Access Token       |<--------------------|
-   |<--------------------------------|                     |
-   |          EDHOC message_3        |                     |
-   |-------------------------------->|                     |
+## Certificate Request (/certrequest)
 
-~~~~~~~~~~~
-{: #fig-mapping-ace title="Overview of the protocol mapping to ACE" artwork-align="center"}
+V requests the public key certificate of U from W through the "/certrequest" path-suffix.
+To request the U's certificate, V MUST issue an HTTP request:
 
-1. RS proactively sends the AS Request Creation Hints message to C to signal the information on
-where C can reach the AS.
+* Method is POST
+* Payload is the serialization of the ID_CRED_I object, as received in EDHOC message_3.
 
-2. RS piggybacks the AS Request Creation Hints message using Auxiliary Data of EDHOC message_1.
-
-3. Before continuing the EDHOC exchange, based on the AS Request Creation Hints information, C sends a POST request to the token endpoint at the AS requesting the access token.
-
-4. The AS issues an assertion to C that is cryptographically protected based on the secret shared between the AS and RS. In this profile, the assertion is encoded as a Bearer Token.
-
-5. C presents this token to RS in EAD_2.
-
-6. RS verifies the token based on the possession of the shared secret with the AS and authenticates C.
-
-## AS Request Creation Hints
-
-Parameters that can appear in the AS Request Creation Hints message are specified in Section 5.3 of {{I-D.ietf-ace-oauth-authz}}.
-RS MUST use the "AS" parameter to transport LOC_W, i.e. an absolute URI where C can reach the AS.
-RS MUST use the "audience" parameter to transport the CBOR sequence consisting of two elements: SS, the selected cipher suite; ENC_ID, the AEAD encrypted blob containing identities.
-The "cnonce" parameter MUST be implied to G_X, i.e. the ephemeral public key of the RS in the underlying EDHOC exchange.
-The "cnonce" parameter is not carried in the AS Request Creation Hints message for byte saving reasons.
-AS Request Creation Hints MUST be carried within EAD_1.
-
-An example EAD_1 value in CBOR diagnostic notation is shown below:
-
-~~~~~~~~~~~
-EAD_1:
-{
-    "AS" : "coaps://as.example.com/token",
-    "audience": << h'73',h'737570657273...' >>
-}
-~~~~~~~~~~~
-
-## Client-to-AS Request
-
-The protocol that provides the secure connection between C and the AS is out-of-scope.
-This can, for example, be TLS 1.3.
-What is important is that the two peers are mutually authenticated, and that the secure connection provides message integrity, confidentiality and freshness.
-It is also necessary for the AS to be able to extract the public key of C used in the underlying security handshake.
-
-C sends the POST request to the token endpoint at the AS following Section 5.8.1. of {{I-D.ietf-ace-oauth-authz}}.
-C MUST set the "audience" parameter to the value received in AS Request Creation Hints.
-C MUST set the "cnonce" parameter to G_X, the ephemeral public key of RS in the EDHOC exchange.
-
-An example exchange using CoAP and CBOR diagnostic notation is shown below:
-
-~~~~~~~~~~~
-    Header: POST (Code=0.02)
-    Uri-Host: "as.example.com"
-    Uri-Path: "token"
-    Content-Format: "application/ace+cbor"
-    Payload:
-    {
-        "audience" : << h'73',h'737570657273...' >>
-        "cnonce" : h'756E73686172...'
-    }
-~~~~~~~~~~~
-
-## AS-to-Client Response
-
-Given successful authorization of C at the AS, the AS responds by issuing a Bearer token and retrieves the certificate of RS on behalf of C.
-The access token and the certificate are passed back to C, who uses it to complete the EDHOC exchange.
-This document extends the ACE framework by registering a new Access Information parameter:
-
-rsp_ad:
-     OPTIONAL. Carries additional information from the AS to C associated with the access token.
-
-
-The AS-to-Client responsE MUST contain:
-
-* ace_profileparameter set to "edhoc-authz"
-* token_type parameter set to "Bearer"
-* access_token as specified in {{voucher}}
-* rsp_ad = bstr .cbor cert_gx
-
-~~~~~~~~~~~
-cert_gx = (
-    CERT_PK_U:        bstr,
-    G_X:	      bstr
-)
-~~~~~~~~~~~
-where:
-
-* CERT_PK_U is the RS's certificate, as discussed in {{voucher_response}}. To be able to retrieve this certificate, the AS first needs to decrypt the audience value and obtain the RS's identity.
-* G_X is the ephemeral key generated by RS in EDHOC message_1.
-
-An example AS response to C is shown below:
-
-~~~~~~~~~~~
-    2.01 Created
-    Content-Format: application/ace+cbor
-    Max-Age: 3600
-    Payload:
-    {
-        "ace_profile" : "edhoc-authz",
-        "token_type" : "Bearer",
-        "access_token" : h'666F726571756172746572...',
-        "rsp_ad" : h'61726973746F64656D6F637261746963616C...'
-    }
-~~~~~~~~~~~
+In case of a successful lookup of the certificate at W, W MUST issue 200 OK response with payload containing the serialized CRED_I certificate.
 
 # Security Considerations  {#sec-cons}
 
@@ -614,7 +511,7 @@ The private ephemeral key is thus used in the device for calculations of key mat
 
 # IANA Considerations  {#iana}
 
-TODO: register rsp_ad ACE parameter
+TODO: register "ake-authz" well-known HTTP path
 
 ## EDHOC External Authorization Data Registry {#iana-ead}
 
