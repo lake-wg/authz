@@ -328,7 +328,7 @@ where context is a CBOR bstr wrapping of the following CBOR sequence:
 ~~~~~~~~~~~
 voucher_input = (
     V_TYPE:        int,
-    H(message_1)   bstr,
+    H(message_1):  bstr,
     CRED_R:        bstr,
 )
 ~~~~~~~~~~~
@@ -418,7 +418,7 @@ V sends the voucher request to W. The Voucher Request SHALL be a CBOR array as d
 
 ~~~~~~~~~~~
 Voucher_Request = [
-    H(message_1)     bstr,
+    H(message_1):    bstr,
     SS:              int,
     G_X:             bstr,
     ENC_ID:          bstr,
