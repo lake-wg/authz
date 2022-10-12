@@ -479,9 +479,11 @@ V verifies CRED_I and that U is an admissible device and then continues the EDHO
 
 # REST Interface at W
 
-The interaction between V and W is enabled through a RESTful HTTPS interface exposed by W.
-V MUST perform a TLS handshake with W, reachable at the URI specified in LOC_W.
-V MUST use the TLS client authentication to authenticate to W, using the certificate containing the PK_V public key.
+The interaction between V and W is enabled through a RESTful interface exposed by W.
+V SHOULD access the resources exposed by W through the protocol indicated by the scheme in LOC_W URI.
+In case the scheme indicates "https", V SHOULD perform a TLS handshake with W and use HTTP.
+In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the same resources using CoAP.
+In both cases, V MUST use the client authentication to authenticate to W, using the certificate containing the PK_V public key.
 
 ## HTTP URIs
 
