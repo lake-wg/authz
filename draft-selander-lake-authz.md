@@ -64,6 +64,8 @@ informative:
   RFC9031:
   RFC9180:
   RFC5785:
+  RFC3172:
+  RFC6761:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
   I-D.mattsson-cose-cbor-cert-compress:
@@ -505,8 +507,6 @@ The private ephemeral key is thus used in the device for calculations of key mat
 
 # IANA Considerations  {#iana}
 
-TODO: register "ake-authz" well-known HTTP path
-
 ## EDHOC External Authorization Data Registry {#iana-ead}
 
 IANA has registered the following entry in the "EDHOC External Authorization Data" registry under the group name "Ephemeral Diffie-
@@ -520,6 +520,22 @@ IANA has registered the following entry in the "EDHOC External Authorization Dat
 |       |            | information     |
 +-------+------------+-----------------+
 ~~~~~~~~~~~
+
+## The Well-Known URI Registry
+
+IANA has registered the following entry in "The Well-Known URI Registry", using the template from {{RFC5785}}:
+
+* URI suffix: ake-authz
+* Change controller: IETF
+* Specification document: \[\[this document\]\]
+* Related information: None
+
+## Well-Known Name Under ".arpa" Name Space
+
+This document allocates a well-known name under the .arpa name space according to the rules given in {{RFC3172}} and {{RFC6761}}.
+The name "ake-authz.arpa" is requested.
+No subdomains are expected, and addition of any such subdomains requires the publication of an IETF Standards Track RFC.
+No A, AAAA, or PTR record is requested.
 
 --- back
 
