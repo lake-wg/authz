@@ -1,7 +1,7 @@
 ---
 title: Lightweight Authorization for EDHOC
 abbrev: Lightweight Authorization for EDHOC
-docname: draft-selander-ace-ake-authz-latest
+docname: draft-selander-lake-authz-latest
 
 ipr: trust200902
 cat: std
