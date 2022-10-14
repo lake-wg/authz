@@ -186,29 +186,29 @@ Three security sessions are going on in parallel:
 {{fig-protocol}} provides an overview of the message flow detailed in this section. Only selected message fields of EDHOC are shown, for more details see Section 3.1 of {{I-D.ietf-lake-edhoc}}.
 
 ~~~~~~~~~~~
-U                                     V                                W
-|                                     |                                |
-|          SUITES_I, G_X, EAD_1       |                                |
-+------------------------------------>|                                |
-|            EDHOC message_1          | H(m1), SS, G_X, ENC_ID, ?PoP_V |
-|                                     +------------------------------->|
-|                                     |     Voucher Request (VREQ)     |
-|                                     |                                |
-|                                     |          H(m1), Voucher        |
-|                                     |<-------------------------------+
-|                                     |     Voucher Response (VRES)    |
-| Enc(ID_CRED_R, Sig_or_MAC_2, EAD_2) |                                |
-|<------------------------------------+                                |
-|           EDHOC message_2           |                                |
-|                                     |                                |
-|     Enc(ID_CRED_I, Sig_or_MAC_3)    |                                |
-+------------------------------------>|                                |
-|           EDHOC message_3           |      (Credential lookup:)      |
-|                                     |           ID_CRED_I            |
-|                                     |------------------------------->|
-|                                     |<-------------------------------|
-|                                     |             CRED_I             |
-|                                     |                                |
+U                                    V                              W
+|                                    |                              |
+|          SUITES_I, G_X, EAD_1      |                              |
++----------------------------------->|                              |
+|            EDHOC message_1         |H(m1), SS, G_X, ENC_ID, ?PoP_V|
+|                                    +----------------------------->|
+|                                    |     Voucher Request (VREQ)   |
+|                                    |                              |
+|                                    |          H(m1), Voucher      |
+|                                    |<-----------------------------+
+|                                    |     Voucher Response (VRES)  |
+| Enc(ID_CRED_R, Sig_or_MAC_2, EAD_2)|                              |
+|<-----------------------------------+                              |
+|           EDHOC message_2          |                              |
+|                                    |                              |
+|     Enc(ID_CRED_I, Sig_or_MAC_3)   |                              |
++----------------------------------->|                              |
+|           EDHOC message_3          |      (Credential lookup:)    |
+|                                    |           ID_CRED_I          |
+|                                    |----------------------------->|
+|                                    |<-----------------------------|
+|                                    |             CRED_I           |
+|                                    |                              |
 
 where
 H(m1) = H(message_1)
