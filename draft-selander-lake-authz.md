@@ -69,7 +69,6 @@ informative:
   I-D.ietf-lake-reqs:
   I-D.ietf-ace-oauth-authz:
   I-D.mattsson-cose-cbor-cert-compress:
-  I-D.selander-ace-coap-est-oscore:
   I-D.ietf-core-oscore-edhoc:
   IEEE802.15.4:
     title: "IEEE Std 802.15.4 Standard for Low-Rate Wireless Networks"
