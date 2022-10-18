@@ -93,7 +93,7 @@ The device and authenticator perform mutual authentication and authorization, as
 
 The protocol assumes that authentication between device and authenticator is performed with EDHOC, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) field defined in EDHOC.
 
-In this document we consider the target interaction for which authorization is needed to be "enrollment", for example joining a network for the first time (e.g. {{RFC9031}}), or certificate enrollment (such as {{I-D.selander-ace-coap-est-oscore}}), but it can be applied to authorize other target interactions.
+In this document we consider the target interaction for which authorization is needed to be "enrollment", for example joining a network for the first time (e.g. {{RFC9031}}), but it can be applied to authorize other target interactions.
 
 The protocol enables a low message count by performing authorization and enrollment in parallel with authentication, instead of in sequence which is common for network access.
 It further reuses protocol elements from EDHOC leading to reduced message sizes on constrained links.
