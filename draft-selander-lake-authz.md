@@ -269,7 +269,7 @@ The data exchanged between U and W is carried between U and V in message_1 and m
 
 ### Voucher Info
 
-The external authorization data EAD_1 contains the EAD item (ead_label, ead_value) = (TBD1, Voucher_Info), where the ead_value is the following CBOR sequence:
+The external authorization data EAD_1 contains an EAD item with ead_label = TBD1 and ead_value = Voucher_Info, where
 
 ~~~~~~~~~~~
 Voucher_Info = (
@@ -322,7 +322,7 @@ The derivation of IV_1 = Expand(PRK, info, length) uses the following input to t
 
 The voucher is an assertion for U that W has performed the relevant verifications and that U is authorized to continue the protocol with V. The voucher is essentially a message authentication code which binds the authentication credential of V to message_1 of EDHOC, integrity protected with the shared secret context between U and W.
 
-The external authorization data EAD_2 contains the EAD item (ead_label, ead_value) = (TBD1, Voucher), where Voucher = Expand(PRK, info, length) uses the following input to the info struct ({{reuse}}):
+The external authorization data EAD_2 contains an EAD item with ead_label = TBD1 and ead_value = Voucher = Expand(PRK, info, length) using the following input to the info struct ({{reuse}}):
 
 * label is TBD1
 * context  = bstr .cbor voucher_input
@@ -346,26 +346,26 @@ where
 
 This section describes the processing in U and V, which execute the EDHOC protocol using their respective authentication credentials, see {{fig-protocol}}. Normal EDHOC processing is omitted here.
 
-### Message 1
+### Message 1 {#m1}
 
 #### Processing in U
 
 U composes EDHOC message_1 using authentication method, identifiers, etc. according to an agreed application profile, see Section 3.9 of {{I-D.ietf-lake-edhoc}}. The selected cipher suite, in this document denoted SS, applies also to the interaction with W as detailed in {{reuse}}, in particular, to the key agreement algorithm which is used with the static public DH key G_W of W. As part of the normal EDHOC processing, U generates the ephemeral public key G_X which is reused in the interaction with W, see {{U-W}}.
 
-The device sends EDHOC message_1 with EAD item (TBD1, Voucher_Info) included in EAD_1, where Voucher_Info is specified in {{U-W}}.
+The device sends EDHOC message_1 with EAD item (-TBD1, Voucher_Info) included in EAD_1, where Voucher_Info is specified in {{U-W}}. The negative sign indicates that the EAD item is critical, see Section 3.8 in {{I-D.ietf-lake-edhoc}}.
 
 
 #### Processing in V
 
-V receives EDHOC message_1 from U and processes it as specified in Section 5.2.3 of {{I-D.ietf-lake-edhoc}}, with the additional step that the content of EAD_1 with ead_label TBD1 triggers the voucher request to W as described in {{V-W}}. The exchange between V and W needs to be completed successfully for the EDHOC exchange to be continued.
+V receives EDHOC message_1 from U and processes it as specified in Section 5.2.3 of {{I-D.ietf-lake-edhoc}}, with the additional step of processing the EAD item in EAD_1. Since the EAD item is critical, if V does not recognize it or it contains information that V cannot process, then V MUST discontinue EDHOC, see Section 3.8 in {{I-D.ietf-lake-edhoc}}. Otherwise, the ead_label = TBD1, triggers the voucher request to W as described in {{V-W}}. The exchange between V and W needs to be completed successfully for the EDHOC exchange to be continued.
 
-### Message 2
+### Message 2 {#m2}
 
 #### Processing in V  {#V_2}
 
 V receives the voucher response from W as described in {{V-W}}.
 
-V sends EDHOC message_2 to U with the EAD item (TBD1, Voucher) included in EAD_2, where the Voucher is specified in {{U-W}}.
+V sends EDHOC message_2 to U with the critical EAD item (-TBD1, Voucher) included in EAD_2, where the Voucher is specified in {{U-W}}.
 
 CRED_R is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of the authenticator PK_V encoded as a COSE_Key in the 'cnf' claim, see Section 3.5.2 of {{I-D.ietf-lake-edhoc}}.
 
@@ -374,7 +374,10 @@ ID_CRED_R contains the CCS with 'kccs' as COSE header_map, see Section 9.6 of {{
 
 #### Processing in U
 
-In addition to normal EDHOC verifications, U MUST verify the Voucher by performing the same calculation as in {{voucher}} using the SS, G_X and ID_U sent in message_1 and CRED_R received in ID_CRED_R of message_2. If the voucher calculated in this way is not identical to what was received in message_2, then U MUST discontinue the protocol.
+U receives EDHOC message_2 from V and processes it as specified in Section 5.3.2 of {{I-D.ietf-lake-edhoc}}, with the additional step of processing the EAD item in EAD_2.
+
+If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST discontinue EDHOC, see Section 3.8 in {{I-D.ietf-lake-edhoc}}. Otherwise U MUST verify the Voucher by performing the same calculation as in {{voucher}} using the SS, G_X and ID_U sent in message_1 and CRED_R received in ID_CRED_R of message_2. If the voucher calculated in this way is not identical to what was received in message_2, then U MUST discontinue the protocol.
+
 
 ### Message 3
 
@@ -507,7 +510,8 @@ The private ephemeral key is thus used in the device for calculations of key mat
 ## EDHOC External Authorization Data Registry {#iana-ead}
 
 IANA has registered the following entry in the "EDHOC External Authorization Data" registry under the group name "Ephemeral Diffie-
-   Hellman Over COSE (EDHOC)". The Label and Value Type correspond to the (ead_label, ead_value) which are defined in this document: (TBD1, Voucher_Info) in EAD_1, and (TBD1, Voucher) in EAD_2.
+   Hellman Over COSE (EDHOC)".
+The ead_label = TBD_1 corresponds to the ead_value Voucher_Info in EAD_1, and Voucher in EAD_2 with processing specified in {{m1}} and {{m2}}, respectively, of this document.
 
 ~~~~~~~~~~~
 +-------+------------+-----------------+
