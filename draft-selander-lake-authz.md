@@ -215,7 +215,7 @@ U                                    V                              W
 where
 H(m1) = H(message_1)
 EAD_1 contains Voucher_Info = [LOC_W, ENC_ID]
-EAD_2 contains Voucher = MAC(V_TYPE, SS, G_X, ID_U, CRED_R)
+EAD_2 contains Voucher = MAC(SS, G_X, ID_U, CRED_R)
 
 ~~~~~~~~~~~
 {: #fig-protocol title="W-assisted authorization of U and V to each other: EDHOC between U and V (only selected message fields shown for simplicity), and Voucher Request/Response between V and W." artwork-align="center"}
@@ -333,7 +333,6 @@ where context is a CBOR bstr wrapping of the following CBOR sequence:
 
 ~~~~~~~~~~~
 voucher_input = (
-    V_TYPE:        int,
     H(message_1):  bstr,
     CRED_R:        bstr,
 )
@@ -341,7 +340,6 @@ voucher_input = (
 
 where
 
-* V_TYPE indicates the type of voucher used (TBD)
 * H(message_1) is copied from the associated voucher request.
 * CRED_R is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of V, PK_V, see {{V_2}}
 
