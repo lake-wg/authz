@@ -187,29 +187,29 @@ Three security sessions are going on in parallel:
 {{fig-protocol}} provides an overview of the message flow detailed in this section. Only selected message fields of EDHOC are shown, for more details see Section 3.1 of {{I-D.ietf-lake-edhoc}}.
 
 ~~~~~~~~~~~
-U                                    V                              W
-|                                    |                              |
-|          SUITES_I, G_X, EAD_1      |                              |
-+----------------------------------->|                              |
-|            EDHOC message_1         |H(m1), SS, G_X, ENC_ID, ?PoP_V|
-|                                    +----------------------------->|
-|                                    |     Voucher Request (VREQ)   |
-|                                    |                              |
-|                                    |          H(m1), Voucher      |
-|                                    |<-----------------------------+
-|                                    |     Voucher Response (VRES)  |
-| Enc(ID_CRED_R, Sig_or_MAC_2, EAD_2)|                              |
-|<-----------------------------------+                              |
-|           EDHOC message_2          |                              |
-|                                    |                              |
-|     Enc(ID_CRED_I, Sig_or_MAC_3)   |                              |
-+----------------------------------->|                              |
-|           EDHOC message_3          |      (Credential lookup:)    |
-|                                    |           ID_CRED_I          |
-|                                    |----------------------------->|
-|                                    |<-----------------------------|
-|                                    |             CRED_I           |
-|                                    |                              |
+U                               V                                  W
+|                               |                                  |
+|       SUITES_I, G_X, EAD_1    |                                  |
++------------------------------>|                                  |
+|         EDHOC message_1       |  H(m1), SS, G_X, ENC_ID, ?PoP_V  |
+|                               +--------------------------------->|
+|                               |     Voucher Request (VREQ)       |
+|                               |                                  |
+|                               |            H(m1), Voucher        |
+|                               |<---------------------------------+
+|                               |       Voucher Response (VRES)    |
+|  Enc(ID_CRED_R, SM_2, EAD_2)  |                                  |
+|<------------------------------+                                  |
+|         EDHOC message_2       |                                  |
+|                               |                                  |
+|      Enc(ID_CRED_I, SM_3)     |                                  |
++------------------------------>|                                  |
+|         EDHOC message_3       |        (Credential lookup:)      |
+|                               |             ID_CRED_I            |
+|                               |--------------------------------->|
+|                               |<---------------------------------|
+|                               |                 CRED_I           |
+|                               |                                  |
 
 where
 H(m1) = H(message_1)
@@ -236,7 +236,7 @@ The protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
 
 * ID_CRED_I and ID_CRED_R are used to identify the authentication credentials of U and V. As shown at the bottom of {{fig-protocol}}, V may use W to obtain CRED_I, the authentication credential of U. The authentication credential of V, CRED_R, is transported in ID_CRED_R in message_2, see {{V_2}}.
 
-* Signature_or_MAC_2 and Signature_or_MAC_3 (abbreviated in {{fig-protocol}}), containing data generated using the private key of V and U, respectively, are shown here just to be able to reason about the use of credentials. The definition of these fields depend on EDHOC method, see Section 5 of {{I-D.ietf-lake-edhoc}}).
+* Signature_or_MAC_2 and Signature_or_MAC_3 (abbreviated SM_2 and SM_3 in {{fig-protocol}}), containing data generated using the private key of V and U, respectively, are shown here just to be able to reason about the use of credentials. The definition of these fields depend on EDHOC method, see Section 5 of {{I-D.ietf-lake-edhoc}}).
 
 The protocol also reuses the Extract and Expand key derivation from EDHOC (Section 4 of {{I-D.ietf-lake-edhoc}}).
 
@@ -369,7 +369,7 @@ V sends EDHOC message_2 to U with the critical EAD item (-TBD1, Voucher) include
 
 CRED_R is a CWT Claims Set (CCS, {{RFC8392}}) containing the public authentication key of the authenticator PK_V encoded as a COSE_Key in the 'cnf' claim, see Section 3.5.2 of {{I-D.ietf-lake-edhoc}}.
 
-ID_CRED_R contains the CCS with 'kccs' as COSE header_map, see Section 9.6 of {{I-D.ietf-lake-edhoc}}. The Sig_or_MAC_2 field calculated using the private key corresponding to PK_V is either signature or MAC depending on EDHOC method.
+ID_CRED_R contains the CCS with 'kccs' as COSE header_map, see Section 9.6 of {{I-D.ietf-lake-edhoc}}. The Signature_or_MAC_2 field calculated using the private key corresponding to PK_V is either a signature or a MAC depending on EDHOC method.
 
 
 #### Processing in U
@@ -385,7 +385,7 @@ If U does not recognize the EAD item or the EAD item contains information that U
 
 If all verifications are passed, then U sends EDHOC message_3.
 
-The Sig_or_MAC_3 field calculated using the private key corresponding to PK_U is either signature or MAC depending on EDHOC method.
+The Signature_or_MAC_3 field calculated using the private key corresponding to PK_U is either a signature or a MAC depending on EDHOC method.
 
 EAD_3 MAY contain a certificate enrollment request, see e.g. CSR specified in {{I-D.mattsson-cose-cbor-cert-compress}}, or other request which the device is now authorized to make.
 
