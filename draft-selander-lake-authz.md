@@ -170,9 +170,9 @@ W has the private DH key corresponding to G_W, which is used to secure the commu
 Authentication credentials and communication security used with V is out of scope, except for the need to verify the possession of the private key of PK_V as specified in {{domain-auth}}.
 
 W provides to U the authorization decision for enrollment with V in the form of a voucher, see {{voucher}}.
-W may provide the authorization credentialy of U, CRED_I, when V has learnt the identity of U.
+W may provide V with the authorization credential of U, CRED_I, after V has learnt the identity of U.
 
-W needs to be available during the execution of the protocol.
+W needs to be available during the execution of the protocol between U and V.
 
 # The Protocol
 
@@ -182,9 +182,9 @@ Three security sessions are going on in parallel:
 
 1. EDHOC {{I-D.ietf-lake-edhoc}} between device (U) and (domain) authenticator (V)
 2. Voucher Request/Response between authenticator (V) and authorization server (W)
-3. An exchange of voucher-related information, including the voucher itself, between device (U) and authorization server (W), mediated by the authenticator.
+3. An exchange of voucher-related information, including the voucher itself, between device (U) and authorization server (W), mediated by the authenticator (V).
 
-{{fig-protocol}} provides an overview of the message flow detailed in this section. Only selected message fields of EDHOC are shown, for more details see Section 3.1 of {{I-D.ietf-lake-edhoc}}.
+{{fig-protocol}} provides an overview of the message flow detailed in this section, for more details see Section 3.1 of {{I-D.ietf-lake-edhoc}}.
 
 ~~~~~~~~~~~
 U                               V                                  W
