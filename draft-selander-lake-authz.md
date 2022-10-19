@@ -213,8 +213,8 @@ U                               V                                  W
 
 where
 H(m1) = H(message_1)
-EAD_1 contains Voucher_Info = [LOC_W, ENC_ID]
-EAD_2 contains Voucher = MAC(SS, G_X, ID_U, CRED_R)
+EAD_1 contains Voucher_Info: LOC_W, ENC_ID
+EAD_2 contains Voucher: MAC(H(message_1), CRED_R)
 
 ~~~~~~~~~~~
 {: #fig-protocol title="W-assisted authorization of U and V to each other: EDHOC between U and V (only selected message fields shown for simplicity), and Voucher Request/Response between V and W." artwork-align="center"}
@@ -269,10 +269,14 @@ The data exchanged between U and W is carried between U and V in message_1 and m
 
 ### Voucher Info
 
-The external authorization data EAD_1 contains an EAD item with ead_label = TBD1 and ead_value = Voucher_Info, where
+The external authorization data EAD_1 contains an EAD item with ead_label = TBD1 and ead_value = Voucher_Info, which is a CBOR byte string:
 
 ~~~~~~~~~~~
-Voucher_Info = (
+Voucher_Info = bstr .cbor Voucher_Info_Seq
+~~~~~~~~~~~
+
+~~~~~~~~~~~
+Voucher_Info_Seq = (
     LOC_W:      tstr,
     ENC_ID:     bstr
 )
@@ -322,7 +326,13 @@ The derivation of IV_1 = Expand(PRK, info, length) uses the following input to t
 
 The voucher is an assertion for U that W has performed the relevant verifications and that U is authorized to continue the protocol with V. The voucher is essentially a message authentication code which binds the authentication credential of V to message_1 of EDHOC, integrity protected with the shared secret context between U and W.
 
-The external authorization data EAD_2 contains an EAD item with ead_label = TBD1 and ead_value = Voucher = Expand(PRK, info, length) using the following input to the info struct ({{reuse}}):
+The external authorization data EAD_2 contains an EAD item with ead_label = TBD1 and ead_value = Voucher, which is a CBOR byte string:
+
+~~~~~~~~~~~
+Voucher = bstr .cbor Expand(PRK, info, length)
+~~~~~~~~~~~
+
+calculated with the following input to the info struct ({{reuse}}):
 
 * label is TBD1
 * context  = bstr .cbor voucher_input
