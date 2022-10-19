@@ -57,7 +57,6 @@ normative:
 informative:
 
   RFC2119:
-  RFC3748:
   RFC7228:
   RFC8174:
   RFC8446:
@@ -67,7 +66,6 @@ informative:
   RFC3172:
   RFC6761:
   I-D.ietf-lake-reqs:
-  I-D.ietf-ace-oauth-authz:
   I-D.mattsson-cose-cbor-cert-compress:
   I-D.ietf-core-oscore-edhoc:
   IEEE802.15.4:
@@ -98,8 +96,6 @@ The protocol enables a low message count by performing authorization and enrollm
 It further reuses protocol elements from EDHOC leading to reduced message sizes on constrained links.
 
 This protocol is applicable to a wide variety of settings, and can be mapped to different authorization architectures.
-This document specifies a profile of the ACE framework {{I-D.ietf-ace-oauth-authz}}.
-Other settings such as EAP {{RFC3748}} are out of scope for this specification.
 
 ## Terminology   {#terminology}
 
