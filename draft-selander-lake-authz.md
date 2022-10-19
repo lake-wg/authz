@@ -386,7 +386,7 @@ ID_CRED_R contains the CCS with 'kccs' as COSE header_map, see Section 9.6 of {{
 
 U receives EDHOC message_2 from V and processes it as specified in Section 5.3.2 of {{I-D.ietf-lake-edhoc}}, with the additional step of processing the EAD item in EAD_2.
 
-If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST discontinue EDHOC, see Section 3.8 in {{I-D.ietf-lake-edhoc}}. Otherwise U MUST verify the Voucher by performing the same calculation as in {{voucher}} using the SS, G_X and ID_U sent in message_1 and CRED_R received in ID_CRED_R of message_2. If the voucher calculated in this way is not identical to what was received in message_2, then U MUST discontinue the protocol.
+If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST discontinue EDHOC, see Section 3.8 in {{I-D.ietf-lake-edhoc}}. Otherwise U MUST verify the Voucher by performing the same calculation as in {{voucher}} using H(message_1) and CRED_R received in ID_CRED_R of message_2. If the voucher calculated in this way is not identical to what was received in message_2, then U MUST discontinue the protocol.
 
 
 ### Message 3
@@ -403,7 +403,7 @@ EDHOC message_3 may be combined with an OSCORE request, see {{I-D.ietf-core-osco
 
 #### Processing in V
 
-V performs the normal EDHOC verifications of message_3. V may retrieve of CRED_I from W, after V learnt ID_CRED_I from U.
+V performs the normal EDHOC verifications of message_3. V may retrieve CRED_I from W, after V learnt ID_CRED_I from U.
 
 ## Authenticator <-> Authorization Server (V <-> W) {#V-W}
 
@@ -456,14 +456,14 @@ W generates the voucher response and sends it to V over the secure connection. T
 
 ~~~~~~~~~~~
 Voucher_Response = [
-    G_X:            bstr,
+    H(message_1):   bstr,
     Voucher:        bstr
 ]
 ~~~~~~~~~~~
 
 where
 
-* G_X is copied from the associated voucher request.
+* H(message_1) is copied from the associated voucher request.
 * The Voucher is defined in {{voucher}}.
 
 #### Processing in V
