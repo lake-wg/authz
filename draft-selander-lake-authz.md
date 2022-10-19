@@ -480,8 +480,8 @@ In both cases, V MUST use the client authentication to authenticate to W, using 
 
 ## HTTP URIs
 
-W MUST support the use of the path-prefix "/.well-known/", as defined in {{RFC5785}}, and the registered name "ake-authz".
-A valid URI thus begins with "https://www.example.com/.well-known/ake-authz".
+W MUST support the use of the path-prefix "/.well-known/", as defined in {{RFC5785}}, and the registered name "lake-authz".
+A valid URI thus begins with "https://www.example.com/.well-known/lake-authz".
 Each operation specified in the following is indicated by a path-suffix.
 
 ## Voucher Request (/voucherrequest)
@@ -536,7 +536,7 @@ The ead_label = TBD_1 corresponds to the ead_value Voucher_Info in EAD_1, and Vo
 
 IANA has registered the following entry in "The Well-Known URI Registry", using the template from {{RFC5785}}:
 
-* URI suffix: ake-authz
+* URI suffix: lake-authz
 * Change controller: IETF
 * Specification document: \[\[this document\]\]
 * Related information: None
@@ -544,7 +544,7 @@ IANA has registered the following entry in "The Well-Known URI Registry", using 
 ## Well-Known Name Under ".arpa" Name Space
 
 This document allocates a well-known name under the .arpa name space according to the rules given in {{RFC3172}} and {{RFC6761}}.
-The name "ake-authz.arpa" is requested.
+The name "lake-authz.arpa" is requested.
 No subdomains are expected, and addition of any such subdomains requires the publication of an IETF Standards Track RFC.
 No A, AAAA, or PTR record is requested.
 
@@ -581,7 +581,7 @@ U                                    V                              W
 |            CoJP response           |                              |
 |
 ~~~~~~~~~~~
-{: #fig-cojp title="Use of draft-selander-ace-ake-authz with CoJP." artwork-align="center"}
+{: #fig-cojp title="Use of draft-selander-lake-authz with CoJP." artwork-align="center"}
 
 
 ## Network discovery
@@ -608,7 +608,7 @@ The device SHALL map the message to a CoAP request:
 * The request method is POST.
 * The type is Confirmable (CON).
 * The Proxy-Scheme option is set to "coap".
-* The Uri-Host option is set to "ake-authz.arpa". This is an anycast type of identifier of the domain authenticator (V) that is resolved to its IPv6 address by the Join Proxy.
+* The Uri-Host option is set to "lake-authz.arpa". This is an anycast type of identifier of the domain authenticator (V) that is resolved to its IPv6 address by the Join Proxy.
 * The Uri-Path option is set to ".well-known/edhoc".
 * The Content-Format option is set to "application/cid-edhoc+cbor-seq"
 * The payload is the (true, EDHOC message_1) CBOR sequence, where EDHOC message_1 is constructed as defined in {{U-V}}.
@@ -641,7 +641,7 @@ The device SHALL map the message to a CoAP request:
 * The request method is POST.
 * The type is Confirmable (CON).
 * The Proxy-Scheme option is set to "coap".
-* The Uri-Host option is set to "ake-authz.arpa".
+* The Uri-Host option is set to "lake-authz.arpa".
 * The Uri-Path option is set to ".well-known/edhoc".
 * The EDHOC option {{I-D.ietf-core-oscore-edhoc}} is set and is empty.
 * The payload is prepared as described in Section 3.2. of {{I-D.ietf-core-oscore-edhoc}}, with EDHOC message_3 and the CoJP Join Request object as the OSCORE-protected payload.
