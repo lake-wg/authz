@@ -62,7 +62,7 @@ informative:
   RFC8446:
   RFC9031:
   RFC9180:
-  RFC5785:
+  RFC8615:
   RFC3172:
   RFC6761:
   I-D.ietf-lake-reqs:
@@ -476,7 +476,7 @@ In both cases, V MUST perform client authentication to authenticate to W, using 
 
 ## HTTP URIs
 
-W MUST support the use of the path-prefix "/.well-known/", as defined in {{RFC5785}}, and the registered name "lake-authz".
+W MUST support the use of the path-prefix "/.well-known/", as defined in {{RFC8615}}, and the registered name "lake-authz".
 A valid URI thus begins with "https://www.example.com/.well-known/lake-authz".
 Each operation specified in the following is indicated by a path-suffix.
 
@@ -530,7 +530,7 @@ The ead_label = TBD_1 corresponds to the ead_value Voucher_Info in EAD_1, and Vo
 
 ## The Well-Known URI Registry
 
-IANA has registered the following entry in "The Well-Known URI Registry", using the template from {{RFC5785}}:
+IANA has registered the following entry in "The Well-Known URI Registry", using the template from {{RFC8615}}:
 
 * URI suffix: lake-authz
 * Change controller: IETF
