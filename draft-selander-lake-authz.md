@@ -476,7 +476,7 @@ The interaction between V and W is enabled through a RESTful interface exposed b
 V SHOULD access the resources exposed by W through the protocol indicated by the scheme in LOC_W URI.
 In case the scheme indicates "https", V SHOULD perform a TLS handshake with W and use HTTP.
 In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the same resources using CoAP.
-In both cases, V MUST use the client authentication to authenticate to W, using the certificate containing the PK_V public key.
+In both cases, V MUST perform client authentication to authenticate to W, using a certificate containing the PK_V public key.
 
 ## HTTP URIs
 
@@ -496,12 +496,12 @@ In case of successful processing at W, W MUST issue a 200 OK response with paylo
 ## Certificate Request (/certrequest)
 
 V requests the public key certificate of U from W through the "/certrequest" path-suffix.
-To request the U's certificate, V MUST issue an HTTP request:
+To request U's authentication credential, V MUST issue an HTTP request:
 
 * Method is POST
 * Payload is the serialization of the ID_CRED_I object, as received in EDHOC message_3.
 
-In case of a successful lookup of the certificate at W, W MUST issue 200 OK response with payload containing the serialized CRED_I certificate.
+In case of a successful lookup of the authentication credential at W, W MUST issue 200 OK response with payload containing the serialized CRED_I.
 
 # Security Considerations  {#sec-cons}
 
