@@ -72,6 +72,14 @@ informative:
     author:
       ins: "IEEE standard for Information Technology"
 
+venue:
+  group: "Lightweight Authenticated Key Exchange"
+  type: "Working Group"
+  mail: "lake@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/lake/"
+  github: " EricssonResearch/ace-ake-authz"
+  latest: "https://ericssonresearch.github.io/ace-ake-authz/draft-selander-lake-authz.html"
+
 --- abstract
 
 This document describes a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange protocol EDHOC with third party assisted authorization, targeting constrained IoT deployments (RFC 7228).
@@ -520,6 +528,7 @@ The ead_label = TBD_1 corresponds to the ead_value Voucher_Info in EAD_1, and Vo
 
 | Label | Value Type | Description |
 | TBD1 | bstr | Voucher related information |
+{: #ead-table title="Additions to the EDHOC external authorization data registry" cols="r l l"}
 
 ## The Well-Known URI Registry
 
