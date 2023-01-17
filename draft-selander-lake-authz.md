@@ -1,6 +1,5 @@
 ---
 title: Lightweight Authorization for EDHOC
-abbrev: Lightweight Authorization for EDHOC
 docname: draft-selander-lake-authz-latest
 
 ipr: trust200902
@@ -57,17 +56,17 @@ normative:
 informative:
 
   RFC2119:
+  RFC3172:
+  RFC6761:
   RFC7228:
   RFC8174:
   RFC8446:
+  RFC8615:
   RFC9031:
   RFC9180:
-  RFC8615:
-  RFC3172:
-  RFC6761:
-  I-D.ietf-lake-reqs:
-  I-D.mattsson-cose-cbor-cert-compress:
   I-D.ietf-core-oscore-edhoc:
+  I-D.ietf-cose-cbor-encoded-cert:
+  I-D.ietf-lake-reqs:
   IEEE802.15.4:
     title: "IEEE Std 802.15.4 Standard for Low-Rate Wireless Networks"
     author:
@@ -85,12 +84,12 @@ This document describes a procedure for augmenting the lightweight authenticated
 For constrained IoT deployments {{RFC7228}} the overhead and processing contributed by security protocols may be significant which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see {{I-D.ietf-lake-reqs}}).
 This document describes a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC {{I-D.ietf-lake-edhoc}} with third party-assisted authorization.
 
-The procedure involves a device, a domain authenticator and an authorization server.
+The procedure involves a device, a domain authenticator, and an authorization server.
 The device and authenticator perform mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and to the authenticator.
 
 The protocol assumes that authentication between device and authenticator is performed with EDHOC, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) field defined in EDHOC.
 
-In this document we consider the target interaction for which authorization is needed to be "enrollment", for example joining a network for the first time (e.g. {{RFC9031}}), but it can be applied to authorize other target interactions.
+In this document we consider the target interaction for which authorization is needed to be "enrollment", for example joining a network for the first time (e.g., {{RFC9031}}), but it can be applied to authorize other target interactions.
 
 The protocol enables a low message count by performing authorization and enrollment in parallel with authentication, instead of in sequence which is common for network access.
 It further reuses protocol elements from EDHOC leading to reduced message sizes on constrained links.
@@ -115,20 +114,20 @@ The procedure is assisted by a (non-constrained) authorization server located in
 The objective of this document is to specify such a protocol which is lightweight over the constrained link by reusing elements of EDHOC.
 See illustration in {{fig-overview}}.
 
-~~~~~~~~~~~
+~~~~~~~~~~~ aasvg
                   Voucher
             EDHOC Info
 +----------+  |    |   +---------------+  Voucher  +---------------+
 |          |  |    |   |               |  Request  |               |
-|  Device  |--|----o-->|    Domain     |---------->| Authorization |
-|          |<-|---o----| Authenticator |<----------|     Server    |
-|    (U)   |--|---|--->|      (V)      |  Voucher  |       (W)     |
+|  Device  |--+----o-->|    Domain     |---------->| Authorization |
+|          |<-+---o----| Authenticator |<----------|     Server    |
+|    (U)   |--+---+--->|      (V)      |  Voucher  |       (W)     |
 |          |      |    |               |  Response |               |
 +----------+      |    +---------------+           +---------------+
                   Voucher
 
 ~~~~~~~~~~~
-{: #fig-overview title="Overview of message flow. Link between U anv V is constrained but link between V and W is not. Voucher_Info and Voucher are sent in EDHOC External Authorization Data." artwork-align="center"}
+{: #fig-overview title="Overview of message flow. Link between U and V is constrained but link between V and W is not. Voucher_Info and Voucher are sent in EDHOC External Authorization Data." artwork-align="center"}
 
 
 # Assumptions
@@ -143,7 +142,7 @@ ID_U is for example a reference to the device authentication credential, or an i
 U is also provisioned with information about W:
 
 * A static public DH key of W (G_W) used to protect communication  between device and authorization server (see {{U-W}}).
-* Location information about the authorization server (LOC_W) that can be used by V. This is typically a URI but may be optimized, e.g. only the domain name.
+* Location information about the authorization server (LOC_W) that can be used by V. This is typically a URI but may be optimized, e.g., only the domain name.
 
 ## Domain Authenticator (V) {#domain-auth}
 
@@ -182,7 +181,7 @@ Three security sessions are going on in parallel:
 
 {{fig-protocol}} provides an overview of the message flow detailed in this section, for more details see Section 3.1 of {{I-D.ietf-lake-edhoc}}.
 
-~~~~~~~~~~~
+~~~~~~~~~~~ aasvg
 U                               V                                  W
 |                               |                                  |
 |       SUITES_I, G_X, EAD_1    |                                  |
@@ -393,7 +392,7 @@ If all verifications are passed, then U sends EDHOC message_3.
 
 The Signature_or_MAC_3 field calculated using the private key corresponding to PK_U is either a signature or a MAC depending on EDHOC method.
 
-EAD_3 MAY contain a certificate enrollment request, see e.g. CSR specified in {{I-D.mattsson-cose-cbor-cert-compress}}, or other request which the device is now authorized to make.
+EAD_3 MAY contain a certificate enrollment request, see e.g., CSR specified in {{I-D.ietf-cose-cbor-encoded-cert}}, or other request which the device is now authorized to make.
 
 EDHOC message_3 may be combined with an OSCORE request, see {{I-D.ietf-core-oscore-edhoc}}.
 
@@ -446,7 +445,7 @@ W uses the identity of the device, ID_U, to look up and verify the associated au
 
 W retrieves the public key of V, PK_V, used to authenticate the secure connection with V, and constructs the CCS (see {{V_2}}) and the Voucher (see {{voucher}}).
 
-Editor's note: Make sure the CCS is defined to allow W generate it uniquely from PK_V.
+Editor's note: Make sure the CCS is defined to allow W to generate it uniquely from PK_V.
 
 W generates the voucher response and sends it to V over the secure connection. The Voucher_Response SHALL be a CBOR array as defined below:
 
@@ -501,7 +500,7 @@ In case of a successful lookup of the authentication credential at W, W MUST iss
 
 # Security Considerations  {#sec-cons}
 
-This specification builds on and reuses many of the security constructions of EDHOC, e.g. shared secret calculation and key derivation. The security considerations of EDHOC {{I-D.ietf-lake-edhoc}} apply with modifications discussed here.
+This specification builds on and reuses many of the security constructions of EDHOC, e.g., shared secret calculation and key derivation. The security considerations of EDHOC {{I-D.ietf-lake-edhoc}} apply with modifications discussed here.
 
 EDHOC provides identity protection of the Initiator, here the device. The encryption of the device identity in the first message should consider potential information leaking from the length of the identifier ID_U, either by making all identifiers having the same length or the use of a padding scheme.
 
@@ -519,14 +518,8 @@ IANA has registered the following entry in the "EDHOC External Authorization Dat
    Hellman Over COSE (EDHOC)".
 The ead_label = TBD_1 corresponds to the ead_value Voucher_Info in EAD_1, and Voucher in EAD_2 with processing specified in {{m1}} and {{m2}}, respectively, of this document.
 
-~~~~~~~~~~~
-+-------+------------+-----------------+
-| Label | Value Type | Description     |
-+-------+------------+-----------------+
-|  TBD1 |    bstr    | Voucher related |
-|       |            | information     |
-+-------+------------+-----------------+
-~~~~~~~~~~~
+| Label | Value Type | Description |
+| TBD1 | bstr | Voucher related information |
 
 ## The Well-Known URI Registry
 
@@ -551,11 +544,11 @@ No A, AAAA, or PTR record is requested.
 This section outlines how the protocol is used for network enrollment and parameter provisioning.
 An IEEE 802.15.4 network is used as an example of how a new device (U) can be enrolled into the domain managed by the domain authenticator (V).
 
-~~~~~~~~~~~
+~~~~~~~~~~~ aasvg
 U                                    V                              W
 |                                    |                              |
 |                                    |                              |
-+- - - - - - - - - - - - - - - - - ->|                              |
++ - - - - - - - - - - - - - - - - -->|                              |
 |    Optional network solicitation   |                              |
 |<-----------------------------------+                              |
 |          Network discovery         |                              |
@@ -580,7 +573,7 @@ U                                    V                              W
 {: #fig-cojp title="Use of draft-selander-lake-authz with CoJP." artwork-align="center"}
 
 
-## Network discovery
+## Network Discovery
 
 When a device first boots, it needs to discover the network it attempts to join.
 The network discovery procedure is defined by the link-layer technology in use.
@@ -594,7 +587,7 @@ The network coordinator emitting beacons may be multiple link-layer hops away fr
 Join Proxy does not participate in the protocol and acts as a transparent router between the device and the domain authenticator.
 For simplicity, {{fig-cojp}} illustrates the case when the device and the domain authenticator are a single hop away and can communicate directly.
 
-## The enrollment protocol with parameter provisioning
+## The Enrollment Protocol with Parameter Provisioning
 
 ### Flight 1
 
