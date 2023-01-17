@@ -77,7 +77,7 @@ venue:
   type: "Working Group"
   mail: "lake@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/lake/"
-  github: " EricssonResearch/ace-ake-authz"
+  github: "EricssonResearch/ace-ake-authz"
   latest: "https://ericssonresearch.github.io/ace-ake-authz/draft-selander-lake-authz.html"
 
 --- abstract
