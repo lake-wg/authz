@@ -528,7 +528,7 @@ The ead_label = TBD_1 corresponds to the ead_value Voucher_Info in EAD_1, and Vo
 
 | Label | Value Type | Description |
 | TBD1 | bstr | Voucher related information |
-{: #ead-table title="Additions to the EDHOC external authorization data registry" cols="r l l"}
+{: #ead-table title="Addition to the EDHOC EAD registry" cols="r l l"}
 
 ## The Well-Known URI Registry
 
