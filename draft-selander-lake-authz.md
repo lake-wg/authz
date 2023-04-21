@@ -123,19 +123,19 @@ The objective of this document is to specify such a protocol which is lightweigh
 See illustration in {{fig-overview}}.
 
 ~~~~~~~~~~~ aasvg
-                  Voucher
-            EDHOC Info
-+----------+  |    |   +---------------+  Voucher  +---------------+
-|          |  |    |   |               |  Request  |               |
-|  Device  |--+----o-->|    Domain     |---------->| Authorization |
-|          |<-+---o----| Authenticator |<----------|     Server    |
-|    (U)   |--+---+--->|      (V)      |  Voucher  |       (W)     |
-|          |      |    |               |  Response |               |
-+----------+      |    +---------------+           +---------------+
-                  Voucher
-
+                Voucher
+                Info
++----------+      |     +---------------+  Voucher  +---------------+
+|          |      |     |               |  Request  |               |
+|  Device  +------o---->|    Domain     +---------->| Authorization |
+|          |<---o-------+ Authenticator |<----------+     Server    |
+|    (U)   +----+------>|      (V)      |  Voucher  |       (W)     |
+|          |    |       |               |  Response |               |
++----------+    |       +---------------+           +---------------+
+              Voucher
 ~~~~~~~~~~~
-{: #fig-overview title="Overview of message flow. Link between U and V is constrained but link between V and W is not. Voucher_Info and Voucher are sent in EDHOC External Authorization Data." artwork-align="center"}
+{: #fig-overview title="Overview of message flow. EDHOC is used on the constrained link between U and V. Voucher_Info and Voucher are sent in EDHOC External Authorization Data. The link between V and W is not constrained. " artwork-align="center"}
+
 
 
 # Assumptions
