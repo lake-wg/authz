@@ -115,9 +115,9 @@ Appendix C.1 of {{I-D.ietf-lake-edhoc}} contains some basic info about CBOR.
 
 The (potentially constrained) device (U) wants to enroll into a domain over a constrained link.
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator (V) with the help of a voucher, and makes the enrollment request.
-The domain authenticator (W) authenticates the device and authorizes its enrollment.
+The domain authenticator, in turn, authenticates the device and authorizes its enrollment.
 Authentication between device and domain authenticator is made with the lightweight authenticated Diffie-Hellman key exchange protocol EDHOC {{I-D.ietf-lake-edhoc}}.
-The procedure is assisted by a (non-constrained) authorization server located in a non-constrained network behind the domain authenticator providing information to the device and to the domain authenticator as part of the protocol.
+The procedure is assisted by a (non-constrained) authorization server (W) located in a non-constrained network behind the domain authenticator providing information to the device and to the domain authenticator as part of the protocol.
 
 The objective of this document is to specify such a protocol which is lightweight over the constrained link by reusing elements of EDHOC.
 See illustration in {{fig-overview}}.
