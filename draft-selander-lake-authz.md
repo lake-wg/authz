@@ -201,7 +201,7 @@ Each of the three parties have protected communication with the other two during
 
 To authenticate to V, the device (U) runs EDHOC in the role of Initiator with authentication credential CRED_U, for example, an X.509 certificate or a CBOR Web Token (CWT, {{RFC8392}}). CRED_U need not be carried to V in EDHOC and can be provisioned to V over a non-constrained network, see bottom of {{fig-protocol}}.
 
-U also needs to identify itself to W, this identifier is denoted by ID_U. The purpose of ID_U is for W to be able to determine if the device with this identifier is authorized to enroll with V. ID_U may be a reference to CRED_U, like ID_CRED_I in EDHOC (see {{Section 3.5.2 of I-D.ietf-lake-edhoc}}), or a device identifier from a different name space, such as EUI-64 identifiers. 
+U also needs to identify itself to W, this identifier is denoted by ID_U. The purpose of ID_U is for W to be able to determine if the device with this identifier is authorized to enroll with V. ID_U may be a reference to CRED_U, like ID_CRED_I in EDHOC (see {{Section 3.5.2 of I-D.ietf-lake-edhoc}}), or a device identifier from a different name space, such as EUI-64 identifiers.
 
 U is also provisioned with information about W:
 
@@ -496,7 +496,7 @@ W extracts from the field containing message_1:
 * G_X - the ephemeral public key of U
 * EAD_1 - which contains ENC_ID.
 
-W verifies and decrypts ENC_ID using the relevant algorithms of the selected cipher suite SS (see {{reuse}}), and obtains ID_U. 
+W verifies and decrypts ENC_ID using the relevant algorithms of the selected cipher suite SS (see {{reuse}}), and obtains ID_U.
 
 W calculates the hash of message_1 H(message_1), and associates this session identifier to ID_U. If H(message_1) is not unique among session identifiers associated to this identity, the protocol SHALL be discontinued.
 
