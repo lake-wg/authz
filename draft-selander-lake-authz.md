@@ -161,7 +161,7 @@ Note the cardinality of the involved parties, it is expected that the authentica
 +----------+    |       +---------------+           +---------------+
               Voucher
 ~~~~~~~~~~~
-{: #fig-overview title="Overview of message flow. EDHOC is used on the constrained link between U and V. Voucher_Info and Voucher sent in EDHOC External Authorization Data (EAD). The link between V and W is not constrained." artwork-align="center"}
+{: #fig-overview title="Overview of message flow. EDHOC is used on the constrained link between U and V. Voucher_Info and Voucher are sent in EDHOC External Authorization Data (EAD). The link between V and W is not constrained." artwork-align="center"}
 
 
 
@@ -212,7 +212,7 @@ U is also provisioned with information about W:
 
 To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Responder with an authentication credential CRED_V, which is a CWT Claims Set {{RFC8392}} containing a public key of V, see {{V_2}}. This proves to U the possession of the private key corresponding to the public key of CRED_V. CRED_V typically needs to be transported to U in EDHOC (using the message field ID_CRED_R, see {{Section 3.5.2 of I-D.ietf-lake-edhoc}}) since there is no previous relation between U and V.
 
-V must also to prove to W the possession of the private key corresponding to the public key of CRED_V, and W must have access the very same credential CRED_V as used with U in EDHOC, since this information is needed to generate the voucher, see {{voucher}}. For this reason it is RECOMMENDED that V runs EDHOC with W using ID_CRED_I = CRED_V. Other means for proof-of-possession related to CRED_V and transport of CRED_V are out of scope.
+V must also prove to W the possession of the private key corresponding to the public key of CRED_V, and W must have access the very same credential CRED_V as used with U in EDHOC, since this information is needed to generate the voucher, see {{voucher}}. For this reason it is RECOMMENDED that V runs EDHOC with W using ID_CRED_I = CRED_V. Other means for proof-of-possession related to CRED_V and transport of CRED_V are out of scope.
 
 V and W also need to establish a secure connection for the Voucher Request/Response protocol.  If V and W have run EDHOC, then secure communication between V and W may be based on OSCORE {{RFC8613}}. Alternatively, V may use different security protocols with U compared to with W. For example, the communication between V and U may be secured by EDHOC and static Diffie-Hellman keys, whereas the communication between V and W may be secured using TLS 1.3 {{RFC8446}} based on server certificates provided by W. Also in this case, proof-of-possession related to CRED_V and transport of CRED_V may be performed using EDHOC with ID_CRED_I = CRED_V carried over TLS.
 
@@ -289,7 +289,7 @@ The protocol consist of three security sessions going on in parallel:
          |                               |                                  |
 
 ~~~~~~~~~~~
-{: #fig-protocol title="Overview of the protocol (inside the box): W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, U and W are assumed to have established a secure channel and performed proof-of-possession of relevant keys. Credential lookup of CRED_U may involve W or other credential database." artwork-align="center"}
+{: #fig-protocol title="Overview of the protocol (inside the box): W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, V and W are assumed to have established a secure channel and performed proof-of-possession of relevant keys. Credential lookup of CRED_U may involve W or other credential database." artwork-align="center"}
 
 
 
