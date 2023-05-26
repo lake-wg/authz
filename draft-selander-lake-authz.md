@@ -113,12 +113,12 @@ This document describes a procedure for augmenting the lightweight authenticated
 For constrained IoT deployments {{RFC7228}} the overhead and processing contributed by security protocols may be significant which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see {{I-D.ietf-lake-reqs}}).
 This document describes a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC {{I-D.ietf-lake-edhoc}} with third party-assisted authorization.
 
-The procedure involves a device, a domain authenticator, and an authorization server.
-The device and domain authenticator perform mutual authentication and authorization, assisted by the authorization server which provides relevant authorization information to the device (a "voucher") and to the authenticator.
+The procedure involves a device, a domain authenticator, and an authorization service.
+The device and domain authenticator perform mutual authentication and authorization, assisted by the authorization service which provides relevant authorization information to the device (a "voucher") and to the authenticator.
 
 In this document we consider the target interaction for which authorization is needed to be "enrollment", for example joining a network for the first time (e.g., {{RFC9031}}), but it can be applied to authorize other target interactions.
 
-The authorization server may represent the manufacturer of the device, or some other party with information about the device from which a trust anchor has been pre-provisioned into the device.
+The authorization service may represent the manufacturer of the device, or some other party with information about the device from which a trust anchor has been pre-provisioned into the device.
 The (domain) authenticator may represent the service provider or some other party controlling access to the network in which the device is enrolling.
 
 The protocol assumes that authentication between device and authenticator is performed with EDHOC {{I-D.ietf-lake-edhoc}}, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) fields defined in EDHOC.
@@ -141,12 +141,12 @@ The (potentially constrained) device (U) wants to enroll into a domain over a co
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator (V) with the help of a voucher conveying authorization information.
 The domain authenticator, in turn, authenticates the device and authorizes its enrollment into the domain.
 
-The procedure is assisted by a (non-constrained) domain authorization server (W) located in a non-constrained network behind the domain authenticator, e.g. on the Internet, providing information to the device (the voucher) and to the domain authenticator as part of the protocol.
+The procedure is assisted by a (non-constrained) domain authorization service (W) located in a non-constrained network behind the domain authenticator, e.g. on the Internet, providing information to the device (the voucher) and to the domain authenticator as part of the protocol.
 
 The objective of this document is to specify such a protocol which is lightweight over the constrained link by reusing elements of EDHOC {{I-D.ietf-lake-edhoc}} and by shifting message overhead to the non-constrained side of the network.
 See illustration in {{fig-overview}}.
 
-Note the cardinality of the involved parties, it is expected that the authenticator need to handle a large unspecified number of devices, but for a given device type or manufacturer there are only one or a few authorization servers.
+Note the cardinality of the involved parties, it is expected that the authenticator need to handle a large unspecified number of devices, but for a given device type or manufacturer it is expected that one or a few nodes host authorization services.
 
 ~~~~~~~~~~~ aasvg
 
@@ -155,7 +155,7 @@ Note the cardinality of the involved parties, it is expected that the authentica
 +----------+      |     +---------------+  Voucher  +---------------+
 |          |      |     |               |  Request  |               |
 |  Device  +------o---->|    Domain     +---------->| Authorization |
-|          |<---o-------+ Authenticator |<----------+     Server    |
+|          |<---o-------+ Authenticator |<----------+    Service    |
 |    (U)   +----+------>|      (V)      |  Voucher  |       (W)     |
 |          |    |       |               |  Response |               |
 +----------+    |       +---------------+           +---------------+
@@ -167,7 +167,7 @@ Note the cardinality of the involved parties, it is expected that the authentica
 
 # Assumptions
 
-The protocol is based on the following relations between the device (U), the domain authenticator (V) and the authorization server (W).
+The protocol is based on the following relations between the device (U), the domain authenticator (V) and the authorization service (W).
 
 * U and W have an explicit relation: U is configured with a public key of W, see {{device}}.
 * V and W have an implicit relation, e.g., based on web PKI with trusted CA certificates, see {{domain-auth}}.
@@ -184,7 +184,7 @@ Each of the three parties have protected communication with the other two during
 +----+-----+            +---------------+            +-------+-------+
 |          |            |               |    non-    |               |
 |  Device  |    con-    |    Domain     |    con-    | Authorization |
-|          |    stra-   | Authenticator |    stra-   |     Server    |
+|          |    stra-   | Authenticator |    stra-   |    Service    |
 |    (U)   |    ined    |      (V)      |    ined    |      (W)      |
 |          |            |               |            |               |
 +----+-----+            +-------+-------+            +-------+-------+
@@ -205,8 +205,8 @@ U also needs to identify itself to W, this identifier is denoted by ID_U. The pu
 
 U is also provisioned with information about W:
 
-* A static public DH key of W (G_W) used to establish secure communication with the authorization server (see {{U-W}}).
-* Location information about the authorization server (LOC_W) that can be used by V to reach W. This is typically a URI but may alternatively be only the domain name.
+* A static public DH key of W (G_W) used to establish secure communication with the authorization service (see {{U-W}}).
+* Location information about the authorization service (LOC_W) that can be used by V to reach W. This is typically a URI but may alternatively be only the domain name.
 
 ## Domain Authenticator (V) {#domain-auth}
 
@@ -225,9 +225,9 @@ Other details of proof-of-possession related to CRED_V and transport of CRED_V a
 V may subsequently obtain the authentication credential of U, CRED_U, from a credential database hosted by W or some other party after V has learnt the identity of U, which happens after EDHOC message_3 from U, see {{fig-protocol}}.
 
 
-## Authorization Server (W) {#authz-server}
+## Authorization Service (W) {#authz-server}
 
-The authorization server (W) is assumed to have the private DH key corresponding to G_W, which is used to establish secure communication with the device (see {{U-W}}). W provides to U the authorization decision for enrollment with V in the form of a voucher (see {{voucher}}). Authorization policies are out of scope for this document.
+The authorization service (W) is assumed to have the private DH key corresponding to G_W, which is used to establish secure communication with the device (see {{U-W}}). W provides to U the authorization decision for enrollment with V in the form of a voucher (see {{voucher}}). Authorization policies are out of scope for this document.
 
 Authentication credentials and communication security with V is described in {{domain-auth}}. To calculate the voucher, W needs access to message_1 and CRED_V as used in the EDHOC run between U and V, see {{voucher}}.
 
@@ -243,8 +243,8 @@ W needs to be available during the execution of the protocol between U and V.
 The protocol consist of three security sessions going on in parallel:
 
 1. The EDHOC protocol between device (U) and (domain) authenticator (V)
-2. Voucher Request/Response between authenticator (V) and authorization server (W)
-3. An exchange of voucher-related information, including the voucher itself, between device (U) and authorization server (W), mediated by the authenticator (V).
+2. Voucher Request/Response between authenticator (V) and authorization service (W)
+3. An exchange of voucher-related information, including the voucher itself, between device (U) and authorization service (W), mediated by the authenticator (V).
 
 {{fig-protocol}} provides an overview of the message flow detailed in this section. An outline of EDHOC is given in {{Section 3 of I-D.ietf-lake-edhoc}}.
 
@@ -338,7 +338,7 @@ info = (
 )
 ~~~~~~~~~~
 
-## Device <-> Authorization Server (U <-> W) {#U-W}
+## Device <-> Authorization Service (U <-> W) {#U-W}
 
 The protocol between U and W is carried between U and V in message_1 and message_2 ({{U-V}}), and between V and W in the Voucher Request/Response ({{V-W}}). The data is protected between the endpoints using secret keys derived from a Diffie-Hellman shared secret (see {{reuse}}) as further detailed in this section.
 
@@ -478,7 +478,7 @@ EDHOC message_3 may be combined with an OSCORE request, see {{I-D.ietf-core-osco
 
 V performs the normal EDHOC verifications of message_3. V may retrieve CRED_U from a Credential Database, after having learnt ID_CRED_I from U.
 
-## Authenticator <-> Authorization Server (V <-> W) {#V-W}
+## Authenticator <-> Authorization Service (V <-> W) {#V-W}
 
 It is assumed that V and W have set up a secure connection, W has accessed the authentication credential CRED_V to be used in the EDHOC session between V and with U, and that W has verified that V is in possession of the private key corresponding to CRED_V, see {{domain-auth}} and {{authz-server}}.
 
@@ -574,9 +574,9 @@ EDHOC provides identity protection of the Initiator, here the device. The encryp
 
 Although W learns about the identity of U after receiving VREQ, this information must not be disclosed to V, until U has revealed its identity to V with ID_CRED_I in message_3. W may be used for lookup of CRED_U from ID_CRED_I, or this credential lookup function may be separate from the authorization function of W. The trust model used here is that U decides to which V it reveals its identity. In an alternative trust model where U trusts W to decide to which V it reveals U's identity, CRED_U could be sent in Voucher Response.
 
- As noted in {{Section 8.2 of I-D.ietf-lake-edhoc}} an ephemeral key may be used to calculate several ECDH shared secrets. In this specification the ephemeral key G_X is also used to calculate G_XW, the shared secret with the authorization server.
+ As noted in {{Section 8.2 of I-D.ietf-lake-edhoc}} an ephemeral key may be used to calculate several ECDH shared secrets. In this specification the ephemeral key G_X is also used to calculate G_XW, the shared secret with the authorization service.
 
-The private ephemeral key is thus used in the device for calculations of key material relating to both the authenticator and the authorization server. There are different options for where to implement these calculations, one option is as an addition to EDHOC, i.e., to extend the EDHOC API in the device with input of public key of W (G_W) and identifier of U (ID_U), and produce the encryption of ID_U which is included in Voucher_Info in EAD_1.
+The private ephemeral key is thus used in the device for calculations of key material relating to both the authenticator and the authorization service. There are different options for where to implement these calculations, one option is as an addition to EDHOC, i.e., to extend the EDHOC API in the device with input of public key of W (G_W) and identifier of U (ID_U), and produce the encryption of ID_U which is included in Voucher_Info in EAD_1.
 
 # IANA Considerations  {#iana}
 
@@ -674,7 +674,7 @@ The device SHALL map the message to a CoAP request:
 ### Flight 2
 
 The domain authenticator receives message_1 and processes it as described in {{U-V}}.
-The message triggers the exchange with the authorization server, as described in {{V-W}}.
+The message triggers the exchange with the authorization service, as described in {{V-W}}.
 If the exchange between V and W completes successfully, the domain authenticator prepares EDHOC message_2, as described in {{U-V}}.
 The authenticator SHALL map the message to a CoAP response:
 
