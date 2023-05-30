@@ -199,9 +199,9 @@ Each of the three parties have protected communication with the other two during
 
 ## Device (U) {#device}
 
-To authenticate to V, the device (U) runs EDHOC in the role of Initiator with authentication credential CRED_U, for example, an X.509 certificate or a CBOR Web Token (CWT, {{RFC8392}}). CRED_U need not be carried to V in EDHOC and can be provisioned to V over a non-constrained network, see bottom of {{fig-protocol}}.
+To authenticate to V, the device (U) runs EDHOC in the role of Initiator with authentication credential CRED_U, for example, an X.509 certificate or a CBOR Web Token (CWT, {{RFC8392}}). CRED_U may, for example, be carried in ID_CRED_I of EDHOC message_3 or be provisioned to V over a non-constrained network, see bottom of {{fig-protocol}}.
 
-U also needs to identify itself to W, this identifier is denoted by ID_U. The purpose of ID_U is for W to be able to determine if the device with this identifier is authorized to enroll with V. ID_U may be a reference to CRED_U, like ID_CRED_I in EDHOC (see {{Section 3.5.2 of I-D.ietf-lake-edhoc}}), or a device identifier from a different name space, such as EUI-64 identifiers.
+U also needs to identify itself to W, this device identifier is denoted by ID_U. The purpose of ID_U is for W to be able to determine if the device with this identifier is authorized to enroll with V. ID_U may be a reference to CRED_U, like ID_CRED_I in EDHOC (see {{Section 3.5.2 of I-D.ietf-lake-edhoc}}), or a device identifier from a different name space, such as EUI-64 identifiers.
 
 U is also provisioned with information about W:
 
@@ -222,7 +222,6 @@ Note that both TLS 1.3 and EDHOC may be run between V and W during this setup pr
 
 Other details of proof-of-possession related to CRED_V and transport of CRED_V are out of scope of this document.
 
-V may subsequently obtain the authentication credential of U, CRED_U, from a credential database hosted by W or some other party after V has learnt the identity of U, which happens after EDHOC message_3 from U, see {{fig-protocol}}.
 
 
 ## Authorization Service (W) {#authz-server}
@@ -501,11 +500,11 @@ W extracts from message_1:
 
 * SS - the selected cipher suite, which is the (last) integer of SUITES_I.
 * G_X - the ephemeral public key of U
-* ENC_ID - the encrypted ID_U, contained in the Voucher_Info field of the EAD item with ead_label = TBD1 (with minus sign indicating criticality)
+* ENC_ID - the encryption of the device identifier ID_U, contained in the Voucher_Info field of the EAD item with ead_label = TBD1 (with minus sign indicating criticality)
 
 W verifies and decrypts ENC_ID using the relevant algorithms of the selected cipher suite SS (see {{reuse}}), and obtains ID_U.
 
-W calculates the hash of message_1 H(message_1), and associates this session identifier to ID_U. If H(message_1) is not unique among session identifiers associated to this identity, the protocol SHALL be discontinued.
+W calculates the hash of message_1 H(message_1), and associates this session identifier to the device identifier ID_U. If H(message_1) is not unique among session identifiers associated to this device identifier of U, the protocol SHALL be discontinued.
 
 W uses ID_U to look up the associated authorization policies for U and enforces them. This is out of scope for the specification.
 
@@ -513,7 +512,7 @@ W uses ID_U to look up the associated authorization policies for U and enforces 
 
 #### Processing in W
 
-W retrieves CRED_V associated to the secure connection with V, and constructs the the Voucher for the device with identity ID_U (see {{voucher}}).
+W retrieves CRED_V associated to the secure connection with V, and constructs the the Voucher for the device with identifier ID_U (see {{voucher}}).
 
 W generates the voucher response and sends it to V over the secure connection. The Voucher_Response SHALL be a CBOR array as defined below:
 
@@ -570,13 +569,13 @@ In case of a successful lookup of the authentication credential at W, W MUST iss
 
 This specification builds on and reuses many of the security constructions of EDHOC, e.g., shared secret calculation and key derivation. The security considerations of EDHOC {{I-D.ietf-lake-edhoc}} apply with modifications discussed here.
 
-EDHOC provides identity protection of the Initiator, here the device. The encryption of the device identity in the first message should consider potential information leaking from the length of the identifier ID_U, either by making all identifiers having the same length or the use of a padding scheme.
+EDHOC provides identity protection of the Initiator, here the device. The encryption of the device identifier ID_U in the first message should consider potential information leaking from the length of ID_U, either by making all identifiers having the same length or the use of a padding scheme.
 
-Although W learns about the identity of U after receiving VREQ, this information must not be disclosed to V, until U has revealed its identity to V with ID_CRED_I in message_3. W may be used for lookup of CRED_U from ID_CRED_I, or this credential lookup function may be separate from the authorization function of W. The trust model used here is that U decides to which V it reveals its identity. In an alternative trust model where U trusts W to decide to which V it reveals U's identity, CRED_U could be sent in Voucher Response.
+Although W learns about the identity of U after receiving VREQ, this information must not be disclosed to V, until U has revealed its identity to V with ID_CRED_I in message_3. W may be used for lookup of CRED_U from ID_CRED_I, or this credential lookup function may be separate from the authorization function of W, see {{fig-protocol}}. The trust model used here is that U decides to which V it reveals its identity. In an alternative trust model where U trusts W to decide to which V it reveals U's identity, CRED_U could be sent in Voucher Response.
 
  As noted in {{Section 8.2 of I-D.ietf-lake-edhoc}} an ephemeral key may be used to calculate several ECDH shared secrets. In this specification the ephemeral key G_X is also used to calculate G_XW, the shared secret with the authorization service.
 
-The private ephemeral key is thus used in the device for calculations of key material relating to both the authenticator and the authorization service. There are different options for where to implement these calculations, one option is as an addition to EDHOC, i.e., to extend the EDHOC API in the device with input of public key of W (G_W) and identifier of U (ID_U), and produce the encryption of ID_U which is included in Voucher_Info in EAD_1.
+The private ephemeral key is thus used in the device for calculations of key material relating to both the authenticator and the authorization service. There are different options for where to implement these calculations, one option is as an addition to EDHOC, i.e., to extend the EDHOC API in the device with input of public key of W (G_W) and device identifier of U (ID_U), and produce the encryption of ID_U which is included in Voucher_Info in EAD_1.
 
 # IANA Considerations  {#iana}
 
