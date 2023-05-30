@@ -167,7 +167,7 @@ Note the cardinality of the involved parties, it is expected that the authentica
 
 # Assumptions
 
-The protocol is based on the following relations between the device (U), the domain authenticator (V) and the authorization service (W).
+The protocol is based on the following pre-existing relations between the device (U), the domain authenticator (V) and the authorization service (W).
 
 * U and W have an explicit relation: U is configured with a public key of W, see {{device}}.
 * V and W have an implicit relation, e.g., based on web PKI with trusted CA certificates, see {{domain-auth}}.
@@ -193,7 +193,7 @@ Each of the three parties have protected communication with the other two during
           No previous relation        Implicit relation
                                     (e.g., web PKI based)
 ~~~~~~~~~~~
-{: #fig-trust title="Overview of relations." artwork-align="center"}
+{: #fig-trust title="Overview of pre-existing relations." artwork-align="center"}
 
 
 
