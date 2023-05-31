@@ -337,6 +337,20 @@ info = (
 )
 ~~~~~~~~~~
 
+## Stateless Operation of V
+
+V may act statelessly in respect to U.
+Once V receives the EDHOC message_1 from U, it forwards it unmodified to W in the form of a Voucher Request.
+V encapsulates the internal state that it needs to respond to U and sends it to W together with EDHOC message_1.
+This state typically contains U's IP address and port number, together with any other implementation-specific parameter needed by V to respond to U.
+
+V MUST encrypt and authenticate the encapsulated state using a randomly generated key, known only to itself.
+How V serializes and encrypts its internal state is out of scope of this specification.
+For example, V may use the existing CBOR and COSE libraries.
+
+W sends to V the voucher together with echoed message_1, as received from U, and V's internal state.
+This allows V to act as a simple message relay until it has obtained the authorization from W to enroll U.
+
 ## Device <-> Authorization Service (U <-> W) {#U-W}
 
 The protocol between U and W is carried between U and V in message_1 and message_2 ({{U-V}}), and between V and W in the Voucher Request/Response ({{V-W}}). The data is protected between the endpoints using secret keys derived from a Diffie-Hellman shared secret (see {{reuse}}) as further detailed in this section.
@@ -480,17 +494,28 @@ V performs the normal EDHOC verifications of message_3. V may retrieve CRED_U fr
 ## Authenticator <-> Authorization Service (V <-> W) {#V-W}
 
 It is assumed that V and W have set up a secure connection, W has accessed the authentication credential CRED_V to be used in the EDHOC session between V and with U, and that W has verified that V is in possession of the private key corresponding to CRED_V, see {{domain-auth}} and {{authz-server}}.
+V and W run the Voucher Request/Response protocol over the secure connection.
 
-V and W run the Voucher Request/Response protocol over the secure connection. The hash of EDHOC message_1, H(message_1), acts as session identifier and binds together instances of the two protocols (U<->V and V<->W).
+
 
 ### Voucher Request {#voucher_request}
 
 #### Processing in V
 
-V uses H(message_1) as a session identifier associated to this connection with W. If the same value of H(message_1) is already used for a connection with this or other W, the protocol SHALL be discontinued.
+V sends the voucher request to W.
+The Voucher Request SHALL be a CBOR array as defined below:
 
-V sends the voucher request to W. The Voucher Request SHALL be the CBOR array \[false, message_1\] where "false" is the CBOR simple value with encoding 0xf4.
+~~~~~~~~~~~
+Voucher_Request = [
+    message_1:      bstr,
+    ? opaque_state: bstr
+]
+~~~~~~~~~~~
 
+where
+
+* message_1 is the EDHOC message_1 as it was received from U.
+* opaque_state is OPTIONAL and represents the serialized and encrypted opaque state needed by V to statelessly respond to U after the reception of Voucher_Response.
 
 #### Processing in W
 
@@ -518,21 +543,24 @@ W generates the voucher response and sends it to V over the secure connection. T
 
 ~~~~~~~~~~~
 Voucher_Response = [
-    H(message_1):   bstr,
-    Voucher:        bstr
+    message_1:      bstr,
+    Voucher:        bstr,
+    ? opaque_state: bstr
 ]
 ~~~~~~~~~~~
 
 where
 
-* H(message_1) is the session identifier.
+* message_1 is the EDHOC message_1 as it was received from V.
 * The Voucher is defined in {{voucher}}.
+* opaque_state is the echoed byte string opaque_state from Voucher_Request, if present.
 
 #### Processing in V
 
-V receives the voucher response from W over the secure connection. If the received session identifier does not match a session identifier H(message_1) associated to the secure connection, the protocol SHALL be discontinued.
+V receives the voucher response from W over the secure connection.
+V decrypts and verifies opaque_state, as received from W, and if successful responds to U with EDHOC message_2.
 
-# REST Interface at W
+# REST Interface at W {#rest_interface}
 
 The interaction between V and W is enabled through a RESTful interface exposed by W.
 V SHOULD access the resources exposed by W through the protocol indicated by the scheme in LOC_W URI.
