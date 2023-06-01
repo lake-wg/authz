@@ -83,6 +83,7 @@ informative:
   RFC8174:
   RFC8446:
   RFC8615:
+  RFC8995:
   RFC9031:
   RFC9180:
   I-D.ietf-core-oscore-edhoc:
