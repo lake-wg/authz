@@ -540,24 +540,35 @@ V SHOULD access the resources exposed by W through the protocol indicated by the
 
 ## Scheme "https" {#scheme-https}
 In case the scheme indicates "https", V MUST perform a TLS handshake with W and use HTTP.
-If the public key of V, PK_V, is a signature key that can be used in a TLS handshake, V SHOULD use the certificate containing PK_V to authenticate to W as a client.
-In case the public key of V, PK_V, is a static DH key that cannot be used in a TLS handshake, V MUST first perform a TLS handshake with W using the available compatible keys.
-V MUST then perform an EDHOC handshake on top of the TLS session, using and proving the possesion of PK_V.
-Performing the EDHOC handshake is only necessary if V did not use PK_V in the TLS handshake with W.
+If the authentication credential CRED_V can be used in a TLS handshake, e.g. an X.509 certificate of a signature public key, then V SHOULD use it to authenticate to W as a client.
+If the authentication credential CRED_V cannot be used in a TLS handshake, e.g. if the public key is a static Diffie-Hellman key, then V SHOULD first perform a TLS handshake with W using available compatible keys.
+V MUST then perform an EDHOC handshake over the TLS connection proving to W the possession of the private key corresponding to CRED_V.
+Performing the EDHOC handshake is only necessary if V did not authenticate with CRED_V in the TLS handshake with W.
 
 ## Scheme "coaps"
-In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the same resources using CoAP.
-The normative requirements on performing the DTLS and EDHOC handshakes from {{scheme-https}} remain the same, except that TLS is replaced with DTLS.
+In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the resources defined in {{uris}} using CoAP.
+The normative requirements in {{scheme-https}} on performing the DTLS and EDHOC handshakes remain the same, except that TLS is replaced with DTLS.
 
 ## Scheme "coap"
-In case the scheme indicates "coap", V SHOULD perform an EDHOC handshake with W, as specified in {{Appendix A of I-D.ietf-lake-edhoc}} and access the same resources using OSCORE and CoAP.
-The authentication credential in this EDHOC run MUST be the certificate containing PK_V.
+In case the scheme indicates "coap", V SHOULD perform an EDHOC handshake with W, as specified in {{Appendix A of I-D.ietf-lake-edhoc}} and access the resources defined in {{uris}} using OSCORE and CoAP.
+The authentication credential in this EDHOC run MUST be CRED_V.
 
-## URIs
+## URIs {#uris}
 
 The URIs defined below are valid for both HTTP and CoAP.
 W MUST support the use of the path-prefix "/.well-known/", as defined in {{RFC8615}}, and the registered name "lake-authz".
-A valid URI thus begins with "https://www.example.com/.well-known/lake-authz", in case of HTTP, or with "coaps://example.com/.well-known/lake-authz" in case of CoAP.
+A valid URI in case of HTTP thus begins with
+
+* "https://www.example.com/.well-known/lake-authz"
+
+In case of CoAP with DTLS:
+
+* "coaps://example.com/.well-known/lake-authz"
+
+In case of EDHOC and OSCORE:
+
+* "coap://example.com/.well-known/lake-authz"
+
 Each operation specified in the following is indicated by a path-suffix.
 
 ### Voucher Request (/voucherrequest)
