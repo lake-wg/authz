@@ -344,12 +344,13 @@ Once V receives the EDHOC message_1 from U, it forwards it unmodified to W in th
 V encapsulates the internal state that it needs to respond to U and sends it to W together with EDHOC message_1.
 This state typically contains U's IP address and port number, together with any other implementation-specific parameter needed by V to respond to U.
 
-V MUST encrypt and authenticate the encapsulated state using a randomly generated key, known only to itself.
+V MUST encrypt and authenticate the encapsulated state using a uniformly-distributed (pseudo-)random key, known only to itself.
 How V serializes and encrypts its internal state is out of scope of this specification.
 For example, V may use the existing CBOR and COSE libraries.
 
 W sends to V the voucher together with echoed message_1, as received from U, and V's internal state.
 This allows V to act as a simple message relay until it has obtained the authorization from W to enroll U.
+The reception of a successful Voucher Response at V from W implies the authorization for V to enroll U.
 
 ## Device <-> Authorization Service (U <-> W) {#U-W}
 
