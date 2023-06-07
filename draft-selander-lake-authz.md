@@ -577,7 +577,7 @@ To request a voucher, V MUST issue a request:
 
 * Method is POST
 * Payload is the serialization of the Voucher Request object, as specified in {{voucher_request}}.
-* Content-Format (Content-Type) is set to "application/fwd-edhoc+cbor-seq"
+* Content-Format (Content-Type) is set to "application/lake-authz-voucherrequest+cbor"
 
 In case of successful processing at W, W MUST issue a 200 OK response with payload containing the serialized Voucher Response object, as specified in {{voucher_response}}.
 
@@ -633,12 +633,12 @@ No A, AAAA, or PTR record is requested.
 
 ## Media Types Registry
 
-IANA has added the media types "application/fwd-edhoc+cbor-seq" to the "Media Types" registry.
+IANA has added the media types "application/lake-authz-voucherrequest+cbor" to the "Media Types" registry.
 
-### application/fwd-edhoc+cbor-seq Media Type Registration
+### application/lake-authz-voucherrequest+cbor Media Type Registration
 
 * Type name: application
-* Subtype name: fwd-edhoc+cbor-seq
+* Subtype name: lake-authz-voucherrequest+cbor
 * Required parameters: N/A
 * Optional paramaters: N/A
 * Encoding considerations: binary
@@ -659,10 +659,10 @@ IANA has added the media types "application/fwd-edhoc+cbor-seq" to the "Media Ty
 
 ## CoAP Content-Formats Registry
 
-IANA has added the media type "application/fwd-edhoc+cbor-seq" to the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".
+IANA has added the media type "application/lake-authz-voucherrequest+cbor" to the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".
 
 | Media Type | Encoding | ID | Reference |
-| application/fwd-edhoc+cbor-seq | - | TBD2 | [[this document]] |
+| application/lake-authz-voucherrequest+cbor | - | TBD2 | [[this document]] |
 {: #coap-content-formats title="Addition to the CoAP Content-Formats registry" cols="l l l"}
 
 --- back
