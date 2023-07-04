@@ -345,7 +345,7 @@ V encapsulates the internal state that it needs to respond to U and sends it to 
 This state typically contains U's IP address and port number, together with any other implementation-specific parameter needed by V to respond to U.
 At this point, V can drop the EDHOC session that was initiated by U.
 
-V MUST encrypt and authenticate the encapsulated state using a uniformly-distributed (pseudo-)random key, known only to itself.
+V MUST encrypt and integrity protect the encapsulated state using a uniformly-distributed (pseudo-)random key, known only to itself.
 How V serializes and encrypts its internal state is out of scope of this specification.
 For example, V may use the existing CBOR and COSE libraries.
 
@@ -561,7 +561,8 @@ where
 #### Processing in V
 
 V receives the voucher response from W over the secure connection.
-V decrypts and verifies opaque_state, as received from W, and if successful responds to U with EDHOC message_2.
+If present, V decrypts and verifies opaque_state as received from W. If that verification fails then EDHOC is discontinued.
+If the voucher response is successfully received from W, then V responds to U with EDHOC message_2 as described in {{V_2}}.
 
 # REST Interface at W {#rest_interface}
 
