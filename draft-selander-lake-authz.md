@@ -535,30 +535,56 @@ V receives the voucher response from W over the secure connection. If the receiv
 # REST Interface at W
 
 The interaction between V and W is enabled through a RESTful interface exposed by W.
+This RESTful interface MAY be implemented using either HTTP or CoAP.
 V SHOULD access the resources exposed by W through the protocol indicated by the scheme in LOC_W URI.
-In case the scheme indicates "https", V SHOULD perform a TLS handshake with W and use HTTP.
-In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the same resources using CoAP.
-In both cases, V MUST perform client authentication to authenticate to W, using a certificate containing the PK_V public key.
 
-## HTTP URIs
+## Scheme "https" {#scheme-https}
+In case the scheme indicates "https", V MUST perform a TLS handshake with W and use HTTP.
+If the authentication credential CRED_V can be used in a TLS handshake, e.g. an X.509 certificate of a signature public key, then V SHOULD use it to authenticate to W as a client.
+If the authentication credential CRED_V cannot be used in a TLS handshake, e.g. if the public key is a static Diffie-Hellman key, then V SHOULD first perform a TLS handshake with W using available compatible keys.
+V MUST then perform an EDHOC handshake over the TLS connection proving to W the possession of the private key corresponding to CRED_V.
+Performing the EDHOC handshake is only necessary if V did not authenticate with CRED_V in the TLS handshake with W.
 
+## Scheme "coaps"
+In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the resources defined in {{uris}} using CoAP.
+The normative requirements in {{scheme-https}} on performing the DTLS and EDHOC handshakes remain the same, except that TLS is replaced with DTLS.
+
+## Scheme "coap"
+In case the scheme indicates "coap", V SHOULD perform an EDHOC handshake with W, as specified in {{Appendix A of I-D.ietf-lake-edhoc}} and access the resources defined in {{uris}} using OSCORE and CoAP.
+The authentication credential in this EDHOC run MUST be CRED_V.
+
+## URIs {#uris}
+
+The URIs defined below are valid for both HTTP and CoAP.
 W MUST support the use of the path-prefix "/.well-known/", as defined in {{RFC8615}}, and the registered name "lake-authz".
-A valid URI thus begins with "https://www.example.com/.well-known/lake-authz".
+A valid URI in case of HTTP thus begins with
+
+* "https://www.example.com/.well-known/lake-authz"
+
+In case of CoAP with DTLS:
+
+* "coaps://example.com/.well-known/lake-authz"
+
+In case of EDHOC and OSCORE:
+
+* "coap://example.com/.well-known/lake-authz"
+
 Each operation specified in the following is indicated by a path-suffix.
 
-## Voucher Request (/voucherrequest)
+### Voucher Request (/voucherrequest)
 
-To request a voucher, V MUST issue an HTTP request:
+To request a voucher, V MUST issue a request:
 
 * Method is POST
 * Payload is the serialization of the Voucher Request object, as specified in {{voucher_request}}.
+* Content-Format (Content-Type) is set to "application/lake-authz-voucherrequest+cbor"
 
 In case of successful processing at W, W MUST issue a 200 OK response with payload containing the serialized Voucher Response object, as specified in {{voucher_response}}.
 
-## Certificate Request (/certrequest)
+### Certificate Request (/certrequest)
 
 V requests the public key certificate of U from W through the "/certrequest" path-suffix.
-To request U's authentication credential, V MUST issue an HTTP request:
+To request U's authentication credential, V MUST issue a request:
 
 * Method is POST
 * Payload is the serialization of the ID_CRED_I object, as received in EDHOC message_3.
@@ -604,6 +630,40 @@ This document allocates a well-known name under the .arpa name space according t
 The name "lake-authz.arpa" is requested.
 No subdomains are expected, and addition of any such subdomains requires the publication of an IETF Standards Track RFC.
 No A, AAAA, or PTR record is requested.
+
+## Media Types Registry
+
+IANA has added the media types "application/lake-authz-voucherrequest+cbor" to the "Media Types" registry.
+
+### application/lake-authz-voucherrequest+cbor Media Type Registration
+
+* Type name: application
+* Subtype name: lake-authz-voucherrequest+cbor
+* Required parameters: N/A
+* Optional paramaters: N/A
+* Encoding considerations: binary
+* Security cosniderations: See {{sec-cons}} of this document.
+* Interoperability considerations: N/A
+* Published specification: [[this document]] (this document)
+* Application that use this media type: To be identified
+* Fragment identifier considerations: N/A
+* Additional information:
+    * Magic number(s): N/A
+    * File extension(s): N/A
+    * Macintosh file type code(s): N/A
+* Person & email address to contact for further information: See "Authors' Addresses" section.
+* Intended usage: COMMON
+* Restrictions on usage: N/A
+* Author: See "Authors' Addresses" section.
+* Change Controller: IESG
+
+## CoAP Content-Formats Registry
+
+IANA has added the media type "application/lake-authz-voucherrequest+cbor" to the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".
+
+| Media Type | Encoding | ID | Reference |
+| application/lake-authz-voucherrequest+cbor | - | TBD2 | [[this document]] |
+{: #coap-content-formats title="Addition to the CoAP Content-Formats registry" cols="l l l"}
 
 --- back
 
