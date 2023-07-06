@@ -104,7 +104,7 @@ venue:
 
 --- abstract
 
-This document describes a procedure for authorizing enrollment of new devices using the lightweight authenticated key exchange protocol Ephemeral Diffie-Hellman Over COSE (EDHOC). The procedure is applicable to zero-touch onboarding of new devices to a contrained network leveraging trust anchors installed at manufacture time.
+This document describes a procedure for authorizing enrollment of new devices using the lightweight authenticated key exchange protocol Ephemeral Diffie-Hellman Over COSE (EDHOC). The procedure is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time.
 
 --- middle
 
@@ -155,9 +155,9 @@ Note the cardinality of the involved parties, it is expected that the authentica
                 Info
 +----------+      |     +---------------+  Voucher  +---------------+
 |          |      |     |               |  Request  |               |
-|  Device  +------o---->|    Domain     +---------->| Authorization |
-|          |<---o-------+ Authenticator |<----------+    Service    |
-|    (U)   +----+------>|      (V)      |  Voucher  |       (W)     |
+|  Device  +------o---->|    Domain     +---------->|   Enrollment  |
+|          |<---o-------+ Authenticator |<----------+     Server    |
+|   (U)    +----+------>|      (V)      |  Voucher  |      (W)      |
 |          |    |       |               |  Response |               |
 +----------+    |       +---------------+           +---------------+
               Voucher
@@ -184,9 +184,9 @@ Each of the three parties have protected communication with the other two during
      |                                                       |
 +----+-----+            +---------------+            +-------+-------+
 |          |            |               |    non-    |               |
-|  Device  |    con-    |    Domain     |    con-    | Authorization |
-|          |    stra-   | Authenticator |    stra-   |    Service    |
-|    (U)   |    ined    |      (V)      |    ined    |      (W)      |
+|  Device  |    con-    |    Domain     |    con-    |   Enrollment  |
+|          |    stra-   | Authenticator |    stra-   |     Server    |
+|   (U)    |    ined    |      (V)      |    ined    |      (W)      |
 |          |            |               |            |               |
 +----+-----+            +-------+-------+            +-------+-------+
      |                          |                            |
