@@ -338,6 +338,24 @@ info = (
 )
 ~~~~~~~~~~
 
+
+## Stateless Operation of V
+
+V may act statelessly in respect to U: the state of the EDHOC session started by U may be dropped at V until an authorization from W is received.
+Once V receives the EDHOC message_1 from U, it forwards it unmodified to W in the form of a Voucher Request.
+V encapsulates the internal state that it needs to respond to U and sends it to W together with EDHOC message_1.
+This state typically contains U's IP address and port number, together with any other implementation-specific parameter needed by V to respond to U.
+At this point, V can drop the EDHOC session that was initiated by U.
+
+V MUST encrypt and integrity protect the encapsulated state using a uniformly-distributed (pseudo-)random key, known only to itself.
+How V serializes and encrypts its internal state is out of scope of this specification.
+For example, V may use the existing CBOR and COSE libraries.
+
+W sends to V the voucher together with echoed message_1, as received from U, and V's internal state.
+This allows V to act as a simple message relay until it has obtained the authorization from W to enroll U.
+The reception of a successful Voucher Response at V from W implies the authorization for V to enroll U.
+At this point, V can initialize a new EDHOC session with U, based on the message and the state retrieved from the Voucher Response from W.
+
 ## Device <-> Enrollment Server (U <-> W) {#U-W}
 
 The protocol between U and W is carried between U and V in message_1 and message_2 ({{U-V}}), and between V and W in the Voucher Request/Response ({{V-W}}). The data is protected between the endpoints using secret keys derived from a Diffie-Hellman shared secret (see {{reuse}}) as further detailed in this section.
@@ -481,17 +499,28 @@ V performs the normal EDHOC verifications of message_3. V may retrieve CRED_U fr
 ## Authenticator <-> Enrollment Server (V <-> W) {#V-W}
 
 It is assumed that V and W have set up a secure connection, W has accessed the authentication credential CRED_V to be used in the EDHOC session between V and with U, and that W has verified that V is in possession of the private key corresponding to CRED_V, see {{domain-auth}} and {{authz-server}}.
+V and W run the Voucher Request/Response protocol over the secure connection.
 
-V and W run the Voucher Request/Response protocol over the secure connection. The hash of EDHOC message_1, H(message_1), acts as session identifier and binds together instances of the two protocols (U<->V and V<->W).
+
 
 ### Voucher Request {#voucher_request}
 
 #### Processing in V
 
-V uses H(message_1) as a session identifier associated to this connection with W. If the same value of H(message_1) is already used for a connection with this or other W, the protocol SHALL be discontinued.
+V sends the voucher request to W.
+The Voucher Request SHALL be a CBOR array as defined below:
 
-V sends the voucher request to W. The Voucher Request SHALL be the CBOR array \[false, message_1\] where "false" is the CBOR simple value with encoding 0xf4.
+~~~~~~~~~~~
+Voucher_Request = [
+    message_1:      bstr,
+    ? opaque_state: bstr
+]
+~~~~~~~~~~~
 
+where
+
+* message_1 is the EDHOC message_1 as it was received from U.
+* opaque_state is OPTIONAL and represents the serialized and encrypted opaque state needed by V to statelessly respond to U after the reception of Voucher_Response.
 
 #### Processing in W
 
@@ -519,47 +548,77 @@ W generates the voucher response and sends it to V over the secure connection. T
 
 ~~~~~~~~~~~
 Voucher_Response = [
-    H(message_1):   bstr,
-    Voucher:        bstr
+    message_1:      bstr,
+    Voucher:        bstr,
+    ? opaque_state: bstr
 ]
 ~~~~~~~~~~~
 
 where
 
-* H(message_1) is the session identifier.
+* message_1 is the EDHOC message_1 as it was received from V.
 * The Voucher is defined in {{voucher}}.
+* opaque_state is the echoed byte string opaque_state from Voucher_Request, if present.
 
 #### Processing in V
 
-V receives the voucher response from W over the secure connection. If the received session identifier does not match a session identifier H(message_1) associated to the secure connection, the protocol SHALL be discontinued.
+V receives the voucher response from W over the secure connection.
+If present, V decrypts and verifies opaque_state as received from W. If that verification fails then EDHOC is discontinued.
+If the voucher response is successfully received from W, then V responds to U with EDHOC message_2 as described in {{V_2}}.
 
-# REST Interface at W
+# REST Interface at W {#rest_interface}
 
 The interaction between V and W is enabled through a RESTful interface exposed by W.
+This RESTful interface MAY be implemented using either HTTP or CoAP.
 V SHOULD access the resources exposed by W through the protocol indicated by the scheme in LOC_W URI.
-In case the scheme indicates "https", V SHOULD perform a TLS handshake with W and use HTTP.
-In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the same resources using CoAP.
-In both cases, V MUST perform client authentication to authenticate to W, using a certificate containing the PK_V public key.
 
-## HTTP URIs
+## Scheme "https" {#scheme-https}
+In case the scheme indicates "https", V MUST perform a TLS handshake with W and use HTTP.
+If the authentication credential CRED_V can be used in a TLS handshake, e.g. an X.509 certificate of a signature public key, then V SHOULD use it to authenticate to W as a client.
+If the authentication credential CRED_V cannot be used in a TLS handshake, e.g. if the public key is a static Diffie-Hellman key, then V SHOULD first perform a TLS handshake with W using available compatible keys.
+V MUST then perform an EDHOC handshake over the TLS connection proving to W the possession of the private key corresponding to CRED_V.
+Performing the EDHOC handshake is only necessary if V did not authenticate with CRED_V in the TLS handshake with W.
 
+## Scheme "coaps"
+In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the resources defined in {{uris}} using CoAP.
+The normative requirements in {{scheme-https}} on performing the DTLS and EDHOC handshakes remain the same, except that TLS is replaced with DTLS.
+
+## Scheme "coap"
+In case the scheme indicates "coap", V SHOULD perform an EDHOC handshake with W, as specified in {{Appendix A of I-D.ietf-lake-edhoc}} and access the resources defined in {{uris}} using OSCORE and CoAP.
+The authentication credential in this EDHOC run MUST be CRED_V.
+
+## URIs {#uris}
+
+The URIs defined below are valid for both HTTP and CoAP.
 W MUST support the use of the path-prefix "/.well-known/", as defined in {{RFC8615}}, and the registered name "lake-authz".
-A valid URI thus begins with "https://www.example.com/.well-known/lake-authz".
+A valid URI in case of HTTP thus begins with
+
+* "https://www.example.com/.well-known/lake-authz"
+
+In case of CoAP with DTLS:
+
+* "coaps://example.com/.well-known/lake-authz"
+
+In case of EDHOC and OSCORE:
+
+* "coap://example.com/.well-known/lake-authz"
+
 Each operation specified in the following is indicated by a path-suffix.
 
-## Voucher Request (/voucherrequest)
+### Voucher Request (/voucherrequest)
 
-To request a voucher, V MUST issue an HTTP request:
+To request a voucher, V MUST issue a request:
 
 * Method is POST
 * Payload is the serialization of the Voucher Request object, as specified in {{voucher_request}}.
+* Content-Format (Content-Type) is set to "application/lake-authz-voucherrequest+cbor"
 
 In case of successful processing at W, W MUST issue a 200 OK response with payload containing the serialized Voucher Response object, as specified in {{voucher_response}}.
 
-## Certificate Request (/certrequest)
+### Certificate Request (/certrequest)
 
 V requests the public key certificate of U from W through the "/certrequest" path-suffix.
-To request U's authentication credential, V MUST issue an HTTP request:
+To request U's authentication credential, V MUST issue a request:
 
 * Method is POST
 * Payload is the serialization of the ID_CRED_I object, as received in EDHOC message_3.
@@ -605,6 +664,40 @@ This document allocates a well-known name under the .arpa name space according t
 The name "lake-authz.arpa" is requested.
 No subdomains are expected, and addition of any such subdomains requires the publication of an IETF Standards Track RFC.
 No A, AAAA, or PTR record is requested.
+
+## Media Types Registry
+
+IANA has added the media types "application/lake-authz-voucherrequest+cbor" to the "Media Types" registry.
+
+### application/lake-authz-voucherrequest+cbor Media Type Registration
+
+* Type name: application
+* Subtype name: lake-authz-voucherrequest+cbor
+* Required parameters: N/A
+* Optional paramaters: N/A
+* Encoding considerations: binary
+* Security cosniderations: See {{sec-cons}} of this document.
+* Interoperability considerations: N/A
+* Published specification: [[this document]] (this document)
+* Application that use this media type: To be identified
+* Fragment identifier considerations: N/A
+* Additional information:
+    * Magic number(s): N/A
+    * File extension(s): N/A
+    * Macintosh file type code(s): N/A
+* Person & email address to contact for further information: See "Authors' Addresses" section.
+* Intended usage: COMMON
+* Restrictions on usage: N/A
+* Author: See "Authors' Addresses" section.
+* Change Controller: IESG
+
+## CoAP Content-Formats Registry
+
+IANA has added the media type "application/lake-authz-voucherrequest+cbor" to the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".
+
+| Media Type | Encoding | ID | Reference |
+| application/lake-authz-voucherrequest+cbor | - | TBD2 | [[this document]] |
+{: #coap-content-formats title="Addition to the CoAP Content-Formats registry" cols="l l l"}
 
 --- back
 
