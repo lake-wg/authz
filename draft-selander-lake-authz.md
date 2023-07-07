@@ -50,7 +50,6 @@ normative:
   RFC8392:
   RFC8949:
   RFC9052:
-  RFC9053:
   RFC8613:
   I-D.ietf-lake-edhoc:
   NIST-800-56A:
@@ -85,9 +84,7 @@ informative:
   RFC8615:
   RFC8995:
   RFC9031:
-  RFC9180:
   I-D.ietf-core-oscore-edhoc:
-  I-D.ietf-cose-cbor-encoded-cert:
   I-D.ietf-lake-reqs:
   IEEE802.15.4:
     title: "IEEE Std 802.15.4 Standard for Low-Rate Wireless Networks"
@@ -252,53 +249,60 @@ The protocol consist of three security sessions going on in parallel:
 
 ~~~~~~~~~~~ aasvg
 
-         U                               V                                  W
-         |                               |                                  |
-         |                               |                                  |
-         |                               |     Establish secure channel     |
-         |                               +<--  ---  ---  ---   ---  ---  -->|
-         |                               |   (e.g., TLS with server cert.)  |
-         |                               |                                  |
-         |                               |       Proof of possession        |
-         |                               +<--  ---  ---  ---   ---  ---  -->|
-         |                               |         (e.g., EDHOC)            |
-         |                               |                                  |
-         |                               |                                  |
-+------------------------------------------------------------------------------------+
-|        |                               |                                  |        |
-|        |        EDHOC message_1        |                                  |        |
-|        +------------------------------>|                                  |        |
-|        |    (EAD_1 = LOC_W, ENC_ID)    |                                  |        |
-|        |                               |                                  |        |
-|        |                               |     Voucher Request (VREQ)       |        |
-|        |                               +--------------------------------->|        |
-|        |                               |    (wrapped EDHOC message_1)     |        |
-|        |                               |                                  |        |
-|        |                               |     Voucher Response (VRES)      |        |
-|        |                               |<---------------------------------+        |
-|        |                               |            (Voucher)             |        |
-|        |                               |                                  |        |
-|        |        EDHOC message_2        |                                  |        |
-|        |<------------------------------+                                  |        |
-|        |       (EAD_2 = Voucher)       |                                  |        |
-|        |                               |                                  |        |
-|        |                               |                                  |        |
-|        |        EDHOC message_3        |                                  |        |
-|        +------------------------------>|                                  |        |
-|        |                               |                                  |        |
-+------------------------------------------------------------------------------------+
-         |                               |
-         |                               |                              Credential
-         |                               |                               Database
-         |                               |                                  |
-         |                               |     ID_CRED_I from message_3     |
-         |                               +---  ---  ---  ---   ---  ---  -->|
-         |                               |<--  ---  ---  ---   ---  ---  ---+
-         |                               |              CRED_U              |
-         |                               |                                  |
+U                           V                                       W
+|                           |                                       |
+|                           |                                       |
+|                           |        Establish secure channel       |
+|                           +<---  ---  ---  ---  ---  ---  ---  -->|
+|                           |      (e.g., TLS with server cert.)    |
+|                           |                                       |
+|                           |   Proof of possession w.r.t. CRED     |
+|                           +<---  ---  ---  ---  ---  ---  ---  -->|
+|                           |            (e.g., EDHOC)              |
+|                           |                                       |
+|                           |                                       |
+|                           |                                       |
 
+---------------------------------------------------------------------
+                        CORE PROTOCOL
+
+|                           |                                       |
+|      EDHOC message_1      |                                       |
++-------------------------->|                                       |
+|  (EAD_1 = LOC_W, ENC_ID)  |                                       |
+|                           |                                       |
+|                           |        Voucher Request (VREQ)         |
+|                           +-------------------------------------->|
+|                           |       (message_1, ?opaque_state)      |
+|                           |                                       |
+|                           |        Voucher Response (VRES)        |
+|                           |<--------------------------------------+
+|                           |  (message_1, Voucher, ?opaque_state)  |
+|                           |                                       |
+|      EDHOC message_2      |                                       |
+|<--------------------------+                                       |
+|     (EAD_2 = Voucher)     |                                       |
+|                           |                                       |
+|                           |                                       |
+|      EDHOC message_3      |                                       |
++-------------------------->|                                       |
+|                           |                                       |
+
+---------------------------------------------------------------------
+
+|                           |
+|                           |                              Credential
+|                           |                                Database
+|                           |                                       |
+|                           |       ID_CRED_I from message_3        |
+|                           +---  ---  ---  ---   ---  ---  ---  -->|
+|                           |                                       |
+|                           |                 CRED_U                |
+|                           |<--  ---  ---  ---  ---   ---  ---  ---+
+|                           |                                       |
+|                           |                                       |
 ~~~~~~~~~~~
-{: #fig-protocol title="Overview of the protocol (inside the box): W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, V and W are assumed to have established a secure channel and performed proof-of-possession of relevant keys. Credential lookup of CRED_U may involve W or other credential database." artwork-align="center"}
+{: #fig-protocol title="Overview of the protocol: W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, V and W are assumed to have established a secure channel and performed proof-of-possession of relevant keys. Credential lookup of CRED_U may involve W or other credential database." artwork-align="center"}
 
 
 
