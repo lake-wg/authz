@@ -168,7 +168,7 @@ Note the cardinality of the involved parties. It is expected that the authentica
 
 # Assumptions
 
-The protocol is based on the following pre-existing relations between the device (U), the domain authenticator (V) and the enrollment server (W), see {{trust}}.
+The protocol is based on the following pre-existing relations between the device (U), the domain authenticator (V) and the enrollment server (W), see {{fig-trust}}.
 
 * U and W have an explicit relation: U is configured with a public key of W, see {{device}}.
 * V and W have an implicit relation, e.g., based on web PKI with trusted CA certificates, see {{domain-auth}}.
