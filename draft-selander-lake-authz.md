@@ -353,7 +353,7 @@ V MUST encrypt and integrity protect the encapsulated state using a uniformly-di
 How V serializes and encrypts its internal state is out of scope of this specification.
 For example, V may use the existing CBOR and COSE libraries.
 
-TBD: Should we include an exmple of serializing internal state?
+Editor's note: Consider to include an example of serialized internal state.
 
 W sends to V the voucher together with echoed message_1, as received from U, and V's internal state.
 This allows V to act as a simple message relay until it has obtained the authorization from W to enroll U.
@@ -407,21 +407,19 @@ where
 
 * SS is the selected cipher suite in SUITES_I of EDHOC message_1, see {{U-V}}.
 
-TBD: Add more context to external_aad.
+Editor's note: Add more context to external_aad.
 
 The derivation of K_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
 
 * info_label = 0
-* context  = h''
+* context  = h'' (the empty CBOR string)
 * length is length of key of the EDHOC AEAD algorithm in bytes
 
 The derivation of IV_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
 
 * info_label = 1
-* context = h''
+* context = h''  (the empty CBOR string)
 * length is length of nonce of the EDHOC AEAD algorithm in bytes
-
-TBD: explain h'' is the CBOR empty string.
 
 ### Voucher {#voucher}
 
@@ -581,13 +579,13 @@ V SHOULD access the resources exposed by W through the protocol indicated by the
 
 ## Scheme "https" {#scheme-https}
 In case the scheme indicates "https", V MUST perform a TLS handshake with W and use HTTP.
-
-TBD: This should not be necessary for each device request; if there already is a TLS connection between V and W that should be reused. Similar considerations for 5.2 and 5.3.
-
 If the authentication credential CRED_V can be used in a TLS handshake, e.g. an X.509 certificate of a signature public key, then V SHOULD use it to authenticate to W as a client.
 If the authentication credential CRED_V cannot be used in a TLS handshake, e.g. if the public key is a static Diffie-Hellman key, then V SHOULD first perform a TLS handshake with W using available compatible keys.
 V MUST then perform an EDHOC session over the TLS connection proving to W the possession of the private key corresponding to CRED_V.
 Performing the EDHOC session is only necessary if V did not authenticate with CRED_V in the TLS handshake with W.
+
+Editor's note: Clarify that performing TLS handshake is not necessary for each device request; if there already is a TLS connection between V and W that should be reused. Similar considerations for 5.2 and 5.3.
+
 
 ## Scheme "coaps"
 In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the resources defined in {{uris}} using CoAP.
