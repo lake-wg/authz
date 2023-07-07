@@ -1,7 +1,7 @@
 ---
 title: Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE
 docname: draft-selander-lake-authz-latest
-
+abbrev: Lightweight Authorization using EDHOC
 ipr: trust200902
 cat: std
 submissiontype: IETF
