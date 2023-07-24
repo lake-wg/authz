@@ -47,6 +47,7 @@ author:
 
 normative:
 
+  RFC8366:
   RFC8392:
   RFC8949:
   RFC9052:
@@ -137,6 +138,7 @@ Appendix C.1 of {{I-D.ietf-lake-edhoc}} contains some basic info about CBOR.
 
 The (potentially constrained) device (U) wants to enroll into a domain over a constrained link.
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator (V) with the help of a voucher conveying authorization information.
+The voucher has a similar role as in {{RFC8366}} but should be considerably more compact.
 The domain authenticator, in turn, authenticates the device and authorizes its enrollment into the domain.
 
 The procedure is assisted by a (non-constrained) enrollment server (W) located in a non-constrained network behind the domain authenticator, e.g. on the Internet, providing information to the device (the voucher) and to the domain authenticator as part of the protocol.
@@ -180,10 +182,10 @@ Each of the three parties have protected communication with the other two during
      | <---------------------------------------------------> |
      |                                                       |
 +----+-----+            +---------------+            +-------+-------+
-|          |            |               |    non-    |               |
-|  Device  |    con-    |    Domain     |    con-    |   Enrollment  |
-|          |    stra-   | Authenticator |    stra-   |     Server    |
-|   (U)    |    ined    |      (V)      |    ined    |      (W)      |
+|          |            |               |            |               |
+|  Device  |    con-    |    Domain     |  not con-  |   Enrollment  |
+|          |  strained  | Authenticator |  strained  |     Server    |
+|   (U)    |  network   |       (V)     |  network   |      (W)      |
 |          |            |               |            |               |
 +----+-----+            +-------+-------+            +-------+-------+
      |                          |                            |
@@ -192,7 +194,6 @@ Each of the three parties have protected communication with the other two during
                                     (e.g., web PKI based)
 ~~~~~~~~~~~
 {: #fig-trust title="Overview of pre-existing relations." artwork-align="center"}
-
 
 
 ## Device (U) {#device}
