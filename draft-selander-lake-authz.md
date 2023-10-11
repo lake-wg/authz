@@ -412,6 +412,8 @@ where
 
 * SS is the selected cipher suite in SUITES_I of EDHOC message_1, see {{U-V}}.
 
+The external_aad is wrapped in an enc_structure as defined in {{Section 5.3 of RFC8152}}.
+
 Editor's note: Add more context to external_aad.
 
 The derivation of K_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
