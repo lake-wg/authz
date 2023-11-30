@@ -424,13 +424,13 @@ The derivation of K_1 = EDHOC-Expand(PRK, info, length) uses the following input
 
 * info_label = 0
 * context  = h'' (the empty CBOR string)
-* length is length of key of the EDHOC AEAD algorithm in bytes
+* length is length of key of the EDHOC AEAD algorithm in bytes (which is the length of K_1)
 
 The derivation of IV_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
 
 * info_label = 1
 * context = h''  (the empty CBOR string)
-* length is length of nonce of the EDHOC AEAD algorithm in bytes
+* length is length of nonce of the EDHOC AEAD algorithm in bytes (which is the length of IV_1)
 
 ### Voucher {#voucher}
 
