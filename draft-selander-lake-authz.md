@@ -395,7 +395,7 @@ where
 
 ENC_ID is 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) computed from the following:
 
-* The encryption key K_1 and nonce IV_1 are derived as specified below.
+* The encryption key K_1 and nonce IV_1 are derived as specified below (see OKM in {{reuse}}).
 * 'protected' is a byte string of size 0
 * 'plaintext' and 'external_aad' as below:
 
