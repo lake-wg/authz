@@ -86,6 +86,7 @@ informative:
   RFC8995:
   RFC9031:
   I-D.ietf-core-oscore-edhoc:
+  I-D.ietf-lake-traces:
   I-D.ietf-lake-reqs:
   IEEE802.15.4:
     title: "IEEE Std 802.15.4 Standard for Low-Rate Wireless Networks"
@@ -121,6 +122,9 @@ The enrollment server may represent the manufacturer of the device, or some othe
 The (domain) authenticator may represent the service provider or some other party controlling access to the network in which the device is enrolling.
 
 The protocol assumes that authentication between device and authenticator is performed with EDHOC {{I-D.ietf-lake-edhoc}}, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) fields defined in EDHOC.
+
+Implementations wishing to leverage the zero-touch capabilities of this protocol are expected to support transmission of credentials by value during the EDHOC exchange.
+Impacts on message size will depend on the type of credential used, e.g., the credentials in {{I-D.ietf-lake-traces}} are CWT Claim Sets of 95 bytes long.
 
 The protocol enables a low message count by performing authorization and enrollment in parallel with authentication, instead of in sequence which is common for network access.
 It further reuses protocol elements from EDHOC leading to reduced message sizes on constrained links.
@@ -391,7 +395,7 @@ where
 
 ENC_ID is 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) computed from the following:
 
-* The encryption key K_1 and nonce IV_1 are derived as specified below.
+* The encryption key K_1 and nonce IV_1 are derived as specified below (see OKM in {{reuse}}).
 * 'protected' is a byte string of size 0
 * 'plaintext' and 'external_aad' as below:
 
@@ -412,19 +416,21 @@ where
 
 * SS is the selected cipher suite in SUITES_I of EDHOC message_1, see {{U-V}}.
 
+The external_aad is wrapped in an enc_structure as defined in {{Section 5.3 of RFC8152}}.
+
 Editor's note: Add more context to external_aad.
 
 The derivation of K_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
 
 * info_label = 0
 * context  = h'' (the empty CBOR string)
-* length is length of key of the EDHOC AEAD algorithm in bytes
+* length is length of key of the EDHOC AEAD algorithm in bytes (which is the length of K_1)
 
 The derivation of IV_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
 
 * info_label = 1
 * context = h''  (the empty CBOR string)
-* length is length of nonce of the EDHOC AEAD algorithm in bytes
+* length is length of nonce of the EDHOC AEAD algorithm in bytes (which is the length of IV_1)
 
 ### Voucher {#voucher}
 
