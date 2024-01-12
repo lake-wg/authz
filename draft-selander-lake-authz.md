@@ -124,7 +124,7 @@ The (domain) authenticator may represent the service provider or some other part
 The protocol assumes that authentication between device and authenticator is performed with EDHOC {{I-D.ietf-lake-edhoc}}, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) fields defined in EDHOC.
 
 Implementations wishing to leverage the zero-touch capabilities of this protocol are expected to support transmission of credentials by value during the EDHOC exchange.
-Impacts on message size will depend on the type of credential used, e.g., the credentials in {{I-D.ietf-lake-traces}} are CWT Claim Sets of 95 bytes long.
+Impacts on message size will depend on the type of credential used.
 
 The protocol enables a low message count by performing authorization and enrollment in parallel with authentication, instead of in sequence which is common for network access.
 It further reuses protocol elements from EDHOC leading to reduced message sizes on constrained links.
