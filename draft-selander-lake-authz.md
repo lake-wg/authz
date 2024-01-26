@@ -395,7 +395,7 @@ where
 
 ENC_ID is 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) computed from the following:
 
-* The encryption key K_1 and nonce IV_1 are derived as specified below (see OKM in {{reuse}}).
+* The encryption key K_1 and nonce IV_1 are derived as specified below.
 * 'protected' is a byte string of size 0
 * 'plaintext' and 'external_aad' as below:
 
@@ -420,13 +420,13 @@ The external_aad is wrapped in an enc_structure as defined in {{Section 5.3 of R
 
 Editor's note: Add more context to external_aad.
 
-The derivation of K_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
+The derivation of K_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see OKM in {{reuse}}):
 
 * info_label = 0
 * context  = h'' (the empty CBOR string)
 * length is length of key of the EDHOC AEAD algorithm in bytes (which is the length of K_1)
 
-The derivation of IV_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
+The derivation of IV_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see OKM in {{reuse}}):
 
 * info_label = 1
 * context = h''  (the empty CBOR string)
