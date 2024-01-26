@@ -32,17 +32,16 @@ author:
   org: INRIA
   country: France
   email: malisa.vucinic@inria.fr
+- name: Geovane Fedrecheski
+  surname: Fedrecheski
+  org: INRIA
+  country: France
+  email: geovane.fedrecheski@inria.fr
 - name: Michael Richardson
   surname: Richardson
   org: Sandelman Software Works
   country: Canada
   email: mcr+ietf@sandelman.ca
-- name: Aurelio Schellenbaum
-  surname: Schellenbaum
-  org: Institute of Embedded Systems, ZHAW
-  abbrev: ZHAW
-  country: Switzerland
-  email: aureliorubendario.schellenbaum@zhaw.ch
 
 
 normative:
@@ -819,5 +818,12 @@ The authenticator playing the role of the {{RFC9031}} JRC obtains the device ide
 
 Flight 4 is the OSCORE response carrying CoJP response message.
 The message is processed as specified in {{Section 8.4.2 of RFC9031}}.
+
+
+
+# Acknowledgments
+{: numbered="no"}
+
+The authors sincerely thank {{{Aurelio Schellenbaum}}} for his contribution in the initial phase of this work.
 
 --- fluff
