@@ -123,9 +123,6 @@ The (domain) authenticator may represent the service provider or some other part
 
 The protocol assumes that authentication between device and authenticator is performed with EDHOC {{I-D.ietf-lake-edhoc}}, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) fields defined in EDHOC.
 
-Implementations wishing to leverage the zero-touch capabilities of this protocol are expected to support transmission of credentials by value during the EDHOC exchange.
-Impacts on message size will depend on the type of credential used.
-
 The protocol enables a low message count by performing authorization and enrollment in parallel with authentication, instead of in sequence which is common for network access.
 It further reuses protocol elements from EDHOC leading to reduced message sizes on constrained links.
 
@@ -177,7 +174,9 @@ The protocol is based on the following pre-existing relations between the device
 * V and W have an implicit relation, e.g., based on web PKI with trusted CA certificates, see {{domain-auth}}.
 * U and V need not have any previous relation, this protocol establishes a relation between U and V.
 
-Each of the three parties have protected communication with the other two during the protocol.
+Each of the three parties can gain protected communication with the other two during the protocol.
+
+V may be able to access credentials over non-nonstrained networks, but U may be limited to constrained networks. Implementations wishing to leverage the zero-touch capabilities of this protocol are expected to support transmission of credentials from V to U by value during the EDHOC exchange, which will impact the message size depending on type of credential used.
 
 ~~~~~~~~~~~ aasvg
 
@@ -189,7 +188,7 @@ Each of the three parties have protected communication with the other two during
 |          |            |               |            |               |
 |  Device  |    con-    |    Domain     |  not con-  |   Enrollment  |
 |          |  strained  | Authenticator |  strained  |     Server    |
-|   (U)    |  network   |       (V)     |  network   |      (W)      |
+|   (U)    |  network   |      (V)      |  network   |      (W)      |
 |          |            |               |            |               |
 +----+-----+            +-------+-------+            +-------+-------+
      |                          |                            |
@@ -198,6 +197,7 @@ Each of the three parties have protected communication with the other two during
                                     (e.g., web PKI based)
 ~~~~~~~~~~~
 {: #fig-trust title="Overview of pre-existing relations." artwork-align="center"}
+
 
 
 ## Device (U) {#device}
