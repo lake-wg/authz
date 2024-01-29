@@ -52,6 +52,7 @@ normative:
   RFC8949:
   RFC9052:
   RFC8613:
+  RFC8152:
   I-D.ietf-lake-edhoc:
   NIST-800-56A:
     author:
