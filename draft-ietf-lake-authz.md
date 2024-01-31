@@ -400,12 +400,12 @@ ENC_ID is 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) computed f
 ~~~~~~~~~~~
 plaintext = (
     ID_U:            bstr,
- )
+)
 ~~~~~~~~~~~
 ~~~~~~~~~~~
 external_aad = (
     SS:              int,
- )
+)
 ~~~~~~~~~~~
 
 where
@@ -432,25 +432,29 @@ The derivation of IV_1 = EDHOC-Expand(PRK, info, length) uses the following inpu
 
 ### Voucher {#voucher}
 
-The voucher is an assertion to U that W has authorized V. The voucher is essentially a message authentication code which binds the authentication credential of V, CRED_V, to message_1 of EDHOC.
-
-The external authorization data EAD_2 contains an EAD item with ead_label = TBD1 and ead_value = Voucher, which is a CBOR byte string:
-
-~~~~~~~~~~~
-Voucher = bstr .cbor EDHOC-Expand(PRK, info, length)
-~~~~~~~~~~~
-
-The voucher is calculated with the following input to the info struct (see {{reuse}}):
-
-* info_label = 2
-* context  = bstr .cbor voucher_input
-* length is EDHOC MAC length in bytes
-
-
-where context is a CBOR byte string wrapping of the following CBOR sequence:
+The voucher is an assertion to U that W has authorized V.
+The voucher consists of the 'ciphertext' field of a COSE_Encrypt0 object:
 
 ~~~~~~~~~~~
-voucher_input = (
+Voucher = COSE_Encrypt0.ciphertext
+~~~~~~~~~~~
+
+Its corresponding plaintext value consists of an opaque field that can be used by W to convey information to U, such as a voucher scope.
+The authentication tag present in the ciphertext is also bound to message_1 and the credential of V.
+
+The external authorization data EAD_2 contains an EAD item with ead_label = TBD1 and ead_value = Voucher, which is computed from the following:
+
+* The encryption key K_2 and nonce IV_2 are derived as specified below.
+* 'protected' is a byte string of size 0
+* 'plaintext' and 'external_aad' as below:
+
+~~~~~~~~~~~
+plaintext = (
+    SCOPE: bstr
+)
+~~~~~~~~~~~
+~~~~~~~~~~~
+external_aad = (
     H(message_1):  bstr,
     CRED_V:        bstr,
 )
@@ -458,8 +462,21 @@ voucher_input = (
 
 where
 
+* SCOPE is an opaque field provided by the application
 * H(message_1) is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 * CRED_V is the CWT Claims Set {{RFC8392}} containing the public authentication key of V, see {{V_2}}
+
+The derivation of K_2 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
+
+* info_label = 2
+* context  = h'' (the empty CBOR string)
+* length is length of key of the EDHOC AEAD algorithm in bytes
+
+The derivation of IV_2 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
+
+* info_label = 3
+* context = h''  (the empty CBOR string)
+* length is length of nonce of the EDHOC AEAD algorithm in bytes
 
 ## Device <-> Authenticator (U <-> V) {#U-V}
 
