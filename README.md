@@ -11,7 +11,7 @@ This is the working area for the individual Internet-Draft, "Lightweight Authori
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/EricssonResearch/ace-ake-authz/blob/master/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/lake-wg/authz/blob/master/CONTRIBUTING.md).
 
 Contributions can be made by creating pull requests.
 The GitHub interface supports creating pull requests using the Edit (✏) button.
