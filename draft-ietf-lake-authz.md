@@ -628,16 +628,16 @@ error_content = (
 )
 ~~~~~~~~~~~
 
-The purpose of REJECT_INFO is to provide verifiable and actionable information to the receiver of the error, so that an automated action can be taken to enable access.
+The purpose of REJECT_INFO is for the sender to provide verifiable and actionable information to the receiver about the error, so that an automated action may be taken to enable access.
 
 ~~~~~~~~~~~ aasvg
-+-------------+---------------+-------------------------------------+
-| REJECT_TYPE | REJECT_INFO   | Description                         |
-+=============+===============+=====================================+
-|           0 | -             | No REJECT_INFO                      |
-+-------------+---------------+-------------------------------------+
-|           1 | bstr          | Access denied                       |
-+-------------+---------------+-------------------------------------+
++-------------+---------------+--------------------------------------+
+| REJECT_TYPE | REJECT_INFO   | Description                          |
++=============+===============+======================================+
+|           0 | -             | No REJECT_INFO                       |
++-------------+---------------+--------------------------------------+
+|           1 | bstr          | REJECT_INFO from trusted third party |
++-------------+---------------+--------------------------------------+
 ~~~~~~~~~~~
 {: #fig-reject title="REJECT_TYPE and REJECT_INFO for ‘Access denied’."}
 
@@ -646,11 +646,11 @@ The purpose of REJECT_INFO is to provide verifiable and actionable information t
 This protocol uses the EDHOC Error "Access denied" in the following way:
 
 * W generates error_content and transfers it to V via the secure connection.
-  If REJECT_TYPE is 1, then REJECT_INFO is encrypted from W to U.
+  If REJECT_TYPE is 1, then REJECT_INFO is encrypted from W to U using the EDHOC AEAD algorithm.
 * V receives error_content, prepares an EDHOC "Access denied" error, and sends to U
-* U receives the error message and extracts the error_content
-  IF REJECT_TYPE is 1, then U decrypts REJECT_INFO and learns additional information and may retry the authorization procedure.
-
+* U receives the error message and extracts the error_content.
+  If REJECT_TYPE is 1, then U decrypts REJECT_INFO, based on which it may retry to gain access.
+  
 The encryption of REJECT_INFO follows a procedure analogous to the one defined in {{voucher_info}}, with the following differences:
 
 ~~~~~~~~~~~
