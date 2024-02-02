@@ -2,10 +2,10 @@
 
 This is the working area for the individual Internet-Draft, "Lightweight Authorization for EDHOC.".
 
-* [Editor's Copy](https://lake-wg.github.io/authz/#go.draft-ietf-lake-authz.html)
+* [Editor's Copy](https://lake-wg.github.io/authz/#go.draft-selander-lake-authz.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-lake-authz)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-ietf-lake-authz)
-* [Compare Editor's Copy to Individual Draft](https://lake-wg.github.io/authz/#go.draft-ietf-lake-authz.diff)
+* [Compare Editor's Copy to Individual Draft](https://lake-wg.github.io/authz/#go.draft-selander-lake-authz.diff)
 
 
 ## Contributing
