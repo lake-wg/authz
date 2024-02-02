@@ -51,6 +51,7 @@ normative:
   RFC8949:
   RFC9052:
   RFC8613:
+  RFC8152:
   I-D.ietf-lake-edhoc:
   NIST-800-56A:
     author:
@@ -85,6 +86,7 @@ informative:
   RFC8995:
   RFC9031:
   I-D.ietf-core-oscore-edhoc:
+  I-D.ietf-lake-traces:
   I-D.ietf-lake-reqs:
   IEEE802.15.4:
     title: "IEEE Std 802.15.4 Standard for Low-Rate Wireless Networks"
@@ -172,7 +174,9 @@ The protocol is based on the following pre-existing relations between the device
 * V and W have an implicit relation, e.g., based on web PKI with trusted CA certificates, see {{domain-auth}}.
 * U and V need not have any previous relation, this protocol establishes a relation between U and V.
 
-Each of the three parties have protected communication with the other two during the protocol.
+Each of the three parties can gain protected communication with the other two during the protocol.
+
+V may be able to access credentials over non-nonstrained networks, but U may be limited to constrained networks. Implementations wishing to leverage the zero-touch capabilities of this protocol are expected to support transmission of credentials from V to U by value during the EDHOC exchange, which will impact the message size depending on type of credential used.
 
 ~~~~~~~~~~~ aasvg
 
@@ -184,7 +188,7 @@ Each of the three parties have protected communication with the other two during
 |          |            |               |            |               |
 |  Device  |    con-    |    Domain     |  not con-  |   Enrollment  |
 |          |  strained  | Authenticator |  strained  |     Server    |
-|   (U)    |  network   |       (V)     |  network   |      (W)      |
+|   (U)    |  network   |      (V)      |  network   |      (W)      |
 |          |            |               |            |               |
 +----+-----+            +-------+-------+            +-------+-------+
      |                          |                            |
@@ -193,6 +197,7 @@ Each of the three parties have protected communication with the other two during
                                     (e.g., web PKI based)
 ~~~~~~~~~~~
 {: #fig-trust title="Overview of pre-existing relations." artwork-align="center"}
+
 
 
 ## Device (U) {#device}
@@ -411,19 +416,21 @@ where
 
 * SS is the selected cipher suite in SUITES_I of EDHOC message_1, see {{U-V}}.
 
+The external_aad is wrapped in an enc_structure as defined in {{Section 5.3 of RFC8152}}.
+
 Editor's note: Add more context to external_aad.
 
-The derivation of K_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
+The derivation of K_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see OKM in {{reuse}}):
 
 * info_label = 0
 * context  = h'' (the empty CBOR string)
-* length is length of key of the EDHOC AEAD algorithm in bytes
+* length is length of key of the EDHOC AEAD algorithm in bytes (which is the length of K_1)
 
-The derivation of IV_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
+The derivation of IV_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see OKM in {{reuse}}):
 
 * info_label = 1
 * context = h''  (the empty CBOR string)
-* length is length of nonce of the EDHOC AEAD algorithm in bytes
+* length is length of nonce of the EDHOC AEAD algorithm in bytes (which is the length of IV_1)
 
 ### Voucher {#voucher}
 
