@@ -650,7 +650,7 @@ This protocol uses the EDHOC Error "Access denied" in the following way:
 * V receives error_content, prepares an EDHOC "Access denied" error, and sends to U
 * U receives the error message and extracts the error_content.
   If REJECT_TYPE is 1, then U decrypts REJECT_INFO, based on which it may retry to gain access.
-  
+
 The encryption of REJECT_INFO follows a procedure analogous to the one defined in {{voucher_info}}, with the following differences:
 
 ~~~~~~~~~~~
