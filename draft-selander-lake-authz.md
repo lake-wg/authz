@@ -51,7 +51,6 @@ normative:
   RFC8949:
   RFC9052:
   RFC8613:
-  RFC8152:
   I-D.ietf-lake-edhoc:
   NIST-800-56A:
     author:
@@ -86,7 +85,6 @@ informative:
   RFC8995:
   RFC9031:
   I-D.ietf-core-oscore-edhoc:
-  I-D.ietf-lake-traces:
   I-D.ietf-lake-reqs:
   IEEE802.15.4:
     title: "IEEE Std 802.15.4 Standard for Low-Rate Wireless Networks"
@@ -416,7 +414,7 @@ where
 
 * SS is the selected cipher suite in SUITES_I of EDHOC message_1, see {{U-V}}.
 
-The external_aad is wrapped in an enc_structure as defined in {{Section 5.3 of RFC8152}}.
+The external_aad is wrapped in an enc_structure as defined in {{Section 5.3 of RFC9052}}.
 
 Editor's note: Add more context to external_aad.
 
