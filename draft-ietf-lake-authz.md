@@ -1,6 +1,6 @@
 ---
 title: Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE
-docname: draft-selander-lake-authz-latest
+docname: draft-ietf-lake-authz-latest
 abbrev: Lightweight Authorization using EDHOC
 ipr: trust200902
 cat: std
@@ -97,7 +97,7 @@ venue:
   mail: "lake@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/lake/"
   github: "EricssonResearch/ace-ake-authz"
-  latest: "https://ericssonresearch.github.io/ace-ake-authz/draft-selander-lake-authz.html"
+  latest: "https://ericssonresearch.github.io/ace-ake-authz/draft-ietf-lake-authz.html"
 
 --- abstract
 
@@ -749,7 +749,7 @@ U                                    V                              W
 |            CoJP response           |                              |
 |
 ~~~~~~~~~~~
-{: #fig-cojp title="Use of draft-selander-lake-authz with CoJP." artwork-align="center"}
+{: #fig-cojp title="Use of draft-ietf-lake-authz with CoJP." artwork-align="center"}
 
 
 ## Network Discovery
