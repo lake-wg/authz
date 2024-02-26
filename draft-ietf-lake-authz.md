@@ -916,38 +916,45 @@ The message is processed as specified in {{Section 8.4.2 of RFC9031}}.
 # Examples
 
 This section presents high level examples of the protocol execution.
-The examples assume that there are one or more U, one or more V, and a single W.
 
-For completeness, we include examples of access control policies in W.
-Note, however, that the policy format and processing mechanism is out of scope in this specification.
-
-## Device request is authorized (single gateway) {#ex_authz_single}
+## Minimal {#ex_authz_simple}
+This is a simple example that demonstrates successful execution of the protocol.
 
 Premises:
 
-- devices = \[u1, u2, u3\]
-- gateways discovered by u1 = \[v1\]
-- W’s allowlist = v1: \[u1\] &mdash; can be read as: the list of devices authorized to enroll via gateway v1 is \[u1\]
+- device (u1) sets ID_U to a key id = 14
+- the access policy in W specifies, via a list of ID_U, that device u1 can enroll via any domain authenticator, i.e. the list is: \[14\]
+
+Execution:
+
+1. device u1 (key id = 14) discovers a gateway (v1) and tries to enroll
+2. gateway v1 identifies the zero-touch join attempt by checking that the label of EAD_1 = TBD1, and prepares a Voucher Request using the information contained in the value of EAD_1
+2. upon receiving the request, W obtains ID_U = 14, authorizes the access, and replies with Voucher Response
+
+## Device request is denied via BLE {#ex_noauthz_ble}
+In this example, a device (u1) tries to enroll a domain via a BLE connection and gets denied by W.
+
+This example differs from the previous one in two aspects.
+First, the type of network used (BLE) becomes relevant during and after the authorization decision.
+Second, the access policy in W contains a mapping of which devices are allowed to join via which gateways.
+
+Note that, while the details of the access policies in W are out of scope of this document, they are useful for this example, and are provided for information purposes only.
+
+Premises:
+
+- device u1 has ID_U = key id = 14 and MAC address = 12-87-98-1A-AD-58
+- there are 3 gateways in the radio range of u1:
+  - v1, with MAC address = A2-A1-88-EE-97-75
+  - v2, with MAC address = 28-0F-70-84-51-E4
+  - v3, with MAC address = 39-63-C9-D0-5C-62
+- the access policy in W specifies, via a mapping of {ID_U, GatewayMACAddress} that device u1 can only join via gateway v3, i.e., the mapping is: {14, 39-63-C9-D0-5C-62}.
 
 Execution:
 
 1. device u1 tries to join via gateway v1
-2. W accepts and replies with Voucher Response
-
-## Device request is denied (multiple gateways)  {#ex_noauthz_multiple}
-
-Premises:
-
-- devices = \[u1, u2, u3\]
-- gateways discovered by u1 = \[v1, v2, v3, v4, v5\] &mdash; sorted e.g. by rssi
-- W’s allowlist = v1: \[\], v2: \[\], v3: \[u1\], v4: \[u1\], v5: \[\] &mdash; can be read as: only u1 is allowed, via either gateway v3 or v4
-
-Execution:
-
-1. device u1 tries to join via gateway v1
-2. W denies and replies with an error. The error_content has REJECT_TYPE = 1, and the plaintext of REJECT_INFO includes v_hint = \[v3, v4\]
+2. W denies and replies with an error. The error_content has REJECT_TYPE = 1, and the plaintext of REJECT_INFO contains a list of suggested gateways = \[h'3963C9D05C62'\]. The list contains one element: the 6-byte MAC address of v1 serialized as a bstr.
 3. gateway v1 assembles an EDHOC Access Denied error with error_content, and sends it to u1
-4. device u1 processes the error, decrypts REJECT_INFO, and retries to join via gateway v3
+4. device u1 processes the error, decrypts REJECT_INFO, and retries the protocol via gateway v3
 
 
 
