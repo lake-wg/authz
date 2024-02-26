@@ -602,6 +602,73 @@ V receives the voucher response from W over the secure connection.
 If present, V decrypts and verifies opaque_state as received from W. If that verification fails then EDHOC is aborted.
 If the voucher response is successfully received from W, then V responds to U with EDHOC message_2 as described in {{V_2}}.
 
+## Error Handling {#err-handling}
+This section specifies a new EDHOC error code and how it is used in the proposed protocol.
+
+### EDHOC Error "Access denied"
+
+This section specifies the new EDHOC error "Access denied", see {{fig-error-codes}}.
+
+~~~~~~~~~~~ aasvg
++----------+----------------+----------------------------------------+
+| ERR_CODE | ERR_INFO Type  | Description                            |
++==========+================+========================================+
+|     TBD3 | error_content  | Access denied                          |
++----------+----------------+----------------------------------------+
+~~~~~~~~~~~
+{: #fig-error-codes title="EDHOC error code and error information for ‘Access denied’."}
+
+Error code TBD3 is used to indicate to the receiver that access control has been applied and the sender has aborted the EDHOC session.
+The ERR_INFO field contains error_content which is a CBOR Sequence consisting of an integer and an optional byte string.
+
+~~~~~~~~~~~ CDDL
+error_content = (
+  REJECT_TYPE : int,
+  ? REJECT_INFO : bstr,
+)
+~~~~~~~~~~~
+
+The purpose of REJECT_INFO is for the sender to provide verifiable and actionable information to the receiver about the error, so that an automated action may be taken to enable access.
+
+~~~~~~~~~~~ aasvg
++-------------+---------------+--------------------------------------+
+| REJECT_TYPE | REJECT_INFO   | Description                          |
++=============+===============+======================================+
+|           0 | -             | No REJECT_INFO                       |
++-------------+---------------+--------------------------------------+
+|           1 | bstr          | REJECT_INFO from trusted third party |
++-------------+---------------+--------------------------------------+
+~~~~~~~~~~~
+{: #fig-reject title="REJECT_TYPE and REJECT_INFO for ‘Access denied’."}
+
+### Error handling in W, V, and U
+
+This protocol uses the EDHOC Error "Access denied" in the following way:
+
+* W generates error_content and transfers it to V via the secure connection.
+  If REJECT_TYPE is 1, then REJECT_INFO is encrypted from W to U using the EDHOC AEAD algorithm.
+* V receives error_content, prepares an EDHOC "Access denied" error, and sends to U
+* U receives the error message and extracts the error_content.
+  If REJECT_TYPE is 1, then U decrypts REJECT_INFO, based on which it may retry to gain access.
+
+The encryption of REJECT_INFO follows a procedure analogous to the one defined in {{voucher_info}}, with the following differences:
+
+~~~~~~~~~~~
+plaintext = (
+    TBD4:            bstr,
+ )
+~~~~~~~~~~~
+~~~~~~~~~~~
+external_aad = (
+    TBD5:            int,
+ )
+~~~~~~~~~~~
+
+where
+
+* TBD4 is TODO.
+* TBD5 is TODO.
+
 # REST Interface at W {#rest_interface}
 
 The interaction between V and W is enabled through a RESTful interface exposed by W.
@@ -682,7 +749,7 @@ The private ephemeral key is thus used in the device for calculations of key mat
 
 IANA has registered the following entry in the "EDHOC External Authorization Data" registry under the group name "Ephemeral Diffie-
    Hellman Over COSE (EDHOC)".
-The ead_label = TBD_1 corresponds to the ead_value Voucher_Info in EAD_1, and Voucher in EAD_2 with processing specified in {{m1}} and {{m2}}, respectively, of this document.
+The ead_label = TBD1 corresponds to the ead_value Voucher_Info in EAD_1, and Voucher in EAD_2 with processing specified in {{m1}} and {{m2}}, respectively, of this document.
 
 | Label | Value Type | Description |
 | TBD1 | bstr | Voucher related information |
