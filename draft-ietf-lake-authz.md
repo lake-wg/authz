@@ -252,58 +252,58 @@ The protocol consist of three security sessions going on in parallel:
 
 ~~~~~~~~~~~ aasvg
 
-U                           V                                       W
-|                           |                                       |
-|                           |                                       |
-|                           |        Establish secure channel       |
-|                           +<---  ---  ---  ---  ---  ---  ---  -->|
-|                           |      (e.g., TLS with server cert.)    |
-|                           |                                       |
-|                           |   Proof of possession w.r.t. CRED     |
-|                           +<---  ---  ---  ---  ---  ---  ---  -->|
-|                           |            (e.g., EDHOC)              |
-|                           |                                       |
-|                           |                                       |
-|                           |                                       |
+U                              V                                       W
+|                              |                                       |
+|                              |                                       |
+|                              |        Establish secure channel       |
+|                              +<---  ---  ---  ---  ---  ---  ---  -->|
+|                              |      (e.g., TLS with server cert.)    |
+|                              |                                       |
+|                              |   Proof of possession w.r.t. CRED     |
+|                              +<---  ---  ---  ---  ---  ---  ---  -->|
+|                              |            (e.g., EDHOC)              |
+|                              |                                       |
+|                              |                                       |
+|                              |                                       |
 
----------------------------------------------------------------------
-                        CORE PROTOCOL
+------------------------------------------------------------------------
+                          CORE PROTOCOL
 
-|                           |                                       |
-|      EDHOC message_1      |                                       |
-+-------------------------->|                                       |
-|  (EAD_1 = LOC_W, ENC_ID)  |                                       |
-|                           |                                       |
-|                           |        Voucher Request (VREQ)         |
-|                           +-------------------------------------->|
-|                           |       (message_1, ?opaque_state)      |
-|                           |                                       |
-|                           |        Voucher Response (VRES)        |
-|                           |<--------------------------------------+
-|                           |  (message_1, Voucher, ?opaque_state)  |
-|                           |                                       |
-|      EDHOC message_2      |                                       |
-|<--------------------------+                                       |
-|     (EAD_2 = Voucher)     |                                       |
-|                           |                                       |
-|                           |                                       |
-|      EDHOC message_3      |                                       |
-+-------------------------->|                                       |
-|                           |                                       |
+|                              |                                       |
+|         EDHOC message_1      |                                       |
++----------------------------->|                                       |
+|  (EAD_1 = LOC_W, ENC_U_INFO) |                                       |
+|                              |                                       |
+|                              |        Voucher Request (VREQ)         |
+|                              +-------------------------------------->|
+|                              |       (message_1, ?opaque_state)      |
+|                              |                                       |
+|                              |        Voucher Response (VRES)        |
+|                              |<--------------------------------------+
+|                              |  (message_1, Voucher, ?opaque_state)  |
+|                              |                                       |
+|         EDHOC message_2      |                                       |
+|<-----------------------------+                                       |
+|        (EAD_2 = Voucher)     |                                       |
+|                              |                                       |
+|                              |                                       |
+|         EDHOC message_3      |                                       |
++----------------------------->|                                       |
+|                              |                                       |
 
----------------------------------------------------------------------
+------------------------------------------------------------------------
 
-|                           |
-|                           |                              Credential
-|                           |                                Database
-|                           |                                       |
-|                           |       ID_CRED_I from message_3        |
-|                           +---  ---  ---  ---   ---  ---  ---  -->|
-|                           |                                       |
-|                           |                 CRED_U                |
-|                           |<--  ---  ---  ---  ---   ---  ---  ---+
-|                           |                                       |
-|                           |                                       |
+|                              |
+|                              |                              Credential
+|                              |                                Database
+|                              |                                       |
+|                              |       ID_CRED_I from message_3        |
+|                              +---  ---  ---  ---   ---  ---  ---  -->|
+|                              |                                       |
+|                              |                 CRED_U                |
+|                              |<--  ---  ---  ---  ---   ---  ---  ---+
+|                              |                                       |
+|                              |                                       |
 ~~~~~~~~~~~
 {: #fig-protocol title="Overview of the protocol: W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, V and W are assumed to have established a secure channel and performed proof-of-possession of relevant keys. Credential lookup of CRED_U may involve W or other credential database." artwork-align="center"}
 
@@ -382,16 +382,16 @@ Voucher_Info = bstr .cbor Voucher_Info_Seq
 ~~~~~~~~~~~
 Voucher_Info_Seq = (
     LOC_W:      tstr,
-    ENC_ID:     bstr
+    ENC_U_INFO:     bstr
 )
 ~~~~~~~~~~~
 
 where
 
 * LOC_W is a text string used by V to locate W, e.g., a URI or a domain name.
-* ENC_ID is a byte string containing an encrypted identifier of U, calculated as follows:
+* ENC_U_INFO is a byte string containing an encrypted identifier of U and, optionally, opaque application data prepared by U. It is calculated as follows:
 
-ENC_ID is 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) computed from the following:
+ENC_U_INFO is 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) computed from the following:
 
 * The encryption key K_1 and nonce IV_1 are derived as specified below.
 * 'protected' is a byte string of size 0
@@ -400,17 +400,20 @@ ENC_ID is 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) computed f
 ~~~~~~~~~~~
 plaintext = (
     ID_U:            bstr,
- )
+    ?OPAQUE_INFO:    bstr,
+)
 ~~~~~~~~~~~
 ~~~~~~~~~~~
 external_aad = (
     SS:              int,
- )
+)
 ~~~~~~~~~~~
 
 where
 
 * ID_U is an identifier of the device, see {{device}}.
+
+* OPAQUE_INFO is an opaque field provided by the application. If present, it will contain application data that U may want to convey to W.
 
 * SS is the selected cipher suite in SUITES_I of EDHOC message_1, see {{U-V}}.
 
@@ -432,25 +435,29 @@ The derivation of IV_1 = EDHOC-Expand(PRK, info, length) uses the following inpu
 
 ### Voucher {#voucher}
 
-The voucher is an assertion to U that W has authorized V. The voucher is essentially a message authentication code which binds the authentication credential of V, CRED_V, to message_1 of EDHOC.
-
-The external authorization data EAD_2 contains an EAD item with ead_label = TBD1 and ead_value = Voucher, which is a CBOR byte string:
-
-~~~~~~~~~~~
-Voucher = bstr .cbor EDHOC-Expand(PRK, info, length)
-~~~~~~~~~~~
-
-The voucher is calculated with the following input to the info struct (see {{reuse}}):
-
-* info_label = 2
-* context  = bstr .cbor voucher_input
-* length is EDHOC MAC length in bytes
-
-
-where context is a CBOR byte string wrapping of the following CBOR sequence:
+The voucher is an assertion to U that W has authorized V.
+The voucher consists of the 'ciphertext' field of a COSE_Encrypt0 object:
 
 ~~~~~~~~~~~
-voucher_input = (
+Voucher = COSE_Encrypt0.ciphertext
+~~~~~~~~~~~
+
+Its corresponding plaintext value consists of an opaque field that can be used by W to convey information to U, such as a voucher scope.
+The authentication tag present in the ciphertext is also bound to message_1 and the credential of V.
+
+The external authorization data EAD_2 contains an EAD item with ead_label = TBD1 and ead_value = Voucher, which is computed from the following:
+
+* The encryption key K_2 and nonce IV_2 are derived as specified below.
+* 'protected' is a byte string of size 0
+* 'plaintext' and 'external_aad' as below:
+
+~~~~~~~~~~~
+plaintext = (
+    ?OPAQUE_INFO: bstr
+)
+~~~~~~~~~~~
+~~~~~~~~~~~
+external_aad = (
     H(message_1):  bstr,
     CRED_V:        bstr,
 )
@@ -458,8 +465,21 @@ voucher_input = (
 
 where
 
+* OPAQUE_INFO is an opaque field provided by the application.
 * H(message_1) is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 * CRED_V is the CWT Claims Set {{RFC8392}} containing the public authentication key of V, see {{V_2}}
+
+The derivation of K_2 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
+
+* info_label = 2
+* context  = h'' (the empty CBOR string)
+* length is length of key of the EDHOC AEAD algorithm in bytes
+
+The derivation of IV_2 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
+
+* info_label = 3
+* context = h''  (the empty CBOR string)
+* length is length of nonce of the EDHOC AEAD algorithm in bytes
 
 ## Device <-> Authenticator (U <-> V) {#U-V}
 
@@ -544,9 +564,11 @@ W extracts from message_1:
 
 * SS - the selected cipher suite, which is the (last) integer of SUITES_I.
 * G_X - the ephemeral public key of U
-* ENC_ID - the encryption of the device identifier ID_U, contained in the Voucher_Info field of the EAD item with ead_label = TBD1 (with minus sign indicating criticality)
+* ENC_U_INFO - the encryption of (1) the device identifier ID_U and (2) the optional OPAQUE_INFO field, contained in the Voucher_Info field of the EAD item with ead_label = TBD1 (with minus sign indicating criticality)
 
-W verifies and decrypts ENC_ID using the relevant algorithms of the selected cipher suite SS (see {{reuse}}), and obtains ID_U.
+W verifies and decrypts ENC_U_INFO using the relevant algorithms of the selected cipher suite SS (see {{reuse}}), and obtains ID_U.
+
+In case OPAQUE_INFO is present, it is made available to the application.
 
 W calculates the hash of message_1 H(message_1), and associates this session identifier to the device identifier ID_U. If H(message_1) is not unique among session identifiers associated to this device identifier of U, the EDHOC session SHALL be aborted.
 
