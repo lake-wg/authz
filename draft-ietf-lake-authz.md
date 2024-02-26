@@ -913,6 +913,42 @@ The authenticator playing the role of the {{RFC9031}} JRC obtains the device ide
 Flight 4 is the OSCORE response carrying CoJP response message.
 The message is processed as specified in {{Section 8.4.2 of RFC9031}}.
 
+# Examples
+
+This section presents high level examples of the protocol execution.
+The examples assume that there are one or more U, one or more V, and a single W.
+
+For completeness, we include examples of access control policies in W.
+Note, however, that the policy format and processing mechanism is out of scope in this specification.
+
+## Device request is authorized (single gateway) {#ex_authz_single}
+
+Premises:
+
+- devices = \[u1, u2, u3\]
+- gateways discovered by u1 = \[v1\]
+- W’s allowlist = v1: \[u1\] &mdash; can be read as: the list of devices authorized to enroll via gateway v1 is \[u1\]
+
+Execution:
+
+1. device u1 tries to join via gateway v1
+2. W accepts and replies with Voucher Response
+
+## Device request is denied (multiple gateways)  {#ex_noauthz_multiple}
+
+Premises:
+
+- devices = \[u1, u2, u3\]
+- gateways discovered by u1 = \[v1, v2, v3, v4, v5\] &mdash; sorted e.g. by rssi
+- W’s allowlist = v1: \[\], v2: \[\], v3: \[u1\], v4: \[u1\], v5: \[\] &mdash; can be read as: only u1 is allowed, via either gateway v3 or v4
+
+Execution:
+
+1. device u1 tries to join via gateway v1
+2. W denies and replies with an error. The error_content has REJECT_TYPE = 1, and the plaintext of REJECT_INFO includes v_hint = \[v3, v4\]
+3. gateway v1 assembles an EDHOC Access Denied error with error_content, and sends it to u1
+4. device u1 processes the error, decrypts REJECT_INFO, and retries to join via gateway v3
+
 
 
 # Acknowledgments
