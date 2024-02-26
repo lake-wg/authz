@@ -647,27 +647,29 @@ This protocol uses the EDHOC Error "Access denied" in the following way:
 
 * W generates error_content and transfers it to V via the secure connection.
   If REJECT_TYPE is 1, then REJECT_INFO is encrypted from W to U using the EDHOC AEAD algorithm.
-* V receives error_content, prepares an EDHOC "Access denied" error, and sends to U
+* V receives error_content, prepares an EDHOC "Access denied" error, and sends it to U.
 * U receives the error message and extracts the error_content.
   If REJECT_TYPE is 1, then U decrypts REJECT_INFO, based on which it may retry to gain access.
 
-The encryption of REJECT_INFO follows a procedure analogous to the one defined in {{voucher_info}}, with the following differences:
+The encryption of REJECT_INFO follows a procedure analogous to the one defined in {{voucher}}, with the following differences:
 
 ~~~~~~~~~~~
 plaintext = (
-    TBD4:            bstr,
+    OPAQUE_INFO:     bstr,
  )
 ~~~~~~~~~~~
 ~~~~~~~~~~~
 external_aad = (
-    TBD5:            int,
+    H(message_1):    bstr,
  )
 ~~~~~~~~~~~
 
 where
 
-* TBD4 is TODO.
-* TBD5 is TODO.
+* OPAQUE_INFO is an opaque field that contains actionable information about the error.
+  It may contain, for example, a list of suggested Vs through which U should join instead.
+
+* H(message_1) is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 
 # REST Interface at W {#rest_interface}
 
