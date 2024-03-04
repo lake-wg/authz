@@ -413,7 +413,11 @@ where
 
 * ID_U is an identifier of the device, see {{device}}.
 
-* OPAQUE_INFO is an opaque field provided by the application. If present, it will contain application data that U may want to convey to W.
+* OPAQUE_INFO is an opaque field provided by the application.
+If present, it will contain application data that U may want to convey to W, e.g., enrollment hints, see {{hints}}.
+Note that OPAQUE_INFO is opaque when viewed as an information element in EDHOC.
+It is opaque to V, while the application in U and W can read its contents.
+The same applies to other references of OPAQUE_INFO throughout this document.
 
 * SS is the selected cipher suite in SUITES_I of EDHOC message_1, see {{U-V}}.
 
@@ -647,27 +651,29 @@ This protocol uses the EDHOC Error "Access denied" in the following way:
 
 * W generates error_content and transfers it to V via the secure connection.
   If REJECT_TYPE is 1, then REJECT_INFO is encrypted from W to U using the EDHOC AEAD algorithm.
-* V receives error_content, prepares an EDHOC "Access denied" error, and sends to U
+* V receives error_content, prepares an EDHOC "Access denied" error, and sends it to U.
 * U receives the error message and extracts the error_content.
   If REJECT_TYPE is 1, then U decrypts REJECT_INFO, based on which it may retry to gain access.
 
-The encryption of REJECT_INFO follows a procedure analogous to the one defined in {{voucher_info}}, with the following differences:
+The encryption of REJECT_INFO follows a procedure analogous to the one defined in {{voucher}}, with the following differences:
 
 ~~~~~~~~~~~
 plaintext = (
-    TBD4:            bstr,
+    OPAQUE_INFO:     bstr,
  )
 ~~~~~~~~~~~
 ~~~~~~~~~~~
 external_aad = (
-    TBD5:            int,
+    H(message_1):    bstr,
  )
 ~~~~~~~~~~~
 
 where
 
-* TBD4 is TODO.
-* TBD5 is TODO.
+* OPAQUE_INFO is an opaque field that contains actionable information about the error.
+  It may contain, for example, a list of suggested Vs through which U should join instead.
+
+* H(message_1) is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 
 # REST Interface at W {#rest_interface}
 
@@ -867,7 +873,6 @@ The device SHALL map the message to a CoAP request:
 * The Proxy-Scheme option is set to "coap".
 * The Uri-Host option is set to "lake-authz.arpa". This is an anycast type of identifier of the domain authenticator (V) that is resolved to its IPv6 address by the Join Proxy.
 * The Uri-Path option is set to ".well-known/edhoc".
-* The Content-Format option is set to "application/cid-edhoc+cbor-seq"
 * The payload is the (true, EDHOC message_1) CBOR sequence, where EDHOC message_1 is constructed as defined in {{U-V}}.
 
 ### Flight 2
@@ -878,7 +883,6 @@ If the exchange between V and W completes successfully, the domain authenticator
 The authenticator SHALL map the message to a CoAP response:
 
 * The response code is 2.04 Changed.
-* The Content-Format option is set to "application/edhoc+cbor-seq"
 * The payload is the EDHOC message_2, as defined in {{U-V}}.
 
 ### Flight 3
@@ -913,8 +917,29 @@ The authenticator playing the role of the {{RFC9031}} JRC obtains the device ide
 Flight 4 is the OSCORE response carrying CoJP response message.
 The message is processed as specified in {{Section 8.4.2 of RFC9031}}.
 
-# Examples
+# Enrollment Hints {#hints}
+This section defines items that can be used in the OPAQUE_INFO field of either EAD_1 or the Access Denied error response.
+The purpose of the proposed items is to improve protocol scalability, aiming to reduce battery usage and enrollment delay.
+The main use case is when several potential gateways (V) are detected by U's radio, which can lead to U trying to enroll (and failing) several times until it finds a suitable V.
 
+## Domain Authenticator hints
+In case W denies the enrollment of U to a given V, a list of Domain Authenticator hints (v_hint) can be sent from W to U.
+The hint is optional and is included in the REJECT_INFO item in the Access Denied error message.
+It consists of a list of application-defined identifiers of V (e.g. MAC addresses, SSIDs, PAN IDs, etc.), as defined below:
+
+v_hint = [ 1* bstr ]
+
+## Device Hints
+U may send a Device hint (u_hint) so that it can help W to select which Vs to include in v_hint.
+This can be useful in large scale scenarios with many gateways (V).
+The hint is an optional field included in the OPAQUE_INFO field within EAD_1, and it must be encrypted.
+The hint itself is application dependent, and can contain GPS coordinates, application-specific tags, the list of Vs detected by U, or other relevant information.
+It is defined as follows:
+
+u_hint: [ 1* bstr ]
+
+
+# Examples
 This section presents high level examples of the protocol execution.
 
 Note: the examples below include samples of access policies used by W. These are provided for the sake of completeness only, since the authorization mechanism used by W is out of scope in this document.
@@ -956,7 +981,6 @@ Execution:
 2. W verifies that MAC address A2-A1-88-EE-97-75 is not in the access policy mapping, and replies with an error. The error_content has REJECT_TYPE = 1, and the plaintext of REJECT_INFO contains a list of suggested gateways = \[h'3963C9D05C62'\]. The single element in the list is the 6-byte MAC address of v3, serialized as a bstr.
 3. gateway v1 assembles an EDHOC error "Access Denied" with error_content, and sends it to u1
 4. device u1 processes the error, decrypts REJECT_INFO, and retries the protocol via gateway v3
-
 
 
 # Acknowledgments
