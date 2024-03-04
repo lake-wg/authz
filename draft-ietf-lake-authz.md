@@ -917,7 +917,7 @@ The message is processed as specified in {{Section 8.4.2 of RFC9031}}.
 
 This section presents high level examples of the protocol execution.
 
-Note: the examples below include samples of access policy used by W. These are provided for the sake of completeness only, as the authorization mechanism used by W is out of scope in this document.
+Note: the examples below include samples of access policies used by W. These are provided for the sake of completeness only, since the authorization mechanism used by W is out of scope in this document.
 
 ## Minimal {#example_minimal}
 This is a simple example that demonstrates successful execution of the protocol.
