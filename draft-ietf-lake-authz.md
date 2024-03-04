@@ -925,7 +925,8 @@ This is a simple example that demonstrates successful execution of the protocol.
 Premises:
 
 - device u1 has ID_U = key id = 14
-- the access policy in W specifies, via a list of ID_U, that device u1 can enroll via any domain authenticator, i.e., the list is: \[14\]
+- the access policy in W specifies, via a list of ID_U, that device u1 can enroll via any domain authenticator, i.e., the list contains ID_U = 14.
+In this case, the policy only specifies a restriction in terms of U, effectively allowing enrollment via any V.
 
 Execution:
 
@@ -946,7 +947,7 @@ Premises:
   - v1 with MAC address = A2-A1-88-EE-97-75
   - v2 with MAC address = 28-0F-70-84-51-E4
   - v3 with MAC address = 39-63-C9-D0-5C-62
-- the access policy in W specifies, via a mapping of {ID_U, GatewayMACAddress} that device u1 can only join via gateway v3, i.e., the mapping is: {14, 39-63-C9-D0-5C-62}
+- the access policy in W specifies, via a mapping of shape (ID_U; MAC1, MAC2, ...) that device u1 can only join via gateway v3, i.e., the mapping is: (14; 39-63-C9-D0-5C-62)
 - W is able to map the PoP key of the gateways to their respective MAC addresses
 
 Execution:
