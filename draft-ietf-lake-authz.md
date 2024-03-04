@@ -913,6 +913,26 @@ The authenticator playing the role of the {{RFC9031}} JRC obtains the device ide
 Flight 4 is the OSCORE response carrying CoJP response message.
 The message is processed as specified in {{Section 8.4.2 of RFC9031}}.
 
+# Enrollment Hints {#hints}
+This section defines items that can be used in the OPAQUE_INFO field of either EAD_1 or the Access Denied error response.
+The purpose of the proposed items is to improve protocol scalability, aiming to reduce battery usage and enrollment delay.
+The main use case is when several potential gateways (V) are detected by U's radio, which can lead to U trying to enroll (and failing) several times until it finds a suitable V.
+
+## Domain Authenticator hints
+In case W denies the enrollment of U to a given V, a list of Domain Authenticator hints (v_hint) can be sent from W to U.
+The hint is optional and is included in the REJECT_INFO item in the Access Denied error message.
+It consists of a list of application-defined identifiers of V (e.g. MAC addresses, SSIDs, PAN IDs, etc.), as defined below:
+
+v_hint = [ 1* bstr ]
+
+## Device Hints
+U may send a Device hint (u_hint) so that it can help W to select which Vs to include in v_hint.
+This can be useful in large scale scenarios with many gateways (V).
+The hint is an optional field included in the OPAQUE_INFO field within EAD_1, and it must be encrypted.
+The hint itself is application dependent, and can contain GPS coordinates, application-specific tags, the list of Vs detected by U, or other relevant information.
+It is defined as follows:
+
+u_hint: [ 1* bstr ]
 
 
 # Acknowledgments
