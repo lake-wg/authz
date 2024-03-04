@@ -873,7 +873,6 @@ The device SHALL map the message to a CoAP request:
 * The Proxy-Scheme option is set to "coap".
 * The Uri-Host option is set to "lake-authz.arpa". This is an anycast type of identifier of the domain authenticator (V) that is resolved to its IPv6 address by the Join Proxy.
 * The Uri-Path option is set to ".well-known/edhoc".
-* The Content-Format option is set to "application/cid-edhoc+cbor-seq"
 * The payload is the (true, EDHOC message_1) CBOR sequence, where EDHOC message_1 is constructed as defined in {{U-V}}.
 
 ### Flight 2
@@ -884,7 +883,6 @@ If the exchange between V and W completes successfully, the domain authenticator
 The authenticator SHALL map the message to a CoAP response:
 
 * The response code is 2.04 Changed.
-* The Content-Format option is set to "application/edhoc+cbor-seq"
 * The payload is the EDHOC message_2, as defined in {{U-V}}.
 
 ### Flight 3
