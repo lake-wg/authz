@@ -413,7 +413,11 @@ where
 
 * ID_U is an identifier of the device, see {{device}}.
 
-* OPAQUE_INFO is an opaque field provided by the application. If present, it will contain application data that U may want to convey to W.
+* OPAQUE_INFO is an opaque field provided by the application.
+If present, it will contain application data that U may want to convey to W, e.g., enrollment hints, see {{hints}}.
+Note that OPAQUE_INFO is opaque when viewed as an information element in EDHOC.
+It is opaque to V, while the application in U and W can read its contents.
+The same applies to other references of OPAQUE_INFO throughout this document.
 
 * SS is the selected cipher suite in SUITES_I of EDHOC message_1, see {{U-V}}.
 
