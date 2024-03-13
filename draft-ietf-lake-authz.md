@@ -96,8 +96,8 @@ venue:
   type: "Working Group"
   mail: "lake@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/lake/"
-  github: "EricssonResearch/ace-ake-authz"
-  latest: "https://ericssonresearch.github.io/ace-ake-authz/draft-ietf-lake-authz.html"
+  github: "lake-wg/authz"
+  latest: "https://lake-wg.github.io/authz/draft-ietf-lake-authz.html"
 
 --- abstract
 

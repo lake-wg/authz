@@ -15,3 +15,5 @@ draft-ietf-ace-ake-authz.xml
 lib
 report.xml
 venv/
+node_modules/
+package-lock.json
