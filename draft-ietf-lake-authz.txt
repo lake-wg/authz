@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 5 September 2024                                     M. Vučinić
+Expires: 14 September 2024                                    M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                            4 March 2024
+                                                           13 March 2024
 
 
    Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE
@@ -28,10 +28,10 @@ About This Document
 
    This note is to be removed before publishing as an RFC.
 
-   The latest revision of this draft can be found at
-   https://ericssonresearch.github.io/ace-ake-authz/draft-ietf-lake-
-   authz.html.  Status information for this document may be found at
-   https://datatracker.ietf.org/doc/draft-ietf-lake-authz/.
+   The latest revision of this draft can be found at https://lake-
+   wg.github.io/authz/draft-ietf-lake-authz.html.  Status information
+   for this document may be found at https://datatracker.ietf.org/doc/
+   draft-ietf-lake-authz/.
 
    Discussion of this document takes place on the Lightweight
    Authenticated Key Exchange Working Group mailing list
@@ -40,7 +40,7 @@ About This Document
    https://www.ietf.org/mailman/listinfo/lake/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/EricssonResearch/ace-ake-authz.
+   https://github.com/lake-wg/authz.
 
 Status of This Memo
 
@@ -57,7 +57,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 September 2024.
+   This Internet-Draft will expire on 14 September 2024.
 
 Copyright Notice
 
