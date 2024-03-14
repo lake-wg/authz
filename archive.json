@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-03-12T01:04:42.099273+00:00",
+  "timestamp": "2024-03-14T01:05:12.465507+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -268,6 +268,68 @@
       "updatedAt": "2024-03-04T15:31:19Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 20,
+      "id": "I_kwDOKiCa6c6CK3L8",
+      "title": "Document's github link is obsolete",
+      "url": "https://github.com/lake-wg/authz/issues/20",
+      "state": "CLOSED",
+      "author": "chrysn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The \"About the document\" section still points to the old repo at EricssonResearch rather than to the current one.\r\n\r\nIn parallel, please consider linking this from the document's \"additional resources\" list in the data tracker (@malishav should be allowed to do this as a chair).",
+      "createdAt": "2024-03-13T12:28:22Z",
+      "updatedAt": "2024-03-13T14:04:42Z",
+      "closedAt": "2024-03-13T14:04:42Z",
+      "comments": [
+        {
+          "author": "malishav",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thanks for the note, just updated the datatracker. I let Geovane update the\r\ndocument.\r\n\r\nOn Wed, Mar 13, 2024 at 13:28 chrysn ***@***.***> wrote:\r\n\r\n> The \"About the document\" section still points to the old repo at\r\n> EricssonResearch rather than to the current one.\r\n>\r\n> In parallel, please consider linking this from the document's \"additional\r\n> resources\" list in the data tracker ***@***.***\r\n> <https://github.com/malishav> should be allowed to do this as a chair).\r\n>\r\n> \u2014\r\n> Reply to this email directly, view it on GitHub\r\n> <https://github.com/lake-wg/authz/issues/20>, or unsubscribe\r\n> <https://github.com/notifications/unsubscribe-auth/AB2M6Q3XDS53B4OIBYQLL23YYBA7XAVCNFSM6AAAAABEUB55D2VHI2DSMVQWIX3LMV43ASLTON2WKOZSGE4DGOBYGU2TMNA>\r\n> .\r\n> You are receiving this because you were mentioned.Message ID:\r\n> ***@***.***>\r\n>\r\n",
+          "createdAt": "2024-03-13T13:07:48Z",
+          "updatedAt": "2024-03-13T13:07:48Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Fixed!",
+          "createdAt": "2024-03-13T14:04:42Z",
+          "updatedAt": "2024-03-13T14:04:42Z"
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "id": "I_kwDOKiCa6c6CK3YP",
+      "title": " authz with U as R and V as I",
+      "url": "https://github.com/lake-wg/authz/issues/21",
+      "state": "OPEN",
+      "author": "chrysn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "(Moved from https://github.com/EricssonResearch/ace-ake-authz/issues/27)\r\n\r\nProcessing some deployment scenarios (involving CoAP-over-GATT), I've found that sometimes the roles of I and R would be reversed.\r\n\r\nApart from the aspect of vulnerable-identities, is there anything fundamentally keeping the ENC_U_INFO from being in message 2, and the voucher from being in message 3? The credential database lookup would then be against ID_CRED_R, but that'd be the same interface as for ID_CRED_I.\r\n\r\nLet's not sink too much time into this if it turns out to be complicated -- I'm not sure whether running EDHOC over CoAP in reverse flow may not be the better choice in this situation anyway, but if this has ever been contemplated in other places, this issue might be a good spot to spool ideas.",
+      "createdAt": "2024-03-13T12:28:46Z",
+      "updatedAt": "2024-03-13T15:51:10Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think that we have made some significant optimizations assuming U as I.\r\nI think that there are different optimizations that occur if V is I.\r\nCoAP-over-GATT probably does not need a discovery process whereby V discovers a U that it should initiate to.\r\n\r\nV as I has many advantages when it comes to managing bandwidth.\r\n",
+          "createdAt": "2024-03-13T15:07:33Z",
+          "updatedAt": "2024-03-13T15:07:33Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Indeed the flow in the GATT case would be that U sends a beacon that contains a 32bit hash of LOC_W, so V would likely already have a good idea of what W would be (given that in a list of peered W, this likely only matches 1 or at most 3) \u2013 so the first EAD would only contain LOC_W for confirmation (or maybe not at all).",
+          "createdAt": "2024-03-13T15:51:09Z",
+          "updatedAt": "2024-03-13T15:51:09Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -799,6 +861,34 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 22,
+      "id": "PR_kwDOKiCa6c5pgs_f",
+      "title": "Fix github links and improve gitignore",
+      "url": "https://github.com/lake-wg/authz/pull/22",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Addressing #20 ",
+      "createdAt": "2024-03-13T14:01:46Z",
+      "updatedAt": "2024-03-13T14:04:26Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "c531dcdc9070063bf16dc5680b03678e234def9f",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "fix-github-links",
+      "headRefOid": "539f60c4da7bb0aec050768561d1f287f0542f78",
+      "closedAt": "2024-03-13T14:04:23Z",
+      "mergedAt": "2024-03-13T14:04:23Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "b7b276bbecea58ee0e547ef72e48c16bd9451261"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
