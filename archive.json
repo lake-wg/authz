@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-03-17T01:09:36.543132+00:00",
+  "timestamp": "2024-03-19T01:05:56.712054+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -330,6 +330,22 @@
           "updatedAt": "2024-03-13T15:51:09Z"
         }
       ]
+    },
+    {
+      "number": 23,
+      "id": "I_kwDOKiCa6c6Cs3ic",
+      "title": "Reduce the usage of opaque_info in EAD_1",
+      "url": "https://github.com/lake-wg/authz/issues/23",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I am interested in exploring how we can reduce, as much as possible, the use of opaque_info, for the following reasons:\r\n1. interoperability\r\n2. the problem of providing \"free connectivity\" in EAD_1\r\n\r\n## Proposal\r\nThe proposal so far is to replace `opaque_info` by `nearby_vs`:\r\n```\r\nnearby_vs = {\r\n  / macs-addrs   /     1: [ + bstr ],\r\n  / pan-ids      /     2: [ + bstr ],\r\n  / ipv4-addrs   /     3: [ + bstr ],\r\n  / ipv6-addrs   /     4: [ + bstr ],\r\n  / app-specific / 16-31: [ + bstr ],\r\n}\r\n```\r\n\r\nSome comments:\r\n1. the idea is to satisfy the problem of sending a list of \"nearby Vs\", while achieving better interoperability, in a way that is agnostic to the type of network identifier\r\n2. for now, the proposal assumes that \"nearby Vs\" is the **only** type of contextual data that U would ever want to send to W\r\n3. do we have concrete examples of other kind of contextual data that should be sent to W?\r\n",
+      "createdAt": "2024-03-18T17:08:13Z",
+      "updatedAt": "2024-03-18T17:08:13Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
