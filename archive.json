@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-03-19T01:05:56.712054+00:00",
+  "timestamp": "2024-03-21T01:06:49.479043+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -312,7 +312,7 @@
       "labels": [],
       "body": "(Moved from https://github.com/EricssonResearch/ace-ake-authz/issues/27)\r\n\r\nProcessing some deployment scenarios (involving CoAP-over-GATT), I've found that sometimes the roles of I and R would be reversed.\r\n\r\nApart from the aspect of vulnerable-identities, is there anything fundamentally keeping the ENC_U_INFO from being in message 2, and the voucher from being in message 3? The credential database lookup would then be against ID_CRED_R, but that'd be the same interface as for ID_CRED_I.\r\n\r\nLet's not sink too much time into this if it turns out to be complicated -- I'm not sure whether running EDHOC over CoAP in reverse flow may not be the better choice in this situation anyway, but if this has ever been contemplated in other places, this issue might be a good spot to spool ideas.",
       "createdAt": "2024-03-13T12:28:46Z",
-      "updatedAt": "2024-03-13T15:51:10Z",
+      "updatedAt": "2024-03-19T11:13:30Z",
       "closedAt": null,
       "comments": [
         {
@@ -328,13 +328,20 @@
           "body": "Indeed the flow in the GATT case would be that U sends a beacon that contains a 32bit hash of LOC_W, so V would likely already have a good idea of what W would be (given that in a list of peered W, this likely only matches 1 or at most 3) \u2013 so the first EAD would only contain LOC_W for confirmation (or maybe not at all).",
           "createdAt": "2024-03-13T15:51:09Z",
           "updatedAt": "2024-03-13T15:51:09Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "At a first glance I think it could work. \r\n\r\nApart from just using EAD_2 / EAD_3 instead of EAD_1 / EAD_2, it would also have some impact on the VREQ/VRES protocol, which currently sends message_1 to W, which is then used in the composition of the Voucher:\r\n\r\n```\r\nexternal_aad = (\r\n    H(message_1): bstr, / could be changed to `H(message_1 || message_2)` (or even just reuse `TH_3`) /\r\n    CRED_V:       bstr,\r\n)\r\n```\r\n",
+          "createdAt": "2024-03-19T11:13:29Z",
+          "updatedAt": "2024-03-19T11:13:29Z"
         }
       ]
     },
     {
       "number": 23,
       "id": "I_kwDOKiCa6c6Cs3ic",
-      "title": "Reduce the usage of opaque_info in EAD_1",
+      "title": "Can we turn opaque_info into more concrete fields, in EAD_1?",
       "url": "https://github.com/lake-wg/authz/issues/23",
       "state": "OPEN",
       "author": "geonnave",
@@ -343,7 +350,39 @@
       "labels": [],
       "body": "I am interested in exploring how we can reduce, as much as possible, the use of opaque_info, for the following reasons:\r\n1. interoperability\r\n2. the problem of providing \"free connectivity\" in EAD_1\r\n\r\n## Proposal\r\nThe proposal so far is to replace `opaque_info` by `nearby_vs`:\r\n```\r\nnearby_vs = {\r\n  / macs-addrs   /     1: [ + bstr ],\r\n  / pan-ids      /     2: [ + bstr ],\r\n  / ipv4-addrs   /     3: [ + bstr ],\r\n  / ipv6-addrs   /     4: [ + bstr ],\r\n  / app-specific / 16-31: [ + bstr ],\r\n}\r\n```\r\n\r\nSome comments:\r\n1. the idea is to satisfy the problem of sending a list of \"nearby Vs\", while achieving better interoperability, in a way that is agnostic to the type of network identifier\r\n2. for now, the proposal assumes that \"nearby Vs\" is the **only** type of contextual data that U would ever want to send to W\r\n3. do we have concrete examples of other kind of contextual data that should be sent to W?\r\n",
       "createdAt": "2024-03-18T17:08:13Z",
-      "updatedAt": "2024-03-18T17:08:13Z",
+      "updatedAt": "2024-03-19T09:48:42Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 24,
+      "id": "I_kwDOKiCa6c6CzUrf",
+      "title": "Can we turn opaque_info into more concrete fields, in the Voucher?",
+      "url": "https://github.com/lake-wg/authz/issues/24",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The idea here is the same as in #23.\r\n\r\n## Proposal\r\nUpdate Voucher so that instead of carrying `opaque_info`, it looks like this:\r\n```\r\nplaintext of Voucher = (\r\n  role-of-v:        uint,  / choice(access-provider=1, owner=2) /\r\n  directives-for-u: bstr,  / application-specific, e.g. frequencies, operation mode, etc /\r\n)\r\n```\r\n\r\nComments:\r\n- the field `role-of-v` tells U whether V should be considered an owner/administrator, or simply a connectivity provider. This is more or less equivalent to the \"assertion\" item in BRSKI's Voucher, with the difference that no claim is made about \"how to verify the ownership of V upon U\". Another reason that motivated me in considering this field was a discussion I had with @chrysn about the \"admin status of V\".\r\n- `directives-for-u` should contain any information that W may find useful to transmit to U. In a way, this is still equivalent to `opaque_data`, but just with a name that conveys the intention of the field.\r\n\r\nQuestions:\r\n- does `role-of-v` make sense? are there other roles that should be considered?\r\n- is there anything else that is missing? is there other type of information that should / could be sent in the Voucher, that would not be covered by the suggested fields?",
+      "createdAt": "2024-03-19T09:48:20Z",
+      "updatedAt": "2024-03-19T09:48:20Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 25,
+      "id": "I_kwDOKiCa6c6Czb9b",
+      "title": "Can we turn opaque_info into more concrete fields, in the Error message?",
+      "url": "https://github.com/lake-wg/authz/issues/25",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The rationale is similar to #23.\r\n\r\n## Proposal\r\nIn the EDHOC error \"Access Denied\", when REJECT_TYPE = 1, have REJECT_INFO look like this:\r\n```\r\nplaintext of REJECT_INFO = (\r\n  suggested-vs:              map,  / same format as `nearby_vs` /\r\n  additional-recovery-info:  bstr, / application-specific actionable information for error recovery /\r\n)\r\n```\r\n\r\nComments:\r\n- `suggested-vs` is equivalent to the current `v_hint` field ([Appendix B](https://www.ietf.org/archive/id/draft-ietf-lake-authz-01.html#appendix-B)), but following the map-based serialization for network identifiers defined in [issue 23](https://github.com/lake-wg/authz/issues/23).\r\n- `additional-recovery-info` -- just like in [issue 24](https://github.com/lake-wg/authz/issues/24), I am merely renaming the open-ended field `opaque_info` to something more intentional.",
+      "createdAt": "2024-03-19T10:01:13Z",
+      "updatedAt": "2024-03-19T10:01:13Z",
       "closedAt": null,
       "comments": []
     }
