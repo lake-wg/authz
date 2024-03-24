@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-03-21T01:06:49.479043+00:00",
+  "timestamp": "2024-03-24T01:11:55.178432+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -385,6 +385,37 @@
       "updatedAt": "2024-03-19T10:01:13Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 26,
+      "id": "I_kwDOKiCa6c6DK9Z5",
+      "title": "Identity protection service",
+      "url": "https://github.com/lake-wg/authz/issues/26",
+      "state": "OPEN",
+      "author": "chrysn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I'm not fully sure where this should go, but authz is probably a good starting point, because it is part of the solution I have in mind right now.\r\n\r\nConsider two parties establishing a connection where both have sensitive identities (in terms of being tracked, of ownership, and both actively solicit connections continuously).\r\nAs an example, a service worker's phone might be constantly listening for beacons of installed equipment, which would report their latest logs, but neither do we want to allow tracking of the worker by identity or affiliation, nor do we want that arbitrary people driving through the city can map where they have equipment installed.\r\n(I figure airtags probably do something similar, but it's easier when reporting your manufacturer just is 2-3 bits of information).\r\n\r\nOne way to solve this is to defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information, and promise to only relay that to other parties in your organization. The organization may run that on their own (in which case they'd probably pick LOC_W=\"\" and take the risk of just seeing many decryption failures whenever they encounter devices of someone else who does the same), or they may use any global provider, where the number of providers should be smaller than the number of organizations using them in any area (maybe 4=len(\"GAMA\")...).\r\n\r\nUsing authz, this could be used like this:\r\n(U = machine, V = phone, W = trustservice; as part of their enrollment, U has learned the public key of W and W knows the mapping from ID_U to CRED_U plus which account this is on, V has a secure channel with W associated with a customer account)\r\n* U sends message 1 with its ID_U\r\n* V sends the ENC_U_INFO to W\r\n* W verifies that V is on the same customer account as U, and returns CRED_U as well as a voucher response.\r\n  I'm not sure we even need to use the voucher here -- all that V needed to know that this is \"one of its own\", and knowing this it can now send its CRED_V (probably by value), and that will suffice to U\r\n* V sends its CRED_U\r\n* U recognizes the CRED_U and ... either sends a KID ID_CRED_V which suffices for this V, or if it turns out that V didn't contact W and just was generous with its CRED_V, maybe V sent something to ask for the full certificate.\r\n\r\nIs that in scope as an application for authz? I think it'd work with authz as-is, and at most need some wording that \"it is fine if the voucher response comes back OK without containing a voucher, V should then just continue like that\". (Maybe the voucher is also just empty, and in the last step U takes that as the hint that even though V sent a credential, itself it can just send ID_CRED_I=b\"\").",
+      "createdAt": "2024-03-21T16:53:08Z",
+      "updatedAt": "2024-03-22T03:44:09Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> One way to solve this is to defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information, and promise to only relay that to other parties in your organization. The organization may run that on their own (in which case they'd probably pick LOC_W=\"\" and take the risk of just seeing many decryption failures whenever they encounter devices of someone else who does the same), or they may use any global provider, where the number of providers should be smaller than the number of organizations using them in any area (maybe 4=len(\"GAMA\")...).\r\n\r\nI'm having difficulties understanding this paragraph.\r\nI think that LOC_W=\"\" means that V has to know the real value?\r\n",
+          "createdAt": "2024-03-22T00:52:35Z",
+          "updatedAt": "2024-03-22T00:52:35Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Yes, LOC_W with some value could mean \"You know whom to ask\".\r\n\r\nThe point of the 3rd party is to enlarge the number of devices which one's device is indistinguishable from. Something is already gained from running such a service on your own (then devices are not trackable individually but any active attacker will see the domain part of their identity), a \"you know whom to ask\" works better at the cost of trial-and-error, and the moral equivalent of \"check with cloudflare first\" works more precisely and still just gives 2-3 bits of information (depending on whether there are 4 or 8 common providers).",
+          "createdAt": "2024-03-22T03:44:08Z",
+          "updatedAt": "2024-03-22T03:44:08Z"
+        }
+      ]
     }
   ],
   "pulls": [
