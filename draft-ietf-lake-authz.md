@@ -400,8 +400,12 @@ ENC_U_INFO is 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) comput
 ~~~~~~~~~~~
 plaintext = (
     ID_U:            bstr,
-    ?OPAQUE_INFO:    bstr,
+    ?NEARBY_VS:      map,
 )
+
+NEARBY_VS = {
+  uint: [ + bstr ],
+}
 ~~~~~~~~~~~
 ~~~~~~~~~~~
 external_aad = (
@@ -413,11 +417,19 @@ where
 
 * ID_U is an identifier of the device, see {{device}}.
 
-* OPAQUE_INFO is an opaque field provided by the application.
-If present, it will contain application data that U may want to convey to W, e.g., enrollment hints, see {{hints}}.
-Note that OPAQUE_INFO is opaque when viewed as an information element in EDHOC.
-It is opaque to V, while the application in U and W can read its contents.
-The same applies to other references of OPAQUE_INFO throughout this document.
+* NEARBY_VS contains network identifiers of Vs that have been discovered by U.
+U MAY send a NEARBY_VS list to W as an optimization when there are many available Vs, where there is a higher chance that the request to enroll via a particular V will be denied.
+NEARBY_VS is encoded as a map of types of network identifiers to a list of network identifiers.
+A list of integer keys to be used as types of network identifiers is provided in {{net-id-table}}.
+For example, in a given entry, the key is the integer 1 (meaning a MAC address) and the value is \[A2-A1-88-EE-97-75\].
+
+| Value | Network Identifier |
+| 1 | MAC Address |
+| 2 | PAN ID |
+| 3 | IPv4 Address |
+| 4 | IPv6 Address |
+| 16-255 | Application-specific |
+{: #net-id-table title="Mapping network identifiers to integers for efficient serialization." cols="r l"}
 
 * SS is the selected cipher suite in SUITES_I of EDHOC message_1, see {{U-V}}.
 
