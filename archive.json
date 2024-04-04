@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-04-02T01:09:39.994208+00:00",
+  "timestamp": "2024-04-04T01:07:29.772066+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -421,6 +421,58 @@
           "body": "> One way to solve this ...\r\n\r\nI also find it hard to understand this paragraph. It appears the main change is that W has a business logic commitment to not share ids with _other organizations_ which could act as unintended trackers? If yes, I fail to see how to integrate it in the protocol.\r\n\r\n> defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information\r\n\r\nWho is attacking here? The trusted party? (that doesn't make sense to me)\r\nWho can read the information?\r\n\r\n> I'm not sure we even need to use the voucher here -- all that V needed to know that this is \"one of its own\"\r\n\r\nI don't understand this part, as V already does not use the voucher ([Section 4.6.2.2](https://www.ietf.org/archive/id/draft-ietf-lake-authz-01.html#section-4.6.2.2)) -- the voucher's intended audience is U. \r\nV simply knows that the authorization has worked by receiving an \"ok\" answer from W (we need to actually define this, as tracked in #19).",
           "createdAt": "2024-03-25T13:35:43Z",
           "updatedAt": "2024-03-25T13:36:00Z"
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "id": "I_kwDOKiCa6c6EXuCP",
+      "title": "Privacy of hints",
+      "url": "https://github.com/lake-wg/authz/issues/27",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "During the IETF 119 LAKE meeting (see [minutes here](https://datatracker.ietf.org/doc/minutes-119-lake-202403210530/)), some comments were raised about the privacy aspects of hints (identifiers of V passed from U to W and vice-versa).\r\nThis issue is intended as a place for discussion of the raised points.\r\n\r\nCurrently in version -01 of the draft, there are two kinds of hints:\r\n1. `u_hints`, meaning radio identifiers of Vs that are discovered by U and communicated to W via an encrypted channel (carried within EAD_1 and then VREQ).\r\n2. `v_hints`, meaning radio identifiers of Vs that are pre-populated in W and are communicated to U via an encrypted channel (carried within VRES and then EDHOC error Access Denied).\r\n\r\nBelow I explore whether or not there are privacy issues regarding hints, from the perspectives of U, V and W, as well as when data is in transit.\r\n\r\n### 1. Privacy of `u_hints`\r\n- At U: gateways (Vs) normally advertise their radio identifiers in beacons -> no issue.\r\n- At V: the hint is encrypted -> no issue.\r\n- At W: the radio identifiers of any V will be read by W\r\n  - \u26a0\ufe0f potential issue: if W shares the identifiers with 3rd parties\r\n  - mitigation: W should commit to not share the received identifiers.\r\n- in transit between U <-> V and V <-> W: the hint is encrypted -> no issue.\r\n\r\n### 2. Privacy of `v_hints`\r\n- At W: the radio identifiers of Vs that are securely associated with W will be read by W\r\n  - \u26a0\ufe0f potential issue: if W shares the identifiers with 3rd parties\r\n  - mitigation: W should commit to not share the received identifiers.\r\n  - \u2753note: since Vs are already associated with W, the Vs should already trust W to not share any information with 3rd parties. Thus I think this is a non-issue.\r\n- At V: the hint is encrypted -> no issue.\r\n- At U: the device U will gain information about Vs that allow U to enroll. \r\n  - \u26a0\ufe0f potential issue: if the device is malicious, it would be learning new information about the system\r\n  - mitigation: only return hints when U is known to W.\r\n    - example 1: device u1 is listed in W's ACL, but the V through which it tried to join is not in the ACL (leading to error \"Access Denied\"). Since W knows u1, it MAY return `v_hints`.\r\n    - example 2: device u2 is not listed in W's ACL (leading to error \"Access Denied\"). Since W does not know u2, it MUST NOT return `v_hints`.\r\n  - \u2753 note: is there an issue when U is known by W (as in example 1 above)? It would be learning about radio identifiers of Vs that might or might not be in its radio range and are expected to be authorized to enroll U. Personally I think this is a non-issue.\r\n- in transit between W <-> V and V <-> U: the hint is encrypted -> no issue.\r\n\r\n### Discussion\r\nI think that the only issues that we need to address in the document are `1. Privacy of u_hints at W` and `2. Privacy of v_hints at U (when U is unknown to W)`.\r\n\r\nLooking forward to receiving comments from those interested in this topic.",
+      "createdAt": "2024-04-02T15:22:57Z",
+      "updatedAt": "2024-04-03T14:18:01Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "\r\nHi Geovane,\r\n\r\nOn 02/04/2024 16:23, Geovane Fedrecheski wrote:\r\n> During the IETF 119 LAKE meeting (see [minutes here](https://datatracker.ietf.org/doc/minutes-119-lake-202403210530/)), some comments were raised about the privacy aspects of hints (identifiers of V passed from U to W and vice-versa).\r\n\r\nSo one thing that'd help me a lot in understanding your analysis\r\nwould be a concrete example that describes a possibly \"bad\"\r\nprivacy situation. That'd not be text that'd need to be in the\r\ndraft, but I think it'd help the discussion along, both here\r\nand maybe later on the list.\r\n\r\nSo... what's the worst privacy case we can think of here?\r\n\r\nTa,\r\nS.\r\n",
+          "createdAt": "2024-04-03T10:20:26Z",
+          "updatedAt": "2024-04-03T10:20:26Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Great question.\r\n\r\n### 1. Privacy of u_hints at W\r\nLet's say that W receives MAC addresses of some Vs, and shares them with third parties. This is harmless in my opinion, as MAC addresses are freely broadcasted in beacons, and do not identify a customer.\r\n\r\nNow, would W share ID_U along with the list of MAC addresses, then it might be used to determine the approximate location of U, e.g. using services like https://developers.google.com/maps/documentation/geolocation/overview.\r\n\r\nSince U assumes W to be trusted (e.g. W is the manufacturer), neither of the above should happen.\r\n\r\n### 2. Privacy of v_hints at U (when U is unknown to W)\r\nLet's say that u1 is a malicious U that has no real business relationship with W.\r\nu1 somehow obtained G_W and LOC_W, but u1 is not known by W: it is not present in the ACL, nor in any database entry.\r\n\r\nNow, u1 prepares and sends a well formed Voucher Request, which W receives and processes normally.\r\nSince u1 is not in W's ACL, W would issue an \"Access Denied\" error, possibly with hints (MAC addresses of Vs). \r\nHowever, since u1 is not in the ACL in the first place, it is impossible to construct a hint that is tailored for u1.\r\nSo, if no hint is added, there is no issue.\r\n\r\nA worst case than this could be W picking random MAC addresses of associated Vs as hints to send to u1 (although this does not make much sense in my opinion). In this case, u1 could keep re-sending Voucher Requests and learning more and more Vs. Eventually, u1 would learn all Vs that are linked to a W. This would expose a business relationship, which could be sensitive. Again, I cannot think of a scenario where picking random Vs to serve as hints could make sense.\r\n\r\n",
+          "createdAt": "2024-04-03T13:01:04Z",
+          "updatedAt": "2024-04-03T13:01:04Z"
+        },
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Geovane Fedrecheski ***@***.***> wrote:\n    > ### 2. Privacy of v_hints at U (when U is unknown to W) Let's say that\n    > u1 is a malicious U that has no real business relationship with W.  u1\n    > somehow obtained G_W and LOC_W, but u1 is not known by W: it is not\n    > present in the ACL, nor in any database entry.\n\n    > Now, u1 prepares and sends a well formed Voucher Request, which W\n    > receives and processes normally.  Since u1 is not in W's ACL, W would\n    > issue an \"Access Denied\" error, possibly with hints (MAC addresses of\n    > Vs).  However, since u1 is not in the ACL in the first place, it is\n    > impossible to construct a hint that is tailored for u1.  So, if no hint\n    > is added, there is no issue.\n\nI agree W should never provide hints in the case that u1 was not\nmanufactured by W.\n\n    > A worst case than this could be W picking random MAC addresses of\n    > associated Vs as hints to send to u1 (although this does not make much\n    > sense in my opinion). In this case, u1 could keep re-sending Voucher\n    > Requests and learning more and more Vs. Eventually, u1 would learn all\n    > Vs that are linked to a W. This would expose a business relationship,\n    > which could be sensitive. Again, I cannot think of a scenario where\n    > picking random Vs to serve as hints could make sense.\n\nIs this a u1 with a colluding W, who is now trying to learn the list of Vs?\nSuch a W wouldn't be in V's trusted list of manufacturers, right?\n\n\n",
+          "createdAt": "2024-04-03T13:25:54Z",
+          "updatedAt": "2024-04-03T13:25:54Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> Is this a u1 with a colluding W, who is now trying to learn the list of Vs?\r\n\r\nNo, I was thinking of a W that simply has a naive implementation of the hint-picking algorithm.\r\n\r\n> Such a (colluding) W wouldn't be in V's trusted list of manufacturers, right?\r\n\r\nCorrect, therefore the collusion with an untrusted W should not be possible.",
+          "createdAt": "2024-04-03T13:41:11Z",
+          "updatedAt": "2024-04-03T13:41:11Z"
+        },
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "\r\nHiya,\r\n\r\nOn 03/04/2024 14:01, Geovane Fedrecheski wrote:\r\n> Great question.\r\n> \r\n> ### 1. Privacy of u_hints at W\r\n> Let's say that W receives MAC addresses of some Vs, and shares them with third parties. This is harmless in my opinion, as MAC addresses are freely broadcasted in beacons, and do not identify a customer.\r\n\r\nI was more after a scenario describing some specific type\r\nof device - it may seem much less threatening to consider\r\nissues for \"U\" than to consider issues for e.g. a health\r\nmonitor or some other device carried by a human.\r\n\r\nIn such cases, GPS co-ords or the list of MACs seen for\r\nV's leaks location information to W which seems undesirable\r\nin general. (Esp. as the protocol uses opaque fields for\r\ncarrying that, and could therefore be abused by device\r\nmanufs.)\r\n\r\nConsider also security issues (as opposed to privacy\r\nissues) in cases where the device is carried by a person\r\nin some security-sensitive location (e.g. a military\r\ninstallation or prison) - it seems pretty squirmy to me\r\nto even provide location information to the device manuf\r\nin such cases.\r\n\r\nI'd generally wonder if the risks are worth the possible\r\nefficiency benefits.\r\n\r\nCheers,\r\nS.\r\n",
+          "createdAt": "2024-04-03T14:18:00Z",
+          "updatedAt": "2024-04-03T14:18:00Z"
         }
       ]
     }
@@ -981,6 +1033,80 @@
         "oid": "b7b276bbecea58ee0e547ef72e48c16bd9451261"
       },
       "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 28,
+      "id": "PR_kwDOKiCa6c5ri3no",
+      "title": "Explain error handling in the VREQ/VRES protocol leg",
+      "url": "https://github.com/lake-wg/authz/pull/28",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Addresses issue #19.\r\n\r\nI took a different approach than the one mentioned in #19, and decided to put the error signaling in the RESTful layer:\r\n- I think it makes sense, since a RESTful interface will be always present between V and W\r\n- Successful responses are already encoded as 200 OK, so this is just an extension of that\r\n\r\nI also modified the text in the `Voucher Request -> Processing in W` subsection to clarify where the error handling mechanism is plugged in.\r\n\r\nFinally, I am not sure if I should elaborate more in the construction `If ID_U is known by W`, i.e., define what it means to be \"known\". Perhaps it is enough the way it is?\r\nNote that one reason to differentiate between known and unknown Us is the privacy of radio identifiers of Vs when using hints (v_hints specifically), as discussed in issue #27.",
+      "createdAt": "2024-04-03T10:15:06Z",
+      "updatedAt": "2024-04-03T10:18:36Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b7b276bbecea58ee0e547ef72e48c16bd9451261",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "add-error-vreq-vres",
+      "headRefOid": "352281d1513ea3db92746cb39bfe24e02d16993d",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 29,
+      "id": "PR_kwDOKiCa6c5rk-Si",
+      "title": "Replace OPAQUE_INFO by NEARBY_VS in EAD_1",
+      "url": "https://github.com/lake-wg/authz/pull/29",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This is a sketch towards issue #23.\r\n\r\nStill not sure how to handle the possible representations of network identifiers listed in the table. For example: should MAC Addresses be sent only as bytes? And what about IPv6 address, should it always be 128 bits or also support compressed notation? (I think we don't want to over-engineer this).\r\n\r\n",
+      "createdAt": "2024-04-03T14:35:09Z",
+      "updatedAt": "2024-04-03T15:44:15Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b7b276bbecea58ee0e547ef72e48c16bd9451261",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "make-opaque-concrete-ead1",
+      "headRefOid": "642cf542b8dd43834019435fb350cfd7b8325158",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "RFC9164 for IPv6 maybe.\r\n",
+          "createdAt": "2024-04-03T14:55:32Z",
+          "updatedAt": "2024-04-03T14:55:32Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> RFC9164 for IPv6\r\n\r\nThanks, I think we should use it.\r\n\r\nI was also not aware of the [CBOR tags registry](https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml), which has definitions for MAC Addresses.\r\n\r\nI think for sure we want to re-use the tag numbers, but I am not sure if we keep the semantics of the data items, considering that we will likely have a list of nearby_vs / hints, thus leading to duplication of tag values, which is not ideal given the constrained link between U and V.\r\n\r\nFor this we could define a special encoding _just to save bytes_ (similar to specific encodings found in EDHOC, e.g. when single-element uint arrays are encoded as just uint). For example we could:\r\n1. just tag a whole array, and all elements will have the same meaning\r\n2. put the tag as first element in the array\r\n\r\nThe advantage of (1) is using the tag as a proper tag, but the disadvantage is that the change in semantics of the data item might be misleading.\r\nAs for (2), it does not cause confusion with tag semantics, but it feels a bit hacky.",
+          "createdAt": "2024-04-03T15:42:57Z",
+          "updatedAt": "2024-04-03T15:42:57Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Just to clarify, I don't think of changing the representation of the identifiers, just how they are grouped with respect to a given tag.",
+          "createdAt": "2024-04-03T15:44:14Z",
+          "updatedAt": "2024-04-03T15:44:14Z"
+        }
+      ],
       "reviews": []
     }
   ]
