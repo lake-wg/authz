@@ -202,7 +202,7 @@ V may be able to access credentials over non-nonstrained networks, but U may be 
 
 ## Device (U) {#device}
 
-To authenticate to V, the device (U) runs EDHOC in the role of Initiator with authentication credential CRED_U, for example, an X.509 certificate {{RFC5280}} or a CBOR Web Token (CWT, {{RFC8392}}). CRED_U may, for example, be carried in ID_CRED_I of EDHOC message_3 or be provisioned to V over a non-constrained network, see bottom of {{fig-protocol}}.
+To authenticate to V, the device (U) runs EDHOC in the role of Initiator with authentication credential CRED_U, for example, an X.509 certificate {{RFC5280}} or a CBOR Web Token (CWT, {{RFC8392}}). CRED_U may, for example, be carried by value in ID_CRED_I of EDHOC message_3 or be provisioned to V over a non-constrained network, leveraging a credential identifier in ID_CRED_I (see bottom of {{fig-protocol}}).
 
 U also needs to identify itself to W, this device identifier is denoted by ID_U. The purpose of ID_U is for W to be able to determine if the device with this identifier is authorized to enroll with V. ID_U may be a reference to CRED_U, like ID_CRED_I in EDHOC (see {{Section 3.5.2 of RFC9528}}), or a device identifier from a different name space, such as EUI-64 identifiers.
 
@@ -215,11 +215,11 @@ U is also provisioned with information about W:
 
 To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Responder with an authentication credential CRED_V, which is a CWT Claims Set {{RFC8392}} containing a public key of V, see {{V_2}}. This proves to U the possession of the private key corresponding to the public key of CRED_V. CRED_V typically needs to be transported to U in EDHOC (using  ID_CRED_R = CRED_V, see {{Section 3.5.2 of RFC9528}}) since there is no previous relation between U and V.
 
-V and W need to establish a secure (confidentiality and integrity protected) connection for the Voucher Request/Response protocol. Furthermore, W needs access the same credential CRED_V as V used with U, and V needs to prove to W the possession of the private key corresponding to the public key of CRED_V. It is RECOMMENDED that V authenticates to W using the same credential CRED_V as with U.
+V and W need to establish a secure (confidentiality and integrity protected) connection for the Voucher Request/Response protocol. Furthermore, W needs to access the same credential CRED_V that V uses with U, and V needs to prove to W the possession of the private key corresponding to the public key of CRED_V. It is RECOMMENDED that V authenticates to W using the same credential CRED_V as with U.
 
 * V and W may protect the Voucher Request/Response protocol using TLS 1.3 with client authentication {{RFC8446}} if CRED_V is an X.509 certificate of a signature public key. However, note that CRED_V may not be a valid credential to use with TLS 1.3, e.g., when U and V run EDHOC with method 1 or 3, where the public key of CRED_V is a static Diffie-Hellman key.
 
-* V may run EDHOC with W using ID_CRED_I = CRED_V. In this case the secure connection between V and W may be based on OSCORE {{RFC8613}}.
+* V may run EDHOC in the role of initiator with W, using ID_CRED_I = CRED_V. In this case the secure connection between V and W may be based on OSCORE {{RFC8613}}.
 
 Note that both TLS 1.3 and EDHOC may be run between V and W during this setup procedure. For example, W may authenticate to V using TLS 1.3 with server certificates signed by a CA trusted by V, and then V may run EDHOC using CRED_V over the secure TLS connection to W, see {{fig-protocol}}.
 
@@ -250,7 +250,7 @@ The protocol consist of three security sessions going on in parallel:
 2. Voucher Request/Response between authenticator (V) and enrollment server (W)
 3. An exchange of voucher-related information, including the voucher itself, between device (U) and enrollment server (W), mediated by the authenticator (V).
 
-{{fig-protocol}} provides an overview of the message flow detailed in this section. An outline of EDHOC is given in {{Section 3 of RFC9528}}.
+{{fig-protocol}} provides an overview of the message flow detailed in this section. An outline of EDHOC is given in {{Section 2 of RFC9528}}.
 
 ~~~~~~~~~~~ aasvg
 
@@ -261,7 +261,7 @@ U                              V                                       W
 |                              +<---  ---  ---  ---  ---  ---  ---  -->|
 |                              |      (e.g., TLS with server cert.)    |
 |                              |                                       |
-|                              |   Proof of possession w.r.t. CRED     |
+|                              |   Proof of possession w.r.t. CRED_V   |
 |                              +<---  ---  ---  ---  ---  ---  ---  -->|
 |                              |            (e.g., EDHOC)              |
 |                              |                                       |
@@ -328,16 +328,16 @@ The protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
 
 * ID_CRED_I and ID_CRED_R are used to identify the authentication credentials CRED_U and CRED_V, respectively. As shown at the bottom of {{fig-protocol}}, V may use W to obtain CRED_U. CRED_V is transported in ID_CRED_R in message_2, see {{V_2}}.
 
-The protocol also reuses the EDHOC-Extract and EDHOC-Expand key derivation from EDHOC (see {{Section 4 of RFC9528}}).
+The protocol also reuses the EDHOC_Extract and EDHOC_Expand key derivation from EDHOC (see {{Section 4 of RFC9528}}).
 
-* The intermediate pseudo-random key PRK is derived using EDHOC-Extract():
-    * PRK = EDHOC-Extract(salt, IKM)
+* The intermediate pseudo-random key PRK is derived using EDHOC_Extract():
+    * PRK = EDHOC_Extract(salt, IKM)
          * where salt = 0x (the zero-length byte string)
          * IKM is computed as an ECDH cofactor Diffie-Hellman shared secret from the public key of W, G_W, and the private key corresponding to G_X (or v.v.), see Section 5.7.1.2 of {{NIST-800-56A}}.
 
-The output keying material OKM is derived from PRK using EDHOC-Expand(), which is defined in terms of the EDHOC hash algorithm of the selected cipher suite, see {{Section 4.2 of RFC9528}}:
+The output keying material OKM is derived from PRK using EDHOC_Expand(), which is defined in terms of the EDHOC hash algorithm of the selected cipher suite, see {{Section 4.1.2 of RFC9528}}:
 
-* OKM = EDHOC-Expand(PRK, info, length)
+* OKM = EDHOC_Expand(PRK, info, length)
 
   where
 
@@ -427,13 +427,13 @@ The external_aad is wrapped in an enc_structure as defined in {{Section 5.3 of R
 
 Editor's note: Add more context to external_aad.
 
-The derivation of K_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see OKM in {{reuse}}):
+The derivation of K_1 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see OKM in {{reuse}}):
 
 * info_label = 0
 * context  = h'' (the empty CBOR string)
 * length is length of key of the EDHOC AEAD algorithm in bytes (which is the length of K_1)
 
-The derivation of IV_1 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see OKM in {{reuse}}):
+The derivation of IV_1 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see OKM in {{reuse}}):
 
 * info_label = 1
 * context = h''  (the empty CBOR string)
@@ -475,13 +475,13 @@ where
 * H(message_1) is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 * CRED_V is the CWT Claims Set {{RFC8392}} containing the public authentication key of V, see {{V_2}}
 
-The derivation of K_2 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
+The derivation of K_2 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
 
 * info_label = 2
 * context  = h'' (the empty CBOR string)
 * length is length of key of the EDHOC AEAD algorithm in bytes
 
-The derivation of IV_2 = EDHOC-Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
+The derivation of IV_2 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
 
 * info_label = 3
 * context = h''  (the empty CBOR string)
