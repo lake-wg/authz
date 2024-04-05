@@ -77,10 +77,12 @@ informative:
 
   RFC2119:
   RFC3172:
+  RFC5280:
   RFC6761:
   RFC7228:
   RFC8174:
   RFC8446:
+  RFC8610:
   RFC8615:
   RFC8995:
   RFC9031:
@@ -130,7 +132,7 @@ This protocol is applicable to a wide variety of settings, and can be mapped to 
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 {{RFC2119}} {{RFC8174}} when, and only when, they appear in all capitals, as shown here.
 
-Readers are expected to have an understanding of CBOR {{RFC8949}} and EDHOC {{RFC9528}}.
+Readers are expected to have an understanding of CBOR {{RFC8949}}, CDDL {{RFC8610}}, and EDHOC {{RFC9528}}.
 Appendix C.1 of {{RFC9528}} contains some basic info about CBOR.
 
 # Problem Description {#prob-desc}
@@ -200,7 +202,7 @@ V may be able to access credentials over non-nonstrained networks, but U may be 
 
 ## Device (U) {#device}
 
-To authenticate to V, the device (U) runs EDHOC in the role of Initiator with authentication credential CRED_U, for example, an X.509 certificate or a CBOR Web Token (CWT, {{RFC8392}}). CRED_U may, for example, be carried in ID_CRED_I of EDHOC message_3 or be provisioned to V over a non-constrained network, see bottom of {{fig-protocol}}.
+To authenticate to V, the device (U) runs EDHOC in the role of Initiator with authentication credential CRED_U, for example, an X.509 certificate {{RFC5280}} or a CBOR Web Token (CWT, {{RFC8392}}). CRED_U may, for example, be carried in ID_CRED_I of EDHOC message_3 or be provisioned to V over a non-constrained network, see bottom of {{fig-protocol}}.
 
 U also needs to identify itself to W, this device identifier is denoted by ID_U. The purpose of ID_U is for W to be able to determine if the device with this identifier is authorized to enroll with V. ID_U may be a reference to CRED_U, like ID_CRED_I in EDHOC (see {{Section 3.5.2 of RFC9528}}), or a device identifier from a different name space, such as EUI-64 identifiers.
 
