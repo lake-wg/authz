@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-04-04T01:07:29.772066+00:00",
+  "timestamp": "2024-04-07T01:12:14.522649+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -436,7 +436,7 @@
       "labels": [],
       "body": "During the IETF 119 LAKE meeting (see [minutes here](https://datatracker.ietf.org/doc/minutes-119-lake-202403210530/)), some comments were raised about the privacy aspects of hints (identifiers of V passed from U to W and vice-versa).\r\nThis issue is intended as a place for discussion of the raised points.\r\n\r\nCurrently in version -01 of the draft, there are two kinds of hints:\r\n1. `u_hints`, meaning radio identifiers of Vs that are discovered by U and communicated to W via an encrypted channel (carried within EAD_1 and then VREQ).\r\n2. `v_hints`, meaning radio identifiers of Vs that are pre-populated in W and are communicated to U via an encrypted channel (carried within VRES and then EDHOC error Access Denied).\r\n\r\nBelow I explore whether or not there are privacy issues regarding hints, from the perspectives of U, V and W, as well as when data is in transit.\r\n\r\n### 1. Privacy of `u_hints`\r\n- At U: gateways (Vs) normally advertise their radio identifiers in beacons -> no issue.\r\n- At V: the hint is encrypted -> no issue.\r\n- At W: the radio identifiers of any V will be read by W\r\n  - \u26a0\ufe0f potential issue: if W shares the identifiers with 3rd parties\r\n  - mitigation: W should commit to not share the received identifiers.\r\n- in transit between U <-> V and V <-> W: the hint is encrypted -> no issue.\r\n\r\n### 2. Privacy of `v_hints`\r\n- At W: the radio identifiers of Vs that are securely associated with W will be read by W\r\n  - \u26a0\ufe0f potential issue: if W shares the identifiers with 3rd parties\r\n  - mitigation: W should commit to not share the received identifiers.\r\n  - \u2753note: since Vs are already associated with W, the Vs should already trust W to not share any information with 3rd parties. Thus I think this is a non-issue.\r\n- At V: the hint is encrypted -> no issue.\r\n- At U: the device U will gain information about Vs that allow U to enroll. \r\n  - \u26a0\ufe0f potential issue: if the device is malicious, it would be learning new information about the system\r\n  - mitigation: only return hints when U is known to W.\r\n    - example 1: device u1 is listed in W's ACL, but the V through which it tried to join is not in the ACL (leading to error \"Access Denied\"). Since W knows u1, it MAY return `v_hints`.\r\n    - example 2: device u2 is not listed in W's ACL (leading to error \"Access Denied\"). Since W does not know u2, it MUST NOT return `v_hints`.\r\n  - \u2753 note: is there an issue when U is known by W (as in example 1 above)? It would be learning about radio identifiers of Vs that might or might not be in its radio range and are expected to be authorized to enroll U. Personally I think this is a non-issue.\r\n- in transit between W <-> V and V <-> U: the hint is encrypted -> no issue.\r\n\r\n### Discussion\r\nI think that the only issues that we need to address in the document are `1. Privacy of u_hints at W` and `2. Privacy of v_hints at U (when U is unknown to W)`.\r\n\r\nLooking forward to receiving comments from those interested in this topic.",
       "createdAt": "2024-04-02T15:22:57Z",
-      "updatedAt": "2024-04-03T14:18:01Z",
+      "updatedAt": "2024-04-05T11:51:32Z",
       "closedAt": null,
       "comments": [
         {
@@ -473,6 +473,55 @@
           "body": "\r\nHiya,\r\n\r\nOn 03/04/2024 14:01, Geovane Fedrecheski wrote:\r\n> Great question.\r\n> \r\n> ### 1. Privacy of u_hints at W\r\n> Let's say that W receives MAC addresses of some Vs, and shares them with third parties. This is harmless in my opinion, as MAC addresses are freely broadcasted in beacons, and do not identify a customer.\r\n\r\nI was more after a scenario describing some specific type\r\nof device - it may seem much less threatening to consider\r\nissues for \"U\" than to consider issues for e.g. a health\r\nmonitor or some other device carried by a human.\r\n\r\nIn such cases, GPS co-ords or the list of MACs seen for\r\nV's leaks location information to W which seems undesirable\r\nin general. (Esp. as the protocol uses opaque fields for\r\ncarrying that, and could therefore be abused by device\r\nmanufs.)\r\n\r\nConsider also security issues (as opposed to privacy\r\nissues) in cases where the device is carried by a person\r\nin some security-sensitive location (e.g. a military\r\ninstallation or prison) - it seems pretty squirmy to me\r\nto even provide location information to the device manuf\r\nin such cases.\r\n\r\nI'd generally wonder if the risks are worth the possible\r\nefficiency benefits.\r\n\r\nCheers,\r\nS.\r\n",
           "createdAt": "2024-04-03T14:18:00Z",
           "updatedAt": "2024-04-03T14:18:00Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Hi @sftcd,\r\n\r\nAt this point, considering we proceed with #29, we would be backing off from sending opaque data in lieu of sending only network identifiers. Also, as a result of the present discussion, I think we can entirely discard the idea of sending GPS coordinates.\r\n\r\nAnother consideration is that just by having U trying to enroll via V, this already leaks some location information to W. For example, in Bluetooth or IEEE 802.15.4 or Wi-Fi one can easily expect a geolocation accuracy of a few tens of meters, given the MAC address of just one gateway. Of course triangulation of more gateways can improve that, but I would say e.g. 50 meters is already quite sensitive.\r\n\r\nNext, IIUC, your concerns regard only hints from U to W. Do you have concerns with the other way around? (where the manufacturer sends identifiers of gateways to a known device).\r\n\r\nI am taking a look at what the performance improvements could look like, might come back later with data.",
+          "createdAt": "2024-04-04T09:39:38Z",
+          "updatedAt": "2024-04-04T09:39:38Z"
+        },
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "TBH, I don't understand why MAC addresses are even involved here - doesn't W only need to know CRED_V? Re-using possibly long term static identifiers like MAC addresses in this way would seem like an anti-pattern to me.\r\n\r\nAnd yes, my primary concern is leaking information about U (e.g. location) to W. But I've not analysed whether there are downsides to W \"sharing\" information with U - I guess there may be issues there that could enable a bad-actor U to more easily probe networks, but as I say, I've not analysed that. (I think mcr's comments above do though.)",
+          "createdAt": "2024-04-04T11:00:43Z",
+          "updatedAt": "2024-04-04T11:00:43Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> why MAC addresses are even involved here (...) doesn't W only need to know CRED_V?\r\n\r\nThe gist here is: we are considering an optimization to accelerate enrollment time when there are several potential networks (Vs), and to have it working would require some sharing of network identifiers.\r\n\r\n> Re-using possibly long term static identifiers like MAC addresses\r\n\r\nThe identifiers do not need to be long term, but then V would need to publish them at W periodically, which in turn requires additional coordination.\r\n\r\n---\r\n\r\nContinuing from my previous message, I did some simulations so we can discuss numbers. \r\n\r\nWe would be looking at faster join times of around 2x to 3x, when the number of available Vs is 10, with variations depending on the types of radio used. Specifically:\r\n- considering 10 available Vs and 5 hint items per message\r\n  - 3x faster join time, considering a 250 Kbps network with a scheduling timeslot of 10 ms (typical TSCH configuration)\r\n  - 2x faster join time, considering a 1 Mbps network with no scheduling cost (typical in Bluetooth)\r\n\r\nHints are more effective the more Vs there are available (e.g. may lead to a 10x improvement under certain conditions, provided there are > 25 available Vs). If available Vs = 5, there is no difference. If it is smaller than 5, using hints causes it to be slower.\r\n\r\nSo, it is a considerable improvement, although likely not a 10x factor in the average case.\r\n\r\n---\r\n\r\nAt this point not sure about next steps. Would be interested in hearing what others think on this topic (@gselander @mcr @malishav @chrysn).",
+          "createdAt": "2024-04-04T16:26:46Z",
+          "updatedAt": "2024-04-04T16:26:46Z"
+        },
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "\r\n\r\nOn 04/04/2024 17:27, Geovane Fedrecheski wrote:\r\n\r\n>> Re-using possibly long term static identifiers like MAC addresses\r\n> \r\n> The identifiers do not need to be long term, but then V would need to\r\n> publish them at W periodically, which in turn requires additional\r\n> coordination.\r\n\r\nIf that's possible, then oughtn't it be possible to use some\r\nother short-lived identifier that isn't a MAC address?\r\n\r\n> At this point not sure about next steps.\r\n\r\nI'd say summarise to the WG list is a good next step.\r\n\r\nCheers,\r\nS.\r\n\r\n",
+          "createdAt": "2024-04-04T17:35:07Z",
+          "updatedAt": "2024-04-04T17:35:07Z"
+        },
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Geovane Fedrecheski ***@***.***> wrote:\n    > The gist here is: we are considering an optimization to accelerate\n    > enrollment time when there are several potential networks (Vs), and to\n\nI think that we could add this later.\nRight now, I think it's premature optimization.\n\n\n",
+          "createdAt": "2024-04-04T18:38:28Z",
+          "updatedAt": "2024-04-04T18:38:28Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "About U providing information about MAC addresses to W: \r\n\r\nHere is an product using hashes of MAC addresses:\r\nhttps://www.footfallcam.com/people-counting/knowledge-base/chapter-19-general-data-protection-regulation-gdpr/\r\n\r\nWe could even do better. Instead of sending a list of MAC addresses, U sends a list of H(G_X, MAC-address) in u_hint (encrypted for W), where\r\n\r\n - H() is a truncated hash of size, say, 4 bytes (TBD)\r\n - G_X is working as a nonce, so the same MAC address detected by different Us or for different sessions with the same U would render independent values\r\n\r\nThe lists are matched by W against the corresponding values calculated with the MAC addresses of relevant Vs which are known to W by the setup of the system. Thus V learns which Vs are heard by U, and then deletes the list of hashes. \r\n\r\nIf U is a legitimate device etc. W returns information about preferred Vs' MAC addresses in v_hint (encrypted for U). (This could also be truncated hashes for compactness. Alternatively, U could enumerate the detected MAC addresses and W just sends back a list of integers, but that requires U to cache the MAC addresses ... which somehow works against the privacy ambition.)\r\n\r\nWould this be sufficient to address this privacy aspect? ",
+          "createdAt": "2024-04-05T09:59:35Z",
+          "updatedAt": "2024-04-05T09:59:35Z"
+        },
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "\r\n> Would this be sufficient to address this privacy aspect?\r\n\r\nIf W ends up knowing which set of V's are close to U, then isn't it game over from the privacy perspective regardless of how W learns that?\r\n",
+          "createdAt": "2024-04-05T11:51:31Z",
+          "updatedAt": "2024-04-05T11:51:31Z"
         }
       ]
     }
@@ -1107,6 +1156,32 @@
           "updatedAt": "2024-04-03T15:44:14Z"
         }
       ],
+      "reviews": []
+    },
+    {
+      "number": 30,
+      "id": "PR_kwDOKiCa6c5r2spj",
+      "title": "Update references now that EDHOC is an RFC",
+      "url": "https://github.com/lake-wg/authz/pull/30",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-04-05T14:46:42Z",
+      "updatedAt": "2024-04-05T14:46:42Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b7b276bbecea58ee0e547ef72e48c16bd9451261",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "update-edhoc-references",
+      "headRefOid": "fc361db1c8791553623236eee322c5088eddd3ed",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
       "reviews": []
     }
   ]
