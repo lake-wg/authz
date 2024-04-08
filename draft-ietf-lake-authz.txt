@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 14 September 2024                                    M. Vučinić
+Expires: 10 October 2024                                      M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                           13 March 2024
+                                                            8 April 2024
 
 
    Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE
@@ -57,7 +57,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 14 September 2024.
+   This Internet-Draft will expire on 10 October 2024.
 
 Copyright Notice
 
@@ -124,8 +124,8 @@ Table of Contents
    the specification of lightweight protocols that are optimizing, in
    particular, message overhead (see [I-D.ietf-lake-reqs]).  This
    document describes a procedure for augmenting the lightweight
-   authenticated Diffie-Hellman key exchange EDHOC [I-D.ietf-lake-edhoc]
-   with third party-assisted authorization.
+   authenticated Diffie-Hellman key exchange EDHOC [RFC9528] with third
+   party-assisted authorization.
 
    The procedure involves a device, a domain authenticator, and an
    enrollment server.  The device and domain authenticator perform
@@ -146,9 +146,9 @@ Table of Contents
    controlling access to the network in which the device is enrolling.
 
    The protocol assumes that authentication between device and
-   authenticator is performed with EDHOC [I-D.ietf-lake-edhoc], and
-   defines the integration of a lightweight authorization procedure
-   using the External Authorization Data (EAD) fields defined in EDHOC.
+   authenticator is performed with EDHOC [RFC9528], and defines the
+   integration of a lightweight authorization procedure using the
+   External Authorization Data (EAD) fields defined in EDHOC.
 
    The protocol enables a low message count by performing authorization
    and enrollment in parallel with authentication, instead of in
@@ -168,8 +168,8 @@ Table of Contents
    capitals, as shown here.
 
    Readers are expected to have an understanding of CBOR [RFC8949] and
-   EDHOC [I-D.ietf-lake-edhoc].  Appendix C.1 of [I-D.ietf-lake-edhoc]
-   contains some basic info about CBOR.
+   EDHOC [RFC9528].  Appendix C.1 of [RFC9528] contains some basic info
+   about CBOR.
 
 2.  Problem Description
 
@@ -190,8 +190,8 @@ Table of Contents
 
    The objective of this document is to specify such a protocol which is
    lightweight over the constrained link by reusing elements of EDHOC
-   [I-D.ietf-lake-edhoc] and by shifting message overhead to the non-
-   constrained side of the network.  See illustration in Figure 1.
+   [RFC9528] and by shifting message overhead to the non-constrained
+   side of the network.  See illustration in Figure 1.
 
    Note the cardinality of the involved parties.  It is expected that
    the authenticator needs to handle a large unspecified number of
@@ -269,8 +269,8 @@ Table of Contents
    denoted by ID_U.  The purpose of ID_U is for W to be able to
    determine if the device with this identifier is authorized to enroll
    with V.  ID_U may be a reference to CRED_U, like ID_CRED_I in EDHOC
-   (see Section 3.5.2 of [I-D.ietf-lake-edhoc]), or a device identifier
-   from a different name space, such as EUI-64 identifiers.
+   (see Section 3.5.2 of [RFC9528]), or a device identifier from a
+   different name space, such as EUI-64 identifiers.
 
    U is also provisioned with information about W:
 
@@ -289,8 +289,8 @@ Table of Contents
    Section 4.5.2.1.  This proves to U the possession of the private key
    corresponding to the public key of CRED_V.  CRED_V typically needs to
    be transported to U in EDHOC (using ID_CRED_R = CRED_V, see
-   Section 3.5.2 of [I-D.ietf-lake-edhoc]) since there is no previous
-   relation between U and V.
+   Section 3.5.2 of [RFC9528]) since there is no previous relation
+   between U and V.
 
    V and W need to establish a secure (confidentiality and integrity
    protected) connection for the Voucher Request/Response protocol.
@@ -362,8 +362,7 @@ Table of Contents
        the authenticator (V).
 
    Figure 3 provides an overview of the message flow detailed in this
-   section.  An outline of EDHOC is given in Section 3 of
-   [I-D.ietf-lake-edhoc].
+   section.  An outline of EDHOC is given in Section 3 of [RFC9528].
 
 U                              V                                       W
 |                              |                                       |
@@ -435,7 +434,7 @@ U                              V                                       W
 
    *  SUITES_I includes the cipher suite for EDHOC selected by U, and
       also defines the algorithms used between U and W (see Section 3.6
-      of [I-D.ietf-lake-edhoc]):
+      of [RFC9528]):
 
       -  EDHOC AEAD algorithm: used to encrypt ID_U
 
@@ -449,8 +448,8 @@ U                              V                                       W
 
    *  EAD_1, EAD_2 are the External Authorization Data message fields of
       message_1 and message_2, respectively, see Section 3.8 of
-      [I-D.ietf-lake-edhoc].  This document specifies the EAD items with
-      ead_label = TBD1, see Section 7.1).
+      [RFC9528].  This document specifies the EAD items with ead_label =
+      TBD1, see Section 7.1).
 
    *  ID_CRED_I and ID_CRED_R are used to identify the authentication
       credentials CRED_U and CRED_V, respectively.  As shown at the
@@ -458,7 +457,7 @@ U                              V                                       W
       transported in ID_CRED_R in message_2, see Section 4.5.2.1.
 
    The protocol also reuses the EDHOC-Extract and EDHOC-Expand key
-   derivation from EDHOC (see Section 4 of [I-D.ietf-lake-edhoc]).
+   derivation from EDHOC (see Section 4 of [RFC9528]).
 
    *  The intermediate pseudo-random key PRK is derived using EDHOC-
       Extract():
@@ -474,7 +473,7 @@ U                              V                                       W
 
    The output keying material OKM is derived from PRK using EDHOC-
    Expand(), which is defined in terms of the EDHOC hash algorithm of
-   the selected cipher suite, see Section 4.2 of [I-D.ietf-lake-edhoc]:
+   the selected cipher suite, see Section 4.2 of [RFC9528]:
 
    *  OKM = EDHOC-Expand(PRK, info, length)
 
@@ -677,29 +676,28 @@ U                              V                                       W
 
    U composes EDHOC message_1 using authentication method, identifiers,
    etc. according to an agreed application profile, see Section 3.9 of
-   [I-D.ietf-lake-edhoc].  The selected cipher suite, in this document
-   denoted SS, applies also to the interaction with W as detailed in
-   Section 4.2, in particular, with respect to the Diffie Hellman key
-   agreement algorithm used between U and W.  As part of the normal
-   EDHOC processing, U generates the ephemeral public key G_X which is
-   reused in the interaction with W, see Section 4.4.
+   [RFC9528].  The selected cipher suite, in this document denoted SS,
+   applies also to the interaction with W as detailed in Section 4.2, in
+   particular, with respect to the Diffie Hellman key agreement
+   algorithm used between U and W.  As part of the normal EDHOC
+   processing, U generates the ephemeral public key G_X which is reused
+   in the interaction with W, see Section 4.4.
 
    The device sends EDHOC message_1 with EAD item (-TBD1, Voucher_Info)
    included in EAD_1, where Voucher_Info is specified in Section 4.4.
    The negative sign indicates that the EAD item is critical, see
-   Section 3.8 of [I-D.ietf-lake-edhoc].
+   Section 3.8 of [RFC9528].
 
 4.5.1.2.  Processing in V
 
    V receives EDHOC message_1 from U and processes it as specified in
-   Section 5.2.3 of [I-D.ietf-lake-edhoc], with the additional step of
-   processing the EAD item in EAD_1.  Since the EAD item is critical, if
-   V does not recognize it or it contains information that V cannot
-   process, then V MUST abort the EDHOC session, see Section 3.8 of
-   [I-D.ietf-lake-edhoc].  Otherwise, the ead_label = TBD1, triggers the
-   voucher request to W as described in Section 4.6.  The exchange
-   between V and W needs to be completed successfully for the EDHOC
-   session to be continued.
+   Section 5.2.3 of [RFC9528], with the additional step of processing
+   the EAD item in EAD_1.  Since the EAD item is critical, if V does not
+   recognize it or it contains information that V cannot process, then V
+   MUST abort the EDHOC session, see Section 3.8 of [RFC9528].
+   Otherwise, the ead_label = TBD1, triggers the voucher request to W as
+   described in Section 4.6.  The exchange between V and W needs to be
+   completed successfully for the EDHOC session to be continued.
 
 4.5.2.  Message 2
 
@@ -713,24 +711,24 @@ U                              V                                       W
 
    CRED_V is a CWT Claims Set [RFC8392] containing the public
    authentication key of V encoded as a COSE_Key in the 'cnf' claim, see
-   Section 3.5.2 of [I-D.ietf-lake-edhoc].
+   Section 3.5.2 of [RFC9528].
 
    ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map,
-   see Section 9.6 of [I-D.ietf-lake-edhoc].
+   see Section 9.6 of [RFC9528].
 
 4.5.2.2.  Processing in U
 
    U receives EDHOC message_2 from V and processes it as specified in
-   Section 5.3.2 of [I-D.ietf-lake-edhoc], with the additional step of
-   processing the EAD item in EAD_2.
+   Section 5.3.2 of [RFC9528], with the additional step of processing
+   the EAD item in EAD_2.
 
    If U does not recognize the EAD item or the EAD item contains
    information that U cannot process, then U MUST abort the EDHOC
-   session, see Section 3.8 of [I-D.ietf-lake-edhoc].  Otherwise U MUST
-   verify the Voucher by performing the same calculation as in
-   Section 4.4.2 using H(message_1) and CRED_V received in ID_CRED_R of
-   message_2.  If the voucher calculated in this way is not identical to
-   what was received in message_2, then U MUST abort the EDHOC session.
+   session, see Section 3.8 of [RFC9528].  Otherwise U MUST verify the
+   Voucher by performing the same calculation as in Section 4.4.2 using
+   H(message_1) and CRED_V received in ID_CRED_R of message_2.  If the
+   voucher calculated in this way is not identical to what was received
+   in message_2, then U MUST abort the EDHOC session.
 
 4.5.3.  Message 3
 
@@ -960,10 +958,9 @@ U                              V                                       W
 5.3.  Scheme "coap"
 
    In case the scheme indicates "coap", V SHOULD perform an EDHOC
-   session with W, as specified in Appendix A of [I-D.ietf-lake-edhoc]
-   and access the resources defined in Section 5.4 using OSCORE and
-   CoAP.  The authentication credential in this EDHOC session MUST be
-   CRED_V.
+   session with W, as specified in Appendix A of [RFC9528] and access
+   the resources defined in Section 5.4 using OSCORE and CoAP.  The
+   authentication credential in this EDHOC session MUST be CRED_V.
 
 5.4.  URIs
 
@@ -1020,8 +1017,8 @@ U                              V                                       W
 
    This specification builds on and reuses many of the security
    constructions of EDHOC, e.g., shared secret calculation and key
-   derivation.  The security considerations of EDHOC
-   [I-D.ietf-lake-edhoc] apply with modifications discussed here.
+   derivation.  The security considerations of EDHOC [RFC9528] apply
+   with modifications discussed here.
 
    EDHOC provides identity protection of the Initiator, here the device.
    The encryption of the device identifier ID_U in the first message
@@ -1039,10 +1036,10 @@ U                              V                                       W
    to which V it reveals U's identity, CRED_U could be sent in Voucher
    Response.
 
-   As noted in Section 8.2 of [I-D.ietf-lake-edhoc] an ephemeral key may
-   be used to calculate several ECDH shared secrets.  In this
-   specification the ephemeral key G_X is also used to calculate G_XW,
-   the shared secret with the enrollment server.
+   As noted in Section 8.2 of [RFC9528] an ephemeral key may be used to
+   calculate several ECDH shared secrets.  In this specification the
+   ephemeral key G_X is also used to calculate G_XW, the shared secret
+   with the enrollment server.
 
    The private ephemeral key is thus used in the device for calculations
    of key material relating to both the authenticator and the enrollment
@@ -1158,13 +1155,6 @@ U                              V                                       W
 
 8.1.  Normative References
 
-   [I-D.ietf-lake-edhoc]
-              Selander, G., Mattsson, J. P., and F. Palombini,
-              "Ephemeral Diffie-Hellman Over COSE (EDHOC)", Work in
-              Progress, Internet-Draft, draft-ietf-lake-edhoc-23, 22
-              January 2024, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-lake-edhoc-23>.
-
    [NIST-800-56A]
               Barker, E., Chen, L., Roginsky, A., Vassilev, A., and R.
               Davis, "Recommendation for Pair-Wise Key-Establishment
@@ -1196,6 +1186,11 @@ U                              V                                       W
               Structures and Process", STD 96, RFC 9052,
               DOI 10.17487/RFC9052, August 2022,
               <https://www.rfc-editor.org/info/rfc9052>.
+
+   [RFC9528]  Selander, G., Preuß Mattsson, J., and F. Palombini,
+              "Ephemeral Diffie-Hellman Over COSE (EDHOC)", RFC 9528,
+              DOI 10.17487/RFC9528, March 2024,
+              <https://www.rfc-editor.org/info/rfc9528>.
 
 8.2.  Informative References
 
@@ -1365,14 +1360,14 @@ A.2.3.  Flight 3
    described in Section 4.5.  The OSCORE-protected payload is the CoJP
    Join Request object specified in Section 8.4.1 of [RFC9031].  OSCORE
    protection leverages the OSCORE Security Context derived from the
-   EDHOC session, as specified in Appendix A of [I-D.ietf-lake-edhoc].
-   To that end, [I-D.ietf-core-oscore-edhoc] specifies that the Sender
-   ID of the client (device) must be set to the connection identifier
-   selected by the domain authenticator, C_R.  OSCORE includes the
-   Sender ID as the kid in the OSCORE option.  The network identifier in
-   the CoJP Join Request object is set to the network identifier
-   obtained from the network discovery phase.  In case of IEEE 802.15.4
-   networks, this is the PAN ID.
+   EDHOC session, as specified in Appendix A of [RFC9528].  To that end,
+   [I-D.ietf-core-oscore-edhoc] specifies that the Sender ID of the
+   client (device) must be set to the connection identifier selected by
+   the domain authenticator, C_R.  OSCORE includes the Sender ID as the
+   kid in the OSCORE option.  The network identifier in the CoJP Join
+   Request object is set to the network identifier obtained from the
+   network discovery phase.  In case of IEEE 802.15.4 networks, this is
+   the PAN ID.
 
    The device SHALL map the message to a CoAP request:
 
