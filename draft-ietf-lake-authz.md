@@ -353,14 +353,14 @@ info = (
 ## Stateless Operation of V
 
 V may act statelessly with respect to U: the state of the EDHOC session started by U may be dropped at V until authorization from W is received.
-Once V has received EDHOC message_1 from U and extracted LOC_W from EAD_1, message_1 is forwarded unmodified to W in the form of a Voucher Request.
+Once V has received EDHOC message_1 from U and extracted LOC_W from EAD_1, message_1 is forwarded unmodified to W in the form of a Voucher Request (see {{voucher_request}}).
 V encapsulates the internal state that it needs to later respond to U, and sends that to W together with EDHOC message_1.
-This state typically contains U's IP address and port number, together with any other implementation-specific parameter needed by V to respond to U.
+This state typically contains addressing information of U (e.g., U's IP address and port number), together with any other implementation-specific parameter needed by V to respond to U.
 At this point, V can drop the EDHOC session that was initiated by U.
 
 V MUST encrypt and integrity protect the encapsulated state using a uniformly-distributed (pseudo-)random key, known only to itself.
 How V serializes and encrypts its internal state is out of scope of this specification.
-For example, V may use the existing CBOR and COSE libraries.
+For example, V may use CBOR and COSE.
 
 Editor's note: Consider to include an example of serialized internal state.
 
@@ -393,7 +393,8 @@ where
 * LOC_W is a text string used by V to locate W, e.g., a URI or a domain name.
 * ENC_U_INFO is a byte string containing an encrypted identifier of U and, optionally, opaque application data prepared by U. It is calculated as follows:
 
-ENC_U_INFO is 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) computed from the following:
+ENC_U_INFO is encrypted using the EDHOC AEAD algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
+It consists of 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) computed from the following:
 
 * The encryption key K_1 and nonce IV_1 are derived as specified below.
 * 'protected' is a byte string of size 0
@@ -431,18 +432,19 @@ The derivation of K_1 = EDHOC_Expand(PRK, info, length) uses the following input
 
 * info_label = 0
 * context  = h'' (the empty CBOR string)
-* length is length of key of the EDHOC AEAD algorithm in bytes (which is the length of K_1)
+* length is length of the key of the EDHOC AEAD algorithm in bytes (which is the length of K_1)
 
 The derivation of IV_1 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see OKM in {{reuse}}):
 
 * info_label = 1
 * context = h''  (the empty CBOR string)
-* length is length of nonce of the EDHOC AEAD algorithm in bytes (which is the length of IV_1)
+* length is length of the nonce of the EDHOC AEAD algorithm in bytes (which is the length of IV_1)
 
 ### Voucher {#voucher}
 
 The voucher is an assertion to U that W has authorized V.
-The voucher consists of the 'ciphertext' field of a COSE_Encrypt0 object:
+It is encrypted using the EDHOC AEAD algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
+It consists of the 'ciphertext' field of a COSE_Encrypt0 object:
 
 ~~~~~~~~~~~
 Voucher = COSE_Encrypt0.ciphertext
@@ -473,19 +475,20 @@ where
 
 * OPAQUE_INFO is an opaque field provided by the application.
 * H(message_1) is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
+The hash is computed by using the EDHOC hash algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
 * CRED_V is the CWT Claims Set {{RFC8392}} containing the public authentication key of V, see {{V_2}}
 
 The derivation of K_2 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
 
 * info_label = 2
 * context  = h'' (the empty CBOR string)
-* length is length of key of the EDHOC AEAD algorithm in bytes
+* length is length of the key of the EDHOC AEAD algorithm in bytes
 
 The derivation of IV_2 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
 
 * info_label = 3
 * context = h''  (the empty CBOR string)
-* length is length of nonce of the EDHOC AEAD algorithm in bytes
+* length is length of the nonce of the EDHOC AEAD algorithm in bytes
 
 ## Device <-> Authenticator (U <-> V) {#U-V}
 
@@ -514,12 +517,12 @@ V sends EDHOC message_2 to U with the critical EAD item (-TBD1, Voucher) include
 
 CRED_V is a CWT Claims Set {{RFC8392}} containing the public authentication key of V encoded as a COSE_Key in the 'cnf' claim, see {{Section 3.5.2 of RFC9528}}.
 
-ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map, see {{Section 9.6 of RFC9528}}.
+ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map, see {{Section 10.6 of RFC9528}}.
 
 
 #### Processing in U
 
-U receives EDHOC message_2 from V and processes it as specified in {{Section 5.3.2 of RFC9528}}, with the additional step of processing the EAD item in EAD_2.
+U receives EDHOC message_2 from V and processes it as specified in {{Section 5.3.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_2.
 
 If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}. Otherwise U MUST verify the Voucher by performing the same calculation as in {{voucher}} using H(message_1) and CRED_V received in ID_CRED_R of message_2. If the voucher calculated in this way is not identical to what was received in message_2, then U MUST abort the EDHOC session.
 
@@ -530,7 +533,7 @@ If U does not recognize the EAD item or the EAD item contains information that U
 
 If all verifications are passed, then U sends EDHOC message_3.
 
-EDHOC message_3 may be combined with an OSCORE request, see {{I-D.ietf-core-oscore-edhoc}}.
+EDHOC message_3 may be combined with an OSCORE-protected application request, see {{I-D.ietf-core-oscore-edhoc}}.
 
 #### Processing in V
 
@@ -559,7 +562,7 @@ Voucher_Request = [
 
 where
 
-* message_1 is the EDHOC message_1 as it was received from U.
+* message_1 is a CBOR byte string whose value is the byte serialization of EDHOC message_1 as it was received from U.
 * opaque_state is OPTIONAL and represents the serialized and encrypted opaque state needed by V to statelessly respond to U after the reception of Voucher_Response.
 
 #### Processing in W
@@ -598,14 +601,15 @@ Voucher_Response = [
 
 where
 
-* message_1 is the EDHOC message_1 as it was received from V.
+* message_1 is a CBOR byte string whose value is the byte serialization of EDHOC message_1 as it was received from V.
 * The Voucher is defined in {{voucher}}.
 * opaque_state is the echoed byte string opaque_state from Voucher_Request, if present.
 
 #### Processing in V
 
 V receives the voucher response from W over the secure connection.
-If present, V decrypts and verifies opaque_state as received from W. If that verification fails then EDHOC is aborted.
+If present, V decrypts and verifies opaque_state as received from W. If that verification fails, then the EDHOC session
+with U is aborted.
 If the voucher response is successfully received from W, then V responds to U with EDHOC message_2 as described in {{V_2}}.
 
 ## Error Handling {#err-handling}
@@ -743,13 +747,13 @@ In case of a successful lookup of the authentication credential at W, W MUST iss
 
 This specification builds on and reuses many of the security constructions of EDHOC, e.g., shared secret calculation and key derivation. The security considerations of EDHOC {{RFC9528}} apply with modifications discussed here.
 
-EDHOC provides identity protection of the Initiator, here the device. The encryption of the device identifier ID_U in the first message should consider potential information leaking from the length of ID_U, either by making all identifiers having the same length or the use of a padding scheme.
+EDHOC provides identity protection of the Initiator, here the device. The encrypted device identifier ID_U in the first message should consider potential information leaking from the length of ID_U, either by making all identifiers having the same length or the use of a padding scheme.
 
 Although W learns about the identity of U after receiving VREQ, this information must not be disclosed to V, until U has revealed its identity to V with ID_CRED_I in message_3. W may be used for lookup of CRED_U from ID_CRED_I, or this credential lookup function may be separate from the authorization function of W, see {{fig-protocol}}. The trust model used here is that U decides to which V it reveals its identity. In an alternative trust model where U trusts W to decide to which V it reveals U's identity, CRED_U could be sent in Voucher Response.
 
- As noted in {{Section 8.2 of RFC9528}} an ephemeral key may be used to calculate several ECDH shared secrets. In this specification the ephemeral key G_X is also used to calculate G_XW, the shared secret with the enrollment server.
+ As noted in {{Section 9.2 of RFC9528}} an ephemeral key may be used to calculate several ECDH shared secrets. In this specification the ephemeral key G_X is also used to calculate G_XW, the shared secret with the enrollment server.
 
-The private ephemeral key is thus used in the device for calculations of key material relating to both the authenticator and the enrollment server. There are different options for where to implement these calculations, one option is as an addition to EDHOC, i.e., to extend the EDHOC API in the device with input of public key of W (G_W) and device identifier of U (ID_U), and produce the encryption of ID_U which is included in Voucher_Info in EAD_1.
+The private ephemeral key is thus used in the device for calculations of key material relating to both the authenticator and the enrollment server. There are different options for where to implement these calculations, one option is as an addition to EDHOC, i.e., to extend the EDHOC API in the device, so that EDHOC can import the public key of W (G_W) and the device identifier of U (ID_U), and then produce the encryption of ID_U which is included in Voucher_Info in EAD_1.
 
 # IANA Considerations  {#iana}
 
@@ -789,7 +793,7 @@ IANA has added the media types "application/lake-authz-voucherrequest+cbor" to t
 * Subtype name: lake-authz-voucherrequest+cbor
 * Required parameters: N/A
 * Optional paramaters: N/A
-* Encoding considerations: binary
+* Encoding considerations: binary (CBOR)
 * Security cosniderations: See {{sec-cons}} of this document.
 * Interoperability considerations: N/A
 * Published specification: [[this document]] (this document)
@@ -807,9 +811,9 @@ IANA has added the media types "application/lake-authz-voucherrequest+cbor" to t
 
 ## CoAP Content-Formats Registry
 
-IANA has added the media type "application/lake-authz-voucherrequest+cbor" to the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".
+IANA has added the following Content-Format number in the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".
 
-| Media Type | Encoding | ID | Reference |
+| Content Type | Content Encoding | ID | Reference |
 | application/lake-authz-voucherrequest+cbor | - | TBD2 | [[this document]] |
 {: #coap-content-formats title="Addition to the CoAP Content-Formats registry" cols="l l l"}
 
@@ -874,7 +878,7 @@ The device SHALL map the message to a CoAP request:
 * The type is Confirmable (CON).
 * The Proxy-Scheme option is set to "coap".
 * The Uri-Host option is set to "lake-authz.arpa". This is an anycast type of identifier of the domain authenticator (V) that is resolved to its IPv6 address by the Join Proxy.
-* The Uri-Path option is set to ".well-known/edhoc".
+* By means of Uri-Path options, the Uri-Path is set to ".well-known/edhoc".
 * The payload is the (true, EDHOC message_1) CBOR sequence, where EDHOC message_1 is constructed as defined in {{U-V}}.
 
 ### Flight 2
@@ -980,7 +984,7 @@ Premises:
 Execution:
 
 1. device u1 tries to join via gateway v1, which forwards the request to W
-2. W verifies that MAC address A2-A1-88-EE-97-75 is not in the access policy mapping, and replies with an error. The error_content has REJECT_TYPE = 1, and the plaintext of REJECT_INFO contains a list of suggested gateways = \[h'3963C9D05C62'\]. The single element in the list is the 6-byte MAC address of v3, serialized as a bstr.
+2. W verifies that MAC address A2-A1-88-EE-97-75 is not in the access policy mapping, and replies with an error. The error_content has REJECT_TYPE = 1, and the plaintext OPAQUE_INFO (used to compute the encrypted REJECT_INFO) specifies a list of suggested gateways = \[h'3963C9D05C62'\]. The single element in the list is the 6-byte MAC address of v3, serialized as a bstr.
 3. gateway v1 assembles an EDHOC error "Access Denied" with error_content, and sends it to u1
 4. device u1 processes the error, decrypts REJECT_INFO, and retries the protocol via gateway v3
 
