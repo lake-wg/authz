@@ -688,7 +688,7 @@ This RESTful interface MAY be implemented using either HTTP or CoAP.
 V SHOULD access the resources exposed by W through the protocol indicated by the scheme in the LOC_W URI.
 
 ## Scheme "https" {#scheme-https}
-In case the scheme indicates "https", V MUST perform a TLS handshake with W and use HTTP.
+In case the scheme indicates "https", V MUST perform a TLS handshake with W and access the resources defined in Section 5.4 using HTTP.
 If the authentication credential CRED_V can be used in a TLS handshake, e.g., an X.509 certificate of a signature public key, then V SHOULD use it to authenticate to W as a client.
 If the authentication credential CRED_V cannot be used in a TLS handshake, e.g., if the public key is a static Diffie-Hellman key, then V SHOULD first perform a TLS handshake with W using available compatible keys.
 V MUST then perform an EDHOC session over the TLS connection proving to W the possession of the private key corresponding to CRED_V.
