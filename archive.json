@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-04-09T01:07:14.452021+00:00",
+  "timestamp": "2024-04-11T01:07:45.508067+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1197,6 +1197,32 @@
       "mergeCommit": {
         "oid": "efbbecef4dd965fd4f658024325a1e3bf7a8eacc"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 31,
+      "id": "PR_kwDOKiCa6c5sG5fX",
+      "title": "Editorial updates addressing Marco's review",
+      "url": "https://github.com/lake-wg/authz/pull/31",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Clarifications and editorial improvements based on @marco-tiloca-sics's [review on the LAKE mailing list](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/).",
+      "createdAt": "2024-04-09T09:28:46Z",
+      "updatedAt": "2024-04-09T09:28:46Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "efbbecef4dd965fd4f658024325a1e3bf7a8eacc",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "addressing-marcos-review-20march2024",
+      "headRefOid": "5ece90db935198dd985033e9c33ae72bd5135309",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
