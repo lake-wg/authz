@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-04-11T01:07:45.508067+00:00",
+  "timestamp": "2024-04-14T01:22:32.892622+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1110,7 +1110,7 @@
       "labels": [],
       "body": "Addresses issue #19.\r\n\r\nI took a different approach than the one mentioned in #19, and decided to put the error signaling in the RESTful layer:\r\n- I think it makes sense, since a RESTful interface will be always present between V and W\r\n- Successful responses are already encoded as 200 OK, so this is just an extension of that\r\n\r\nI also modified the text in the `Voucher Request -> Processing in W` subsection to clarify where the error handling mechanism is plugged in.\r\n\r\nFinally, I am not sure if I should elaborate more in the construction `If ID_U is known by W`, i.e., define what it means to be \"known\". Perhaps it is enough the way it is?\r\nNote that one reason to differentiate between known and unknown Us is the privacy of radio identifiers of Vs when using hints (v_hints specifically), as discussed in issue #27.",
       "createdAt": "2024-04-03T10:15:06Z",
-      "updatedAt": "2024-04-03T10:18:36Z",
+      "updatedAt": "2024-04-11T08:23:30Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b7b276bbecea58ee0e547ef72e48c16bd9451261",
@@ -1122,7 +1122,21 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c5205pA",
+          "commit": {
+            "abbreviatedOid": "352281d"
+          },
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "Looks good, some comments: \r\n\r\nThese two sentences overlap each other:\r\n\r\n\"If H(message_1) is not unique among session identifiers associated to this device identifier of U, the EDHOC session SHALL be aborted.\r\n\r\nIf processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see {{rest-voucher-request}}.\"\r\n\r\nPerhaps can be combined?\r\n\r\n\r\n\r\nOLD\r\n\"U cannot authenticate\"\r\nNEW\r\n\"U cannot be identified\"\r\n\r\n\r\n\"this happens either if W fails to process the Voucher Request, or if it succeeds but ID_U is considered unkonwn to W. In this case, W MUST reply with a 400 Bad Request.\"\r\n\r\nTypo:\"unkonwn\"\r\n\r\n400 Bad Request\r\nMust this be HTTP?\r\n\r\n\r\nOLD\r\n\"U is authenticated but unauthorized\"\r\nNEW\r\n\"U is identified but unauthorized\"\r\n\r\n\r\n",
+          "createdAt": "2024-04-11T08:23:30Z",
+          "updatedAt": "2024-04-11T08:23:30Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 29,
@@ -1212,19 +1226,41 @@
       "labels": [],
       "body": "Clarifications and editorial improvements based on @marco-tiloca-sics's [review on the LAKE mailing list](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/).",
       "createdAt": "2024-04-09T09:28:46Z",
-      "updatedAt": "2024-04-09T09:28:46Z",
+      "updatedAt": "2024-04-11T10:12:51Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "efbbecef4dd965fd4f658024325a1e3bf7a8eacc",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "addressing-marcos-review-20march2024",
-      "headRefOid": "5ece90db935198dd985033e9c33ae72bd5135309",
+      "headRefOid": "57925d144dbe0384d910df7c02a04125b4248599",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@gselander thank you for the review. \r\n\r\n> add Marco to the acknowledgments\r\n\r\nDone.",
+          "createdAt": "2024-04-11T10:12:50Z",
+          "updatedAt": "2024-04-11T10:12:50Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c521Bwt",
+          "commit": {
+            "abbreviatedOid": "5ece90d"
+          },
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "Looks good. We should add Marco to the acknowledgments.",
+          "createdAt": "2024-04-11T08:40:46Z",
+          "updatedAt": "2024-04-11T08:40:46Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
