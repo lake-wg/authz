@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-04-14T01:22:32.892622+00:00",
+  "timestamp": "2024-04-16T01:06:39.074002+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -366,9 +366,17 @@
       "labels": [],
       "body": "The idea here is the same as in #23.\r\n\r\n## Proposal\r\nUpdate Voucher so that instead of carrying `opaque_info`, it looks like this:\r\n```\r\nplaintext of Voucher = (\r\n  role-of-v:        uint,  / choice(access-provider=1, owner=2) /\r\n  directives-for-u: bstr,  / application-specific, e.g. frequencies, operation mode, etc /\r\n)\r\n```\r\n\r\nComments:\r\n- the field `role-of-v` tells U whether V should be considered an owner/administrator, or simply a connectivity provider. This is more or less equivalent to the \"assertion\" item in BRSKI's Voucher, with the difference that no claim is made about \"how to verify the ownership of V upon U\". Another reason that motivated me in considering this field was a discussion I had with @chrysn about the \"admin status of V\".\r\n- `directives-for-u` should contain any information that W may find useful to transmit to U. In a way, this is still equivalent to `opaque_data`, but just with a name that conveys the intention of the field.\r\n\r\nQuestions:\r\n- does `role-of-v` make sense? are there other roles that should be considered?\r\n- is there anything else that is missing? is there other type of information that should / could be sent in the Voucher, that would not be covered by the suggested fields?",
       "createdAt": "2024-03-19T09:48:20Z",
-      "updatedAt": "2024-03-19T09:48:20Z",
+      "updatedAt": "2024-04-15T14:56:39Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Logging some updates here.\r\n\r\n### 1. Specifying the fields `role-of-v` and `directives-for-u`\r\nDuring a design team meeting on April 11, we discussed that the two items discussed above could be specified in an appendix (therefore keeping `OPAQUE_INFO` as part of the Voucher).\r\n\r\nThe concern here is making the protocol too closed, while we are still not sure of all potential use cases and needs.\r\n\r\nJust as a quick note, to me this starts to resemble a bit the case of EAP, where the main protocol is specified in a higher level, and then certain details are defined in later specifications. It differs from EAP as the authentication *is defined* (it relies on EDHOC's), but is similar to EAP as the underlying transport *is not defined*. Might bring this discussion into a separate issue.\r\n\r\n### 2. `directives-for-u`: use case with LoRaWAN\r\nThe Join-accept message defined in LoRaWAN v1.1 \u00b9 is sent as a response to a successful Join-request.\r\nJoin-accept contains the following fields: JoinNonce, Home_NetID, DevAddr, DownLinkSettings, RxDelay, ChannelFrequencyList.\r\n\r\nThus, when using `lake-authz` with LoRaWAN, the `directives-for-u` field could contain the fields of a Join-accept message.\r\n\r\n\u00b9 https://resources.lora-alliance.org/technical-specifications/lorawan-specification-v1-1",
+          "createdAt": "2024-04-15T14:56:37Z",
+          "updatedAt": "2024-04-15T14:56:37Z"
+        }
+      ]
     },
     {
       "number": 25,
