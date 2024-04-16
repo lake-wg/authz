@@ -739,12 +739,16 @@ To request a voucher, V MUST issue a request such that:
 * Payload is the serialization of the Voucher Request object, as specified in {{voucher_request}}.
 * Content-Format (Content-Type) is set to "application/lake-authz-voucherrequest+cbor"
 
-In case of successful processing at W, W MUST issue a 200 OK response with payload containing the serialized Voucher Response object, as specified in {{voucher_response}}.
+In case of successful processing at W, W MUST issue a response such that:
+
+* Status code is 200 OK if using HTTP, or 2.04 Changed if using CoAP
+* Payload is the serialized Voucher Response object, as specified in {{voucher_response}}
+* Content-Format (Content-Type) is set to "application/lake-authz-voucherresponse+cbor"
 
 In case of error, two cases should be considered:
 
-* U cannot be identified: this happens either if W fails to process the Voucher Request, or if it succeeds but ID_U is considered unknown to W. In this case, W MUST reply with a 400 Bad Request.
-* U is identified but unauthorized: this happens if W is able to process the Voucher Request, and W recognizes ID_U as a known device, but the access policies forbid enrollment. For example, the policy could enforce enrollment within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 401 Unauthorized code, where the payload is the serialized error_content object. The latter MAY be used by V to prepare an EDHOC error "Access Denied", see {{err-handling}}.
+* U cannot be identified: this happens either if W fails to process the Voucher Request, or if it succeeds but ID_U is considered unknown to W. In this case, W MUST reply with 400 Bad Request if using HTTP, or 4.00 if using CoAP.
+* U is identified but unauthorized: this happens if W is able to process the Voucher Request, and W recognizes ID_U as a known device, but the access policies forbid enrollment. For example, the policy could enforce enrollment within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 403 Forbidden code if using HTTP, or 4.03 if using CoAP; the payload is the serialized error_content object, with Content-Format (Content-Type) set to "application/lake-authz-vouchererror+cbor". The payload MAY be used by V to prepare an EDHOC error "Access Denied", see {{err-handling}}.
 
 ### Certificate Request (/certrequest)
 
@@ -753,8 +757,13 @@ To request U's authentication credential, V MUST issue a request such that:
 
 * Method is POST
 * Payload is the serialization of the ID_CRED_I object, as received in EDHOC message_3.
+* Content-Format (Content-Type) is set to "application/lake-authz-certrequest+cbor"
 
-In case of a successful lookup of the authentication credential at W, W MUST issue 200 OK response with payload containing the serialized CRED_U.
+In case of a successful lookup of the authentication credential at W, W MUST issue a response such that:
+
+* Status code is 200 OK if using HTTP, or 2.04 Changed if using CoAP
+* Payload is the serialized CRED_U
+* Content-Format (Content-Type) is set to "application/lake-authz-certresponse+cbor"
 
 # Security Considerations  {#sec-cons}
 
