@@ -579,7 +579,7 @@ W verifies and decrypts ENC_U_INFO using the relevant algorithms of the selected
 
 In case OPAQUE_INFO is present, it is made available to the application.
 
-W calculates the hash of message_1 H(message_1), and associates this session identifier to the device identifier ID_U. If H(message_1) is not unique among session identifiers associated with this device identifier of U, the EDHOC session SHALL be aborted.
+W calculates the hash of message_1 H(message_1), and associates this session identifier to the device identifier ID_U. To avoid processing duplicates, H(message_1) SHALL be unique among session identifiers associated with a given ID_U.
 
 If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see {{rest-voucher-request}}.
 
@@ -742,8 +742,8 @@ In case of successful processing at W, W MUST issue a 200 OK response with paylo
 
 In case of error, two cases should be considered:
 
-* U cannot authenticate: this happens either if W fails to process the Voucher Request, or if it succeeds but ID_U is considered unkonwn to W. In this case, W MUST reply with a 400 Bad Request.
-* U is authenticated but unauthorized: this happens if W is able to process the Voucher Request, and W recognizes ID_U as a known device, but the access policies forbid enrollment. For example, the policy could enforce enrollment within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 401 Unauthorized code, where the payload is the serialized error_content object. The latter MAY be used by V to prepare an EDHOC error "Access Denied", see {{err-handling}}.
+* U cannot be identified: this happens either if W fails to process the Voucher Request, or if it succeeds but ID_U is considered unknown to W. In this case, W MUST reply with a 400 Bad Request.
+* U is identified but unauthorized: this happens if W is able to process the Voucher Request, and W recognizes ID_U as a known device, but the access policies forbid enrollment. For example, the policy could enforce enrollment within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 401 Unauthorized code, where the payload is the serialized error_content object. The latter MAY be used by V to prepare an EDHOC error "Access Denied", see {{err-handling}}.
 
 ### Certificate Request (/certrequest)
 
