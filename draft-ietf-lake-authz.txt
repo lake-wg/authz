@@ -1030,10 +1030,10 @@ U                              V                                       W
    with modifications discussed here.
 
    EDHOC provides identity protection of the Initiator, here the device.
-   The encrypted device identifier ID_U in the first message should
-   consider potential information leaking from the length of ID_U,
-   either by making all identifiers having the same length or the use of
-   a padding scheme.
+   The encryption of the device identifier ID_U in the first message
+   should consider potential information leaking from the length of
+   ID_U, either by making all identifiers having the same length or the
+   use of a padding scheme.
 
    Although W learns about the identity of U after receiving VREQ, this
    information must not be disclosed to V, until U has revealed its
