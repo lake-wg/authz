@@ -135,7 +135,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 Readers are expected to have an understanding of CBOR {{RFC8949}}, CDDL {{RFC8610}}, and EDHOC {{RFC9528}}.
 Appendix C.1 of {{RFC9528}} contains some basic info about CBOR.
 
-# Objetive {#objective}
+# Objectives {#objective}
 
 The goal of this protocol is to enable a (potentially constrained) device (U) to enroll into a domain over a constrained link.
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator (V) with the help of a voucher conveying authorization information.
