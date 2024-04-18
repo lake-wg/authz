@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-04-16T01:06:39.074002+00:00",
+  "timestamp": "2024-04-18T01:06:47.211806+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1118,18 +1118,26 @@
       "labels": [],
       "body": "Addresses issue #19.\r\n\r\nI took a different approach than the one mentioned in #19, and decided to put the error signaling in the RESTful layer:\r\n- I think it makes sense, since a RESTful interface will be always present between V and W\r\n- Successful responses are already encoded as 200 OK, so this is just an extension of that\r\n\r\nI also modified the text in the `Voucher Request -> Processing in W` subsection to clarify where the error handling mechanism is plugged in.\r\n\r\nFinally, I am not sure if I should elaborate more in the construction `If ID_U is known by W`, i.e., define what it means to be \"known\". Perhaps it is enough the way it is?\r\nNote that one reason to differentiate between known and unknown Us is the privacy of radio identifiers of Vs when using hints (v_hints specifically), as discussed in issue #27.",
       "createdAt": "2024-04-03T10:15:06Z",
-      "updatedAt": "2024-04-11T08:23:30Z",
+      "updatedAt": "2024-04-16T09:54:40Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
-      "baseRefOid": "b7b276bbecea58ee0e547ef72e48c16bd9451261",
+      "baseRefOid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "add-error-vreq-vres",
-      "headRefOid": "352281d1513ea3db92746cb39bfe24e02d16993d",
+      "headRefOid": "bae131b8d8d1ce7c81af174dfe5d3eb13883357d",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Suggestions applied, comment about HTTP-only status code addressed in PR #32.",
+          "createdAt": "2024-04-16T09:54:39Z",
+          "updatedAt": "2024-04-16T09:54:39Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOKiCa6c5205pA",
@@ -1227,24 +1235,26 @@
       "id": "PR_kwDOKiCa6c5sG5fX",
       "title": "Editorial updates addressing Marco's review",
       "url": "https://github.com/lake-wg/authz/pull/31",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Clarifications and editorial improvements based on @marco-tiloca-sics's [review on the LAKE mailing list](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/).",
       "createdAt": "2024-04-09T09:28:46Z",
-      "updatedAt": "2024-04-11T10:12:51Z",
+      "updatedAt": "2024-04-16T08:00:10Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "efbbecef4dd965fd4f658024325a1e3bf7a8eacc",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "addressing-marcos-review-20march2024",
       "headRefOid": "57925d144dbe0384d910df7c02a04125b4248599",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-04-16T08:00:06Z",
+      "mergedAt": "2024-04-16T08:00:06Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290"
+      },
       "comments": [
         {
           "author": "geonnave",
@@ -1269,6 +1279,58 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 32,
+      "id": "PR_kwDOKiCa6c5sx-jh",
+      "title": "Specify missing CoAP status codes and Content-Format",
+      "url": "https://github.com/lake-wg/authz/pull/32",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As per @marco-tiloca-sics's [review](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/) of [Section 5.4.1] and [Section 5.4.2], and @gselander's comment on PR #28.\r\n\r\nFor now this is on top of PR #28, so to review look only at commit https://github.com/lake-wg/authz/commit/ebcfa62f45d343fcd794a8795e094e17b51e64b3.",
+      "createdAt": "2024-04-16T09:52:47Z",
+      "updatedAt": "2024-04-16T09:52:47Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "http-and-coap-params-v-to-w",
+      "headRefOid": "ebcfa62f45d343fcd794a8795e094e17b51e64b3",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 33,
+      "id": "PR_kwDOKiCa6c5s0Z4V",
+      "title": "Rename section Problem Description to Objective",
+      "url": "https://github.com/lake-wg/authz/pull/33",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As per @marco-tiloca-sics's [review](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/) of [Section 2].",
+      "createdAt": "2024-04-16T15:21:55Z",
+      "updatedAt": "2024-04-17T15:39:28Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "rename-section-problem-to-objective",
+      "headRefOid": "1afbfd695a56748eaa2f0fb8de0fa535b33e61d0",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
