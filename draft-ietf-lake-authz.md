@@ -176,7 +176,7 @@ The protocol is based on the following pre-existing relations between the device
 
 Each of the three parties can gain protected communication with the other two during the protocol.
 
-V may be able to access credentials over non-nonstrained networks, but U may be limited to constrained networks. Implementations wishing to leverage the zero-touch capabilities of this protocol are expected to support transmission of credentials from V to U by value during the EDHOC exchange, which will impact the message size depending on the type of credential used.
+V may be able to access credentials over non-constrained networks, but U may be limited to constrained networks. Implementations wishing to leverage the zero-touch capabilities of this protocol are expected to support transmission of credentials from V to U by value during the EDHOC exchange, which will impact the message size depending on the type of credential used.
 
 ~~~~~~~~~~~ aasvg
 
@@ -223,7 +223,7 @@ V and W need to establish a secure (confidentiality and integrity protected) con
 
 Note that both TLS 1.3 and EDHOC may be run between V and W during this setup procedure. For example, W may authenticate to V using TLS 1.3 with server certificates signed by a CA trusted by V, and then V may run EDHOC using CRED_V over the secure TLS connection to W, see {{fig-protocol}}.
 
-Note also that the secure connection between V and W may be long lived and reused for multiple voucher requests/responses.
+Note also that the secure connection between V and W may be long-lived and reused for multiple voucher requests/responses.
 
 Other details of proof-of-possession related to CRED_V and transport of CRED_V are out of scope of this document.
 
@@ -496,7 +496,7 @@ This section describes the processing in U and V, which includes the EDHOC proto
 
 #### Processing in U
 
-U composes EDHOC message_1 using authentication method, identifiers, etc. according to an agreed application profile, see {{Section 3.9 of RFC9528}}. The selected cipher suite, in this document denoted SS, applies also to the interaction with W as detailed in {{reuse}}, in particular, with respect to the Diffie Hellman key agreement algorithm used between U and W. As part of the normal EDHOC processing, U generates the ephemeral public key G_X that is reused in the interaction with W, see {{U-W}}.
+U composes EDHOC message_1 using authentication method, identifiers, etc. according to an agreed application profile, see {{Section 3.9 of RFC9528}}. The selected cipher suite, in this document denoted SS, applies also to the interaction with W as detailed in {{reuse}}, in particular, with respect to the Diffie-Hellman key agreement algorithm used between U and W. As part of the normal EDHOC processing, U generates the ephemeral public key G_X that is reused in the interaction with W, see {{U-W}}.
 
 The device sends EDHOC message_1 with EAD item (-TBD1, Voucher_Info) included in EAD_1, where Voucher_Info is specified in {{U-W}}. The negative sign indicates that the EAD item is critical, see {{Section 3.8 of RFC9528}}.
 
@@ -535,7 +535,7 @@ EDHOC message_3 may be combined with an OSCORE-protected application request, se
 
 #### Processing in V
 
-V performs the normal EDHOC verifications of message_3. V may retrieve CRED_U from a Credential Database, after having learnt ID_CRED_I from U.
+V performs the normal EDHOC verifications of message_3. V may retrieve CRED_U from a Credential Database, after having learned ID_CRED_I from U.
 
 ## Authenticator <-> Enrollment Server (V <-> W) {#V-W}
 
@@ -790,9 +790,9 @@ IANA has added the media types "application/lake-authz-voucherrequest+cbor" to t
 * Type name: application
 * Subtype name: lake-authz-voucherrequest+cbor
 * Required parameters: N/A
-* Optional paramaters: N/A
+* Optional parameters: N/A
 * Encoding considerations: binary (CBOR)
-* Security cosniderations: See {{sec-cons}} of this document.
+* Security considerations: See {{sec-cons}} of this document.
 * Interoperability considerations: N/A
 * Published specification: [[this document]] (this document)
 * Application that use this media type: To be identified
@@ -973,7 +973,7 @@ This example also illustrates how the REJECT_INFO field of the EDHOC error Acces
 
 Premises:
 
-- devices and gateways communicate via Bluetooth Low Energy (BLE), therefore their network identifers are MAC addresses (EUI-48)
+- devices and gateways communicate via Bluetooth Low Energy (BLE), therefore their network identifiers are MAC addresses (EUI-48)
 - device u1 has ID_U = key id = 14
 - there are 3 gateways in the radio range of u1:
   - v1 with MAC address = A2-A1-88-EE-97-75
