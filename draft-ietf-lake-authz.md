@@ -945,7 +945,7 @@ The hint itself is application dependent, and can contain GPS coordinates, appli
 It is defined as follows:
 
 ~~~ cddl
-u_hint: [ 1* bstr ]
+u_hint = [ 1* bstr ]
 ~~~
 
 # Examples
