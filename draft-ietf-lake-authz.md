@@ -378,14 +378,12 @@ The protocol between U and W is carried between U and V in message_1 and message
 The external authorization data EAD_1 contains an EAD item with ead_label = TBD1 and ead_value = Voucher_Info, which is a CBOR byte string:
 
 ~~~~~~~~~~~ cddl
-Voucher_Info = bstr .cbor Voucher_Info_Seq
-~~~~~~~~~~~
+Voucher_Info = bstr .cborseq Voucher_Info_Seq
 
-~~~~~~~~~~~ cddl
-Voucher_Info_Seq = (
+Voucher_Info_Seq = [ ; used as a CBOR sequence, not array
     LOC_W:      tstr,
     ENC_U_INFO:     bstr
-)
+]
 ~~~~~~~~~~~
 
 where
