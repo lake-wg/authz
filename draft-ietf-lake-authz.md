@@ -932,7 +932,7 @@ The hint is optional and is included in the REJECT_INFO item in the Access Denie
 It consists of a list of application-defined identifiers of V (e.g. MAC addresses, SSIDs, PAN IDs, etc.), as defined below:
 
 ~~~ cddl
-v_hint = [ 1* bstr ]
+v_hint = [ + bstr ]
 ~~~
 
 ## Device Hints
@@ -943,7 +943,7 @@ The hint itself is application dependent, and can contain GPS coordinates, appli
 It is defined as follows:
 
 ~~~ cddl
-u_hint = [ 1* bstr ]
+u_hint = [ + bstr ]
 ~~~
 
 # Examples
