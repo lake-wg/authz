@@ -466,7 +466,7 @@ plaintext = (
 ~~~~~~~~~~~
 ~~~~~~~~~~~ cddl
 external_aad = (
-    H(message_1):  bstr,
+    H_message_1:  bstr,
     CRED_V:        bstr,
 )
 ~~~~~~~~~~~
@@ -474,7 +474,7 @@ external_aad = (
 where
 
 * OPAQUE_INFO is an opaque field provided by the application.
-* H(message_1) is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
+* H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 The hash is computed by using the EDHOC hash algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
 * CRED_V is the CWT Claims Set {{RFC8392}} containing the public authentication key of V, see {{V_2}}
 
@@ -524,7 +524,7 @@ ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map, see {{Sect
 
 U receives EDHOC message_2 from V and processes it as specified in {{Section 5.3.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_2.
 
-If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}. Otherwise, U MUST verify the Voucher by performing the same calculation as in {{voucher}} using H(message_1) and CRED_V received in ID_CRED_R of message_2. If the voucher calculated in this way is not identical to what was received in message_2, then U MUST abort the EDHOC session.
+If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}. Otherwise, U MUST verify the Voucher by performing the same calculation as in {{voucher}} using H_message_1 and CRED_V received in ID_CRED_R of message_2. If the voucher calculated in this way is not identical to what was received in message_2, then U MUST abort the EDHOC session.
 
 
 ### Message 3
@@ -579,7 +579,7 @@ W verifies and decrypts ENC_U_INFO using the relevant algorithms of the selected
 
 In case OPAQUE_INFO is present, it is made available to the application.
 
-W calculates the hash of message_1 H(message_1), and associates this session identifier to the device identifier ID_U. If H(message_1) is not unique among session identifiers associated with this device identifier of U, the EDHOC session SHALL be aborted.
+W calculates the hash of message_1 H_message_1, and associates this session identifier to the device identifier ID_U. If H_message_1 is not unique among session identifiers associated with this device identifier of U, the EDHOC session SHALL be aborted.
 
 W uses ID_U to look up the associated authorization policies for U and enforces them. This is out of scope for the specification.
 
@@ -670,7 +670,7 @@ plaintext = (
 ~~~~~~~~~~~
 ~~~~~~~~~~~ cddl
 external_aad = (
-    H(message_1):    bstr,
+    H_message_1:    bstr,
  )
 ~~~~~~~~~~~
 
@@ -679,7 +679,7 @@ where
 * OPAQUE_INFO is an opaque field that contains actionable information about the error.
   It may contain, for example, a list of suggested Vs through which U should join instead.
 
-* H(message_1) is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
+* H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 
 # REST Interface at W {#rest_interface}
 
