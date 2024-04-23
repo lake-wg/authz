@@ -341,7 +341,7 @@ The output keying material OKM is derived from PRK using EDHOC_Expand(), which i
 
   where
 
-~~~~~~~~~
+~~~~~~~~~ cddl
 info = (
    info_label : int,
    context : bstr,
@@ -377,11 +377,11 @@ The protocol between U and W is carried between U and V in message_1 and message
 
 The external authorization data EAD_1 contains an EAD item with ead_label = TBD1 and ead_value = Voucher_Info, which is a CBOR byte string:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 Voucher_Info = bstr .cbor Voucher_Info_Seq
 ~~~~~~~~~~~
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 Voucher_Info_Seq = (
     LOC_W:      tstr,
     ENC_U_INFO:     bstr
@@ -400,13 +400,13 @@ It consists of 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) compu
 * 'protected' is a byte string of size 0
 * 'plaintext' and 'external_aad' as below:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 plaintext = (
     ID_U:            bstr,
     ?OPAQUE_INFO:    bstr,
 )
 ~~~~~~~~~~~
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 external_aad = (
     SS:              int,
 )
@@ -446,7 +446,7 @@ The voucher is an assertion to U that W has authorized V.
 It is encrypted using the EDHOC AEAD algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
 It consists of the 'ciphertext' field of a COSE_Encrypt0 object:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 Voucher = COSE_Encrypt0.ciphertext
 ~~~~~~~~~~~
 
@@ -459,12 +459,12 @@ The external authorization data EAD_2 contains an EAD item with ead_label = TBD1
 * 'protected' is a byte string of size 0
 * 'plaintext' and 'external_aad' as below:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 plaintext = (
     ?OPAQUE_INFO: bstr
 )
 ~~~~~~~~~~~
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 external_aad = (
     H(message_1):  bstr,
     CRED_V:        bstr,
@@ -553,7 +553,7 @@ V and W run the Voucher Request/Response protocol over the secure connection.
 V sends the voucher request to W.
 The Voucher Request SHALL be a CBOR array as defined below:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 Voucher_Request = [
     message_1:      bstr,
     ? opaque_state: bstr
@@ -591,7 +591,7 @@ W retrieves CRED_V associated with the secure connection with V, and constructs 
 
 W generates the voucher response and sends it to V over the secure connection. The Voucher_Response SHALL be a CBOR array as defined below:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 Voucher_Response = [
     message_1:      bstr,
     Voucher:        bstr,
@@ -631,7 +631,7 @@ This section specifies the new EDHOC error "Access denied", see {{fig-error-code
 Error code TBD3 is used to indicate to the receiver that access control has been applied and the sender has aborted the EDHOC session.
 The ERR_INFO field contains error_content which is a CBOR Sequence consisting of an integer and an optional byte string.
 
-~~~~~~~~~~~ CDDL
+~~~~~~~~~~~ cddl
 error_content = (
   REJECT_TYPE : int,
   ? REJECT_INFO : bstr,
@@ -663,12 +663,12 @@ This protocol uses the EDHOC Error "Access denied" in the following way:
 
 The encryption of REJECT_INFO follows a procedure analogous to the one defined in {{voucher}}, with the following differences:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 plaintext = (
     OPAQUE_INFO:     bstr,
  )
 ~~~~~~~~~~~
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 external_aad = (
     H(message_1):    bstr,
  )
@@ -933,7 +933,9 @@ In case W denies the enrollment of U to a given V, a list of Domain Authenticato
 The hint is optional and is included in the REJECT_INFO item in the Access Denied error message.
 It consists of a list of application-defined identifiers of V (e.g. MAC addresses, SSIDs, PAN IDs, etc.), as defined below:
 
+~~~ cddl
 v_hint = [ 1* bstr ]
+~~~
 
 ## Device Hints
 U may send a Device hint (u_hint) so that it can help W to select which Vs to include in v_hint.
@@ -942,8 +944,9 @@ The hint is an optional field included in the OPAQUE_INFO field within EAD_1, an
 The hint itself is application dependent, and can contain GPS coordinates, application-specific tags, the list of Vs detected by U, or other relevant information.
 It is defined as follows:
 
+~~~ cddl
 u_hint: [ 1* bstr ]
-
+~~~
 
 # Examples
 This section presents high level examples of the protocol execution.
