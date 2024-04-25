@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-04-23T01:08:29.209971+00:00",
+  "timestamp": "2024-04-25T01:10:17.487996+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -546,6 +546,22 @@
           "updatedAt": "2024-04-08T08:50:31Z"
         }
       ]
+    },
+    {
+      "number": 35,
+      "id": "I_kwDOKiCa6c6Gpl6e",
+      "title": "Media type templates must stand on their own",
+      "url": "https://github.com/lake-wg/authz/issues/35",
+      "state": "OPEN",
+      "author": "cabo",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "In the IANA registry, there will not be a link that could be used in \"See \"Authors' Addresses\" section\".\r\nPlease do fill in those fields.",
+      "createdAt": "2024-04-23T14:32:51Z",
+      "updatedAt": "2024-04-23T14:32:51Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -1359,13 +1375,13 @@
       "labels": [],
       "body": "As per @marco-tiloca-sics's [review](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/) of [Section 2].",
       "createdAt": "2024-04-16T15:21:55Z",
-      "updatedAt": "2024-04-18T08:55:58Z",
+      "updatedAt": "2024-04-24T08:57:06Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "rename-section-problem-to-objective",
-      "headRefOid": "1afbfd695a56748eaa2f0fb8de0fa535b33e61d0",
+      "headRefOid": "c235524c5b14fe10bc8722ac113e558263c990ce",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -1379,6 +1395,92 @@
           "updatedAt": "2024-04-18T08:55:57Z"
         }
       ],
+      "reviews": []
+    },
+    {
+      "number": 34,
+      "id": "PR_kwDOKiCa6c5tepf8",
+      "title": "CDDL nits",
+      "url": "https://github.com/lake-wg/authz/pull/34",
+      "state": "OPEN",
+      "author": "cabo",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-04-23T13:43:32Z",
+      "updatedAt": "2024-04-23T14:45:55Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
+      "headRepository": "cabo/lake-authz",
+      "headRefName": "cddl-nits",
+      "headRefOid": "8840d2fde619cb0fa157cf9b19095cc579856ba6",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "cabo",
+          "authorAssociation": "NONE",
+          "body": "There also is the weird construct COSE_Encrypt0.ciphertext -- this is a bstr, no?\r\n(Or do you allow null as well?)",
+          "createdAt": "2024-04-23T13:45:16Z",
+          "updatedAt": "2024-04-23T14:45:55Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 36,
+      "id": "PR_kwDOKiCa6c5tlOsh",
+      "title": "Using EDHOC reverse message flow",
+      "url": "https://github.com/lake-wg/authz/pull/36",
+      "state": "OPEN",
+      "author": "gselander",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "For discussion. \r\n\r\nInstead of sending message_1, U sends a trigger over multicast/broadcast which leads to V sending message_1 to U. This allows a discovery process where EAD_1 could contain an EAD item specified in lake-authz, allowing advertisement of the use of the authz protocol, or certain deployment of authz, independent of underlying layer. This allows U to detect gateways supporting the authz protocol ,or certain deployment, and provide such information to W using the \"hints\" and allow an effficient deployment.\r\n\r\nEDHOC messages then follow with EAD_x having the content of EAD_(x-1) of the forward flow. \r\n\r\nNote that ID_CRED_R, sent in message_2, can now be empty because V will now run VREQ/VRES with W and in this case CRED_U can be returned without changing the basic identity protection assumption of EDHOC.",
+      "createdAt": "2024-04-24T09:58:09Z",
+      "updatedAt": "2024-04-24T09:58:09Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
+      "headRepository": "lake-wg/authz",
+      "headRefName": "reverse-flow",
+      "headRefOid": "2c11ba3022d889115218ef06e48074fa6c76961c",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 37,
+      "id": "PR_kwDOKiCa6c5tnUPB",
+      "title": "Read-through updates",
+      "url": "https://github.com/lake-wg/authz/pull/37",
+      "state": "OPEN",
+      "author": "gselander",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I did a read through and found some bits and pieces. Please review.",
+      "createdAt": "2024-04-24T14:56:47Z",
+      "updatedAt": "2024-04-24T14:56:47Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
+      "headRepository": "lake-wg/authz",
+      "headRefName": "read-through",
+      "headRefOid": "f1dda65f1e9dfc0f125a6f583168d47854b7e100",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
       "reviews": []
     }
   ]
