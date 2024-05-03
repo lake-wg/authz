@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 19 October 2024                                      M. Vučinić
+Expires: 4 November 2024                                      M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                           17 April 2024
+                                                              3 May 2024
 
 
    Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE
@@ -57,7 +57,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 October 2024.
+   This Internet-Draft will expire on 4 November 2024.
 
 Copyright Notice
 
@@ -77,7 +77,7 @@ Table of Contents
 
    1.  Introduction
      1.1.  Terminology
-   2.  Problem Description
+   2.  Protocol Outline
    3.  Assumptions
      3.1.  Device (U)
      3.2.  Domain Authenticator (V)
@@ -171,16 +171,16 @@ Table of Contents
    [RFC8610], and EDHOC [RFC9528].  Appendix C.1 of [RFC9528] contains
    some basic info about CBOR.
 
-2.  Problem Description
+2.  Protocol Outline
 
-   The (potentially constrained) device (U) wants to enroll into a
-   domain over a constrained link.  The device authenticates and
-   enforces authorization of the (non-constrained) domain authenticator
-   (V) with the help of a voucher conveying authorization information.
-   The voucher has a similar role as in [RFC8366] but should be
-   considerably more compact.  The domain authenticator, in turn,
-   authenticates the device and authorizes its enrollment into the
-   domain.
+   The goal of this protocol is to enable a (potentially constrained)
+   device (U) to enroll into a domain over a constrained link.  The
+   device authenticates and enforces authorization of the (non-
+   constrained) domain authenticator (V) with the help of a voucher
+   conveying authorization information.  The voucher has a similar role
+   as in [RFC8366] but should be considerably more compact.  The domain
+   authenticator, in turn, authenticates the device and authorizes its
+   enrollment into the domain.
 
    The procedure is assisted by a (non-constrained) enrollment server
    (W) located in a non-constrained network behind the domain
