@@ -135,9 +135,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 Readers are expected to have an understanding of CBOR {{RFC8949}}, CDDL {{RFC8610}}, and EDHOC {{RFC9528}}.
 Appendix C.1 of {{RFC9528}} contains some basic info about CBOR.
 
-# Problem Description {#prob-desc}
+# Protocol Outline {#outline}
 
-The (potentially constrained) device (U) wants to enroll into a domain over a constrained link.
+The goal of this protocol is to enable a (potentially constrained) device (U) to enroll into a domain over a constrained link.
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator (V) with the help of a voucher conveying authorization information.
 The voucher has a similar role as in {{RFC8366}} but should be considerably more compact.
 The domain authenticator, in turn, authenticates the device and authorizes its enrollment into the domain.
