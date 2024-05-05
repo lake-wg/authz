@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-05-02T01:08:01.574761+00:00",
+  "timestamp": "2024-05-05T01:13:23.366192+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1366,26 +1366,28 @@
     {
       "number": 33,
       "id": "PR_kwDOKiCa6c5s0Z4V",
-      "title": "Rename section Problem Description to Objective",
+      "title": "Rename section Problem Description to Outline",
       "url": "https://github.com/lake-wg/authz/pull/33",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "As per @marco-tiloca-sics's [review](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/) of [Section 2].",
       "createdAt": "2024-04-16T15:21:55Z",
-      "updatedAt": "2024-04-24T08:57:06Z",
+      "updatedAt": "2024-05-03T07:00:33Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "rename-section-problem-to-objective",
       "headRefOid": "c235524c5b14fe10bc8722ac113e558263c990ce",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-05-03T07:00:24Z",
+      "mergedAt": "2024-05-03T07:00:24Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "a899f5cc8c43fbdf74f70831a6faf6e55ec40a34"
+      },
       "comments": [
         {
           "author": "gselander",
@@ -1409,7 +1411,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2024-04-23T13:43:32Z",
-      "updatedAt": "2024-04-23T14:45:55Z",
+      "updatedAt": "2024-05-03T06:51:59Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
@@ -1427,6 +1429,13 @@
           "body": "There also is the weird construct COSE_Encrypt0.ciphertext -- this is a bstr, no?\r\n(Or do you allow null as well?)",
           "createdAt": "2024-04-23T13:45:16Z",
           "updatedAt": "2024-04-23T14:45:55Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thank you @cabo, the contributions look good.\r\n\r\n> There also is the weird construct COSE_Encrypt0.ciphertext -- this is a bstr, no?\r\n\r\nYes it is a bstr, we could update it to have `COSE_Encrypt0.ciphertext` mentioned in the text and `bstr` in the CDDL definition.",
+          "createdAt": "2024-05-03T06:51:58Z",
+          "updatedAt": "2024-05-03T06:51:58Z"
         }
       ],
       "reviews": []
@@ -1443,18 +1452,33 @@
       "labels": [],
       "body": "For discussion. \r\n\r\nInstead of sending message_1, U sends a trigger over multicast/broadcast which leads to V sending message_1 to U. This allows a discovery process where EAD_1 could contain an EAD item specified in lake-authz, allowing advertisement of the use of the authz protocol, or certain deployment of authz, independent of underlying layer. This allows U to detect gateways supporting the authz protocol ,or certain deployment, and provide such information to W using the \"hints\" and allow an effficient deployment.\r\n\r\nEDHOC messages then follow with EAD_x having the content of EAD_(x-1) of the forward flow. \r\n\r\nNote that ID_CRED_R, sent in message_2, can now be empty because V will now run VREQ/VRES with W and in this case CRED_U can be returned without changing the basic identity protection assumption of EDHOC.",
       "createdAt": "2024-04-24T09:58:09Z",
-      "updatedAt": "2024-04-24T09:58:09Z",
+      "updatedAt": "2024-05-04T22:46:39Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
       "headRepository": "lake-wg/authz",
       "headRefName": "reverse-flow",
-      "headRefOid": "2c11ba3022d889115218ef06e48074fa6c76961c",
+      "headRefOid": "f7c4a95ab2560f4bcbcb9f5517efa6edc91b6b7c",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think it is a good idea in that it also may help in the advertisement of lake-authz support.\r\n\r\nMy first thought is about the practicality of the `trigger/broadcast message` and the `reply with payload (message_1)`. Since I have some ongoing work about mapping to lake-authz to link layer technologies, I can add this topic in the discussions there (including the [hackathon side meeting](https://openwsn.atlassian.net/wiki/spaces/LAKE/pages/2390458394/lake-authz+and+link+layer)).\r\n\r\nThus, so far we have the following motivations / use cases for enabling a reverse message flow:\r\n- facilitating advertisement of the lake-authz feature\r\n  - which in turn may work as an opt-in and address privacy issues related to sharing of network identifiers, see issue #27 \r\n- some CoAP-over-GATT deployment scenario brought up by @chrysn in issue #21 ",
+          "createdAt": "2024-05-03T08:35:01Z",
+          "updatedAt": "2024-05-03T08:35:01Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Sounds viable to me if #21 is viable.\r\n\r\nFor the broadcasting aspect, it may also be an option to broadcast a message_1. Sure, the EDHOC machinery may only advance for one selected peer (especially, sending two message_3 may be dangerous, even though I'm not sure why precisely, as long as all G_Y are distinct), but is there any harm done in decrypting (but not verifying) message_2, and then arriving at a binary decision to advance (and commit to the outcome of 5.3.3 step 6) only if ID_CRED_R and EAD_2 contains the right values?",
+          "createdAt": "2024-05-04T22:46:38Z",
+          "updatedAt": "2024-05-04T22:46:38Z"
+        }
+      ],
       "reviews": []
     },
     {
@@ -1469,7 +1493,7 @@
       "labels": [],
       "body": "I did a read through and found some bits and pieces. Please review.",
       "createdAt": "2024-04-24T14:56:47Z",
-      "updatedAt": "2024-04-24T14:56:47Z",
+      "updatedAt": "2024-05-03T07:22:47Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
@@ -1480,8 +1504,57 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thanks, looks good to me.",
+          "createdAt": "2024-05-03T07:22:46Z",
+          "updatedAt": "2024-05-03T07:22:46Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c55cjSz",
+          "commit": {
+            "abbreviatedOid": "f1dda65"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-03T07:17:55Z",
+          "updatedAt": "2024-05-03T07:17:55Z",
+          "comments": [
+            {
+              "originalPosition": 44,
+              "body": "Why remove the text about the Voucher being carried in EAD_2?",
+              "createdAt": "2024-05-03T07:17:55Z",
+              "updatedAt": "2024-05-03T07:17:56Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c55ckAG",
+          "commit": {
+            "abbreviatedOid": "f1dda65"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-03T07:20:07Z",
+          "updatedAt": "2024-05-03T07:20:07Z",
+          "comments": [
+            {
+              "originalPosition": 44,
+              "body": "Nevermind, reading the section `#V_2` it makes sense. W does not know about EAD and EAD_2, only V.",
+              "createdAt": "2024-05-03T07:20:07Z",
+              "updatedAt": "2024-05-03T07:20:07Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
