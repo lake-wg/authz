@@ -442,10 +442,10 @@ The derivation of IV_1 = EDHOC_Expand(PRK, info, length) uses the following inpu
 
 The voucher is an assertion to U that W has authorized V.
 It is encrypted using the EDHOC AEAD algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
-It consists of the 'ciphertext' field of a COSE_Encrypt0 object:
+It consists of the 'ciphertext' field of a COSE_Encrypt0 object, which is a byte string, as defined below.
 
 ~~~~~~~~~~~ cddl
-Voucher = COSE_Encrypt0.ciphertext
+Voucher = bstr
 ~~~~~~~~~~~
 
 Its corresponding plaintext value consists of an opaque field that can be used by W to convey information to U, such as a voucher scope.
