@@ -579,7 +579,8 @@ W verifies and decrypts ENC_U_INFO using the relevant algorithms of the selected
 
 In case OPAQUE_INFO is present, it is made available to the application.
 
-W calculates the hash of message_1 H(message_1), and associates this session identifier to the device identifier ID_U. To avoid processing duplicates, H(message_1) SHALL be unique among session identifiers associated with a given ID_U.
+W calculates the hash of message_1 H(message_1), and associates this session identifier to the device identifier ID_U.
+Note that message_1 contains a unique ephemeral key, therefore H(message_1) is expected to be unique.
 
 If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see {{rest-voucher-request}}.
 
