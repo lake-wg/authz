@@ -135,9 +135,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 Readers are expected to have an understanding of CBOR {{RFC8949}}, CDDL {{RFC8610}}, and EDHOC {{RFC9528}}.
 Appendix C.1 of {{RFC9528}} contains some basic info about CBOR.
 
-# Problem Description {#prob-desc}
+# Protocol Outline {#outline}
 
-The (potentially constrained) device (U) wants to enroll into a domain over a constrained link.
+The goal of this protocol is to enable a (potentially constrained) device (U) to enroll into a domain over a constrained link.
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator (V) with the help of a voucher conveying authorization information.
 The voucher has a similar role as in {{RFC8366}} but should be considerably more compact.
 The domain authenticator, in turn, authenticates the device and authorizes its enrollment into the domain.
@@ -221,7 +221,7 @@ V and W need to establish a secure (confidentiality and integrity protected) con
 
 * V may run EDHOC in the role of initiator with W, using ID_CRED_I = CRED_V. In this case the secure connection between V and W may be based on OSCORE {{RFC8613}}.
 
-Note that both TLS 1.3 and EDHOC may be run between V and W during this setup procedure. For example, W may authenticate to V using TLS 1.3 with server certificates signed by a CA trusted by V, and then V may run EDHOC using CRED_V over the secure TLS connection to W, see {{fig-protocol}}.
+Note that one solution for establishing secure connection and proof-of-possession is to run TLS 1.3 and EDHOC between V and W during the setup procedure. For example, W may authenticate to V using TLS 1.3 with server certificates signed by a CA trusted by V, and then V may run EDHOC using CRED_V over the secure TLS connection to W, see {{fig-protocol}}. In this case OSCORE is not needed since the purpose of EDHOC is only to verify proof-of-possession.
 
 Note also that the secure connection between V and W may be long-lived and reused for multiple voucher requests/responses.
 
@@ -319,9 +319,8 @@ The protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
 
 * SUITES_I includes the cipher suite for EDHOC selected by U, and also defines the algorithms used between U and W (see {{Section 3.6 of RFC9528}}):
 
-    * EDHOC AEAD algorithm: used to encrypt ID_U
-    * EDHOC hash algorithm: used for key derivation and to calculate the voucher
-    * EDHOC MAC length in bytes: length of the voucher
+    * EDHOC AEAD algorithm: used to encrypt ID_U and to generate voucher
+    * EDHOC hash algorithm: used for key derivation
     * EDHOC key exchange algorithm: used to calculate the shared secret between U and W
 
 * EAD_1, EAD_2 are the External Authorization Data message fields of message_1 and message_2, respectively, see {{Section 3.8 of RFC9528}}. This document specifies the EAD items with ead_label = TBD1, see {{iana-ead}}).
@@ -358,13 +357,14 @@ V encapsulates the internal state that it needs to later respond to U, and sends
 This state typically contains addressing information of U (e.g., U's IP address and port number), together with any other implementation-specific parameter needed by V to respond to U.
 At this point, V can drop the EDHOC session that was initiated by U.
 
-V MUST encrypt and integrity protect the encapsulated state using a uniformly-distributed (pseudo-)random key, known only to itself.
+The encapsulated state MUST be protected using a uniformly-distributed (pseudo-)random key, known only to itself and specific for the current EDHOC session to prevent replay attacks of old encapsulated state.
+
 How V serializes and encrypts its internal state is out of scope in this specification.
 For example, V may use CBOR and COSE.
 
 Editor's note: Consider to include an example of serialized internal state.
 
-W sends to V the voucher together with the echoed message_1, as received from U, and V's internal state.
+W sends to V the voucher together with the echoed message_1, as received from U, and V's internal state, see {{voucher_response}}.
 This allows V to act as a simple message relay until it has obtained the authorization from W to enroll U.
 The reception of a successful Voucher Response at V from W implies the authorization for V to enroll U.
 At this point, V can initialize a new EDHOC session with U, based on the message and the state retrieved from the Voucher Response from W.
@@ -449,9 +449,7 @@ Voucher = COSE_Encrypt0.ciphertext
 ~~~~~~~~~~~
 
 Its corresponding plaintext value consists of an opaque field that can be used by W to convey information to U, such as a voucher scope.
-The authentication tag present in the ciphertext is also bound to message_1 and the credential of V.
-
-The external authorization data EAD_2 contains an EAD item with ead_label = TBD1 and ead_value = Voucher, which is computed from the following:
+The authentication tag present in the ciphertext is also bound to message_1 and the credential of V as described below.
 
 * The encryption key K_2 and nonce IV_2 are derived as specified below.
 * 'protected' is a byte string of size 0
@@ -511,7 +509,7 @@ V receives EDHOC message_1 from U and processes it as specified in {{Section 5.2
 
 V receives the voucher response from W as described in {{V-W}}.
 
-V sends EDHOC message_2 to U with the critical EAD item (-TBD1, Voucher) included in EAD_2, where the Voucher is specified in {{U-W}}.
+V sends EDHOC message_2 to U with the critical EAD item (-TBD1, Voucher) included in EAD_2, i.e., ead_label = TBD1 and ead_value = Voucher, as specified in {{voucher}}.
 
 CRED_V is a CWT Claims Set {{RFC8392}} containing the public authentication key of V encoded as a COSE_Key in the 'cnf' claim, see {{Section 3.5.2 of RFC9528}}.
 
@@ -522,7 +520,7 @@ ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map, see {{Sect
 
 U receives EDHOC message_2 from V and processes it as specified in {{Section 5.3.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_2.
 
-If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}. Otherwise, U MUST verify the Voucher by performing the same calculation as in {{voucher}} using H_message_1 and CRED_V received in ID_CRED_R of message_2. If the voucher calculated in this way is not identical to what was received in message_2, then U MUST abort the EDHOC session.
+If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}. Otherwise, U MUST verify the Voucher using H_message_1, CRED_V, and the keys derived as in {{voucher}}. If the verification fails then U MUST abort the EDHOC session.
 
 
 ### Message 3
