@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-05-23T01:10:44.298594+00:00",
+  "timestamp": "2024-05-26T01:16:26.880523+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1134,13 +1134,13 @@
       "labels": [],
       "body": "Addresses issue #19.\r\n\r\nI took a different approach than the one mentioned in #19, and decided to put the error signaling in the RESTful layer:\r\n- I think it makes sense, since a RESTful interface will be always present between V and W\r\n- Successful responses are already encoded as 200 OK, so this is just an extension of that\r\n\r\nI also modified the text in the `Voucher Request -> Processing in W` subsection to clarify where the error handling mechanism is plugged in.\r\n\r\nFinally, I am not sure if I should elaborate more in the construction `If ID_U is known by W`, i.e., define what it means to be \"known\". Perhaps it is enough the way it is?\r\nNote that one reason to differentiate between known and unknown Us is the privacy of radio identifiers of Vs when using hints (v_hints specifically), as discussed in issue #27.",
       "createdAt": "2024-04-03T10:15:06Z",
-      "updatedAt": "2024-04-18T08:53:43Z",
+      "updatedAt": "2024-05-24T09:29:08Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "add-error-vreq-vres",
-      "headRefOid": "bae131b8d8d1ce7c81af174dfe5d3eb13883357d",
+      "headRefOid": "b3cdf17ae5c5ec69b89e7c4a1b2e51baa776a8d0",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -1185,6 +1185,26 @@
               "body": "The original sentence is describe what action to take if message_1 has been received before. It is not clear from the new sentence how to make H(message_1) unique.",
               "createdAt": "2024-04-18T08:53:43Z",
               "updatedAt": "2024-04-18T08:53:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c57wvZ7",
+          "commit": {
+            "abbreviatedOid": "b3cdf17"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-24T09:29:08Z",
+          "updatedAt": "2024-05-24T09:29:08Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "Pushed an update that removes the text about \"processing duplicates\", since that's not the only possible reason for wanting unique session ids per device (this was discussed in a previous meeting).\r\n\r\n#### Regarding your comment\r\n> The original sentence is describe what action to take if message_1 has been received before\r\n\r\nThe answer is that the newly introduced phrase in line 585 (\"If processing fails ...\") serves as a catch all action for any kind of error happening in the above paragraphs.\r\n\r\n> It is not clear from the new sentence how to make H(message_1) unique\r\n\r\nI don't see how the previous version is more clear. I also think that just stating that it should be unique is enough.",
+              "createdAt": "2024-05-24T09:29:08Z",
+              "updatedAt": "2024-05-24T09:29:08Z"
             }
           ]
         }
@@ -1328,7 +1348,7 @@
       "labels": [],
       "body": "As per @marco-tiloca-sics's [review](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/) of [Section 5.4.1] and [Section 5.4.2], and @gselander's comment on PR #28.\r\n\r\nFor now this is on top of PR #28, so to review look only at commit https://github.com/lake-wg/authz/commit/ebcfa62f45d343fcd794a8795e094e17b51e64b3.",
       "createdAt": "2024-04-16T09:52:47Z",
-      "updatedAt": "2024-04-18T08:55:00Z",
+      "updatedAt": "2024-05-24T09:30:50Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290",
@@ -1358,6 +1378,26 @@
               "body": "As in #28",
               "createdAt": "2024-04-18T08:55:00Z",
               "updatedAt": "2024-04-18T08:55:00Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c57wwN6",
+          "commit": {
+            "abbreviatedOid": "ebcfa62"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-24T09:30:50Z",
+          "updatedAt": "2024-05-24T09:30:50Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "Answered [here in 28](https://github.com/lake-wg/authz/pull/28/files#r1613175478)",
+              "createdAt": "2024-05-24T09:30:50Z",
+              "updatedAt": "2024-05-24T09:30:50Z"
             }
           ]
         }
@@ -1411,13 +1451,13 @@
       "labels": [],
       "body": "",
       "createdAt": "2024-04-23T13:43:32Z",
-      "updatedAt": "2024-05-03T06:51:59Z",
+      "updatedAt": "2024-05-24T10:12:43Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
-      "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
+      "baseRefOid": "bed36c25823fb3708aa6ada0cac38ed67b2be824",
       "headRepository": "cabo/lake-authz",
       "headRefName": "cddl-nits",
-      "headRefOid": "8840d2fde619cb0fa157cf9b19095cc579856ba6",
+      "headRefOid": "30455fded599b4824e7299dbc188fc2c8ef6b920",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -1507,24 +1547,26 @@
       "id": "PR_kwDOKiCa6c5tnUPB",
       "title": "Read-through updates",
       "url": "https://github.com/lake-wg/authz/pull/37",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "gselander",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "I did a read through and found some bits and pieces. Please review.",
       "createdAt": "2024-04-24T14:56:47Z",
-      "updatedAt": "2024-05-03T07:22:47Z",
+      "updatedAt": "2024-05-24T08:49:31Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
       "headRepository": "lake-wg/authz",
       "headRefName": "read-through",
       "headRefOid": "f1dda65f1e9dfc0f125a6f583168d47854b7e100",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-05-24T08:49:31Z",
+      "mergedAt": "2024-05-24T08:49:30Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "bed36c25823fb3708aa6ada0cac38ed67b2be824"
+      },
       "comments": [
         {
           "author": "geonnave",
