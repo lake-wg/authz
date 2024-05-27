@@ -213,7 +213,7 @@ U is also provisioned with information about W:
 
 ## Domain Authenticator (V) {#domain-auth}
 
-To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Responder with an authentication credential CRED_V, which is a CWT Claims Set {{RFC8392}} containing a public key of V, see {{V_2}}. This proves to U the possession of the private key corresponding to the public key of CRED_V. CRED_V typically needs to be transported to U in EDHOC (using  ID_CRED_R = CRED_V, see {{Section 3.5.2 of RFC9528}}) since there is no previous relation between U and V.
+To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Responder with an authentication credential CRED_V containing a public key of V, see {{V_2}}. This proves to U the possession of the private key corresponding to the public key of CRED_V. CRED_V typically needs to be transported to U in EDHOC (using  ID_CRED_R = CRED_V, see {{Section 3.5.2 of RFC9528}}) since there is no previous relation between U and V.
 
 V and W need to establish a secure (confidentiality and integrity protected) connection for the Voucher Request/Response protocol. Furthermore, W needs to access the same credential CRED_V that V uses with U, and V needs to prove to W the possession of the private key corresponding to the public key of CRED_V. It is RECOMMENDED that V authenticates to W using the same credential CRED_V as with U.
 
@@ -261,7 +261,7 @@ U                              V                                       W
 |                              +<---  ---  ---  ---  ---  ---  ---  -->|
 |                              |      (e.g., TLS with server cert.)    |
 |                              |                                       |
-|                              |   Proof of possession w.r.t. CRED_V   |
+|                              |   Proof-of-possession w.r.t. CRED_V   |
 |                              +<---  ---  ---  ---  ---  ---  ---  -->|
 |                              |            (e.g., EDHOC)              |
 |                              |                                       |
