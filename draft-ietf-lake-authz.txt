@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 25 November 2024                                     M. Vučinić
+Expires: 7 December 2024                                      M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                             24 May 2024
+                                                             5 June 2024
 
 
    Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE
@@ -57,7 +57,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 November 2024.
+   This Internet-Draft will expire on 7 December 2024.
 
 Copyright Notice
 
@@ -807,12 +807,20 @@ U                              V                                       W
    application.
 
    W calculates the hash of message_1 H(message_1), and associates this
-   session identifier to the device identifier ID_U.  If H(message_1) is
-   not unique among session identifiers associated with this device
-   identifier of U, the EDHOC session SHALL be aborted.
+   session identifier to the device identifier ID_U.  Note that
+   message_1 contains a unique ephemeral key, therefore H(message_1) is
+   expected to be unique.
+
+   If processing fails up until this point, the protocol SHALL be
+   aborted with an error code signaling a generic issue with the
+   request, see Section 5.4.1.
 
    W uses ID_U to look up the associated authorization policies for U
    and enforces them.  This is out of scope for the specification.
+
+   If ID_U is known by W, but authorization fails, the protocol SHALL be
+   aborted with an error code signaling an access control issue, see
+   Section 4.7 and Section 5.4.1.
 
 4.6.2.  Voucher Response
 
@@ -841,6 +849,9 @@ U                              V                                       W
 
    *  opaque_state is the echoed byte string opaque_state from
       Voucher_Request, if present.
+
+   W signals the successful generation of the voucher via a status code
+   in the REST interface, as defined in Section 5.4.1.
 
 4.6.2.2.  Processing in V
 
@@ -899,7 +910,9 @@ U                              V                                       W
 
    *  W generates error_content and transfers it to V via the secure
       connection.  If REJECT_TYPE is 1, then REJECT_INFO is encrypted
-      from W to U using the EDHOC AEAD algorithm.
+      from W to U using the EDHOC AEAD algorithm.  W signals the error
+      via an appropriate status code in the REST interface, as defined
+      in Section 5.4.1.
 
    *  V receives error_content, prepares an EDHOC "Access denied" error,
       and sends it to U.
@@ -1005,6 +1018,21 @@ U                              V                                       W
    In case of successful processing at W, W MUST issue a 200 OK response
    with payload containing the serialized Voucher Response object, as
    specified in Section 4.6.2.
+
+   In case of error, two cases should be considered:
+
+   *  U cannot be identified: this happens either if W fails to process
+      the Voucher Request, or if it succeeds but ID_U is considered
+      unknown to W.  In this case, W MUST reply with a 400 Bad Request.
+
+   *  U is identified but unauthorized: this happens if W is able to
+      process the Voucher Request, and W recognizes ID_U as a known
+      device, but the access policies forbid enrollment.  For example,
+      the policy could enforce enrollment within a delimited time
+      window, via a specific V, etc.  In this case, W MUST reply with a
+      401 Unauthorized code, where the payload is the serialized
+      error_content object.  The latter MAY be used by V to prepare an
+      EDHOC error "Access Denied", see Section 4.7.
 
 5.4.2.  Certificate Request (/certrequest)
 
