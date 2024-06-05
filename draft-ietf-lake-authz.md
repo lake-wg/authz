@@ -176,7 +176,7 @@ The protocol is based on the following pre-existing relations between the device
 
 Each of the three parties can gain protected communication with the other two during the protocol.
 
-V may be able to access credentials over non-nonstrained networks, but U may be limited to constrained networks. Implementations wishing to leverage the zero-touch capabilities of this protocol are expected to support transmission of credentials from V to U by value during the EDHOC exchange, which will impact the message size depending on the type of credential used.
+V may be able to access credentials over non-constrained networks, but U may be limited to constrained networks. Implementations wishing to leverage the zero-touch capabilities of this protocol are expected to support transmission of credentials from V to U by value during the EDHOC exchange, which will impact the message size depending on the type of credential used.
 
 ~~~~~~~~~~~ aasvg
 
@@ -223,7 +223,7 @@ V and W need to establish a secure (confidentiality and integrity protected) con
 
 Note that one solution for establishing secure connection and proof-of-possession is to run TLS 1.3 and EDHOC between V and W during the setup procedure. For example, W may authenticate to V using TLS 1.3 with server certificates signed by a CA trusted by V, and then V may run EDHOC using CRED_V over the secure TLS connection to W, see {{fig-protocol}}. In this case OSCORE is not needed since the purpose of EDHOC is only to verify proof-of-possession.
 
-Note also that the secure connection between V and W may be long lived and reused for multiple voucher requests/responses.
+Note also that the secure connection between V and W may be long-lived and reused for multiple voucher requests/responses.
 
 Other details of proof-of-possession related to CRED_V and transport of CRED_V are out of scope of this document.
 
@@ -340,7 +340,7 @@ The output keying material OKM is derived from PRK using EDHOC_Expand(), which i
 
   where
 
-~~~~~~~~~
+~~~~~~~~~ cddl
 info = (
    info_label : int,
    context : bstr,
@@ -377,15 +377,13 @@ The protocol between U and W is carried between U and V in message_1 and message
 
 The external authorization data EAD_1 contains an EAD item with ead_label = TBD1 and ead_value = Voucher_Info, which is a CBOR byte string:
 
-~~~~~~~~~~~
-Voucher_Info = bstr .cbor Voucher_Info_Seq
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
+Voucher_Info = bstr .cborseq Voucher_Info_Seq
 
-~~~~~~~~~~~
-Voucher_Info_Seq = (
+Voucher_Info_Seq = [ ; used as a CBOR sequence, not array
     LOC_W:      tstr,
     ENC_U_INFO:     bstr
-)
+]
 ~~~~~~~~~~~
 
 where
@@ -400,13 +398,13 @@ It consists of 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) compu
 * 'protected' is a byte string of size 0
 * 'plaintext' and 'external_aad' as below:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 plaintext = (
     ID_U:            bstr,
     ?OPAQUE_INFO:    bstr,
 )
 ~~~~~~~~~~~
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 external_aad = (
     SS:              int,
 )
@@ -444,10 +442,10 @@ The derivation of IV_1 = EDHOC_Expand(PRK, info, length) uses the following inpu
 
 The voucher is an assertion to U that W has authorized V.
 It is encrypted using the EDHOC AEAD algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
-It consists of the 'ciphertext' field of a COSE_Encrypt0 object:
+It consists of the 'ciphertext' field of a COSE_Encrypt0 object, which is a byte string, as defined below.
 
-~~~~~~~~~~~
-Voucher = COSE_Encrypt0.ciphertext
+~~~~~~~~~~~ cddl
+Voucher = bstr
 ~~~~~~~~~~~
 
 Its corresponding plaintext value consists of an opaque field that can be used by W to convey information to U, such as a voucher scope.
@@ -457,14 +455,14 @@ The authentication tag present in the ciphertext is also bound to message_1 and 
 * 'protected' is a byte string of size 0
 * 'plaintext' and 'external_aad' as below:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 plaintext = (
     ?OPAQUE_INFO: bstr
 )
 ~~~~~~~~~~~
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 external_aad = (
-    H(message_1):  bstr,
+    H_message_1:  bstr,
     CRED_V:        bstr,
 )
 ~~~~~~~~~~~
@@ -472,7 +470,7 @@ external_aad = (
 where
 
 * OPAQUE_INFO is an opaque field provided by the application.
-* H(message_1) is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
+* H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 The hash is computed by using the EDHOC hash algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
 * CRED_V is the CWT Claims Set {{RFC8392}} containing the public authentication key of V, see {{V_2}}
 
@@ -496,7 +494,7 @@ This section describes the processing in U and V, which includes the EDHOC proto
 
 #### Processing in U
 
-U composes EDHOC message_1 using authentication method, identifiers, etc. according to an agreed application profile, see {{Section 3.9 of RFC9528}}. The selected cipher suite, in this document denoted SS, applies also to the interaction with W as detailed in {{reuse}}, in particular, with respect to the Diffie Hellman key agreement algorithm used between U and W. As part of the normal EDHOC processing, U generates the ephemeral public key G_X that is reused in the interaction with W, see {{U-W}}.
+U composes EDHOC message_1 using authentication method, identifiers, etc. according to an agreed application profile, see {{Section 3.9 of RFC9528}}. The selected cipher suite, in this document denoted SS, applies also to the interaction with W as detailed in {{reuse}}, in particular, with respect to the Diffie-Hellman key agreement algorithm used between U and W. As part of the normal EDHOC processing, U generates the ephemeral public key G_X that is reused in the interaction with W, see {{U-W}}.
 
 The device sends EDHOC message_1 with EAD item (-TBD1, Voucher_Info) included in EAD_1, where Voucher_Info is specified in {{U-W}}. The negative sign indicates that the EAD item is critical, see {{Section 3.8 of RFC9528}}.
 
@@ -522,7 +520,7 @@ ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map, see {{Sect
 
 U receives EDHOC message_2 from V and processes it as specified in {{Section 5.3.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_2.
 
-If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}. Otherwise, U MUST verify the Voucher using H(message_1), CRED_V, and the keys derived as in {{voucher}}. If the verification fails then U MUST abort the EDHOC session.
+If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}. Otherwise, U MUST verify the Voucher using H_message_1, CRED_V, and the keys derived as in {{voucher}}. If the verification fails then U MUST abort the EDHOC session.
 
 
 ### Message 3
@@ -535,7 +533,7 @@ EDHOC message_3 may be combined with an OSCORE-protected application request, se
 
 #### Processing in V
 
-V performs the normal EDHOC verifications of message_3. V may retrieve CRED_U from a Credential Database, after having learnt ID_CRED_I from U.
+V performs the normal EDHOC verifications of message_3. V may retrieve CRED_U from a Credential Database, after having learned ID_CRED_I from U.
 
 ## Authenticator <-> Enrollment Server (V <-> W) {#V-W}
 
@@ -551,7 +549,7 @@ V and W run the Voucher Request/Response protocol over the secure connection.
 V sends the voucher request to W.
 The Voucher Request SHALL be a CBOR array as defined below:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 Voucher_Request = [
     message_1:      bstr,
     ? opaque_state: bstr
@@ -577,8 +575,8 @@ W verifies and decrypts ENC_U_INFO using the relevant algorithms of the selected
 
 In case OPAQUE_INFO is present, it is made available to the application.
 
-W calculates the hash of message_1 H(message_1), and associates this session identifier to the device identifier ID_U.
-Note that message_1 contains a unique ephemeral key, therefore H(message_1) is expected to be unique.
+W calculates the hash of message_1 H_message_1, and associates this session identifier to the device identifier ID_U.
+Note that message_1 contains a unique ephemeral key, therefore H_message_1 is expected to be unique.
 
 If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see {{rest-voucher-request}}.
 
@@ -594,7 +592,7 @@ W retrieves CRED_V associated with the secure connection with V, and constructs 
 
 W generates the voucher response and sends it to V over the secure connection. The Voucher_Response SHALL be a CBOR array as defined below:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 Voucher_Response = [
     message_1:      bstr,
     Voucher:        bstr,
@@ -636,7 +634,7 @@ This section specifies the new EDHOC error "Access denied", see {{fig-error-code
 Error code TBD3 is used to indicate to the receiver that access control has been applied and the sender has aborted the EDHOC session.
 The ERR_INFO field contains error_content which is a CBOR Sequence consisting of an integer and an optional byte string.
 
-~~~~~~~~~~~ CDDL
+~~~~~~~~~~~ cddl
 error_content = (
   REJECT_TYPE : int,
   ? REJECT_INFO : bstr,
@@ -669,14 +667,14 @@ This protocol uses the EDHOC Error "Access denied" in the following way:
 
 The encryption of REJECT_INFO follows a procedure analogous to the one defined in {{voucher}}, with the following differences:
 
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 plaintext = (
     OPAQUE_INFO:     bstr,
  )
 ~~~~~~~~~~~
-~~~~~~~~~~~
+~~~~~~~~~~~ cddl
 external_aad = (
-    H(message_1):    bstr,
+    H_message_1:    bstr,
  )
 ~~~~~~~~~~~
 
@@ -685,7 +683,7 @@ where
 * OPAQUE_INFO is an opaque field that contains actionable information about the error.
   It may contain, for example, a list of suggested Vs through which U should join instead.
 
-* H(message_1) is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
+* H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 
 # REST Interface at W {#rest_interface}
 
@@ -812,9 +810,9 @@ IANA has added the media types "application/lake-authz-voucherrequest+cbor" to t
 * Type name: application
 * Subtype name: lake-authz-voucherrequest+cbor
 * Required parameters: N/A
-* Optional paramaters: N/A
+* Optional parameters: N/A
 * Encoding considerations: binary (CBOR)
-* Security cosniderations: See {{sec-cons}} of this document.
+* Security considerations: See {{sec-cons}} of this document.
 * Interoperability considerations: N/A
 * Published specification: [[this document]] (this document)
 * Application that use this media type: To be identified
@@ -953,7 +951,9 @@ In case W denies the enrollment of U to a given V, a list of Domain Authenticato
 The hint is optional and is included in the REJECT_INFO item in the Access Denied error message.
 It consists of a list of application-defined identifiers of V (e.g. MAC addresses, SSIDs, PAN IDs, etc.), as defined below:
 
-v_hint = [ 1* bstr ]
+~~~ cddl
+v_hint = [ + bstr ]
+~~~
 
 ## Device Hints
 U may send a Device hint (u_hint) so that it can help W to select which Vs to include in v_hint.
@@ -962,8 +962,9 @@ The hint is an optional field included in the OPAQUE_INFO field within EAD_1, an
 The hint itself is application dependent, and can contain GPS coordinates, application-specific tags, the list of Vs detected by U, or other relevant information.
 It is defined as follows:
 
-u_hint: [ 1* bstr ]
-
+~~~ cddl
+u_hint = [ + bstr ]
+~~~
 
 # Examples
 This section presents high level examples of the protocol execution.
@@ -992,7 +993,7 @@ This example also illustrates how the REJECT_INFO field of the EDHOC error Acces
 
 Premises:
 
-- devices and gateways communicate via Bluetooth Low Energy (BLE), therefore their network identifers are MAC addresses (EUI-48)
+- devices and gateways communicate via Bluetooth Low Energy (BLE), therefore their network identifiers are MAC addresses (EUI-48)
 - device u1 has ID_U = key id = 14
 - there are 3 gateways in the radio range of u1:
   - v1 with MAC address = A2-A1-88-EE-97-75
