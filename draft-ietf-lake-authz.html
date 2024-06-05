@@ -2389,14 +2389,25 @@ A valid URI in case of HTTP thus begins with<a href="#section-5.4-1" class="pilc
               <p id="section-5.4.1-2.3.1">Content-Format (Content-Type) is set to "application/lake-authz-voucherrequest+cbor"<a href="#section-5.4.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-5.4.1-3">In case of successful processing at W, W MUST issue a 200 OK response with payload containing the serialized Voucher Response object, as specified in <a href="#voucher_response" class="auto internal xref">Section 4.6.2</a>.<a href="#section-5.4.1-3" class="pilcrow">¶</a></p>
-<p id="section-5.4.1-4">In case of error, two cases should be considered:<a href="#section-5.4.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.4.1-3">In case of successful processing at W, W MUST issue a response such that:<a href="#section-5.4.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.4.1-5.1">
-              <p id="section-5.4.1-5.1.1">U cannot be identified: this happens either if W fails to process the Voucher Request, or if it succeeds but ID_U is considered unknown to W. In this case, W MUST reply with a 400 Bad Request.<a href="#section-5.4.1-5.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5.4.1-4.1">
+              <p id="section-5.4.1-4.1.1">Status code is 200 OK if using HTTP, or 2.04 Changed if using CoAP<a href="#section-5.4.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-5.4.1-5.2">
-              <p id="section-5.4.1-5.2.1">U is identified but unauthorized: this happens if W is able to process the Voucher Request, and W recognizes ID_U as a known device, but the access policies forbid enrollment. For example, the policy could enforce enrollment within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 401 Unauthorized code, where the payload is the serialized error_content object. The latter MAY be used by V to prepare an EDHOC error "Access Denied", see <a href="#err-handling" class="auto internal xref">Section 4.7</a>.<a href="#section-5.4.1-5.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-5.4.1-4.2">
+              <p id="section-5.4.1-4.2.1">Payload is the serialized Voucher Response object, as specified in <a href="#voucher_response" class="auto internal xref">Section 4.6.2</a><a href="#section-5.4.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.4.1-4.3">
+              <p id="section-5.4.1-4.3.1">Content-Format (Content-Type) is set to "application/lake-authz-voucherresponse+cbor"<a href="#section-5.4.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-5.4.1-5">In case of error, two cases should be considered:<a href="#section-5.4.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.4.1-6.1">
+              <p id="section-5.4.1-6.1.1">U cannot be identified: this happens either if W fails to process the Voucher Request, or if it succeeds but ID_U is considered unknown to W. In this case, W MUST reply with 400 Bad Request if using HTTP, or 4.00 if using CoAP.<a href="#section-5.4.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.4.1-6.2">
+              <p id="section-5.4.1-6.2.1">U is identified but unauthorized: this happens if W is able to process the Voucher Request, and W recognizes ID_U as a known device, but the access policies forbid enrollment. For example, the policy could enforce enrollment within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 403 Forbidden code if using HTTP, or 4.03 if using CoAP; the payload is the serialized error_content object, with Content-Format (Content-Type) set to "application/lake-authz-vouchererror+cbor". The payload MAY be used by V to prepare an EDHOC error "Access Denied", see <a href="#err-handling" class="auto internal xref">Section 4.7</a>.<a href="#section-5.4.1-6.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -2415,8 +2426,22 @@ To request U's authentication credential, V MUST issue a request such that:<a hr
             <li class="normal" id="section-5.4.2-2.2">
               <p id="section-5.4.2-2.2.1">Payload is the serialization of the ID_CRED_I object, as received in EDHOC message_3.<a href="#section-5.4.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
+            <li class="normal" id="section-5.4.2-2.3">
+              <p id="section-5.4.2-2.3.1">Content-Format (Content-Type) is set to "application/lake-authz-certrequest+cbor"<a href="#section-5.4.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
           </ul>
-<p id="section-5.4.2-3">In case of a successful lookup of the authentication credential at W, W MUST issue 200 OK response with payload containing the serialized CRED_U.<a href="#section-5.4.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.4.2-3">In case of a successful lookup of the authentication credential at W, W MUST issue a response such that:<a href="#section-5.4.2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.4.2-4.1">
+              <p id="section-5.4.2-4.1.1">Status code is 200 OK if using HTTP, or 2.04 Changed if using CoAP<a href="#section-5.4.2-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.4.2-4.2">
+              <p id="section-5.4.2-4.2.1">Payload is the serialized CRED_U<a href="#section-5.4.2-4.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.4.2-4.3">
+              <p id="section-5.4.2-4.3.1">Content-Format (Content-Type) is set to "application/lake-authz-certresponse+cbor"<a href="#section-5.4.2-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
 </section>
 </div>
 </section>
