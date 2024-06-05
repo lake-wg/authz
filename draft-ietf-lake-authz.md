@@ -577,9 +577,14 @@ W verifies and decrypts ENC_U_INFO using the relevant algorithms of the selected
 
 In case OPAQUE_INFO is present, it is made available to the application.
 
-W calculates the hash of message_1 H(message_1), and associates this session identifier to the device identifier ID_U. If H(message_1) is not unique among session identifiers associated with this device identifier of U, the EDHOC session SHALL be aborted.
+W calculates the hash of message_1 H(message_1), and associates this session identifier to the device identifier ID_U.
+Note that message_1 contains a unique ephemeral key, therefore H(message_1) is expected to be unique.
+
+If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see {{rest-voucher-request}}.
 
 W uses ID_U to look up the associated authorization policies for U and enforces them. This is out of scope for the specification.
+
+If ID_U is known by W, but authorization fails, the protocol SHALL be aborted with an error code signaling an access control issue, see {{err-handling}} and {{rest-voucher-request}}.
 
 ### Voucher Response {#voucher_response}
 
@@ -602,6 +607,8 @@ where
 * message_1 is a CBOR byte string whose value is the byte serialization of EDHOC message_1 as it was received from V.
 * The Voucher is defined in {{voucher}}.
 * opaque_state is the echoed byte string opaque_state from Voucher_Request, if present.
+
+W signals the successful generation of the voucher via a status code in the REST interface, as defined in {{rest-voucher-request}}.
 
 #### Processing in V
 
@@ -655,6 +662,7 @@ This protocol uses the EDHOC Error "Access denied" in the following way:
 
 * W generates error_content and transfers it to V via the secure connection.
   If REJECT_TYPE is 1, then REJECT_INFO is encrypted from W to U using the EDHOC AEAD algorithm.
+  W signals the error via an appropriate status code in the REST interface, as defined in {{rest-voucher-request}}.
 * V receives error_content, prepares an EDHOC "Access denied" error, and sends it to U.
 * U receives the error message and extracts the error_content.
   If REJECT_TYPE is 1, then U decrypts REJECT_INFO, based on which it may retry to gain access.
@@ -721,7 +729,7 @@ In case of EDHOC and OSCORE:
 
 Each operation specified in the following is indicated by a path-suffix.
 
-### Voucher Request (/voucherrequest)
+### Voucher Request (/voucherrequest) {#rest-voucher-request}
 
 To request a voucher, V MUST issue a request such that:
 
@@ -730,6 +738,11 @@ To request a voucher, V MUST issue a request such that:
 * Content-Format (Content-Type) is set to "application/lake-authz-voucherrequest+cbor"
 
 In case of successful processing at W, W MUST issue a 200 OK response with payload containing the serialized Voucher Response object, as specified in {{voucher_response}}.
+
+In case of error, two cases should be considered:
+
+* U cannot be identified: this happens either if W fails to process the Voucher Request, or if it succeeds but ID_U is considered unknown to W. In this case, W MUST reply with a 400 Bad Request.
+* U is identified but unauthorized: this happens if W is able to process the Voucher Request, and W recognizes ID_U as a known device, but the access policies forbid enrollment. For example, the policy could enforce enrollment within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 401 Unauthorized code, where the payload is the serialized error_content object. The latter MAY be used by V to prepare an EDHOC error "Access Denied", see {{err-handling}}.
 
 ### Certificate Request (/certrequest)
 
