@@ -481,7 +481,7 @@ where
 * OPAQUE_INFO is an opaque field provided by the application.
 * H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 The hash is computed by using the EDHOC hash algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
-* CRED_V is the CWT Claims Set {{RFC8392}} containing the public authentication key of V, see {{V_2}}
+* CRED_V is the credential used by V to authenticate to U and W, see {{V_2}} and {{creds-table}}.
 
 The derivation of K_2 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
 
@@ -520,8 +520,10 @@ V receives the voucher response from W as described in {{V-W}}.
 
 V sends EDHOC message_2 to U with the critical EAD item (-TBD1, Voucher) included in EAD_2, i.e., ead_label = TBD1 and ead_value = Voucher, as specified in {{voucher}}.
 
-CRED_V is a CWT Claims Set {{RFC8392}} containing the public authentication key of V encoded as a COSE_Key in the 'cnf' claim, see {{Section 3.5.2 of RFC9528}}.
+The type of CRED_V may depend on the selected mechanism for the establishment of a secure channel between V and W, See {{creds-table}}.
 
+In case the network between U and V is constrained, it is recommended that CRED_V be a CWT Claims Set (CCS) {{RFC8392}}.
+The CCS contains the public authentication key of V encoded as a COSE_Key in the 'cnf' claim, see {{Section 3.5.2 of RFC9528}}.
 ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map, see {{Section 10.6 of RFC9528}}.
 
 
