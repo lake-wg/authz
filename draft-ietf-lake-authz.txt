@@ -232,7 +232,7 @@ Table of Contents
    Each of the three parties can gain protected communication with the
    other two during the protocol.
 
-   V may be able to access credentials over non-nonstrained networks,
+   V may be able to access credentials over non-constrained networks,
    but U may be limited to constrained networks.  Implementations
    wishing to leverage the zero-touch capabilities of this protocol are
    expected to support transmission of credentials from V to U by value
@@ -319,7 +319,7 @@ Table of Contents
    Figure 3.  In this case OSCORE is not needed since the purpose of
    EDHOC is only to verify proof-of-possession.
 
-   Note also that the secure connection between V and W may be long
+   Note also that the secure connection between V and W may be long-
    lived and reused for multiple voucher requests/responses.
 
    Other details of proof-of-possession related to CRED_V and transport
@@ -534,12 +534,12 @@ U                              V                                       W
    ead_label = TBD1 and ead_value = Voucher_Info, which is a CBOR byte
    string:
 
-   Voucher_Info = bstr .cbor Voucher_Info_Seq
+   Voucher_Info = bstr .cborseq Voucher_Info_Seq
 
-   Voucher_Info_Seq = (
+   Voucher_Info_Seq = [ ; used as a CBOR sequence, not array
        LOC_W:      tstr,
        ENC_U_INFO:     bstr
-   )
+   ]
 
    where
 
@@ -616,9 +616,10 @@ U                              V                                       W
    The voucher is an assertion to U that W has authorized V.  It is
    encrypted using the EDHOC AEAD algorithm of the selected cipher suite
    specified in SUITE_I of EDHOC message_1.  It consists of the
-   'ciphertext' field of a COSE_Encrypt0 object:
+   'ciphertext' field of a COSE_Encrypt0 object, which is a byte string,
+   as defined below.
 
-   Voucher = COSE_Encrypt0.ciphertext
+   Voucher = bstr
 
    Its corresponding plaintext value consists of an opaque field that
    can be used by W to convey information to U, such as a voucher scope.
@@ -637,7 +638,7 @@ U                              V                                       W
    )
 
    external_aad = (
-       H(message_1):  bstr,
+       H_message_1:  bstr,
        CRED_V:        bstr,
    )
 
@@ -645,7 +646,7 @@ U                              V                                       W
 
    *  OPAQUE_INFO is an opaque field provided by the application.
 
-   *  H(message_1) is the hash of EDHOC message_1, calculated from the
+   *  H_message_1 is the hash of EDHOC message_1, calculated from the
       associated voucher request, see Section 4.6.1.  The hash is
       computed by using the EDHOC hash algorithm of the selected cipher
       suite specified in SUITE_I of EDHOC message_1.
@@ -685,7 +686,7 @@ U                              V                                       W
    etc. according to an agreed application profile, see Section 3.9 of
    [RFC9528].  The selected cipher suite, in this document denoted SS,
    applies also to the interaction with W as detailed in Section 4.2, in
-   particular, with respect to the Diffie Hellman key agreement
+   particular, with respect to the Diffie-Hellman key agreement
    algorithm used between U and W.  As part of the normal EDHOC
    processing, U generates the ephemeral public key G_X that is reused
    in the interaction with W, see Section 4.4.
@@ -732,7 +733,7 @@ U                              V                                       W
    If U does not recognize the EAD item or the EAD item contains
    information that U cannot process, then U MUST abort the EDHOC
    session, see Section 3.8 of [RFC9528].  Otherwise, U MUST verify the
-   Voucher using H(message_1), CRED_V, and the keys derived as in
+   Voucher using H_message_1, CRED_V, and the keys derived as in
    Section 4.4.2.  If the verification fails then U MUST abort the EDHOC
    session.
 
@@ -748,7 +749,7 @@ U                              V                                       W
 4.5.3.2.  Processing in V
 
    V performs the normal EDHOC verifications of message_3.  V may
-   retrieve CRED_U from a Credential Database, after having learnt
+   retrieve CRED_U from a Credential Database, after having learned
    ID_CRED_I from U.
 
 4.6.  Authenticator <-> Enrollment Server (V <-> W)
@@ -806,9 +807,9 @@ U                              V                                       W
    In case OPAQUE_INFO is present, it is made available to the
    application.
 
-   W calculates the hash of message_1 H(message_1), and associates this
+   W calculates the hash of message_1 H_message_1, and associates this
    session identifier to the device identifier ID_U.  Note that
-   message_1 contains a unique ephemeral key, therefore H(message_1) is
+   message_1 contains a unique ephemeral key, therefore H_message_1 is
    expected to be unique.
 
    If processing fails up until this point, the protocol SHALL be
@@ -929,7 +930,7 @@ U                              V                                       W
     )
 
    external_aad = (
-       H(message_1):    bstr,
+       H_message_1:    bstr,
     )
 
    where
@@ -938,7 +939,7 @@ U                              V                                       W
       information about the error.  It may contain, for example, a list
       of suggested Vs through which U should join instead.
 
-   *  H(message_1) is the hash of EDHOC message_1, calculated from the
+   *  H_message_1 is the hash of EDHOC message_1, calculated from the
       associated voucher request, see Section 4.6.1.
 
 5.  REST Interface at W
@@ -1158,11 +1159,11 @@ U                              V                                       W
 
    *  Required parameters: N/A
 
-   *  Optional paramaters: N/A
+   *  Optional parameters: N/A
 
    *  Encoding considerations: binary (CBOR)
 
-   *  Security cosniderations: See Section 6 of this document.
+   *  Security considerations: See Section 6 of this document.
 
    *  Interoperability considerations: N/A
 
@@ -1491,7 +1492,7 @@ B.1.  Domain Authenticator hints
    identifiers of V (e.g.  MAC addresses, SSIDs, PAN IDs, etc.), as
    defined below:
 
-   v_hint = [ 1* bstr ]
+   v_hint = [ + bstr ]
 
 B.2.  Device Hints
 
@@ -1503,7 +1504,7 @@ B.2.  Device Hints
    GPS coordinates, application-specific tags, the list of Vs detected
    by U, or other relevant information.  It is defined as follows:
 
-   u_hint: [ 1* bstr ]
+   u_hint = [ + bstr ]
 
 Appendix C.  Examples
 
@@ -1552,7 +1553,7 @@ C.2.  Wrong gateway
    Premises:
 
    *  devices and gateways communicate via Bluetooth Low Energy (BLE),
-      therefore their network identifers are MAC addresses (EUI-48)
+      therefore their network identifiers are MAC addresses (EUI-48)
 
    *  device u1 has ID_U = key id = 14
 
