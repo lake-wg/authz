@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-04T01:13:02.070237+00:00",
+  "timestamp": "2024-06-06T01:12:35.987714+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -554,7 +554,7 @@
       "url": "https://github.com/lake-wg/authz/issues/35",
       "state": "OPEN",
       "author": "cabo",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "In the IANA registry, there will not be a link that could be used in \"See \"Authors' Addresses\" section\".\r\nPlease do fill in those fields.",
@@ -1127,24 +1127,26 @@
       "id": "PR_kwDOKiCa6c5ri3no",
       "title": "Explain error handling in the VREQ/VRES protocol leg",
       "url": "https://github.com/lake-wg/authz/pull/28",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Addresses issue #19.\r\n\r\nI took a different approach than the one mentioned in #19, and decided to put the error signaling in the RESTful layer:\r\n- I think it makes sense, since a RESTful interface will be always present between V and W\r\n- Successful responses are already encoded as 200 OK, so this is just an extension of that\r\n\r\nI also modified the text in the `Voucher Request -> Processing in W` subsection to clarify where the error handling mechanism is plugged in.\r\n\r\nFinally, I am not sure if I should elaborate more in the construction `If ID_U is known by W`, i.e., define what it means to be \"known\". Perhaps it is enough the way it is?\r\nNote that one reason to differentiate between known and unknown Us is the privacy of radio identifiers of Vs when using hints (v_hints specifically), as discussed in issue #27.",
       "createdAt": "2024-04-03T10:15:06Z",
-      "updatedAt": "2024-05-24T09:29:08Z",
+      "updatedAt": "2024-06-05T10:31:30Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
-      "baseRefOid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290",
+      "baseRefOid": "bed36c25823fb3708aa6ada0cac38ed67b2be824",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "add-error-vreq-vres",
-      "headRefOid": "b3cdf17ae5c5ec69b89e7c4a1b2e51baa776a8d0",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "2eb46480fdd95b5a735eff1b45be5759ba7ef66c",
+      "closedAt": "2024-06-05T10:27:41Z",
+      "mergedAt": "2024-06-05T10:27:41Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "41293193800a42c8fb7906d095c04dedf0b4b949"
+      },
       "comments": [
         {
           "author": "geonnave",
@@ -1205,6 +1207,26 @@
               "body": "Pushed an update that removes the text about \"processing duplicates\", since that's not the only possible reason for wanting unique session ids per device (this was discussed in a previous meeting).\r\n\r\n#### Regarding your comment\r\n> The original sentence is describe what action to take if message_1 has been received before\r\n\r\nThe answer is that the newly introduced phrase in line 585 (\"If processing fails ...\") serves as a catch all action for any kind of error happening in the above paragraphs.\r\n\r\n> It is not clear from the new sentence how to make H(message_1) unique\r\n\r\nI don't see how the previous version is more clear. I also think that just stating that it should be unique is enough.",
               "createdAt": "2024-05-24T09:29:08Z",
               "updatedAt": "2024-05-24T09:29:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c59F-qa",
+          "commit": {
+            "abbreviatedOid": "2eb4648"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-05T10:27:03Z",
+          "updatedAt": "2024-06-05T10:27:04Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "Pushed the solution proposed by @malishav. (now it doesn't use the SHALL in an incorrect way)",
+              "createdAt": "2024-06-05T10:27:04Z",
+              "updatedAt": "2024-06-05T10:27:04Z"
             }
           ]
         }
@@ -1341,24 +1363,26 @@
       "id": "PR_kwDOKiCa6c5sx-jh",
       "title": "Specify missing CoAP status codes and Content-Format",
       "url": "https://github.com/lake-wg/authz/pull/32",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "As per @marco-tiloca-sics's [review](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/) of [Section 5.4.1] and [Section 5.4.2], and @gselander's comment on PR #28.\r\n\r\nFor now this is on top of PR #28, so to review look only at commit https://github.com/lake-wg/authz/commit/ebcfa62f45d343fcd794a8795e094e17b51e64b3.",
       "createdAt": "2024-04-16T09:52:47Z",
-      "updatedAt": "2024-05-24T09:30:50Z",
+      "updatedAt": "2024-06-05T10:31:32Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
-      "baseRefOid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290",
+      "baseRefOid": "41293193800a42c8fb7906d095c04dedf0b4b949",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "http-and-coap-params-v-to-w",
-      "headRefOid": "ebcfa62f45d343fcd794a8795e094e17b51e64b3",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "0601e86b525eb459979b266266f7b7a7fb55c794",
+      "closedAt": "2024-06-05T10:31:25Z",
+      "mergedAt": "2024-06-05T10:31:25Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "d864161ee1bcd7410f02f3704b1457b86db60e30"
+      },
       "comments": [],
       "reviews": [
         {
@@ -1444,28 +1468,30 @@
       "id": "PR_kwDOKiCa6c5tepf8",
       "title": "CDDL nits",
       "url": "https://github.com/lake-wg/authz/pull/34",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "cabo",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2024-04-23T13:43:32Z",
-      "updatedAt": "2024-05-24T10:12:43Z",
+      "updatedAt": "2024-06-05T12:07:35Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
-      "baseRefOid": "bed36c25823fb3708aa6ada0cac38ed67b2be824",
+      "baseRefOid": "d864161ee1bcd7410f02f3704b1457b86db60e30",
       "headRepository": "cabo/lake-authz",
       "headRefName": "cddl-nits",
-      "headRefOid": "30455fded599b4824e7299dbc188fc2c8ef6b920",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "0400d838ccd6d7e8e7620d3528cfa283c53f1c9d",
+      "closedAt": "2024-06-05T12:07:35Z",
+      "mergedAt": "2024-06-05T12:07:35Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "b5dac6c38cadfdb3b5ca5c70e095c4f4e912328b"
+      },
       "comments": [
         {
           "author": "cabo",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "There also is the weird construct COSE_Encrypt0.ciphertext -- this is a bstr, no?\r\n(Or do you allow null as well?)",
           "createdAt": "2024-04-23T13:45:16Z",
           "updatedAt": "2024-04-23T14:45:55Z"
@@ -1492,7 +1518,7 @@
       "labels": [],
       "body": "For discussion. \r\n\r\nInstead of sending message_1, U sends a trigger over multicast/broadcast which leads to V sending message_1 to U. This allows a discovery process where EAD_1 could contain an EAD item specified in lake-authz, allowing advertisement of the use of the authz protocol, or certain deployment of authz, independent of underlying layer. This allows U to detect gateways supporting the authz protocol ,or certain deployment, and provide such information to W using the \"hints\" and allow an effficient deployment.\r\n\r\nEDHOC messages then follow with EAD_x having the content of EAD_(x-1) of the forward flow. \r\n\r\nNote that ID_CRED_R, sent in message_2, can now be empty because V will now run VREQ/VRES with W and in this case CRED_U can be returned without changing the basic identity protection assumption of EDHOC.",
       "createdAt": "2024-04-24T09:58:09Z",
-      "updatedAt": "2024-05-08T08:52:50Z",
+      "updatedAt": "2024-06-05T09:24:52Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
@@ -1538,6 +1564,20 @@
           "body": "We are discussing two different kinds of role reversal, change of EDHOC roles, or change of CoAP roles. This gives 4 cases:\r\n\r\n00. (00) No reversal. U = I = CoAP client, V = R = CoAP server.\r\n\r\n01. (01) EDHOC reverse message flow, as in A.2.2 of RFC 9528. In this case the CoAP roles are reversed so U = I = CoAP server and V = R = CoAP client, and a trigger message is included. This was the intent with this PR.\r\n\r\n10. (10) Reversing EDHOC roles in the lake-authz architecture. In this case V = I = CoAP client, U = R = CoAP server. \r\n\r\n11. (11) Reversal in cases 1 and 2 combined, i.e. U = R = CoAP client sends a CoAP request trigger message to V = I = CoAP server, which responds with message_1 etc. \r\n\r\nBroadcast/multicast/etc. of trigger seems useful at least in case 1, as discussed above, and does not seem harmful in case 3. \r\n\r\nHowever, broadcast of message_1 may be an issue. It may be tempting for applications to use multiple sessions resulting from different endpoints responding to the same message_1. The security analyses made for EDHOC may not apply if G_X is reused. Moreover, the same connection identifier C_I intended to be used by the Initiator to distinguish between sessions is now used by the Initiator in multiple sessions (which also means special care needed for OSCORE sessions for which different Sender/Recipient Identifiers are required).\r\n\r\nCan we restrict multicast to the trigger message, or what functionality / optimization would be lost if we do?\r\n\r\n",
           "createdAt": "2024-05-07T13:24:54Z",
           "updatedAt": "2024-05-08T08:52:50Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "In a design meeting, we discussed a fifth scenario:\r\n\r\n4. (100) No reversal, but with advertisement (e.g. via network beacons).\r\n\r\nHere is what I envision in this scenario:\r\n\r\n---\r\n\r\n#### Advertisement of lake-authz capability\r\nV may broadcast support for lake-authz using some network advertisement mechanism provided by the lower layer, e.g., link layer beacons.\r\nIf used, the advertisement may contain the following information:\r\n1. V supports lake-authz as a protocol. This can be indicated by the presence of an `authz-protocol` information element of type int and value TBD1.\r\n2. V is part of a particular instance/system implementing lake-authz (analogy: eduroam is an instance of EAP). This can be indicated by an `authz-instance` information element of type bstr whose value is specified by the application.\r\n\r\nThe exact formatting of the `authz-protocol` and `authz-instance` values is out of scope of this specification, as it depends on how each lower layer formats its advertisement packets.\r\n\r\nWhen U receives an advertisement containing either of these fields, this information should be made available to the application, which may use it to prioritize the selection of a suitable V.",
+          "createdAt": "2024-06-05T09:08:28Z",
+          "updatedAt": "2024-06-05T09:08:28Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> However, broadcast of message_1 may be an issue\r\n\r\nThe \"using X multiple times\" aspect is why we should stop here. If one of the security teams could re-do their analysis assuming X reuse (with a check that it's only ever used with different Y), we can resume this, and then we can still fix this (because the direction where C_I is relevant has CoAP request-response binding, and then if C_I is relevant at the OSCORE level, the OSCORE identifiers can be changed in a combined CoAP/message 3 \u2013 but only if the X reuse holds).\r\n\r\nBroadcast on the network layer can still be useful without \"multicast EDHOC\", but would be more of an anycast use \u2013 if more than one device responds, that response would be rejected, and the next device waits for the next multicast that has a new G_X.\r\n\r\n> advertisements\r\n\r\nThe way I'm modeling those advertisements in CoAP-over-GATT is that they are a multicast requests in the CoAP sense. That way, they fall directly into the (11) flow and don't need to be regarded as out-of-band communication. That may or may not work for the link layers you have in mind.",
+          "createdAt": "2024-06-05T09:24:51Z",
+          "updatedAt": "2024-06-05T09:24:51Z"
         }
       ],
       "reviews": []
@@ -1631,18 +1671,26 @@
       "labels": [],
       "body": "As of now, this is mostly intended as a place for discussion.",
       "createdAt": "2024-05-27T14:43:12Z",
-      "updatedAt": "2024-05-27T15:18:03Z",
+      "updatedAt": "2024-06-05T12:56:00Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
-      "baseRefOid": "bed36c25823fb3708aa6ada0cac38ed67b2be824",
+      "baseRefOid": "b5dac6c38cadfdb3b5ca5c70e095c4f4e912328b",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "type-of-cred-v",
-      "headRefOid": "0cac854fb87d649dbe486084dbdaf470fdb4815b",
+      "headRefOid": "362f00eb8bb694ca47719052c3399bbd909a8d68",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This is now ready for review.\r\n\r\nThe two main changes are:\r\n- generalize CRED_V over the text (so that it is not restricted to being a CCS)\r\n- improve the description of the different ways V and W can establish a secure channel, and the implications on the type of CRED_V and EDHOC method used by V (see `creds-table`).",
+          "createdAt": "2024-06-05T12:55:58Z",
+          "updatedAt": "2024-06-05T12:55:58Z"
+        }
+      ],
       "reviews": []
     }
   ]
