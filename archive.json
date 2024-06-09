@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-06T01:12:35.987714+00:00",
+  "timestamp": "2024-06-09T01:19:14.980121+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1662,7 +1662,7 @@
     {
       "number": 38,
       "id": "PR_kwDOKiCa6c5wrEB8",
-      "title": "WIP: Credentials and clarifications",
+      "title": "Credentials and clarifications",
       "url": "https://github.com/lake-wg/authz/pull/38",
       "state": "OPEN",
       "author": "geonnave",
@@ -1671,7 +1671,7 @@
       "labels": [],
       "body": "As of now, this is mostly intended as a place for discussion.",
       "createdAt": "2024-05-27T14:43:12Z",
-      "updatedAt": "2024-06-05T12:56:00Z",
+      "updatedAt": "2024-06-07T07:29:57Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b5dac6c38cadfdb3b5ca5c70e095c4f4e912328b",
