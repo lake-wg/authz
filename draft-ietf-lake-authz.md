@@ -219,18 +219,16 @@ V and W need to establish a secure (confidentiality and integrity protected) con
 Furthermore, W needs to access the same credential CRED_V that V uses with U (to compute the Voucher), and V needs to prove to W the possession of the private key corresponding to the public key of CRED_V.
 It is RECOMMENDED that V authenticates to W using the same credential CRED_V as with U.
 
-The secure channel between V and W may be protected using TLS, EDHOC, or a combination of both.
-The choice of protocols affects which type of credential and methods should be used by V.
-V and W SHALL protect the Voucher Request/Response protocol using one of the options in {{creds-table}} below.
+Note that the choice of protocols may affect which type of credential and methods should be used by V.
+For example, in case V and W select TLS for the secure channel and PoP, then CRED_V is a X.509 certificate, and the EDHOC method used by V is signature-based.
+Some of the possible combinations of protocols to secure the connection between V and W are listed in {{creds-table}} below.
 
 | Secure channel between V and W | Proof-of-Possession from V to W | Type of CRED_V | EDHOC method used by V |
 |--|--|--|--|
 | [D]TLS 1.3 with mutual authentication, where V is the client and W is the server. | Provided by [D]TLS. | Restricted to types that are supported by both [D]TLS and EDHOC, e.g., X.509 certificates. | V MUST authenticate using a signature. |
 | [D]TLS 1.3 with client authentication, where V is the client and W is the server. | Run an EDHOC session on top of the TLS-protected channel. | Any type supported by EDHOC, e.g., X.509, C509, CWT, or CCS. | Any method may be used. |
 | EDHOC and OSCORE, where V is the initiator and W is the responder.    | Already provided by EDHOC during the setup of the secure channel. | Any type supported by EDHOC. | Any method may be used. |
-{: #creds-table title="Securing the connection between V and W" cols="l l l"}
-
-Note that one solution for establishing secure connection and proof-of-possession is to run TLS 1.3 and EDHOC between V and W during the setup procedure. For example, W may authenticate to V using TLS 1.3 with server certificates signed by a CA trusted by V, and then V may run EDHOC using CRED_V over the secure TLS connection to W, see {{fig-protocol}}. In this case OSCORE is not needed since the purpose of EDHOC is only to verify proof-of-possession.
+{: #creds-table title="Securing the connection between V and W." cols="l l l"}
 
 Note also that the secure connection between V and W may be long-lived and reused for multiple voucher requests/responses.
 
