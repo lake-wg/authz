@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-11T01:14:01.492280+00:00",
+  "timestamp": "2024-06-13T01:13:23.824146+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1671,13 +1671,13 @@
       "labels": [],
       "body": "As of now, this is mostly intended as a place for discussion.",
       "createdAt": "2024-05-27T14:43:12Z",
-      "updatedAt": "2024-06-07T07:29:57Z",
+      "updatedAt": "2024-06-12T15:01:48Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b5dac6c38cadfdb3b5ca5c70e095c4f4e912328b",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "type-of-cred-v",
-      "headRefOid": "362f00eb8bb694ca47719052c3399bbd909a8d68",
+      "headRefOid": "9b7bc73fb0ae92f950b5686c638f86c546b7b9e7",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
