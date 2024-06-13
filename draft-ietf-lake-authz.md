@@ -228,7 +228,7 @@ Some of the possible combinations of protocols to secure the connection between 
 | [D]TLS 1.3 with mutual authentication, where V is the client and W is the server. | Provided by [D]TLS. | Restricted to types that are supported by both [D]TLS and EDHOC, e.g., X.509 certificates. | V MUST authenticate using a signature. |
 | [D]TLS 1.3 with client authentication, where V is the client and W is the server. | Run an EDHOC session on top of the TLS-protected channel. | Any type supported by EDHOC, e.g., X.509, C509, CWT, or CCS. | Any method may be used. |
 | EDHOC and OSCORE, where V is the initiator and W is the responder.    | Already provided by EDHOC during the setup of the secure channel. | Any type supported by EDHOC. | Any method may be used. |
-{: #creds-table title="Securing the connection between V and W." cols="l l l"}
+{: #creds-table title="Examples of how to secure the connection between V and W." cols="l l l"}
 
 Note also that the secure connection between V and W may be long-lived and reused for multiple voucher requests/responses.
 
