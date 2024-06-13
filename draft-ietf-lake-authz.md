@@ -213,15 +213,22 @@ U is also provisioned with information about W:
 
 ## Domain Authenticator (V) {#domain-auth}
 
-To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Responder with an authentication credential CRED_V, which is a CWT Claims Set {{RFC8392}} containing a public key of V, see {{V_2}}. This proves to U the possession of the private key corresponding to the public key of CRED_V. CRED_V typically needs to be transported to U in EDHOC (using  ID_CRED_R = CRED_V, see {{Section 3.5.2 of RFC9528}}) since there is no previous relation between U and V.
+To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Responder with an authentication credential CRED_V containing a public key of V, see {{V_2}}. This proves to U the possession of the private key corresponding to the public key of CRED_V. CRED_V typically needs to be transported to U in EDHOC (using  ID_CRED_R = CRED_V, see {{Section 3.5.2 of RFC9528}}) since there is no previous relation between U and V.
 
-V and W need to establish a secure (confidentiality and integrity protected) connection for the Voucher Request/Response protocol. Furthermore, W needs to access the same credential CRED_V that V uses with U, and V needs to prove to W the possession of the private key corresponding to the public key of CRED_V. It is RECOMMENDED that V authenticates to W using the same credential CRED_V as with U.
+V and W need to establish a secure (confidentiality and integrity protected) connection for the Voucher Request/Response protocol.
+Furthermore, W needs to access the same credential CRED_V that V uses with U (to compute the Voucher), and V needs to prove to W the possession of the private key corresponding to the public key of CRED_V.
+It is RECOMMENDED that V authenticates to W using the same credential CRED_V as with U.
 
-* V and W may protect the Voucher Request/Response protocol using TLS 1.3 with client authentication {{RFC8446}} if CRED_V is an X.509 certificate of a signature public key. However, note that CRED_V may not be a valid credential to use with TLS 1.3, e.g., when U and V run EDHOC with method 1 or 3, where the public key of CRED_V is a static Diffie-Hellman key.
+Note that the choice of protocols may affect which type of credential and methods should be used by V.
+For example, in case V and W select TLS for the secure channel and PoP, then CRED_V is a X.509 certificate, and the EDHOC method used by V is signature-based.
+Some of the possible combinations of protocols to secure the connection between V and W are listed in {{creds-table}} below.
 
-* V may run EDHOC in the role of initiator with W, using ID_CRED_I = CRED_V. In this case the secure connection between V and W may be based on OSCORE {{RFC8613}}.
-
-Note that one solution for establishing secure connection and proof-of-possession is to run TLS 1.3 and EDHOC between V and W during the setup procedure. For example, W may authenticate to V using TLS 1.3 with server certificates signed by a CA trusted by V, and then V may run EDHOC using CRED_V over the secure TLS connection to W, see {{fig-protocol}}. In this case OSCORE is not needed since the purpose of EDHOC is only to verify proof-of-possession.
+| Secure channel between V and W | Proof-of-Possession from V to W | Type of CRED_V | EDHOC method used by V |
+|--|--|--|--|
+| [D]TLS 1.3 with mutual authentication, where V is the client and W is the server. | Provided by [D]TLS. | Restricted to types that are supported by both [D]TLS and EDHOC, e.g., X.509 certificates. | V MUST authenticate using a signature. |
+| [D]TLS 1.3 with client authentication, where V is the client and W is the server. | Run an EDHOC session on top of the TLS-protected channel. | Any type supported by EDHOC, e.g., X.509, C509, CWT, or CCS. | Any method may be used. |
+| EDHOC and OSCORE, where V is the initiator and W is the responder.    | Already provided by EDHOC during the setup of the secure channel. | Any type supported by EDHOC. | Any method may be used. |
+{: #creds-table title="Examples of how to secure the connection between V and W." cols="l l l"}
 
 Note also that the secure connection between V and W may be long-lived and reused for multiple voucher requests/responses.
 
@@ -261,7 +268,7 @@ U                              V                                       W
 |                              +<---  ---  ---  ---  ---  ---  ---  -->|
 |                              |      (e.g., TLS with server cert.)    |
 |                              |                                       |
-|                              |   Proof of possession w.r.t. CRED_V   |
+|                              |   Proof-of-possession w.r.t. CRED_V   |
 |                              +<---  ---  ---  ---  ---  ---  ---  -->|
 |                              |            (e.g., EDHOC)              |
 |                              |                                       |
@@ -472,7 +479,7 @@ where
 * OPAQUE_INFO is an opaque field provided by the application.
 * H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 The hash is computed by using the EDHOC hash algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
-* CRED_V is the CWT Claims Set {{RFC8392}} containing the public authentication key of V, see {{V_2}}
+* CRED_V is the credential used by V to authenticate to U and W, see {{V_2}} and {{creds-table}}.
 
 The derivation of K_2 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see {{reuse}}):
 
@@ -511,8 +518,10 @@ V receives the voucher response from W as described in {{V-W}}.
 
 V sends EDHOC message_2 to U with the critical EAD item (-TBD1, Voucher) included in EAD_2, i.e., ead_label = TBD1 and ead_value = Voucher, as specified in {{voucher}}.
 
-CRED_V is a CWT Claims Set {{RFC8392}} containing the public authentication key of V encoded as a COSE_Key in the 'cnf' claim, see {{Section 3.5.2 of RFC9528}}.
+The type of CRED_V may depend on the selected mechanism for the establishment of a secure channel between V and W, See {{creds-table}}.
 
+In case the network between U and V is constrained, it is recommended that CRED_V be a CWT Claims Set (CCS) {{RFC8392}}.
+The CCS contains the public authentication key of V encoded as a COSE_Key in the 'cnf' claim, see {{Section 3.5.2 of RFC9528}}.
 ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map, see {{Section 10.6 of RFC9528}}.
 
 
