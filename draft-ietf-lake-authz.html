@@ -18,17 +18,17 @@
 <meta content="draft-ietf-lake-authz-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.21.0
-    Python 3.11.9
+    Python 3.12.3
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
     intervaltree 3.1.0
-    Jinja2 3.1.2
-    lxml 4.9.3
-    platformdirs 4.2.1
+    Jinja2 3.1.4
+    lxml 4.9.4
+    platformdirs 4.2.2
     pycountry 22.3.5
     PyYAML 6.0.1
     requests 2.31.0
-    setuptools 68.2.2
+    setuptools 69.5.1
     six 1.16.0
     wcwidth 0.2.13
 -->
@@ -1033,7 +1033,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Selander, et al.</td>
-<td class="center">Expires 7 December 2024</td>
+<td class="center">Expires 15 December 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1046,12 +1046,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-lake-authz-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-06-05" class="published">5 June 2024</time>
+<time datetime="2024-06-13" class="published">13 June 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-12-07">7 December 2024</time></dd>
+<dd class="expires"><time datetime="2024-12-15">15 December 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1117,7 +1117,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 7 December 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 15 December 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1503,17 +1503,49 @@ See illustration in <a href="#fig-overview" class="auto internal xref">Figure 1<
         <h3 id="name-domain-authenticator-v">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-domain-authenticator-v" class="section-name selfRef">Domain Authenticator (V)</a>
         </h3>
-<p id="section-3.2-1">To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Responder with an authentication credential CRED_V, which is a CWT Claims Set <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span> containing a public key of V, see <a href="#V_2" class="auto internal xref">Section 4.5.2.1</a>. This proves to U the possession of the private key corresponding to the public key of CRED_V. CRED_V typically needs to be transported to U in EDHOC (using  ID_CRED_R = CRED_V, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.2" class="relref">Section 3.5.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>) since there is no previous relation between U and V.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">V and W need to establish a secure (confidentiality and integrity protected) connection for the Voucher Request/Response protocol. Furthermore, W needs to access the same credential CRED_V that V uses with U, and V needs to prove to W the possession of the private key corresponding to the public key of CRED_V. It is RECOMMENDED that V authenticates to W using the same credential CRED_V as with U.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-3.2-3.1">
-            <p id="section-3.2-3.1.1">V and W may protect the Voucher Request/Response protocol using TLS 1.3 with client authentication <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> if CRED_V is an X.509 certificate of a signature public key. However, note that CRED_V may not be a valid credential to use with TLS 1.3, e.g., when U and V run EDHOC with method 1 or 3, where the public key of CRED_V is a static Diffie-Hellman key.<a href="#section-3.2-3.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-3.2-3.2">
-            <p id="section-3.2-3.2.1">V may run EDHOC in the role of initiator with W, using ID_CRED_I = CRED_V. In this case the secure connection between V and W may be based on OSCORE <span>[<a href="#RFC8613" class="cite xref">RFC8613</a>]</span>.<a href="#section-3.2-3.2.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-3.2-4">Note that one solution for establishing secure connection and proof-of-possession is to run TLS 1.3 and EDHOC between V and W during the setup procedure. For example, W may authenticate to V using TLS 1.3 with server certificates signed by a CA trusted by V, and then V may run EDHOC using CRED_V over the secure TLS connection to W, see <a href="#fig-protocol" class="auto internal xref">Figure 3</a>. In this case OSCORE is not needed since the purpose of EDHOC is only to verify proof-of-possession.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Responder with an authentication credential CRED_V containing a public key of V, see <a href="#V_2" class="auto internal xref">Section 4.5.2.1</a>. This proves to U the possession of the private key corresponding to the public key of CRED_V. CRED_V typically needs to be transported to U in EDHOC (using  ID_CRED_R = CRED_V, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.2" class="relref">Section 3.5.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>) since there is no previous relation between U and V.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">V and W need to establish a secure (confidentiality and integrity protected) connection for the Voucher Request/Response protocol.
+Furthermore, W needs to access the same credential CRED_V that V uses with U (to compute the Voucher), and V needs to prove to W the possession of the private key corresponding to the public key of CRED_V.
+It is RECOMMENDED that V authenticates to W using the same credential CRED_V as with U.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">Note that the choice of protocols may affect which type of credential and methods should be used by V.
+For example, in case V and W select TLS for the secure channel and PoP, then CRED_V is a X.509 certificate, and the EDHOC method used by V is signature-based.
+Some of the possible combinations of protocols to secure the connection between V and W are listed in <a href="#creds-table" class="auto internal xref">Table 1</a> below.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<span id="name-examples-of-how-to-secure-t"></span><div id="creds-table">
+<table class="center" id="table-1">
+          <caption>
+<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#name-examples-of-how-to-secure-t" class="selfRef">Examples of how to secure the connection between V and W.</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Secure channel between V and W</th>
+              <th class="text-left" rowspan="1" colspan="1">Proof-of-Possession from V to W</th>
+              <th class="text-left" rowspan="1" colspan="1">Type of CRED_V</th>
+              <th class="text-left" rowspan="1" colspan="1">EDHOC method used by V</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">[D]TLS 1.3 with mutual authentication, where V is the client and W is the server.</td>
+              <td class="text-left" rowspan="1" colspan="1">Provided by [D]TLS.</td>
+              <td class="text-left" rowspan="1" colspan="1">Restricted to types that are supported by both [D]TLS and EDHOC, e.g., X.509 certificates.</td>
+              <td class="text-left" rowspan="1" colspan="1">V MUST authenticate using a signature.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">[D]TLS 1.3 with client authentication, where V is the client and W is the server.</td>
+              <td class="text-left" rowspan="1" colspan="1">Run an EDHOC session on top of the TLS-protected channel.</td>
+              <td class="text-left" rowspan="1" colspan="1">Any type supported by EDHOC, e.g., X.509, C509, CWT, or CCS.</td>
+              <td class="text-left" rowspan="1" colspan="1">Any method may be used.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">EDHOC and OSCORE, where V is the initiator and W is the responder.</td>
+              <td class="text-left" rowspan="1" colspan="1">Already provided by EDHOC during the setup of the secure channel.</td>
+              <td class="text-left" rowspan="1" colspan="1">Any type supported by EDHOC.</td>
+              <td class="text-left" rowspan="1" colspan="1">Any method may be used.</td>
+            </tr>
+          </tbody>
+        </table>
+</div>
 <p id="section-3.2-5">Note also that the secure connection between V and W may be long-lived and reused for multiple voucher requests/responses.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
 <p id="section-3.2-6">Other details of proof-of-possession related to CRED_V and transport of CRED_V are out of scope of this document.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
 </section>
@@ -1637,9 +1669,7 @@ See illustration in <a href="#fig-overview" class="auto internal xref">Figure 1<
                   <text x="412" y="116">with</text>
                   <text x="460" y="116">server</text>
                   <text x="516" y="116">cert.)</text>
-                  <text x="304" y="148">Proof</text>
-                  <text x="340" y="148">of</text>
-                  <text x="396" y="148">possession</text>
+                  <text x="360" y="148">Proof-of-possession</text>
                   <text x="468" y="148">w.r.t.</text>
                   <text x="524" y="148">CRED_V</text>
                   <text x="380" y="180">(e.g.,</text>
@@ -1929,7 +1959,7 @@ external_aad = (
 The hash is computed by using the EDHOC hash algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.<a href="#section-4.4.2-8.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.4.2-8.3">
-              <p id="section-4.4.2-8.3.1">CRED_V is the CWT Claims Set <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span> containing the public authentication key of V, see <a href="#V_2" class="auto internal xref">Section 4.5.2.1</a><a href="#section-4.4.2-8.3.1" class="pilcrow">¶</a></p>
+              <p id="section-4.4.2-8.3.1">CRED_V is the credential used by V to authenticate to U and W, see <a href="#V_2" class="auto internal xref">Section 4.5.2.1</a> and <a href="#creds-table" class="auto internal xref">Table 1</a>.<a href="#section-4.4.2-8.3.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-4.4.2-9">The derivation of K_2 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see <a href="#reuse" class="auto internal xref">Section 4.2</a>):<a href="#section-4.4.2-9" class="pilcrow">¶</a></p>
@@ -2002,8 +2032,10 @@ The hash is computed by using the EDHOC hash algorithm of the selected cipher su
             </h5>
 <p id="section-4.5.2.1-1">V receives the voucher response from W as described in <a href="#V-W" class="auto internal xref">Section 4.6</a>.<a href="#section-4.5.2.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.5.2.1-2">V sends EDHOC message_2 to U with the critical EAD item (-TBD1, Voucher) included in EAD_2, i.e., ead_label = TBD1 and ead_value = Voucher, as specified in <a href="#voucher" class="auto internal xref">Section 4.4.2</a>.<a href="#section-4.5.2.1-2" class="pilcrow">¶</a></p>
-<p id="section-4.5.2.1-3">CRED_V is a CWT Claims Set <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span> containing the public authentication key of V encoded as a COSE_Key in the 'cnf' claim, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.2" class="relref">Section 3.5.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.<a href="#section-4.5.2.1-3" class="pilcrow">¶</a></p>
-<p id="section-4.5.2.1-4">ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-10.6" class="relref">Section 10.6</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.<a href="#section-4.5.2.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.5.2.1-3">The type of CRED_V may depend on the selected mechanism for the establishment of a secure channel between V and W, See <a href="#creds-table" class="auto internal xref">Table 1</a>.<a href="#section-4.5.2.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.5.2.1-4">In case the network between U and V is constrained, it is recommended that CRED_V be a CWT Claims Set (CCS) <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span>.
+The CCS contains the public authentication key of V encoded as a COSE_Key in the 'cnf' claim, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.2" class="relref">Section 3.5.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.
+ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-10.6" class="relref">Section 10.6</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.<a href="#section-4.5.2.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="processing-in-u-1">
@@ -2471,9 +2503,9 @@ To request U's authentication credential, V MUST issue a request such that:<a hr
    Hellman Over COSE (EDHOC)".
 The ead_label = TBD1 corresponds to the ead_value Voucher_Info in EAD_1, and Voucher in EAD_2 with processing specified in <a href="#m1" class="auto internal xref">Section 4.5.1</a> and <a href="#m2" class="auto internal xref">Section 4.5.2</a>, respectively, of this document.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <span id="name-addition-to-the-edhoc-ead-r"></span><div id="ead-table">
-<table class="center" id="table-1">
+<table class="center" id="table-2">
           <caption>
-<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#table-2" class="selfRef">Table 2</a>:
 <a href="#name-addition-to-the-edhoc-ead-r" class="selfRef">Addition to the EDHOC EAD registry</a>
           </caption>
 <thead>
@@ -2610,9 +2642,9 @@ No A, AAAA, or PTR record is requested.<a href="#section-7.3-1" class="pilcrow">
         </h3>
 <p id="section-7.5-1">IANA has added the following Content-Format number in the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".<a href="#section-7.5-1" class="pilcrow">¶</a></p>
 <span id="name-addition-to-the-coap-conten"></span><div id="coap-content-formats">
-<table class="center" id="table-2">
+<table class="center" id="table-3">
           <caption>
-<a href="#table-2" class="selfRef">Table 2</a>:
+<a href="#table-3" class="selfRef">Table 3</a>:
 <a href="#name-addition-to-the-coap-conten" class="selfRef">Addition to the CoAP Content-Formats registry</a>
           </caption>
 <thead>
