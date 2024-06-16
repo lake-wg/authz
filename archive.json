@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-13T01:13:23.824146+00:00",
+  "timestamp": "2024-06-16T01:19:11.760605+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1664,24 +1664,26 @@
       "id": "PR_kwDOKiCa6c5wrEB8",
       "title": "Credentials and clarifications",
       "url": "https://github.com/lake-wg/authz/pull/38",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "As of now, this is mostly intended as a place for discussion.",
       "createdAt": "2024-05-27T14:43:12Z",
-      "updatedAt": "2024-06-12T15:01:48Z",
+      "updatedAt": "2024-06-13T07:20:35Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b5dac6c38cadfdb3b5ca5c70e095c4f4e912328b",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "type-of-cred-v",
-      "headRefOid": "9b7bc73fb0ae92f950b5686c638f86c546b7b9e7",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "18223c33bfcdd8417473859ab7f8bca3280164d3",
+      "closedAt": "2024-06-13T07:20:35Z",
+      "mergedAt": "2024-06-13T07:20:35Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "7e3e6a4da0fd319b4ca7d52b635b7cd655b040d5"
+      },
       "comments": [
         {
           "author": "geonnave",
@@ -1689,6 +1691,13 @@
           "body": "This is now ready for review.\r\n\r\nThe two main changes are:\r\n- generalize CRED_V over the text (so that it is not restricted to being a CCS)\r\n- improve the description of the different ways V and W can establish a secure channel, and the implications on the type of CRED_V and EDHOC method used by V (see `creds-table`).",
           "createdAt": "2024-06-05T12:55:58Z",
           "updatedAt": "2024-06-05T12:55:58Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This looks good to me, I just proposed an updated caption.",
+          "createdAt": "2024-06-13T05:05:42Z",
+          "updatedAt": "2024-06-13T05:05:42Z"
         }
       ],
       "reviews": []
