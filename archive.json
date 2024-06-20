@@ -1,0 +1,1706 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2024-06-20T01:12:30.700230+00:00",
+  "repo": "lake-wg/authz",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOKiCa6c54mu3L",
+      "title": "Voucher is not bound to U",
+      "url": "https://github.com/lake-wg/authz/issues/1",
+      "state": "CLOSED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This was previously discussed in the IETF-118, and the goal is to discuss whether it is desirable / necessary to have the voucher be bound to U.\r\n\r\nOne open question here is: how can V be sure that the Voucher received from W is bound to the sender of message_3?",
+      "createdAt": "2023-12-04T09:40:17Z",
+      "updatedAt": "2024-04-18T09:53:31Z",
+      "closedAt": "2024-04-18T09:53:30Z",
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "In a design team meeting last Friday (Dec 1) the following comments were raised:\r\n- the Voucher is protected by EDHOC session via the transcript hash\r\n- there is a consideration about doing authorization before authentication, that needs to be checked",
+          "createdAt": "2023-12-04T09:42:03Z",
+          "updatedAt": "2023-12-04T14:45:34Z"
+        },
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "\r\n\r\nOn 04/12/2023 09:42, Geovane Fedrecheski wrote:\r\n> In a meeting last Friday (Dec 1)\r\n\r\nWhat meeting was that? (Even though this is only a github comment,\r\nit's generally good to document that kind of thing so the IETF WG\r\ncan better evaluate outcomes from such a meeting.)\r\n\r\nTa,\r\nS.\r\n",
+          "createdAt": "2023-12-04T11:24:44Z",
+          "updatedAt": "2023-12-04T11:24:44Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@sftcd Good question. This was a design team meeting following up on the comments from IETF 118. Geovane is holding the pen driving the work forward :-)",
+          "createdAt": "2023-12-04T13:49:43Z",
+          "updatedAt": "2023-12-04T13:49:43Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "(@geonnave Maybe edit comments and make global replace \"meeting\" -> \"design team meeting\".)",
+          "createdAt": "2023-12-04T14:37:06Z",
+          "updatedAt": "2023-12-04T14:37:06Z"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "I_kwDOKiCa6c54mwA6",
+      "title": "Add EAD_3 field?",
+      "url": "https://github.com/lake-wg/authz/issues/2",
+      "state": "CLOSED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "After receiving message_3, V may want to check that CRED_U is bound to the voucher received from W (see #1). In this case, V would need to (1) have the voucher saved on state, and (2) it would have to dispatch a \"check CRED_U against Voucher\" action.\r\n\r\nRight now, on the implementation side, dispatching any EAD-related action is done via detecting the presence of an EAD field (since the core EDHOC implementation must be agnostic of EAD items).\r\n\r\nThus, it may make sense to add an EAD_3 field to enable such a dispatch.",
+      "createdAt": "2023-12-04T09:42:50Z",
+      "updatedAt": "2024-04-18T09:54:11Z",
+      "closedAt": "2024-04-18T09:54:11Z",
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "As discussed in the design team meeting, the next step is to think of additional scenarios where this might be needed (if any).",
+          "createdAt": "2023-12-04T09:43:30Z",
+          "updatedAt": "2023-12-04T14:45:59Z"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOKiCa6c54mweB",
+      "title": " Should the voucher include a scope?",
+      "url": "https://github.com/lake-wg/authz/issues/3",
+      "state": "CLOSED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "During the IETF-118 meeting, it was discussed whether the Voucher should include a scope. One simple alternative would be to propose an opaque \"scope\" field whose usage details would be left to the application.",
+      "createdAt": "2023-12-04T09:43:53Z",
+      "updatedAt": "2024-03-04T17:21:43Z",
+      "closedAt": "2024-03-04T17:21:43Z",
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "As discussed in the last design team meeting, we do plan to include a scope field. That may involve updating the Voucher structure to be a COSE_Encrypt0, where ciphertext is the concatenation of encrypted-plaintext (empty) and the voucher MAC. The scope can then be included in the encrypted-plaintext or in the (un)protected header. \r\n\r\nThe scope would convey information to U about V, such as capabilities of V, usage policies, etc. I think we need to think of a few concrete examples here.",
+          "createdAt": "2023-12-04T09:51:42Z",
+          "updatedAt": "2023-12-04T14:46:22Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "After the merge of #11, the voucher can now include extra data, such as a scope. The actual contents that we may wish to send, however, may not be a scope as much as _assertions_ or _directives_ from W to U. ",
+          "createdAt": "2024-02-26T14:29:02Z",
+          "updatedAt": "2024-02-26T14:29:02Z"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "I_kwDOKiCa6c58nPKX",
+      "title": "Add error handling",
+      "url": "https://github.com/lake-wg/authz/issues/5",
+      "state": "CLOSED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The protocol should include an error handling mechanism. Below is a first sketch as well as a few considerations to be discussed:\r\n\r\n```\r\nW may answer Voucher Request with a Voucher Error (VERR):\r\n\r\nVERR = (code: uint, ?info: bstr)\r\n```\r\n\r\nNotes:\r\n- security: VERR should be encrypted and integrity-protected, e.g. `COSE_Encrypt0` from W to U, just like `ENC_ID` on `EAD_1`\r\n- how to transport: \r\n  - W to V: the encrypted VERR is sent via the secure channel already established between both parties\r\n  - V to U: we can possibly reuse EDHOC's error signalling (see [lake-edhoc#section-6](https://www.ietf.org/archive/id/draft-ietf-lake-edhoc-22.html#section-6)). Thus the encrypted VERR could be the content of `ERR_INFO`. Note that this might require declaring a new EDHOC `ERR_CODE`, so that `ERR_INFO` can have a content of type `bstr`.\r\n\r\ncc @gselander @malishav ",
+      "createdAt": "2024-01-19T14:15:31Z",
+      "updatedAt": "2024-02-26T14:30:25Z",
+      "closedAt": "2024-02-26T14:30:25Z",
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Solved in #9.",
+          "createdAt": "2024-02-26T14:30:25Z",
+          "updatedAt": "2024-02-26T14:30:25Z"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "id": "I_kwDOKiCa6c58nZaT",
+      "title": "Appendix or Examples section",
+      "url": "https://github.com/lake-wg/authz/issues/6",
+      "state": "CLOSED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "A section with example use cases for the protocol can improve readability of the spec.\r\n\r\nHere is a brief list of use cases that can serve as base for such section:\r\n\r\n```\r\n### UC1: voucher works, 1 gateway\r\n\r\npremises:\r\n- devices = [u1, \u2026]\r\n- discovered_gateways = [v1]\r\n- W\u2019s allowlist = v1: [u1]\r\n\r\nscenarios:\r\n1. device u1 tries to join via gateway v1, W accepts and replies Voucher Response\r\n\r\n### UC2: basic error response, 1 gateway\r\n\r\npremises:\r\n- devices = [u1, \u2026]\r\n- discovered_gateways = [v1]\r\n- W\u2019s allowlist = v1: []\r\n\r\nscenarios:\r\n1. device u1 tries to join via gateway v1, W denies and replies Voucher Error\r\n\r\n### UC3: basic error response, 5 gateways\r\n\r\npremises:\r\n- devices = [u1, \u2026]\r\n- discovered_gateways = [v1, v2, v3, v4, v5] // sorted e.g. by rssi\r\n- W\u2019s allowlist = v1: [], v2: [], v3: [u1], v4: [u1], v5: []\r\n\r\nscenarios:\r\n1. device u1 tries to join via gateway v1, W denies and replies Voucher Error\r\n2. device u1 tries to join via gateway v2, W denies and replies Voucher Error\r\n3. device u1 tries to join via gateway v3, W accepts and replies Voucher Response\r\n\r\n### UC4: error includes gateway hint, 5 gateways\r\n\r\npremises:\r\n- devices = [u1, \u2026]\r\n- discovered_gateways = [v1, v2, v3, v4, v5] // sorted e.g. by rssi\r\n- W\u2019s allowlist = v1: [], v2: [], v3: [u1], v4: [u1], v5: []\r\n\r\nscenarios:\r\n1. device u1 tries to join via gateway v1, W denies and replies Voucher Error with hint = [v3, v4]\r\n2. device u1 tries to join via gateway v3, W accepts and replies Voucher Response\r\n```",
+      "createdAt": "2024-01-19T14:40:26Z",
+      "updatedAt": "2024-03-04T17:20:42Z",
+      "closedAt": "2024-03-04T17:20:42Z",
+      "comments": [
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Looks good to me. I think UC1 & UC4 (scenario 1) could be sufficient, perhaps start with them?",
+          "createdAt": "2024-01-26T12:16:41Z",
+          "updatedAt": "2024-01-26T12:16:41Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Addressed in #10 ",
+          "createdAt": "2024-03-04T17:20:42Z",
+          "updatedAt": "2024-03-04T17:20:42Z"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "id": "I_kwDOKiCa6c58naZT",
+      "title": "Device enrollment in the presence of many Vs",
+      "url": "https://github.com/lake-wg/authz/issues/7",
+      "state": "CLOSED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The access policies in W may contain a mapping of which Us are authorized to join via which Vs, e.g. `{v1: [u1, u2], v2: [u3]}`. In this case, if a device detects many Vs in its vicinity, it may have to try to exhaustively try to enroll via different Vs until it finds the right one (see use case UC3 in issue #6).\r\n\r\nA possible solution includes sharing more information between V and W, so that this process can be sped up. Here is an initial sketch of how it could look like:\r\n\r\n```\r\n# Enrollment hints\r\nThis section defines optional fields with the purpose of improving protocol scalability, aiming to reduce battery usage and enrollment delay.\r\nThe main use case is when several potential gateways (V) are detected by U's radio, which can lead to U trying to enroll (and failing) several times until it finds a suitable V.\r\n\r\n## Domain Authenticator hints\r\nIn case W denies the enrollment of U to a given V, a list of Domain Authenticator hints (v_hints) can be sent from W to U.\r\nThe hint is optional and is sent as part of an error message.\r\nIt consists of a list of application-defined identifiers of V (e.g. MAC addresses, SSIDs, PAN IDs, etc.), as defined below:\r\n\r\nv_hints = [ 1* bstr ]\r\n\r\n## Device hints\r\nU may send a Device hint (u_hint) so that it can help W to select which Vs to include in v_hints.\r\nThis can be useful in large scale scenarios with many gateways (V).\r\nThe hint is an optional field in EAD_1, and it must be encrypted.\r\nThe hint itself is application dependent, and can contain GPS coordinates, application-specific tags, the list of Vs detected by U, or other relevant information.\r\nIt is defined as follows:\r\n\r\nu_hint: [ 1* bstr ]\r\n```\r\n\r\nNotes:\r\n- related to #5, as `v_hint` would be carried in the Voucher Error message\r\n- all hints should be encrypted and integrity-protected, e.g., via `COSE_Encrypt0`",
+      "createdAt": "2024-01-19T14:42:53Z",
+      "updatedAt": "2024-03-04T15:21:58Z",
+      "closedAt": "2024-03-04T15:21:58Z",
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Solved in #13 ",
+          "createdAt": "2024-03-04T15:21:58Z",
+          "updatedAt": "2024-03-04T15:21:58Z"
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "id": "I_kwDOKiCa6c6BK6d5",
+      "title": "Clarifications on the usage of OPAQUE_INFO",
+      "url": "https://github.com/lake-wg/authz/issues/17",
+      "state": "CLOSED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "> If could be good to clarify that \u201cOPAQUE_INFO\u201d is opaque when viewed as information element in EDHOC. It is opaque to V but the application in U and W can read the contents.\r\n\r\n^ by @gselander in [PR 13](https://github.com/lake-wg/authz/pull/13#issuecomment-1976265705).",
+      "createdAt": "2024-03-04T15:29:14Z",
+      "updatedAt": "2024-03-04T16:47:57Z",
+      "closedAt": "2024-03-04T16:47:56Z",
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Solved in #18 ",
+          "createdAt": "2024-03-04T16:47:57Z",
+          "updatedAt": "2024-03-04T16:47:57Z"
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "id": "I_kwDOKiCa6c6BK7k0",
+      "title": "Explain error response in the context of the VREQ/VRES protocol",
+      "url": "https://github.com/lake-wg/authz/issues/19",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See [previous comment](https://github.com/lake-wg/authz/pull/13#issuecomment-1976281759) by @gselander:\r\n\r\n```\r\nOne more comment:\r\n\r\n\"W generates error_content and transfers it to V via the secure connection.\"\r\n\r\nWe should explain how this message is part of the VREQ/VRES protocol. This is not necessary an error from the point of view of that protocol. If we don't have a quick fix, make a separate issue.\r\n\r\nEdit: For example, add a flag in VRES\r\n\r\nVoucher_Response = [\r\nmessage_1: bstr,\r\nflag: int,\r\nresponse: bstr,\r\n? opaque_state: bstr\r\n]\r\n\r\nflag = -1 is used with response = Voucher. In case of reject, then (flag, response) = error_content.\r\n\r\n(or other preferred construction)\r\n\r\nEdit: Or reserve REJECT_TYPE = 0 for the no reject case. The flag/ REJECT_TYPE thus becomes a status code for the VREQ/VRES protocol. Maybe rename \"REJECT_TYPE\" accordingly. Or leave out for this update.\r\n```",
+      "createdAt": "2024-03-04T15:31:19Z",
+      "updatedAt": "2024-03-04T15:31:19Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 20,
+      "id": "I_kwDOKiCa6c6CK3L8",
+      "title": "Document's github link is obsolete",
+      "url": "https://github.com/lake-wg/authz/issues/20",
+      "state": "CLOSED",
+      "author": "chrysn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The \"About the document\" section still points to the old repo at EricssonResearch rather than to the current one.\r\n\r\nIn parallel, please consider linking this from the document's \"additional resources\" list in the data tracker (@malishav should be allowed to do this as a chair).",
+      "createdAt": "2024-03-13T12:28:22Z",
+      "updatedAt": "2024-03-13T14:04:42Z",
+      "closedAt": "2024-03-13T14:04:42Z",
+      "comments": [
+        {
+          "author": "malishav",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thanks for the note, just updated the datatracker. I let Geovane update the\r\ndocument.\r\n\r\nOn Wed, Mar 13, 2024 at 13:28 chrysn ***@***.***> wrote:\r\n\r\n> The \"About the document\" section still points to the old repo at\r\n> EricssonResearch rather than to the current one.\r\n>\r\n> In parallel, please consider linking this from the document's \"additional\r\n> resources\" list in the data tracker ***@***.***\r\n> <https://github.com/malishav> should be allowed to do this as a chair).\r\n>\r\n> \u2014\r\n> Reply to this email directly, view it on GitHub\r\n> <https://github.com/lake-wg/authz/issues/20>, or unsubscribe\r\n> <https://github.com/notifications/unsubscribe-auth/AB2M6Q3XDS53B4OIBYQLL23YYBA7XAVCNFSM6AAAAABEUB55D2VHI2DSMVQWIX3LMV43ASLTON2WKOZSGE4DGOBYGU2TMNA>\r\n> .\r\n> You are receiving this because you were mentioned.Message ID:\r\n> ***@***.***>\r\n>\r\n",
+          "createdAt": "2024-03-13T13:07:48Z",
+          "updatedAt": "2024-03-13T13:07:48Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Fixed!",
+          "createdAt": "2024-03-13T14:04:42Z",
+          "updatedAt": "2024-03-13T14:04:42Z"
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "id": "I_kwDOKiCa6c6CK3YP",
+      "title": " authz with U as R and V as I",
+      "url": "https://github.com/lake-wg/authz/issues/21",
+      "state": "OPEN",
+      "author": "chrysn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "(Moved from https://github.com/EricssonResearch/ace-ake-authz/issues/27)\r\n\r\nProcessing some deployment scenarios (involving CoAP-over-GATT), I've found that sometimes the roles of I and R would be reversed.\r\n\r\nApart from the aspect of vulnerable-identities, is there anything fundamentally keeping the ENC_U_INFO from being in message 2, and the voucher from being in message 3? The credential database lookup would then be against ID_CRED_R, but that'd be the same interface as for ID_CRED_I.\r\n\r\nLet's not sink too much time into this if it turns out to be complicated -- I'm not sure whether running EDHOC over CoAP in reverse flow may not be the better choice in this situation anyway, but if this has ever been contemplated in other places, this issue might be a good spot to spool ideas.",
+      "createdAt": "2024-03-13T12:28:46Z",
+      "updatedAt": "2024-03-19T11:13:30Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think that we have made some significant optimizations assuming U as I.\r\nI think that there are different optimizations that occur if V is I.\r\nCoAP-over-GATT probably does not need a discovery process whereby V discovers a U that it should initiate to.\r\n\r\nV as I has many advantages when it comes to managing bandwidth.\r\n",
+          "createdAt": "2024-03-13T15:07:33Z",
+          "updatedAt": "2024-03-13T15:07:33Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Indeed the flow in the GATT case would be that U sends a beacon that contains a 32bit hash of LOC_W, so V would likely already have a good idea of what W would be (given that in a list of peered W, this likely only matches 1 or at most 3) \u2013 so the first EAD would only contain LOC_W for confirmation (or maybe not at all).",
+          "createdAt": "2024-03-13T15:51:09Z",
+          "updatedAt": "2024-03-13T15:51:09Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "At a first glance I think it could work. \r\n\r\nApart from just using EAD_2 / EAD_3 instead of EAD_1 / EAD_2, it would also have some impact on the VREQ/VRES protocol, which currently sends message_1 to W, which is then used in the composition of the Voucher:\r\n\r\n```\r\nexternal_aad = (\r\n    H(message_1): bstr, / could be changed to `H(message_1 || message_2)` (or even just reuse `TH_3`) /\r\n    CRED_V:       bstr,\r\n)\r\n```\r\n",
+          "createdAt": "2024-03-19T11:13:29Z",
+          "updatedAt": "2024-03-19T11:13:29Z"
+        }
+      ]
+    },
+    {
+      "number": 23,
+      "id": "I_kwDOKiCa6c6Cs3ic",
+      "title": "Can we turn opaque_info into more concrete fields, in EAD_1?",
+      "url": "https://github.com/lake-wg/authz/issues/23",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I am interested in exploring how we can reduce, as much as possible, the use of opaque_info, for the following reasons:\r\n1. interoperability\r\n2. the problem of providing \"free connectivity\" in EAD_1\r\n\r\n## Proposal\r\nThe proposal so far is to replace `opaque_info` by `nearby_vs`:\r\n```\r\nnearby_vs = {\r\n  / macs-addrs   /     1: [ + bstr ],\r\n  / pan-ids      /     2: [ + bstr ],\r\n  / ipv4-addrs   /     3: [ + bstr ],\r\n  / ipv6-addrs   /     4: [ + bstr ],\r\n  / app-specific / 16-31: [ + bstr ],\r\n}\r\n```\r\n\r\nSome comments:\r\n1. the idea is to satisfy the problem of sending a list of \"nearby Vs\", while achieving better interoperability, in a way that is agnostic to the type of network identifier\r\n2. for now, the proposal assumes that \"nearby Vs\" is the **only** type of contextual data that U would ever want to send to W\r\n3. do we have concrete examples of other kind of contextual data that should be sent to W?\r\n",
+      "createdAt": "2024-03-18T17:08:13Z",
+      "updatedAt": "2024-03-19T09:48:42Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 24,
+      "id": "I_kwDOKiCa6c6CzUrf",
+      "title": "Can we turn opaque_info into more concrete fields, in the Voucher?",
+      "url": "https://github.com/lake-wg/authz/issues/24",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The idea here is the same as in #23.\r\n\r\n## Proposal\r\nUpdate Voucher so that instead of carrying `opaque_info`, it looks like this:\r\n```\r\nplaintext of Voucher = (\r\n  role-of-v:        uint,  / choice(access-provider=1, owner=2) /\r\n  directives-for-u: bstr,  / application-specific, e.g. frequencies, operation mode, etc /\r\n)\r\n```\r\n\r\nComments:\r\n- the field `role-of-v` tells U whether V should be considered an owner/administrator, or simply a connectivity provider. This is more or less equivalent to the \"assertion\" item in BRSKI's Voucher, with the difference that no claim is made about \"how to verify the ownership of V upon U\". Another reason that motivated me in considering this field was a discussion I had with @chrysn about the \"admin status of V\".\r\n- `directives-for-u` should contain any information that W may find useful to transmit to U. In a way, this is still equivalent to `opaque_data`, but just with a name that conveys the intention of the field.\r\n\r\nQuestions:\r\n- does `role-of-v` make sense? are there other roles that should be considered?\r\n- is there anything else that is missing? is there other type of information that should / could be sent in the Voucher, that would not be covered by the suggested fields?",
+      "createdAt": "2024-03-19T09:48:20Z",
+      "updatedAt": "2024-04-15T14:56:39Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Logging some updates here.\r\n\r\n### 1. Specifying the fields `role-of-v` and `directives-for-u`\r\nDuring a design team meeting on April 11, we discussed that the two items discussed above could be specified in an appendix (therefore keeping `OPAQUE_INFO` as part of the Voucher).\r\n\r\nThe concern here is making the protocol too closed, while we are still not sure of all potential use cases and needs.\r\n\r\nJust as a quick note, to me this starts to resemble a bit the case of EAP, where the main protocol is specified in a higher level, and then certain details are defined in later specifications. It differs from EAP as the authentication *is defined* (it relies on EDHOC's), but is similar to EAP as the underlying transport *is not defined*. Might bring this discussion into a separate issue.\r\n\r\n### 2. `directives-for-u`: use case with LoRaWAN\r\nThe Join-accept message defined in LoRaWAN v1.1 \u00b9 is sent as a response to a successful Join-request.\r\nJoin-accept contains the following fields: JoinNonce, Home_NetID, DevAddr, DownLinkSettings, RxDelay, ChannelFrequencyList.\r\n\r\nThus, when using `lake-authz` with LoRaWAN, the `directives-for-u` field could contain the fields of a Join-accept message.\r\n\r\n\u00b9 https://resources.lora-alliance.org/technical-specifications/lorawan-specification-v1-1",
+          "createdAt": "2024-04-15T14:56:37Z",
+          "updatedAt": "2024-04-15T14:56:37Z"
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "id": "I_kwDOKiCa6c6Czb9b",
+      "title": "Can we turn opaque_info into more concrete fields, in the Error message?",
+      "url": "https://github.com/lake-wg/authz/issues/25",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The rationale is similar to #23.\r\n\r\n## Proposal\r\nIn the EDHOC error \"Access Denied\", when REJECT_TYPE = 1, have REJECT_INFO look like this:\r\n```\r\nplaintext of REJECT_INFO = (\r\n  suggested-vs:              map,  / same format as `nearby_vs` /\r\n  additional-recovery-info:  bstr, / application-specific actionable information for error recovery /\r\n)\r\n```\r\n\r\nComments:\r\n- `suggested-vs` is equivalent to the current `v_hint` field ([Appendix B](https://www.ietf.org/archive/id/draft-ietf-lake-authz-01.html#appendix-B)), but following the map-based serialization for network identifiers defined in [issue 23](https://github.com/lake-wg/authz/issues/23).\r\n- `additional-recovery-info` -- just like in [issue 24](https://github.com/lake-wg/authz/issues/24), I am merely renaming the open-ended field `opaque_info` to something more intentional.",
+      "createdAt": "2024-03-19T10:01:13Z",
+      "updatedAt": "2024-03-19T10:01:13Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 26,
+      "id": "I_kwDOKiCa6c6DK9Z5",
+      "title": "Identity protection service",
+      "url": "https://github.com/lake-wg/authz/issues/26",
+      "state": "OPEN",
+      "author": "chrysn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I'm not fully sure where this should go, but authz is probably a good starting point, because it is part of the solution I have in mind right now.\r\n\r\nConsider two parties establishing a connection where both have sensitive identities (in terms of being tracked, of ownership, and both actively solicit connections continuously).\r\nAs an example, a service worker's phone might be constantly listening for beacons of installed equipment, which would report their latest logs, but neither do we want to allow tracking of the worker by identity or affiliation, nor do we want that arbitrary people driving through the city can map where they have equipment installed.\r\n(I figure airtags probably do something similar, but it's easier when reporting your manufacturer just is 2-3 bits of information).\r\n\r\nOne way to solve this is to defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information, and promise to only relay that to other parties in your organization. The organization may run that on their own (in which case they'd probably pick LOC_W=\"\" and take the risk of just seeing many decryption failures whenever they encounter devices of someone else who does the same), or they may use any global provider, where the number of providers should be smaller than the number of organizations using them in any area (maybe 4=len(\"GAMA\")...).\r\n\r\nUsing authz, this could be used like this:\r\n(U = machine, V = phone, W = trustservice; as part of their enrollment, U has learned the public key of W and W knows the mapping from ID_U to CRED_U plus which account this is on, V has a secure channel with W associated with a customer account)\r\n* U sends message 1 with its ID_U\r\n* V sends the ENC_U_INFO to W\r\n* W verifies that V is on the same customer account as U, and returns CRED_U as well as a voucher response.\r\n  I'm not sure we even need to use the voucher here -- all that V needed to know that this is \"one of its own\", and knowing this it can now send its CRED_V (probably by value), and that will suffice to U\r\n* V sends its CRED_U\r\n* U recognizes the CRED_U and ... either sends a KID ID_CRED_V which suffices for this V, or if it turns out that V didn't contact W and just was generous with its CRED_V, maybe V sent something to ask for the full certificate.\r\n\r\nIs that in scope as an application for authz? I think it'd work with authz as-is, and at most need some wording that \"it is fine if the voucher response comes back OK without containing a voucher, V should then just continue like that\". (Maybe the voucher is also just empty, and in the last step U takes that as the hint that even though V sent a credential, itself it can just send ID_CRED_I=b\"\").",
+      "createdAt": "2024-03-21T16:53:08Z",
+      "updatedAt": "2024-03-25T13:36:00Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> One way to solve this is to defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information, and promise to only relay that to other parties in your organization. The organization may run that on their own (in which case they'd probably pick LOC_W=\"\" and take the risk of just seeing many decryption failures whenever they encounter devices of someone else who does the same), or they may use any global provider, where the number of providers should be smaller than the number of organizations using them in any area (maybe 4=len(\"GAMA\")...).\r\n\r\nI'm having difficulties understanding this paragraph.\r\nI think that LOC_W=\"\" means that V has to know the real value?\r\n",
+          "createdAt": "2024-03-22T00:52:35Z",
+          "updatedAt": "2024-03-22T00:52:35Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Yes, LOC_W with some value could mean \"You know whom to ask\".\r\n\r\nThe point of the 3rd party is to enlarge the number of devices which one's device is indistinguishable from. Something is already gained from running such a service on your own (then devices are not trackable individually but any active attacker will see the domain part of their identity), a \"you know whom to ask\" works better at the cost of trial-and-error, and the moral equivalent of \"check with cloudflare first\" works more precisely and still just gives 2-3 bits of information (depending on whether there are 4 or 8 common providers).",
+          "createdAt": "2024-03-22T03:44:08Z",
+          "updatedAt": "2024-03-22T03:44:08Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> One way to solve this ...\r\n\r\nI also find it hard to understand this paragraph. It appears the main change is that W has a business logic commitment to not share ids with _other organizations_ which could act as unintended trackers? If yes, I fail to see how to integrate it in the protocol.\r\n\r\n> defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information\r\n\r\nWho is attacking here? The trusted party? (that doesn't make sense to me)\r\nWho can read the information?\r\n\r\n> I'm not sure we even need to use the voucher here -- all that V needed to know that this is \"one of its own\"\r\n\r\nI don't understand this part, as V already does not use the voucher ([Section 4.6.2.2](https://www.ietf.org/archive/id/draft-ietf-lake-authz-01.html#section-4.6.2.2)) -- the voucher's intended audience is U. \r\nV simply knows that the authorization has worked by receiving an \"ok\" answer from W (we need to actually define this, as tracked in #19).",
+          "createdAt": "2024-03-25T13:35:43Z",
+          "updatedAt": "2024-03-25T13:36:00Z"
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "id": "I_kwDOKiCa6c6EXuCP",
+      "title": "Privacy of hints",
+      "url": "https://github.com/lake-wg/authz/issues/27",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "During the IETF 119 LAKE meeting (see [minutes here](https://datatracker.ietf.org/doc/minutes-119-lake-202403210530/)), some comments were raised about the privacy aspects of hints (identifiers of V passed from U to W and vice-versa).\r\nThis issue is intended as a place for discussion of the raised points.\r\n\r\nCurrently in version -01 of the draft, there are two kinds of hints:\r\n1. `u_hints`, meaning radio identifiers of Vs that are discovered by U and communicated to W via an encrypted channel (carried within EAD_1 and then VREQ).\r\n2. `v_hints`, meaning radio identifiers of Vs that are pre-populated in W and are communicated to U via an encrypted channel (carried within VRES and then EDHOC error Access Denied).\r\n\r\nBelow I explore whether or not there are privacy issues regarding hints, from the perspectives of U, V and W, as well as when data is in transit.\r\n\r\n### 1. Privacy of `u_hints`\r\n- At U: gateways (Vs) normally advertise their radio identifiers in beacons -> no issue.\r\n- At V: the hint is encrypted -> no issue.\r\n- At W: the radio identifiers of any V will be read by W\r\n  - \u26a0\ufe0f potential issue: if W shares the identifiers with 3rd parties\r\n  - mitigation: W should commit to not share the received identifiers.\r\n- in transit between U <-> V and V <-> W: the hint is encrypted -> no issue.\r\n\r\n### 2. Privacy of `v_hints`\r\n- At W: the radio identifiers of Vs that are securely associated with W will be read by W\r\n  - \u26a0\ufe0f potential issue: if W shares the identifiers with 3rd parties\r\n  - mitigation: W should commit to not share the received identifiers.\r\n  - \u2753note: since Vs are already associated with W, the Vs should already trust W to not share any information with 3rd parties. Thus I think this is a non-issue.\r\n- At V: the hint is encrypted -> no issue.\r\n- At U: the device U will gain information about Vs that allow U to enroll. \r\n  - \u26a0\ufe0f potential issue: if the device is malicious, it would be learning new information about the system\r\n  - mitigation: only return hints when U is known to W.\r\n    - example 1: device u1 is listed in W's ACL, but the V through which it tried to join is not in the ACL (leading to error \"Access Denied\"). Since W knows u1, it MAY return `v_hints`.\r\n    - example 2: device u2 is not listed in W's ACL (leading to error \"Access Denied\"). Since W does not know u2, it MUST NOT return `v_hints`.\r\n  - \u2753 note: is there an issue when U is known by W (as in example 1 above)? It would be learning about radio identifiers of Vs that might or might not be in its radio range and are expected to be authorized to enroll U. Personally I think this is a non-issue.\r\n- in transit between W <-> V and V <-> U: the hint is encrypted -> no issue.\r\n\r\n### Discussion\r\nI think that the only issues that we need to address in the document are `1. Privacy of u_hints at W` and `2. Privacy of v_hints at U (when U is unknown to W)`.\r\n\r\nLooking forward to receiving comments from those interested in this topic.",
+      "createdAt": "2024-04-02T15:22:57Z",
+      "updatedAt": "2024-04-08T08:50:32Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "\r\nHi Geovane,\r\n\r\nOn 02/04/2024 16:23, Geovane Fedrecheski wrote:\r\n> During the IETF 119 LAKE meeting (see [minutes here](https://datatracker.ietf.org/doc/minutes-119-lake-202403210530/)), some comments were raised about the privacy aspects of hints (identifiers of V passed from U to W and vice-versa).\r\n\r\nSo one thing that'd help me a lot in understanding your analysis\r\nwould be a concrete example that describes a possibly \"bad\"\r\nprivacy situation. That'd not be text that'd need to be in the\r\ndraft, but I think it'd help the discussion along, both here\r\nand maybe later on the list.\r\n\r\nSo... what's the worst privacy case we can think of here?\r\n\r\nTa,\r\nS.\r\n",
+          "createdAt": "2024-04-03T10:20:26Z",
+          "updatedAt": "2024-04-03T10:20:26Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Great question.\r\n\r\n### 1. Privacy of u_hints at W\r\nLet's say that W receives MAC addresses of some Vs, and shares them with third parties. This is harmless in my opinion, as MAC addresses are freely broadcasted in beacons, and do not identify a customer.\r\n\r\nNow, would W share ID_U along with the list of MAC addresses, then it might be used to determine the approximate location of U, e.g. using services like https://developers.google.com/maps/documentation/geolocation/overview.\r\n\r\nSince U assumes W to be trusted (e.g. W is the manufacturer), neither of the above should happen.\r\n\r\n### 2. Privacy of v_hints at U (when U is unknown to W)\r\nLet's say that u1 is a malicious U that has no real business relationship with W.\r\nu1 somehow obtained G_W and LOC_W, but u1 is not known by W: it is not present in the ACL, nor in any database entry.\r\n\r\nNow, u1 prepares and sends a well formed Voucher Request, which W receives and processes normally.\r\nSince u1 is not in W's ACL, W would issue an \"Access Denied\" error, possibly with hints (MAC addresses of Vs). \r\nHowever, since u1 is not in the ACL in the first place, it is impossible to construct a hint that is tailored for u1.\r\nSo, if no hint is added, there is no issue.\r\n\r\nA worst case than this could be W picking random MAC addresses of associated Vs as hints to send to u1 (although this does not make much sense in my opinion). In this case, u1 could keep re-sending Voucher Requests and learning more and more Vs. Eventually, u1 would learn all Vs that are linked to a W. This would expose a business relationship, which could be sensitive. Again, I cannot think of a scenario where picking random Vs to serve as hints could make sense.\r\n\r\n",
+          "createdAt": "2024-04-03T13:01:04Z",
+          "updatedAt": "2024-04-03T13:01:04Z"
+        },
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Geovane Fedrecheski ***@***.***> wrote:\n    > ### 2. Privacy of v_hints at U (when U is unknown to W) Let's say that\n    > u1 is a malicious U that has no real business relationship with W.  u1\n    > somehow obtained G_W and LOC_W, but u1 is not known by W: it is not\n    > present in the ACL, nor in any database entry.\n\n    > Now, u1 prepares and sends a well formed Voucher Request, which W\n    > receives and processes normally.  Since u1 is not in W's ACL, W would\n    > issue an \"Access Denied\" error, possibly with hints (MAC addresses of\n    > Vs).  However, since u1 is not in the ACL in the first place, it is\n    > impossible to construct a hint that is tailored for u1.  So, if no hint\n    > is added, there is no issue.\n\nI agree W should never provide hints in the case that u1 was not\nmanufactured by W.\n\n    > A worst case than this could be W picking random MAC addresses of\n    > associated Vs as hints to send to u1 (although this does not make much\n    > sense in my opinion). In this case, u1 could keep re-sending Voucher\n    > Requests and learning more and more Vs. Eventually, u1 would learn all\n    > Vs that are linked to a W. This would expose a business relationship,\n    > which could be sensitive. Again, I cannot think of a scenario where\n    > picking random Vs to serve as hints could make sense.\n\nIs this a u1 with a colluding W, who is now trying to learn the list of Vs?\nSuch a W wouldn't be in V's trusted list of manufacturers, right?\n\n\n",
+          "createdAt": "2024-04-03T13:25:54Z",
+          "updatedAt": "2024-04-03T13:25:54Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> Is this a u1 with a colluding W, who is now trying to learn the list of Vs?\r\n\r\nNo, I was thinking of a W that simply has a naive implementation of the hint-picking algorithm.\r\n\r\n> Such a (colluding) W wouldn't be in V's trusted list of manufacturers, right?\r\n\r\nCorrect, therefore the collusion with an untrusted W should not be possible.",
+          "createdAt": "2024-04-03T13:41:11Z",
+          "updatedAt": "2024-04-03T13:41:11Z"
+        },
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "\r\nHiya,\r\n\r\nOn 03/04/2024 14:01, Geovane Fedrecheski wrote:\r\n> Great question.\r\n> \r\n> ### 1. Privacy of u_hints at W\r\n> Let's say that W receives MAC addresses of some Vs, and shares them with third parties. This is harmless in my opinion, as MAC addresses are freely broadcasted in beacons, and do not identify a customer.\r\n\r\nI was more after a scenario describing some specific type\r\nof device - it may seem much less threatening to consider\r\nissues for \"U\" than to consider issues for e.g. a health\r\nmonitor or some other device carried by a human.\r\n\r\nIn such cases, GPS co-ords or the list of MACs seen for\r\nV's leaks location information to W which seems undesirable\r\nin general. (Esp. as the protocol uses opaque fields for\r\ncarrying that, and could therefore be abused by device\r\nmanufs.)\r\n\r\nConsider also security issues (as opposed to privacy\r\nissues) in cases where the device is carried by a person\r\nin some security-sensitive location (e.g. a military\r\ninstallation or prison) - it seems pretty squirmy to me\r\nto even provide location information to the device manuf\r\nin such cases.\r\n\r\nI'd generally wonder if the risks are worth the possible\r\nefficiency benefits.\r\n\r\nCheers,\r\nS.\r\n",
+          "createdAt": "2024-04-03T14:18:00Z",
+          "updatedAt": "2024-04-03T14:18:00Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Hi @sftcd,\r\n\r\nAt this point, considering we proceed with #29, we would be backing off from sending opaque data in lieu of sending only network identifiers. Also, as a result of the present discussion, I think we can entirely discard the idea of sending GPS coordinates.\r\n\r\nAnother consideration is that just by having U trying to enroll via V, this already leaks some location information to W. For example, in Bluetooth or IEEE 802.15.4 or Wi-Fi one can easily expect a geolocation accuracy of a few tens of meters, given the MAC address of just one gateway. Of course triangulation of more gateways can improve that, but I would say e.g. 50 meters is already quite sensitive.\r\n\r\nNext, IIUC, your concerns regard only hints from U to W. Do you have concerns with the other way around? (where the manufacturer sends identifiers of gateways to a known device).\r\n\r\nI am taking a look at what the performance improvements could look like, might come back later with data.",
+          "createdAt": "2024-04-04T09:39:38Z",
+          "updatedAt": "2024-04-04T09:39:38Z"
+        },
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "TBH, I don't understand why MAC addresses are even involved here - doesn't W only need to know CRED_V? Re-using possibly long term static identifiers like MAC addresses in this way would seem like an anti-pattern to me.\r\n\r\nAnd yes, my primary concern is leaking information about U (e.g. location) to W. But I've not analysed whether there are downsides to W \"sharing\" information with U - I guess there may be issues there that could enable a bad-actor U to more easily probe networks, but as I say, I've not analysed that. (I think mcr's comments above do though.)",
+          "createdAt": "2024-04-04T11:00:43Z",
+          "updatedAt": "2024-04-04T11:00:43Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> why MAC addresses are even involved here (...) doesn't W only need to know CRED_V?\r\n\r\nThe gist here is: we are considering an optimization to accelerate enrollment time when there are several potential networks (Vs), and to have it working would require some sharing of network identifiers.\r\n\r\n> Re-using possibly long term static identifiers like MAC addresses\r\n\r\nThe identifiers do not need to be long term, but then V would need to publish them at W periodically, which in turn requires additional coordination.\r\n\r\n---\r\n\r\nContinuing from my previous message, I did some simulations so we can discuss numbers. \r\n\r\nWe would be looking at faster join times of around 2x to 3x, when the number of available Vs is 10, with variations depending on the types of radio used. Specifically:\r\n- considering 10 available Vs and 5 hint items per message\r\n  - 3x faster join time, considering a 250 Kbps network with a scheduling timeslot of 10 ms (typical TSCH configuration)\r\n  - 2x faster join time, considering a 1 Mbps network with no scheduling cost (typical in Bluetooth)\r\n\r\nHints are more effective the more Vs there are available (e.g. may lead to a 10x improvement under certain conditions, provided there are > 25 available Vs). If available Vs = 5, there is no difference. If it is smaller than 5, using hints causes it to be slower.\r\n\r\nSo, it is a considerable improvement, although likely not a 10x factor in the average case.\r\n\r\n---\r\n\r\nAt this point not sure about next steps. Would be interested in hearing what others think on this topic (@gselander @mcr @malishav @chrysn).",
+          "createdAt": "2024-04-04T16:26:46Z",
+          "updatedAt": "2024-04-04T16:26:46Z"
+        },
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "\r\n\r\nOn 04/04/2024 17:27, Geovane Fedrecheski wrote:\r\n\r\n>> Re-using possibly long term static identifiers like MAC addresses\r\n> \r\n> The identifiers do not need to be long term, but then V would need to\r\n> publish them at W periodically, which in turn requires additional\r\n> coordination.\r\n\r\nIf that's possible, then oughtn't it be possible to use some\r\nother short-lived identifier that isn't a MAC address?\r\n\r\n> At this point not sure about next steps.\r\n\r\nI'd say summarise to the WG list is a good next step.\r\n\r\nCheers,\r\nS.\r\n\r\n",
+          "createdAt": "2024-04-04T17:35:07Z",
+          "updatedAt": "2024-04-04T17:35:07Z"
+        },
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Geovane Fedrecheski ***@***.***> wrote:\n    > The gist here is: we are considering an optimization to accelerate\n    > enrollment time when there are several potential networks (Vs), and to\n\nI think that we could add this later.\nRight now, I think it's premature optimization.\n\n\n",
+          "createdAt": "2024-04-04T18:38:28Z",
+          "updatedAt": "2024-04-04T18:38:28Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "About U providing information about MAC addresses to W: \r\n\r\nHere is an product using hashes of MAC addresses:\r\nhttps://www.footfallcam.com/people-counting/knowledge-base/chapter-19-general-data-protection-regulation-gdpr/\r\n\r\nWe could even do better. Instead of sending a list of MAC addresses, U sends a list of H(G_X, MAC-address) in u_hint (encrypted for W), where\r\n\r\n - H() is a truncated hash of size, say, 4 bytes (TBD)\r\n - G_X is working as a nonce, so the same MAC address detected by different Us or for different sessions with the same U would render independent values\r\n\r\nThe lists are matched by W against the corresponding values calculated with the MAC addresses of relevant Vs which are known to W by the setup of the system. Thus V learns which Vs are heard by U, and then deletes the list of hashes. \r\n\r\nIf U is a legitimate device etc. W returns information about preferred Vs' MAC addresses in v_hint (encrypted for U). (This could also be truncated hashes for compactness. Alternatively, U could enumerate the detected MAC addresses and W just sends back a list of integers, but that requires U to cache the MAC addresses ... which somehow works against the privacy ambition.)\r\n\r\nWould this be sufficient to address this privacy aspect? ",
+          "createdAt": "2024-04-05T09:59:35Z",
+          "updatedAt": "2024-04-05T09:59:35Z"
+        },
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "\r\n> Would this be sufficient to address this privacy aspect?\r\n\r\nIf W ends up knowing which set of V's are close to U, then isn't it game over from the privacy perspective regardless of how W learns that?\r\n",
+          "createdAt": "2024-04-05T11:51:31Z",
+          "updatedAt": "2024-04-05T11:51:31Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> If W ends up knowing which set of V's are close to U\r\n\r\nIn certain use cases, such as [Example 2](https://www.ietf.org/archive/id/draft-ietf-lake-authz-01.html#name-wrong-gateway) in the draft, we consider that the authorization policies may contain mappings from U to V's:\r\n\r\n```\r\nthe access policy in W specifies, via a mapping of shape (ID_U; MAC1, MAC2, ...) that device u1 \r\ncan only join via gateway v3, i.e., the mapping is: (14; 39-63-C9-D0-5C-62)\r\n```\r\n\r\nIn this case, W already has the full graph connecting U's and V's -- it has to have it, to enforce some business logic.\r\n\r\nIt is worth emphasizing that the hints would only be used in this kind of scenario, where W already has a mapping of U and V's. Since hints are optional, other scenarios that have less coupled architectures (with U's being able to join via any V's), would still be supported by the protocol, and would not need or use hints.\r\n\r\n(note: the example is using MAC addresses, but it could be any identifier of V, such as ID_CRED_V)",
+          "createdAt": "2024-04-08T08:27:59Z",
+          "updatedAt": "2024-04-08T08:27:59Z"
+        },
+        {
+          "author": "sftcd",
+          "authorAssociation": "NONE",
+          "body": "\r\n\r\nOn 08/04/2024 09:28, Geovane Fedrecheski wrote:\r\n> In certain use cases, such as [Example 2](https://www.ietf.org/archive/id/draft-ietf-lake-authz-01.html#name-wrong-gateway) in the draft, we consider that the authorization policies may contain mappings from U to V's:\r\n> \r\n> ```\r\n> the access policy in W specifies, via a mapping of shape (ID_U; MAC1, MAC2, ...) that device u1\r\n> can only join via gateway v3, i.e., the mapping is: (14; 39-63-C9-D0-5C-62)\r\n> ```\r\n> \r\n> In this case, W already has the full graph connecting U's and V's -- it has to have it, to enforce some business logic.\r\n\r\nFor me, the above is too abstract to enable analysis of privacy\r\nissues, or business logic.\r\n\r\nCheers,\r\nS.\r\n",
+          "createdAt": "2024-04-08T08:50:31Z",
+          "updatedAt": "2024-04-08T08:50:31Z"
+        }
+      ]
+    },
+    {
+      "number": 35,
+      "id": "I_kwDOKiCa6c6Gpl6e",
+      "title": "Media type templates must stand on their own",
+      "url": "https://github.com/lake-wg/authz/issues/35",
+      "state": "OPEN",
+      "author": "cabo",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In the IANA registry, there will not be a link that could be used in \"See \"Authors' Addresses\" section\".\r\nPlease do fill in those fields.",
+      "createdAt": "2024-04-23T14:32:51Z",
+      "updatedAt": "2024-04-23T14:32:51Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 4,
+      "id": "PR_kwDOKiCa6c5hCE4Q",
+      "title": "Implementation notes",
+      "url": "https://github.com/lake-wg/authz/pull/4",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "There are 3 clarifications in separate commits. I am not totally sure if the consideration about credentials by value should be in the introduction, but I wanted them to be upfront in the document since it is a requirement to EDHOC implementations who wish to support this.",
+      "createdAt": "2023-12-04T09:58:22Z",
+      "updatedAt": "2024-02-02T08:24:25Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "048c37dcfb72a09c7c4e691611897123384e2838",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "implementation-notes",
+      "headRefOid": "961df517ca51e98fd9efaa10abe05c58f0c613e9",
+      "closedAt": "2024-02-02T08:24:22Z",
+      "mergedAt": "2024-02-02T08:24:22Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "7406be0905efda10dd7996d7b7cc6e287f27bcdd"
+      },
+      "comments": [
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Looks good, I made some editorial changes.\r\n\r\n(For some reason editor's copy won't update, don't understand why.) ",
+          "createdAt": "2024-01-26T11:10:43Z",
+          "updatedAt": "2024-01-26T11:10:43Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@gselander thank you. The problem was a missing reference declaration, and is now fixed.",
+          "createdAt": "2024-01-29T08:02:17Z",
+          "updatedAt": "2024-01-29T08:02:17Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 8,
+      "id": "PR_kwDOKiCa6c5lEemS",
+      "title": "Update links to new repository at lake-wg",
+      "url": "https://github.com/lake-wg/authz/pull/8",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-01-25T14:07:33Z",
+      "updatedAt": "2024-02-02T08:24:47Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "048c37dcfb72a09c7c4e691611897123384e2838",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "update-links-to-new-repo",
+      "headRefOid": "2e774da3036612abee259e6e725b618fe4f12b39",
+      "closedAt": "2024-02-02T08:24:44Z",
+      "mergedAt": "2024-02-02T08:24:44Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "f2e543dcfd316af94893f13ffc2507822f43db17"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c5t5rvh",
+          "commit": {
+            "abbreviatedOid": "2e774da"
+          },
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-25T14:12:06Z",
+          "updatedAt": "2024-01-25T14:12:06Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "id": "PR_kwDOKiCa6c5lI2rP",
+      "title": "Add error section",
+      "url": "https://github.com/lake-wg/authz/pull/9",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Adding an error handling section. Work in progress.",
+      "createdAt": "2024-01-26T08:45:49Z",
+      "updatedAt": "2024-02-26T14:29:44Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "981e71af06900d26281ad51507708c9167f659d0",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "add-error-section",
+      "headRefOid": "51513df38aae5375109898650f7a6e58597f67b2",
+      "closedAt": "2024-02-26T14:29:42Z",
+      "mergedAt": "2024-02-26T14:29:42Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "e678db91e8e64fb6a9290b8f6b554438b21b864f"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 10,
+      "id": "PR_kwDOKiCa6c5lWPlr",
+      "title": "Add Examples section (appendix)",
+      "url": "https://github.com/lake-wg/authz/pull/10",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Addresses #6.",
+      "createdAt": "2024-01-29T16:36:41Z",
+      "updatedAt": "2024-03-04T17:20:15Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "f4dc212f99e41b37be7aea286bf16b7381a3958b",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "add-examples-section",
+      "headRefOid": "3fecd9ec90ba4324d6d37e76b55c2cc4e0bd4036",
+      "closedAt": "2024-03-04T17:20:10Z",
+      "mergedAt": "2024-03-04T17:20:09Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "c531dcdc9070063bf16dc5680b03678e234def9f"
+      },
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Note that the second example (equivalent to UC4 in #6) does not include the `hint`, as it is not specified yet. It can be added back once that is done.",
+          "createdAt": "2024-01-29T16:39:54Z",
+          "updatedAt": "2024-01-29T16:39:54Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@gselander I added more details to the examples, do you want to take a look?",
+          "createdAt": "2024-03-04T14:21:24Z",
+          "updatedAt": "2024-03-04T14:21:24Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Looks good, but I didn't understand this:\r\n\r\n> the access policy in W specifies, via a list of ID_U, that device u1 can enroll via any domain authenticator, i.e., the list is: \\[14\\]\r\n\r\nHow can I understand that the list has this format?",
+          "createdAt": "2024-03-04T14:36:24Z",
+          "updatedAt": "2024-03-04T14:36:24Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Comparing with this in the second example. \r\n\r\n> {14, 39-63-C9-D0-5C-62}\r\n\r\nThe brackets are confusing, but is the absence of other entries (besides 14) in the previous example an indication that there is no restriction on what gateway?",
+          "createdAt": "2024-03-04T14:38:55Z",
+          "updatedAt": "2024-03-04T14:38:55Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> How can I understand that the list has this format?\r\n\r\nMy goal is just to provide an example of how the access policy could look like at W, while its exact format is out of scope (it is up to the authorization mechanism to define that).\r\n\r\nMaybe I could change it to `e.g., the access policy could look like this: [14]` (note the use of `e.g.` instead of `i.e.`) to make it clear that it is just an example.",
+          "createdAt": "2024-03-04T14:53:30Z",
+          "updatedAt": "2024-03-04T14:53:30Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> The brackets are confusing, but is the absence of other entries (besides 14) in the previous example an indication that there is no restriction on what gateway?\r\n\r\nYes, I intend for one example to have no restriction on the gateway, and another to have such restriction. The bracket notation is supposed to denote a mapping of ID_U and MAC Addresses, I can think of something else if that is not clear.",
+          "createdAt": "2024-03-04T14:56:10Z",
+          "updatedAt": "2024-03-04T14:56:10Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> Yes, I intend for one example to have no restriction on the gateway, and another to have such restriction. The bracket notation is supposed to denote a mapping of ID_U and MAC Addresses, I can think of something else if that is not clear.\r\n\r\nYes, please change from \"i.e.\" to \"e.g.\", the former gives the impression that there is something that should be understood based on something else. The examples are fine. It would be good with a common notation was used in both examples, and perhaps also the asymmetry between the first element and the following element(s), for example (14; MAC1, MAC2, ...)  and (14; ). Or (14; *).",
+          "createdAt": "2024-03-04T15:19:36Z",
+          "updatedAt": "2024-03-04T15:19:36Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I re-arranged the text so that there is no \"expectation\" on formats that are not defined. In doing so I decided to keep `i.e.`, because using `e.g.` again within the example felt redundant.\r\n\r\nIn summary, the changes are:\r\n1. in the first example, I abstracted away the format of the policy\r\n2. in the second one, I defined the policy format, so that I could use `i.e.` to mean a clear implication",
+          "createdAt": "2024-03-04T16:45:53Z",
+          "updatedAt": "2024-03-04T16:45:53Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c5yIkC_",
+          "commit": {
+            "abbreviatedOid": "cd130cc"
+          },
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-03-04T17:03:06Z",
+          "updatedAt": "2024-03-04T17:03:06Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "id": "PR_kwDOKiCa6c5lkfiV",
+      "title": "Ability to transfer opaque application data",
+      "url": "https://github.com/lake-wg/authz/pull/11",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Addressing #3.\r\n\r\nThe idea is to use 'ciphertext' from COSE_Encrypt0, which already has a MAC (the authentication tag), with the added benefit that now it is possible for W to send encrypted opaque data to U.",
+      "createdAt": "2024-01-31T13:21:39Z",
+      "updatedAt": "2024-02-26T14:24:55Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "c94faabf06cb97e2881248c1ece8f652c7ec5c7b",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "add-scope-to-voucher",
+      "headRefOid": "5ed20fef1632f3796b7bd4e4d4642b2826844326",
+      "closedAt": "2024-02-26T14:24:44Z",
+      "mergedAt": "2024-02-26T14:24:44Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "981e71af06900d26281ad51507708c9167f659d0"
+      },
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Some notes:\r\n- I am not sure `SCOPE` is the best name here. Maybe `OPAQUE_DATA` or similar (open to ideas).\r\n- I don't know if there is a rule for naming things like `K_2` and `info_label`, so I just incremented them from the values already in the draft.",
+          "createdAt": "2024-01-31T13:47:36Z",
+          "updatedAt": "2024-01-31T13:47:36Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Discussed in the design team meeting:\r\n\r\n```\r\n# from U to W:\r\nnow: plaintext = ID_U\r\ndesired: plaintext =\r\n\r\nENC_U_INFO = (\r\n  ID_U: bstr\r\n  ?opaque_info: bstr\r\n    e.g. available_networks, e.g. mac address (previously u_hints)\r\n)\r\n\r\n# from W to U:\r\nENC_W_INFO = (\r\n  ?opaque_info: bstr\r\n    e.g. selected/proposed_networks, e.g. mac address (previously v_hints)\r\n)\r\n```",
+          "createdAt": "2024-02-02T08:56:47Z",
+          "updatedAt": "2024-02-02T08:56:47Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Just to update on the above, what we really want is to enable transmission of an optional OPAQUE_INFO in the three cases below:\r\n\r\n```\r\n1. from U to W, within EAD_1 / Voucher_Info\r\nENC_U_INFO = (\r\n  ID_U: bstr\r\n  ?OPAQUE_INFO: bstr\r\n    e.g. available_networks, e.g. mac address (previously u_hints)\r\n)\r\n\r\n2. from W to U, within EAD_2 / Voucher\r\nplaintext of Voucher = (\r\n  ?OPAQUE_INFO: bstr\r\n    e.g. selected/proposed_networks, e.g. mac address (previously v_hints)\r\n)\r\n\r\n(note that in this case the MAC, which was originally the full content of the Voucher, will be the authentication tag generated during encryption)\r\n\r\n3. from W to U, within Error message\r\nplaintext of REJECT_INFO = (\r\n    ?OPAQUE_INFO:            bstr,\r\n)\r\n```\r\n\r\nIn this PR, cases 1 and 2 are addressed (I am updating its title).\r\nCase 3 is being handled in PR #9, and will be updated once this one is settled, as it is now establishing some new terminology.",
+          "createdAt": "2024-02-06T11:13:40Z",
+          "updatedAt": "2024-02-06T12:41:42Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@gselander I added an example of what could go in the voucher on commit [893d156](https://github.com/lake-wg/authz/pull/11/commits/893d156d4bfdea0a1a260822caf63163aa49a783). Could you please take a look?\r\n\r\n",
+          "createdAt": "2024-02-09T16:17:17Z",
+          "updatedAt": "2024-02-09T16:17:17Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 12,
+      "id": "PR_kwDOKiCa6c5ls3YD",
+      "title": "Update draft name and URLs",
+      "url": "https://github.com/lake-wg/authz/pull/12",
+      "state": "CLOSED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Similar to #8. This also updates the filename to match the working group draft name.\r\n\r\nNot sure how to update the diff URL though.",
+      "createdAt": "2024-02-01T13:26:27Z",
+      "updatedAt": "2024-02-02T10:13:46Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "ac30874fe99d1ca2c8f657e198844d467a08c57b",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "update-more-urls",
+      "headRefOid": "3c0a45061c5d69276a7487072c9ed2de40415522",
+      "closedAt": "2024-02-02T10:13:46Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Closing as it was solved in commits https://github.com/lake-wg/authz/commit/085fd96bce160938420a6aaadef62876539d0d8f and https://github.com/lake-wg/authz/commit/72a75a10e582c553ff1600d902d66a7346095f6b",
+          "createdAt": "2024-02-02T10:13:42Z",
+          "updatedAt": "2024-02-02T10:13:42Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 13,
+      "id": "PR_kwDOKiCa6c5ls_Io",
+      "title": "Add enrollment hints",
+      "url": "https://github.com/lake-wg/authz/pull/13",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Addresses #7. Work in progress.",
+      "createdAt": "2024-02-01T13:42:22Z",
+      "updatedAt": "2024-03-04T14:22:00Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "96776f116f44f9801783f6c325ebaeca81530de7",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "add-enrollment-hints",
+      "headRefOid": "ff0d6c33389b954e20b87bcd2c067f88e9b954fe",
+      "closedAt": "2024-03-04T14:21:55Z",
+      "mergedAt": "2024-03-04T14:21:55Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "74a6c6d2bfa4641200728f05720aaa7a33ff604c"
+      },
+      "comments": [
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I read through the changes, some minor comments: \r\n\r\n* If could be good to clarify that \u201cOPAQUE_INFO\u201d is opaque when viewed as information element in EDHOC. It is opaque to V but the application in U and W can read the contents.\r\n* \u201cThe hint is an optional field in EAD_1, and it must be encrypted.\u201d\r\nClarify that u_hint is included in OPAQUE_INFO.\r\n* Similarly, clarify that v_hint in included in REJECT_INFO\r\n* Nit: All words in upper case in titles: \"Enrollment hints\"->\"Enrollment Hints\", etc.",
+          "createdAt": "2024-03-04T10:32:04Z",
+          "updatedAt": "2024-03-04T10:32:04Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "One more comment: \r\n\r\n\"W generates error_content and transfers it to V via the secure connection.\"\r\n\r\nWe should explain how this message is part of the VREQ/VRES protocol. This is not necessary an error from the point of view of that protocol. If we don't have a quick fix, make a separate issue.\r\n\r\nEdit: For example, add a flag in VRES\r\n\r\nVoucher_Response = [\r\n    message_1:      bstr,\r\n    flag:               int,\r\n    response:        bstr,\r\n    ? opaque_state: bstr\r\n]\r\n\r\nflag = -1 is used with response = Voucher.  In case of reject, then (flag, response) = error_content.\r\n\r\n(or other preferred construction)\r\n\r\nEdit: Or reserve REJECT_TYPE = 0 for the no reject case. The flag/ REJECT_TYPE thus becomes a status code for the VREQ/VRES protocol. Maybe rename \"REJECT_TYPE\" accordingly. Or leave out for this update. ",
+          "createdAt": "2024-03-04T10:40:19Z",
+          "updatedAt": "2024-03-04T10:58:28Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thank you @chrysn and @gselander for your comments.\r\n\r\nNote that the reviewed text included more commits than just the hints. I just rebased it from master to include just the hints' update.\r\n\r\nFinally, @gselander I just addressed the comments that applied to the hints section. Will address the remaining ones in a separate issue.",
+          "createdAt": "2024-03-04T14:00:10Z",
+          "updatedAt": "2024-03-04T14:00:10Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thanks @geonnave, ff0d6c3 looks good.",
+          "createdAt": "2024-03-04T14:16:25Z",
+          "updatedAt": "2024-03-04T14:16:25Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c5yEq7v",
+          "commit": {
+            "abbreviatedOid": "ea029f4"
+          },
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "The voucher details are something I care about, and that text looks good to me.",
+          "createdAt": "2024-03-04T09:30:07Z",
+          "updatedAt": "2024-03-04T09:30:07Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "id": "PR_kwDOKiCa6c5mqLkz",
+      "title": "Rename filename from individual name to ietf",
+      "url": "https://github.com/lake-wg/authz/pull/14",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-02-12T17:04:45Z",
+      "updatedAt": "2024-02-12T17:08:35Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "2bf9001c881352d01d91e93393601bc5c126889e",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "rename-draft-filename",
+      "headRefOid": "1c0305c7e481397e706b7b98207f10d91c38f4c1",
+      "closedAt": "2024-02-12T17:08:28Z",
+      "mergedAt": "2024-02-12T17:08:28Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "c94faabf06cb97e2881248c1ece8f652c7ec5c7b"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 15,
+      "id": "PR_kwDOKiCa6c5n8MbF",
+      "title": "Update error content with opaque info",
+      "url": "https://github.com/lake-wg/authz/pull/15",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-02-26T16:51:16Z",
+      "updatedAt": "2024-02-27T08:29:43Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "e678db91e8e64fb6a9290b8f6b554438b21b864f",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "update-erorr-with-opaque-info",
+      "headRefOid": "cd11bd4ea42bb99fb69f70399b2f43aa1d191c0d",
+      "closedAt": "2024-02-27T08:29:40Z",
+      "mergedAt": "2024-02-27T08:29:40Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "96776f116f44f9801783f6c325ebaeca81530de7"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 16,
+      "id": "PR_kwDOKiCa6c5omLzS",
+      "title": "CoJP examples: Don't send extra Content-Format",
+      "url": "https://github.com/lake-wg/authz/pull/16",
+      "state": "MERGED",
+      "author": "chrysn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Sending these is optional in oscore-edhoc, and given there is a SHALL in the text, this needlessly increases the verbosity over the air.\r\n\r\n(I'm tempted to state something similar about the CON in message 1, especially with regard to RFC9031's text on join proxies, but at least that's more complicated, and removing content-format is easy).",
+      "createdAt": "2024-03-04T14:19:59Z",
+      "updatedAt": "2024-03-04T16:54:50Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "96776f116f44f9801783f6c325ebaeca81530de7",
+      "headRepository": "chrysn-pull-requests/authz",
+      "headRefName": "no-extra-ct",
+      "headRefOid": "8ee5bd78050b99235766e1d4bf310cdf530ace78",
+      "closedAt": "2024-03-04T16:54:50Z",
+      "mergedAt": "2024-03-04T16:54:50Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "f4dc212f99e41b37be7aea286bf16b7381a3958b"
+      },
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@malishav I think you have more context on the impact of this change, could you please take a look?",
+          "createdAt": "2024-03-04T14:26:27Z",
+          "updatedAt": "2024-03-04T14:26:27Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thank you for your contribution @chrysn!",
+          "createdAt": "2024-03-04T16:54:46Z",
+          "updatedAt": "2024-03-04T16:54:46Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c5yHz3o",
+          "commit": {
+            "abbreviatedOid": "8ee5bd7"
+          },
+          "author": "malishav",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "I believe @chrysn is right. There is a SHALL in our text on how to transport the message but we include Content-Format there, although it is optionally transported (media-type can be inferred from the URI) according to draft-ietf-core-oscore-edhoc. I think the PR is OK to be merged.",
+          "createdAt": "2024-03-04T15:40:19Z",
+          "updatedAt": "2024-03-04T15:40:19Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "id": "PR_kwDOKiCa6c5omuRC",
+      "title": "Clarifications about the usage of OPAQUE_INFO",
+      "url": "https://github.com/lake-wg/authz/pull/18",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Solves #17 ",
+      "createdAt": "2024-03-04T15:29:30Z",
+      "updatedAt": "2024-03-04T16:23:15Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "74a6c6d2bfa4641200728f05720aaa7a33ff604c",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "clarifications-opaque-info",
+      "headRefOid": "d51adec35a6c688bd7fc4df97f5c15384780846d",
+      "closedAt": "2024-03-04T16:23:12Z",
+      "mergedAt": "2024-03-04T16:23:12Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "a5fe68b295b57624dd0c0c272818a9850c32a6ed"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c5yH3lb",
+          "commit": {
+            "abbreviatedOid": "d51adec"
+          },
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-03-04T15:46:35Z",
+          "updatedAt": "2024-03-04T15:46:35Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "id": "PR_kwDOKiCa6c5pgs_f",
+      "title": "Fix github links and improve gitignore",
+      "url": "https://github.com/lake-wg/authz/pull/22",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Addressing #20 ",
+      "createdAt": "2024-03-13T14:01:46Z",
+      "updatedAt": "2024-03-13T14:04:26Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "c531dcdc9070063bf16dc5680b03678e234def9f",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "fix-github-links",
+      "headRefOid": "539f60c4da7bb0aec050768561d1f287f0542f78",
+      "closedAt": "2024-03-13T14:04:23Z",
+      "mergedAt": "2024-03-13T14:04:23Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "b7b276bbecea58ee0e547ef72e48c16bd9451261"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 28,
+      "id": "PR_kwDOKiCa6c5ri3no",
+      "title": "Explain error handling in the VREQ/VRES protocol leg",
+      "url": "https://github.com/lake-wg/authz/pull/28",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Addresses issue #19.\r\n\r\nI took a different approach than the one mentioned in #19, and decided to put the error signaling in the RESTful layer:\r\n- I think it makes sense, since a RESTful interface will be always present between V and W\r\n- Successful responses are already encoded as 200 OK, so this is just an extension of that\r\n\r\nI also modified the text in the `Voucher Request -> Processing in W` subsection to clarify where the error handling mechanism is plugged in.\r\n\r\nFinally, I am not sure if I should elaborate more in the construction `If ID_U is known by W`, i.e., define what it means to be \"known\". Perhaps it is enough the way it is?\r\nNote that one reason to differentiate between known and unknown Us is the privacy of radio identifiers of Vs when using hints (v_hints specifically), as discussed in issue #27.",
+      "createdAt": "2024-04-03T10:15:06Z",
+      "updatedAt": "2024-06-05T10:31:30Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "bed36c25823fb3708aa6ada0cac38ed67b2be824",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "add-error-vreq-vres",
+      "headRefOid": "2eb46480fdd95b5a735eff1b45be5759ba7ef66c",
+      "closedAt": "2024-06-05T10:27:41Z",
+      "mergedAt": "2024-06-05T10:27:41Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "41293193800a42c8fb7906d095c04dedf0b4b949"
+      },
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Suggestions applied, comment about HTTP-only status code addressed in PR #32.",
+          "createdAt": "2024-04-16T09:54:39Z",
+          "updatedAt": "2024-04-16T09:54:39Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c5205pA",
+          "commit": {
+            "abbreviatedOid": "352281d"
+          },
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "Looks good, some comments: \r\n\r\nThese two sentences overlap each other:\r\n\r\n\"If H(message_1) is not unique among session identifiers associated to this device identifier of U, the EDHOC session SHALL be aborted.\r\n\r\nIf processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see {{rest-voucher-request}}.\"\r\n\r\nPerhaps can be combined?\r\n\r\n\r\n\r\nOLD\r\n\"U cannot authenticate\"\r\nNEW\r\n\"U cannot be identified\"\r\n\r\n\r\n\"this happens either if W fails to process the Voucher Request, or if it succeeds but ID_U is considered unkonwn to W. In this case, W MUST reply with a 400 Bad Request.\"\r\n\r\nTypo:\"unkonwn\"\r\n\r\n400 Bad Request\r\nMust this be HTTP?\r\n\r\n\r\nOLD\r\n\"U is authenticated but unauthorized\"\r\nNEW\r\n\"U is identified but unauthorized\"\r\n\r\n\r\n",
+          "createdAt": "2024-04-11T08:23:30Z",
+          "updatedAt": "2024-04-11T08:23:30Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKiCa6c53s8V2",
+          "commit": {
+            "abbreviatedOid": "bae131b"
+          },
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-04-18T08:53:42Z",
+          "updatedAt": "2024-04-18T08:53:43Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "The original sentence is describe what action to take if message_1 has been received before. It is not clear from the new sentence how to make H(message_1) unique.",
+              "createdAt": "2024-04-18T08:53:43Z",
+              "updatedAt": "2024-04-18T08:53:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c57wvZ7",
+          "commit": {
+            "abbreviatedOid": "b3cdf17"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-24T09:29:08Z",
+          "updatedAt": "2024-05-24T09:29:08Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "Pushed an update that removes the text about \"processing duplicates\", since that's not the only possible reason for wanting unique session ids per device (this was discussed in a previous meeting).\r\n\r\n#### Regarding your comment\r\n> The original sentence is describe what action to take if message_1 has been received before\r\n\r\nThe answer is that the newly introduced phrase in line 585 (\"If processing fails ...\") serves as a catch all action for any kind of error happening in the above paragraphs.\r\n\r\n> It is not clear from the new sentence how to make H(message_1) unique\r\n\r\nI don't see how the previous version is more clear. I also think that just stating that it should be unique is enough.",
+              "createdAt": "2024-05-24T09:29:08Z",
+              "updatedAt": "2024-05-24T09:29:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c59F-qa",
+          "commit": {
+            "abbreviatedOid": "2eb4648"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-05T10:27:03Z",
+          "updatedAt": "2024-06-05T10:27:04Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "Pushed the solution proposed by @malishav. (now it doesn't use the SHALL in an incorrect way)",
+              "createdAt": "2024-06-05T10:27:04Z",
+              "updatedAt": "2024-06-05T10:27:04Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "id": "PR_kwDOKiCa6c5rk-Si",
+      "title": "Replace OPAQUE_INFO by NEARBY_VS in EAD_1",
+      "url": "https://github.com/lake-wg/authz/pull/29",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This is a sketch towards issue #23.\r\n\r\nStill not sure how to handle the possible representations of network identifiers listed in the table. For example: should MAC Addresses be sent only as bytes? And what about IPv6 address, should it always be 128 bits or also support compressed notation? (I think we don't want to over-engineer this).\r\n\r\n",
+      "createdAt": "2024-04-03T14:35:09Z",
+      "updatedAt": "2024-04-03T15:44:15Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b7b276bbecea58ee0e547ef72e48c16bd9451261",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "make-opaque-concrete-ead1",
+      "headRefOid": "642cf542b8dd43834019435fb350cfd7b8325158",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "RFC9164 for IPv6 maybe.\r\n",
+          "createdAt": "2024-04-03T14:55:32Z",
+          "updatedAt": "2024-04-03T14:55:32Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> RFC9164 for IPv6\r\n\r\nThanks, I think we should use it.\r\n\r\nI was also not aware of the [CBOR tags registry](https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml), which has definitions for MAC Addresses.\r\n\r\nI think for sure we want to re-use the tag numbers, but I am not sure if we keep the semantics of the data items, considering that we will likely have a list of nearby_vs / hints, thus leading to duplication of tag values, which is not ideal given the constrained link between U and V.\r\n\r\nFor this we could define a special encoding _just to save bytes_ (similar to specific encodings found in EDHOC, e.g. when single-element uint arrays are encoded as just uint). For example we could:\r\n1. just tag a whole array, and all elements will have the same meaning\r\n2. put the tag as first element in the array\r\n\r\nThe advantage of (1) is using the tag as a proper tag, but the disadvantage is that the change in semantics of the data item might be misleading.\r\nAs for (2), it does not cause confusion with tag semantics, but it feels a bit hacky.",
+          "createdAt": "2024-04-03T15:42:57Z",
+          "updatedAt": "2024-04-03T15:42:57Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Just to clarify, I don't think of changing the representation of the identifiers, just how they are grouped with respect to a given tag.",
+          "createdAt": "2024-04-03T15:44:14Z",
+          "updatedAt": "2024-04-03T15:44:14Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 30,
+      "id": "PR_kwDOKiCa6c5r2spj",
+      "title": "Update references now that EDHOC is an RFC",
+      "url": "https://github.com/lake-wg/authz/pull/30",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-04-05T14:46:42Z",
+      "updatedAt": "2024-04-08T07:40:14Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b7b276bbecea58ee0e547ef72e48c16bd9451261",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "update-edhoc-references",
+      "headRefOid": "fc361db1c8791553623236eee322c5088eddd3ed",
+      "closedAt": "2024-04-08T07:40:11Z",
+      "mergedAt": "2024-04-08T07:40:11Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "efbbecef4dd965fd4f658024325a1e3bf7a8eacc"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 31,
+      "id": "PR_kwDOKiCa6c5sG5fX",
+      "title": "Editorial updates addressing Marco's review",
+      "url": "https://github.com/lake-wg/authz/pull/31",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Clarifications and editorial improvements based on @marco-tiloca-sics's [review on the LAKE mailing list](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/).",
+      "createdAt": "2024-04-09T09:28:46Z",
+      "updatedAt": "2024-04-16T08:00:10Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "efbbecef4dd965fd4f658024325a1e3bf7a8eacc",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "addressing-marcos-review-20march2024",
+      "headRefOid": "57925d144dbe0384d910df7c02a04125b4248599",
+      "closedAt": "2024-04-16T08:00:06Z",
+      "mergedAt": "2024-04-16T08:00:06Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290"
+      },
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@gselander thank you for the review. \r\n\r\n> add Marco to the acknowledgments\r\n\r\nDone.",
+          "createdAt": "2024-04-11T10:12:50Z",
+          "updatedAt": "2024-04-11T10:12:50Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c521Bwt",
+          "commit": {
+            "abbreviatedOid": "5ece90d"
+          },
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "Looks good. We should add Marco to the acknowledgments.",
+          "createdAt": "2024-04-11T08:40:46Z",
+          "updatedAt": "2024-04-11T08:40:46Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 32,
+      "id": "PR_kwDOKiCa6c5sx-jh",
+      "title": "Specify missing CoAP status codes and Content-Format",
+      "url": "https://github.com/lake-wg/authz/pull/32",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As per @marco-tiloca-sics's [review](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/) of [Section 5.4.1] and [Section 5.4.2], and @gselander's comment on PR #28.\r\n\r\nFor now this is on top of PR #28, so to review look only at commit https://github.com/lake-wg/authz/commit/ebcfa62f45d343fcd794a8795e094e17b51e64b3.",
+      "createdAt": "2024-04-16T09:52:47Z",
+      "updatedAt": "2024-06-05T10:31:32Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "41293193800a42c8fb7906d095c04dedf0b4b949",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "http-and-coap-params-v-to-w",
+      "headRefOid": "0601e86b525eb459979b266266f7b7a7fb55c794",
+      "closedAt": "2024-06-05T10:31:25Z",
+      "mergedAt": "2024-06-05T10:31:25Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "d864161ee1bcd7410f02f3704b1457b86db60e30"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c53s9Bh",
+          "commit": {
+            "abbreviatedOid": "ebcfa62"
+          },
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-04-18T08:55:00Z",
+          "updatedAt": "2024-04-18T08:55:00Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "As in #28",
+              "createdAt": "2024-04-18T08:55:00Z",
+              "updatedAt": "2024-04-18T08:55:00Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c57wwN6",
+          "commit": {
+            "abbreviatedOid": "ebcfa62"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-24T09:30:50Z",
+          "updatedAt": "2024-05-24T09:30:50Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "Answered [here in 28](https://github.com/lake-wg/authz/pull/28/files#r1613175478)",
+              "createdAt": "2024-05-24T09:30:50Z",
+              "updatedAt": "2024-05-24T09:30:50Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "id": "PR_kwDOKiCa6c5s0Z4V",
+      "title": "Rename section Problem Description to Outline",
+      "url": "https://github.com/lake-wg/authz/pull/33",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As per @marco-tiloca-sics's [review](https://mailarchive.ietf.org/arch/msg/lake/ScUM1MfnWe7imi1IfWybrRZlzMw/) of [Section 2].",
+      "createdAt": "2024-04-16T15:21:55Z",
+      "updatedAt": "2024-05-03T07:00:33Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "2f26fcee934b0d3b48cae8a4891cc4bd001e6290",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "rename-section-problem-to-objective",
+      "headRefOid": "c235524c5b14fe10bc8722ac113e558263c990ce",
+      "closedAt": "2024-05-03T07:00:24Z",
+      "mergedAt": "2024-05-03T07:00:24Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "a899f5cc8c43fbdf74f70831a6faf6e55ec40a34"
+      },
+      "comments": [
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Or perhaps better \"Outline\"",
+          "createdAt": "2024-04-18T08:55:57Z",
+          "updatedAt": "2024-04-18T08:55:57Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 34,
+      "id": "PR_kwDOKiCa6c5tepf8",
+      "title": "CDDL nits",
+      "url": "https://github.com/lake-wg/authz/pull/34",
+      "state": "MERGED",
+      "author": "cabo",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-04-23T13:43:32Z",
+      "updatedAt": "2024-06-05T12:07:35Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "d864161ee1bcd7410f02f3704b1457b86db60e30",
+      "headRepository": "cabo/lake-authz",
+      "headRefName": "cddl-nits",
+      "headRefOid": "0400d838ccd6d7e8e7620d3528cfa283c53f1c9d",
+      "closedAt": "2024-06-05T12:07:35Z",
+      "mergedAt": "2024-06-05T12:07:35Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "b5dac6c38cadfdb3b5ca5c70e095c4f4e912328b"
+      },
+      "comments": [
+        {
+          "author": "cabo",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "There also is the weird construct COSE_Encrypt0.ciphertext -- this is a bstr, no?\r\n(Or do you allow null as well?)",
+          "createdAt": "2024-04-23T13:45:16Z",
+          "updatedAt": "2024-04-23T14:45:55Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thank you @cabo, the contributions look good.\r\n\r\n> There also is the weird construct COSE_Encrypt0.ciphertext -- this is a bstr, no?\r\n\r\nYes it is a bstr, we could update it to have `COSE_Encrypt0.ciphertext` mentioned in the text and `bstr` in the CDDL definition.",
+          "createdAt": "2024-05-03T06:51:58Z",
+          "updatedAt": "2024-05-03T06:51:58Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 36,
+      "id": "PR_kwDOKiCa6c5tlOsh",
+      "title": "Using EDHOC reverse message flow",
+      "url": "https://github.com/lake-wg/authz/pull/36",
+      "state": "OPEN",
+      "author": "gselander",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "For discussion. \r\n\r\nInstead of sending message_1, U sends a trigger over multicast/broadcast which leads to V sending message_1 to U. This allows a discovery process where EAD_1 could contain an EAD item specified in lake-authz, allowing advertisement of the use of the authz protocol, or certain deployment of authz, independent of underlying layer. This allows U to detect gateways supporting the authz protocol ,or certain deployment, and provide such information to W using the \"hints\" and allow an effficient deployment.\r\n\r\nEDHOC messages then follow with EAD_x having the content of EAD_(x-1) of the forward flow. \r\n\r\nNote that ID_CRED_R, sent in message_2, can now be empty because V will now run VREQ/VRES with W and in this case CRED_U can be returned without changing the basic identity protection assumption of EDHOC.",
+      "createdAt": "2024-04-24T09:58:09Z",
+      "updatedAt": "2024-06-05T09:24:52Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
+      "headRepository": "lake-wg/authz",
+      "headRefName": "reverse-flow",
+      "headRefOid": "f7c4a95ab2560f4bcbcb9f5517efa6edc91b6b7c",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think it is a good idea in that it also may help in the advertisement of lake-authz support.\r\n\r\nMy first thought is about the practicality of the `trigger/broadcast message` and the `reply with payload (message_1)`. Since I have some ongoing work about mapping to lake-authz to link layer technologies, I can add this topic in the discussions there (including the [hackathon side meeting](https://openwsn.atlassian.net/wiki/spaces/LAKE/pages/2390458394/lake-authz+and+link+layer)).\r\n\r\nThus, so far we have the following motivations / use cases for enabling a reverse message flow:\r\n- facilitating advertisement of the lake-authz feature\r\n  - which in turn may work as an opt-in and address privacy issues related to sharing of network identifiers, see issue #27 \r\n- some CoAP-over-GATT deployment scenario brought up by @chrysn in issue #21 ",
+          "createdAt": "2024-05-03T08:35:01Z",
+          "updatedAt": "2024-05-03T08:35:01Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Sounds viable to me if #21 is viable.\r\n\r\nFor the broadcasting aspect, it may also be an option to broadcast a message_1. Sure, the EDHOC machinery may only advance for one selected peer (especially, sending two message_3 may be dangerous, even though I'm not sure why precisely, as long as all G_Y are distinct), but is there any harm done in decrypting (but not verifying) message_2, and then arriving at a binary decision to advance (and commit to the outcome of 5.3.3 step 6) only if ID_CRED_R and EAD_2 contains the right values?",
+          "createdAt": "2024-05-04T22:46:38Z",
+          "updatedAt": "2024-05-04T22:46:38Z"
+        },
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "\n    > For the broadcasting aspect, it may also be an option to broadcast a\n    > message_1. Sure, the EDHOC machinery may only advance for one selected\n\nIt sounds harmless to do the survey in parallel, if all proxies lead to\ndifferent networks.  If they lead to the same network, then you've just\ncreated congestion.\n\n\n\n",
+          "createdAt": "2024-05-06T09:52:32Z",
+          "updatedAt": "2024-05-06T09:52:32Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Amplification leading to congestion can be an issue with any multicast that causes later traffic (no matter whether it's an empty POST or a message_1). A message_1 in there may even help keep the traffic low, because if W can see that requests from different V contain the same message_1, can respond positively to the V that may enroll it, and tell the others off.",
+          "createdAt": "2024-05-07T11:54:17Z",
+          "updatedAt": "2024-05-07T11:54:17Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "We are discussing two different kinds of role reversal, change of EDHOC roles, or change of CoAP roles. This gives 4 cases:\r\n\r\n00. (00) No reversal. U = I = CoAP client, V = R = CoAP server.\r\n\r\n01. (01) EDHOC reverse message flow, as in A.2.2 of RFC 9528. In this case the CoAP roles are reversed so U = I = CoAP server and V = R = CoAP client, and a trigger message is included. This was the intent with this PR.\r\n\r\n10. (10) Reversing EDHOC roles in the lake-authz architecture. In this case V = I = CoAP client, U = R = CoAP server. \r\n\r\n11. (11) Reversal in cases 1 and 2 combined, i.e. U = R = CoAP client sends a CoAP request trigger message to V = I = CoAP server, which responds with message_1 etc. \r\n\r\nBroadcast/multicast/etc. of trigger seems useful at least in case 1, as discussed above, and does not seem harmful in case 3. \r\n\r\nHowever, broadcast of message_1 may be an issue. It may be tempting for applications to use multiple sessions resulting from different endpoints responding to the same message_1. The security analyses made for EDHOC may not apply if G_X is reused. Moreover, the same connection identifier C_I intended to be used by the Initiator to distinguish between sessions is now used by the Initiator in multiple sessions (which also means special care needed for OSCORE sessions for which different Sender/Recipient Identifiers are required).\r\n\r\nCan we restrict multicast to the trigger message, or what functionality / optimization would be lost if we do?\r\n\r\n",
+          "createdAt": "2024-05-07T13:24:54Z",
+          "updatedAt": "2024-05-08T08:52:50Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "In a design meeting, we discussed a fifth scenario:\r\n\r\n4. (100) No reversal, but with advertisement (e.g. via network beacons).\r\n\r\nHere is what I envision in this scenario:\r\n\r\n---\r\n\r\n#### Advertisement of lake-authz capability\r\nV may broadcast support for lake-authz using some network advertisement mechanism provided by the lower layer, e.g., link layer beacons.\r\nIf used, the advertisement may contain the following information:\r\n1. V supports lake-authz as a protocol. This can be indicated by the presence of an `authz-protocol` information element of type int and value TBD1.\r\n2. V is part of a particular instance/system implementing lake-authz (analogy: eduroam is an instance of EAP). This can be indicated by an `authz-instance` information element of type bstr whose value is specified by the application.\r\n\r\nThe exact formatting of the `authz-protocol` and `authz-instance` values is out of scope of this specification, as it depends on how each lower layer formats its advertisement packets.\r\n\r\nWhen U receives an advertisement containing either of these fields, this information should be made available to the application, which may use it to prioritize the selection of a suitable V.",
+          "createdAt": "2024-06-05T09:08:28Z",
+          "updatedAt": "2024-06-05T09:08:28Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> However, broadcast of message_1 may be an issue\r\n\r\nThe \"using X multiple times\" aspect is why we should stop here. If one of the security teams could re-do their analysis assuming X reuse (with a check that it's only ever used with different Y), we can resume this, and then we can still fix this (because the direction where C_I is relevant has CoAP request-response binding, and then if C_I is relevant at the OSCORE level, the OSCORE identifiers can be changed in a combined CoAP/message 3 \u2013 but only if the X reuse holds).\r\n\r\nBroadcast on the network layer can still be useful without \"multicast EDHOC\", but would be more of an anycast use \u2013 if more than one device responds, that response would be rejected, and the next device waits for the next multicast that has a new G_X.\r\n\r\n> advertisements\r\n\r\nThe way I'm modeling those advertisements in CoAP-over-GATT is that they are a multicast requests in the CoAP sense. That way, they fall directly into the (11) flow and don't need to be regarded as out-of-band communication. That may or may not work for the link layers you have in mind.",
+          "createdAt": "2024-06-05T09:24:51Z",
+          "updatedAt": "2024-06-05T09:24:51Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 37,
+      "id": "PR_kwDOKiCa6c5tnUPB",
+      "title": "Read-through updates",
+      "url": "https://github.com/lake-wg/authz/pull/37",
+      "state": "MERGED",
+      "author": "gselander",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I did a read through and found some bits and pieces. Please review.",
+      "createdAt": "2024-04-24T14:56:47Z",
+      "updatedAt": "2024-05-24T08:49:31Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
+      "headRepository": "lake-wg/authz",
+      "headRefName": "read-through",
+      "headRefOid": "f1dda65f1e9dfc0f125a6f583168d47854b7e100",
+      "closedAt": "2024-05-24T08:49:31Z",
+      "mergedAt": "2024-05-24T08:49:30Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "bed36c25823fb3708aa6ada0cac38ed67b2be824"
+      },
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thanks, looks good to me.",
+          "createdAt": "2024-05-03T07:22:46Z",
+          "updatedAt": "2024-05-03T07:22:46Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c55cjSz",
+          "commit": {
+            "abbreviatedOid": "f1dda65"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-03T07:17:55Z",
+          "updatedAt": "2024-05-03T07:17:55Z",
+          "comments": [
+            {
+              "originalPosition": 44,
+              "body": "Why remove the text about the Voucher being carried in EAD_2?",
+              "createdAt": "2024-05-03T07:17:55Z",
+              "updatedAt": "2024-05-03T07:17:56Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c55ckAG",
+          "commit": {
+            "abbreviatedOid": "f1dda65"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-03T07:20:07Z",
+          "updatedAt": "2024-05-03T07:20:07Z",
+          "comments": [
+            {
+              "originalPosition": 44,
+              "body": "Nevermind, reading the section `#V_2` it makes sense. W does not know about EAD and EAD_2, only V.",
+              "createdAt": "2024-05-03T07:20:07Z",
+              "updatedAt": "2024-05-03T07:20:07Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "id": "PR_kwDOKiCa6c5wrEB8",
+      "title": "Credentials and clarifications",
+      "url": "https://github.com/lake-wg/authz/pull/38",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As of now, this is mostly intended as a place for discussion.",
+      "createdAt": "2024-05-27T14:43:12Z",
+      "updatedAt": "2024-06-13T07:20:35Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b5dac6c38cadfdb3b5ca5c70e095c4f4e912328b",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "type-of-cred-v",
+      "headRefOid": "18223c33bfcdd8417473859ab7f8bca3280164d3",
+      "closedAt": "2024-06-13T07:20:35Z",
+      "mergedAt": "2024-06-13T07:20:35Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "7e3e6a4da0fd319b4ca7d52b635b7cd655b040d5"
+      },
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This is now ready for review.\r\n\r\nThe two main changes are:\r\n- generalize CRED_V over the text (so that it is not restricted to being a CCS)\r\n- improve the description of the different ways V and W can establish a secure channel, and the implications on the type of CRED_V and EDHOC method used by V (see `creds-table`).",
+          "createdAt": "2024-06-05T12:55:58Z",
+          "updatedAt": "2024-06-05T12:55:58Z"
+        },
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This looks good to me, I just proposed an updated caption.",
+          "createdAt": "2024-06-13T05:05:42Z",
+          "updatedAt": "2024-06-13T05:05:42Z"
+        }
+      ],
+      "reviews": []
+    }
+  ]
+}
