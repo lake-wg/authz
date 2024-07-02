@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-30T01:20:10.175095+00:00",
+  "timestamp": "2024-07-02T01:14:48.504939+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -258,16 +258,24 @@
       "id": "I_kwDOKiCa6c6BK7k0",
       "title": "Explain error response in the context of the VREQ/VRES protocol",
       "url": "https://github.com/lake-wg/authz/issues/19",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "See [previous comment](https://github.com/lake-wg/authz/pull/13#issuecomment-1976281759) by @gselander:\r\n\r\n```\r\nOne more comment:\r\n\r\n\"W generates error_content and transfers it to V via the secure connection.\"\r\n\r\nWe should explain how this message is part of the VREQ/VRES protocol. This is not necessary an error from the point of view of that protocol. If we don't have a quick fix, make a separate issue.\r\n\r\nEdit: For example, add a flag in VRES\r\n\r\nVoucher_Response = [\r\nmessage_1: bstr,\r\nflag: int,\r\nresponse: bstr,\r\n? opaque_state: bstr\r\n]\r\n\r\nflag = -1 is used with response = Voucher. In case of reject, then (flag, response) = error_content.\r\n\r\n(or other preferred construction)\r\n\r\nEdit: Or reserve REJECT_TYPE = 0 for the no reject case. The flag/ REJECT_TYPE thus becomes a status code for the VREQ/VRES protocol. Maybe rename \"REJECT_TYPE\" accordingly. Or leave out for this update.\r\n```",
       "createdAt": "2024-03-04T15:31:19Z",
-      "updatedAt": "2024-03-04T15:31:19Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2024-07-01T09:07:48Z",
+      "closedAt": "2024-07-01T09:07:48Z",
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Solved in #28 ",
+          "createdAt": "2024-07-01T09:07:48Z",
+          "updatedAt": "2024-07-01T09:07:48Z"
+        }
+      ]
     },
     {
       "number": 20,
