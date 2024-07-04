@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-07-02T01:14:48.504939+00:00",
+  "timestamp": "2024-07-04T01:14:44.862831+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1708,6 +1708,32 @@
           "updatedAt": "2024-06-13T05:05:42Z"
         }
       ],
+      "reviews": []
+    },
+    {
+      "number": 39,
+      "id": "PR_kwDOKiCa6c50WIdX",
+      "title": "Fix contact for media type registration",
+      "url": "https://github.com/lake-wg/authz/pull/39",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Solves #35.\r\n\r\nI consulted some existing recent RFCs and apparently the most common approach is to refer to a WG or area. \r\nI decided to just link the WG.\r\nBelow are some examples.\r\n```\r\n- some use WG name, e.g. in RFCs 9553, 8949: \"IETF CBOR Working Group (cbor@ietf.org) or IETF Applications and Real-Time Area (art@ietf.org)\"\r\n- some use the IESG, e.g. in RFC 9525: \"iesg@ietf.org\"\r\n- some use just Author's Addresses with RFC name, e.g. in RFC 9528: \"See \"Authors' Addresses\" section in RFC 9528.\"\r\n```",
+      "createdAt": "2024-07-03T15:59:58Z",
+      "updatedAt": "2024-07-03T15:59:59Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "7e3e6a4da0fd319b4ca7d52b635b7cd655b040d5",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "fix-media-type-contact",
+      "headRefOid": "388201a1a579b02d167ddc76131044701552b39b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
       "reviews": []
     }
   ]
