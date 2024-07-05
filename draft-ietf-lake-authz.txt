@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 15 December 2024                                     M. Vučinić
+Expires: 6 January 2025                                       M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                            13 June 2024
+                                                             5 July 2024
 
 
    Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE
@@ -57,7 +57,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 December 2024.
+   This Internet-Draft will expire on 6 January 2025.
 
 Copyright Notice
 
@@ -1202,14 +1202,14 @@ U                              V                                       W
 
       -  Macintosh file type code(s): N/A
 
-   *  Person & email address to contact for further information: See
-      "Authors' Addresses" section.
+   *  Person & email address to contact for further information: IETF
+      LAKE Working Group (lake@ietf.org)
 
    *  Intended usage: COMMON
 
    *  Restrictions on usage: N/A
 
-   *  Author: See "Authors' Addresses" section.
+   *  Author: LAKE WG
 
    *  Change Controller: IESG
 
