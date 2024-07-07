@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-07-04T01:14:44.862831+00:00",
+  "timestamp": "2024-07-07T01:20:54.317598+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -560,15 +560,15 @@
       "id": "I_kwDOKiCa6c6Gpl6e",
       "title": "Media type templates must stand on their own",
       "url": "https://github.com/lake-wg/authz/issues/35",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cabo",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "In the IANA registry, there will not be a link that could be used in \"See \"Authors' Addresses\" section\".\r\nPlease do fill in those fields.",
       "createdAt": "2024-04-23T14:32:51Z",
-      "updatedAt": "2024-04-23T14:32:51Z",
-      "closedAt": null,
+      "updatedAt": "2024-07-05T15:46:02Z",
+      "closedAt": "2024-07-05T15:46:02Z",
       "comments": []
     }
   ],
@@ -1715,24 +1715,26 @@
       "id": "PR_kwDOKiCa6c50WIdX",
       "title": "Fix contact for media type registration",
       "url": "https://github.com/lake-wg/authz/pull/39",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Solves #35.\r\n\r\nI consulted some existing recent RFCs and apparently the most common approach is to refer to a WG or area. \r\nI decided to just link the WG.\r\nBelow are some examples.\r\n```\r\n- some use WG name, e.g. in RFCs 9553, 8949: \"IETF CBOR Working Group (cbor@ietf.org) or IETF Applications and Real-Time Area (art@ietf.org)\"\r\n- some use the IESG, e.g. in RFC 9525: \"iesg@ietf.org\"\r\n- some use just Author's Addresses with RFC name, e.g. in RFC 9528: \"See \"Authors' Addresses\" section in RFC 9528.\"\r\n```",
       "createdAt": "2024-07-03T15:59:58Z",
-      "updatedAt": "2024-07-03T15:59:59Z",
+      "updatedAt": "2024-07-05T15:46:05Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "7e3e6a4da0fd319b4ca7d52b635b7cd655b040d5",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "fix-media-type-contact",
       "headRefOid": "388201a1a579b02d167ddc76131044701552b39b",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-07-05T15:46:01Z",
+      "mergedAt": "2024-07-05T15:46:01Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "39487319d1a31dd1f509cb643535162a23d6cf0f"
+      },
       "comments": [],
       "reviews": []
     }
