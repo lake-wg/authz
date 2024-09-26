@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-09-24T01:26:25.865658+00:00",
+  "timestamp": "2024-09-26T01:25:34.354511+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1526,7 +1526,7 @@
       "labels": [],
       "body": "For discussion. \r\n\r\nInstead of sending message_1, U sends a trigger over multicast/broadcast which leads to V sending message_1 to U. This allows a discovery process where EAD_1 could contain an EAD item specified in lake-authz, allowing advertisement of the use of the authz protocol, or certain deployment of authz, independent of underlying layer. This allows U to detect gateways supporting the authz protocol ,or certain deployment, and provide such information to W using the \"hints\" and allow an effficient deployment.\r\n\r\nEDHOC messages then follow with EAD_x having the content of EAD_(x-1) of the forward flow. \r\n\r\nNote that ID_CRED_R, sent in message_2, can now be empty because V will now run VREQ/VRES with W and in this case CRED_U can be returned without changing the basic identity protection assumption of EDHOC.",
       "createdAt": "2024-04-24T09:58:09Z",
-      "updatedAt": "2024-06-05T09:24:52Z",
+      "updatedAt": "2024-09-25T13:15:39Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
@@ -1586,6 +1586,13 @@
           "body": "> However, broadcast of message_1 may be an issue\r\n\r\nThe \"using X multiple times\" aspect is why we should stop here. If one of the security teams could re-do their analysis assuming X reuse (with a check that it's only ever used with different Y), we can resume this, and then we can still fix this (because the direction where C_I is relevant has CoAP request-response binding, and then if C_I is relevant at the OSCORE level, the OSCORE identifiers can be changed in a combined CoAP/message 3 \u2013 but only if the X reuse holds).\r\n\r\nBroadcast on the network layer can still be useful without \"multicast EDHOC\", but would be more of an anycast use \u2013 if more than one device responds, that response would be rejected, and the next device waits for the next multicast that has a new G_X.\r\n\r\n> advertisements\r\n\r\nThe way I'm modeling those advertisements in CoAP-over-GATT is that they are a multicast requests in the CoAP sense. That way, they fall directly into the (11) flow and don't need to be regarded as out-of-band communication. That may or may not work for the link layers you have in mind.",
           "createdAt": "2024-06-05T09:24:51Z",
           "updatedAt": "2024-06-05T09:24:51Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The \"broadcast on the network layer\" is now also an example in https://datatracker.ietf.org/doc/draft-amsuess-core-coap-over-gatt/07/ (section 4.2). Especially in combination with NIPC, this looks promising as a way to keep radio traffic for unenrolled devices low. But the way it is presented there right now, the default U=I setup holds, but I acts as the CoAP server, so it's reverse flow. It does technically send the first message, but that is a one-shot message expressed as an unsolicited response. (One might also do things subtly differently and invent a new flow, where I POSTs msg_1 with No-Response and waits for R to reverse roles mid-flight, which I don't see anything problematic with, but the phrasing as \"it's a response to a POST the client didn't send\" works well and is easier on the EDHOC-CoAP side of explanations).",
+          "createdAt": "2024-09-25T13:15:37Z",
+          "updatedAt": "2024-09-25T13:15:37Z"
         }
       ],
       "reviews": []
