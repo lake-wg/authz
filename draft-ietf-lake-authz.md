@@ -1,7 +1,7 @@
 ---
-title: Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE
+title: Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
 docname: draft-ietf-lake-authz-latest
-abbrev: Lightweight Authorization using EDHOC
+abbrev: ELA
 ipr: trust200902
 cat: std
 submissiontype: IETF
@@ -103,7 +103,10 @@ venue:
 
 --- abstract
 
-This document describes a procedure for authorizing enrollment of new devices using the lightweight authenticated key exchange protocol Ephemeral Diffie-Hellman Over COSE (EDHOC). The procedure is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time.
+Ephemeral Diffie-Hellman Over COSE (EDHOC) is a lightweight authenticated key exchange protocol intended for use in constrained scenarios.
+This document specifies Lightweight Authorization using EDHOC (ELA).
+The procedure allows authorizing enrollment of new devices using the extension point defined in EDHOC.
+ELA is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time.
 
 --- middle
 
@@ -111,9 +114,9 @@ This document describes a procedure for authorizing enrollment of new devices us
 
 
 For constrained IoT deployments {{RFC7228}} the overhead and processing contributed by security protocols may be significant, which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see {{I-D.ietf-lake-reqs}}).
-This document describes a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC {{RFC9528}} with third party-assisted authorization.
+This document describes Lightweight Authorization using EDHOC (ELA), a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC {{RFC9528}} with third party-assisted authorization.
 
-The procedure involves a device, a domain authenticator, and an enrollment server.
+ELA involves a device, a domain authenticator, and an enrollment server.
 The device and domain authenticator perform mutual authentication and authorization, assisted by the enrollment server that provides relevant authorization information to the device (a "voucher") and to the authenticator. The high-level model is similar to BRSKI {{RFC8995}}.
 
 In this document, we consider the target interaction for which authorization is needed to be "enrollment", for example joining a network for the first time (e.g., {{RFC9031}}), but it can be applied to authorize other target interactions.
@@ -121,9 +124,9 @@ In this document, we consider the target interaction for which authorization is 
 The enrollment server may represent the manufacturer of the device, or some other party with information about the device from which a trust anchor has been pre-provisioned into the device.
 The (domain) authenticator may represent the service provider or some other party controlling access to the network in which the device is enrolling.
 
-The protocol assumes that authentication between device and authenticator is performed with EDHOC {{RFC9528}}, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) fields defined in EDHOC.
+ELA assumes that authentication between device and authenticator is performed with EDHOC {{RFC9528}}, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) fields defined in EDHOC.
 
-The protocol enables a low message count by performing authorization and enrollment in parallel with authentication, instead of in sequence, which is common for network access.
+ELA enables a low message count by performing authorization and enrollment in parallel with authentication, instead of in sequence, which is common for network access.
 It further reuses protocol elements from EDHOC, leading to reduced message sizes on constrained links.
 
 This protocol is applicable to a wide variety of settings, and can be mapped to different authorization architectures.
@@ -137,7 +140,7 @@ Appendix C.1 of {{RFC9528}} contains some basic info about CBOR.
 
 # Protocol Outline {#outline}
 
-The goal of this protocol is to enable a (potentially constrained) device (U) to enroll into a domain over a constrained link.
+The goal of ELA is to enable a (potentially constrained) device (U) to enroll into a domain over a constrained link.
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator (V) with the help of a voucher conveying authorization information.
 The voucher has a similar role as in {{RFC8366}} but should be considerably more compact.
 The domain authenticator, in turn, authenticates the device and authorizes its enrollment into the domain.
@@ -251,7 +254,7 @@ W needs to be available during the execution of the protocol between U and V.
 
 ## Overview
 
-The protocol consist of three security sessions going on in parallel:
+The ELA protocol consist of three security sessions going on in parallel:
 
 1. The EDHOC session between device (U) and (domain) authenticator (V)
 2. Voucher Request/Response between authenticator (V) and enrollment server (W)
@@ -314,13 +317,13 @@ U                              V                                       W
 |                              |                                       |
 |                              |                                       |
 ~~~~~~~~~~~
-{: #fig-protocol title="Overview of the protocol: W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, V and W are assumed to have established a secure channel and performed proof-of-possession of relevant keys. Credential lookup of CRED_U may involve W or other credential database." artwork-align="center"}
+{: #fig-protocol title="Overview of ELA: W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, V and W are assumed to have established a secure channel and performed proof-of-possession of relevant keys. Credential lookup of CRED_U may involve W or other credential database." artwork-align="center"}
 
 
 
 ## Reuse of EDHOC {#reuse}
 
-The protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
+The ELA protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
 
 * G_X, the ephemeral public Diffie-Hellman key of U, is also used in the protocol between U and W.
 
@@ -625,7 +628,7 @@ with U is aborted.
 If the voucher response is successfully received from W, then V responds to U with EDHOC message_2 as described in {{V_2}}.
 
 ## Error Handling {#err-handling}
-This section specifies a new EDHOC error code and how it is used in the proposed protocol.
+This section specifies a new EDHOC error code and how it is used in ELA.
 
 ### EDHOC Error "Access denied"
 
@@ -665,7 +668,7 @@ The purpose of REJECT_INFO is for the sender to provide verifiable and actionabl
 
 ### Error handling in W, V, and U
 
-This protocol uses the EDHOC Error "Access denied" in the following way:
+ELA uses the EDHOC Error "Access denied" in the following way:
 
 * W generates error_content and transfers it to V via the secure connection.
   If REJECT_TYPE is 1, then REJECT_INFO is encrypted from W to U using the EDHOC AEAD algorithm.
@@ -848,7 +851,7 @@ IANA has added the following Content-Format number in the "CoAP Content-Formats"
 
 # Use with Constrained Join Protocol (CoJP)
 
-This section outlines how the protocol is used for network enrollment and parameter provisioning.
+This section outlines how ELA is used for network enrollment and parameter provisioning.
 An IEEE 802.15.4 network is used as an example of how a new device (U) can be enrolled into the domain managed by the domain authenticator (V).
 
 ~~~~~~~~~~~ aasvg
@@ -981,7 +984,7 @@ This section presents high level examples of the protocol execution.
 Note: the examples below include samples of access policies used by W. These are provided for the sake of completeness only, since the authorization mechanism used by W is out of scope in this document.
 
 ## Minimal {#example_minimal}
-This is a simple example that demonstrates a successful execution of the protocol.
+This is a simple example that demonstrates a successful execution of ELA.
 
 Premises:
 
