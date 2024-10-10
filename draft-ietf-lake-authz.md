@@ -80,6 +80,7 @@ informative:
   RFC5280:
   RFC6761:
   RFC7228:
+  RFC7593:
   RFC8174:
   RFC8446:
   RFC8610:
@@ -90,6 +91,11 @@ informative:
   I-D.ietf-lake-reqs:
   IEEE802.15.4:
     title: "IEEE Std 802.15.4 Standard for Low-Rate Wireless Networks"
+    author:
+      ins: "IEEE standard for Information Technology"
+  IEEE802.1X:
+    title: "IEEE Standard for Local and metropolitan area networks - Port-Based Network Access Control"
+    date: February 2010
     author:
       ins: "IEEE standard for Information Technology"
 
@@ -697,6 +703,57 @@ where
 
 * H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 
+# Optimization Strategies
+
+When ELA is used for zero-touch enrollment, U normally has little to no knowledge of the available V's.
+This may lead to situations where U has to retry several times at different V's until it finds one that works.
+This section presents two optimization strategies for such cases.
+They were developed to address scenarios where V's are radio gateways to which U wants to enroll.
+
+## U anycasts message_1 {#strat-anycast}
+
+This strategy consists in U disseminating EDHOC message_1 as anycast (a broadcast from which only one successful message_2 response is expected).
+When each of the V's in radio range of U receive message_1, one of the following can happen:
+
+- V does not implement EDHOC, and drops the message
+- V does not implement ELA, and since EAD_1 is critical, it either responds with an error or drops the message (preferred)
+- V forwards message_1 to W as VREQ, but W does not authorize it, and error handling is applied
+- V forwards message_1 to W as VREQ, W authorizes it, and the protocol flows normally
+
+U is expected to receive at most one message_2 as response, which contains the Voucher.
+In case U receives additional message_2's, they MUST be silently dropped.
+
+This strategy may increase the number of messages that need to be processed by V and W, in exchange for reducing resource usage in U.
+
+Security concerns related to this strategy, including potential reuse of G_X and double processing of message_2, are discussed in Section {{sec-cons}}.
+
+## V advertises support for ELA
+
+In this strategy, V shares some information (V_INFO) with a potential U, that can help it decide whether to try to enroll in that V.
+For example, V may send a V_INFO stating that:
+
+- V implements ELA -- similarly to how EAPOL {{IEEE802.1X}} frames state support for IEEE 802.1X
+- V is part of a certain domain -- similarly to how Eduroam {{RFC7593}} is used in the SSID field for IEEE 802.11 networks
+
+The mechanism used to transport V_INFO will depend on the underlying communication technology and also on application needs.
+
+As a guideline for implementers, we define the following fields that can be included in a V_INFO structure:
+
+~~~~~~~~~~~ cddl
+ELA_ID:    int
+DOMAIN_ID: bstr
+~~~~~~~~~~~
+
+Where:
+
+- ELA_ID identifies the ELA protocol (NOTE: can we register such an identifier at IANA?)
+- DOMAIN_ID identifies the domain to which V belongs to, for example an URL or UUID
+
+Details on how exatcly these fields are structured are left to the application.
+
+Examples of how the advertisement strategy may be applied according to different application needs are presented in {{example-strat}}.
+
+
 # REST Interface at W {#rest_interface}
 
 The interaction between V and W is enabled through a RESTful interface exposed by W.
@@ -848,6 +905,8 @@ IANA has added the following Content-Format number in the "CoAP Content-Formats"
 {: #coap-content-formats title="Addition to the CoAP Content-Formats registry" cols="l l l"}
 
 --- back
+
+# Example Optimization Strategies {#example-strat}
 
 # Use with Constrained Join Protocol (CoJP)
 
