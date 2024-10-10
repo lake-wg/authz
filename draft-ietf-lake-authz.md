@@ -1,7 +1,7 @@
 ---
-title: Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE
+title: Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
 docname: draft-ietf-lake-authz-latest
-abbrev: Lightweight Authorization using EDHOC
+abbrev: ELA
 ipr: trust200902
 cat: std
 submissiontype: IETF
@@ -103,7 +103,10 @@ venue:
 
 --- abstract
 
-This document describes a procedure for authorizing enrollment of new devices using the lightweight authenticated key exchange protocol Ephemeral Diffie-Hellman Over COSE (EDHOC). The procedure is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time.
+Ephemeral Diffie-Hellman Over COSE (EDHOC) is a lightweight authenticated key exchange protocol intended for use in constrained scenarios.
+This document specifies Lightweight Authorization using EDHOC (ELA).
+The procedure allows authorizing enrollment of new devices using the extension point defined in EDHOC.
+ELA is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time.
 
 --- middle
 
