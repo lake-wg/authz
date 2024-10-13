@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-10T01:25:49.879398+00:00",
+  "timestamp": "2024-10-13T01:38:46.851649+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1742,6 +1742,58 @@
       "mergeCommit": {
         "oid": "39487319d1a31dd1f509cb643535162a23d6cf0f"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 40,
+      "id": "PR_kwDOKiCa6c5-L2gC",
+      "title": "Protocol name: introduce abbreviated form 'ELA'",
+      "url": "https://github.com/lake-wg/authz/pull/40",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Applying the ELA abbreviation as discussed with @malishav and @gselander. ",
+      "createdAt": "2024-10-10T08:38:00Z",
+      "updatedAt": "2024-10-10T09:03:58Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "bf4d0654051494f1b66e0bf99827283677e6db83",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "name-it-ela",
+      "headRefOid": "e1f3a78b270ec63823fe5ea7cac13fa90f32c072",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 41,
+      "id": "PR_kwDOKiCa6c5-PmRl",
+      "title": "Add section Optimization Strategies",
+      "url": "https://github.com/lake-wg/authz/pull/41",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "So far this PR introduces:\r\n- a new section called Optimization Strategies, where (1) broadcast and (2) advertisement solutions are presented\r\n- a new appendix for the protocol with EDHOC reverse flow\r\n- a new appendix to hold example advertisement strategies (intention is to list a few possible strategies, sampling from what we have discussed at length already)\r\n\r\nNote that although this PR does not build on top of #40, I am using the abbreviated form ELA to refer to the protocol. The idea is to rebase it once #40 gets merged. ",
+      "createdAt": "2024-10-10T15:58:40Z",
+      "updatedAt": "2024-10-11T15:32:23Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "bf4d0654051494f1b66e0bf99827283677e6db83",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "optimizations-broadcast-advertisement",
+      "headRefOid": "055d6c9245cedf26d50353c485b56cfb172ec70d",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
