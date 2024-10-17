@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-15T01:27:13.742505+00:00",
+  "timestamp": "2024-10-17T01:26:36.792241+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1526,7 +1526,7 @@
       "labels": [],
       "body": "For discussion. \r\n\r\nInstead of sending message_1, U sends a trigger over multicast/broadcast which leads to V sending message_1 to U. This allows a discovery process where EAD_1 could contain an EAD item specified in lake-authz, allowing advertisement of the use of the authz protocol, or certain deployment of authz, independent of underlying layer. This allows U to detect gateways supporting the authz protocol ,or certain deployment, and provide such information to W using the \"hints\" and allow an effficient deployment.\r\n\r\nEDHOC messages then follow with EAD_x having the content of EAD_(x-1) of the forward flow. \r\n\r\nNote that ID_CRED_R, sent in message_2, can now be empty because V will now run VREQ/VRES with W and in this case CRED_U can be returned without changing the basic identity protection assumption of EDHOC.",
       "createdAt": "2024-04-24T09:58:09Z",
-      "updatedAt": "2024-09-25T13:15:39Z",
+      "updatedAt": "2024-10-15T08:57:39Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
@@ -1593,6 +1593,13 @@
           "body": "The \"broadcast on the network layer\" is now also an example in https://datatracker.ietf.org/doc/draft-amsuess-core-coap-over-gatt/07/ (section 4.2). Especially in combination with NIPC, this looks promising as a way to keep radio traffic for unenrolled devices low. But the way it is presented there right now, the default U=I setup holds, but I acts as the CoAP server, so it's reverse flow. It does technically send the first message, but that is a one-shot message expressed as an unsolicited response. (One might also do things subtly differently and invent a new flow, where I POSTs msg_1 with No-Response and waits for R to reverse roles mid-flight, which I don't see anything problematic with, but the phrasing as \"it's a response to a POST the client didn't send\" works well and is easier on the EDHOC-CoAP side of explanations).",
           "createdAt": "2024-09-25T13:15:37Z",
           "updatedAt": "2024-09-25T13:15:37Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thanks for referencing it there @chrysn, I added a back-reference to [here](https://github.com/lake-wg/authz/pull/41/files#diff-d6b094b88f44995cdbae2dd5a4b533e7a9a45cfe05bd8bf53017251c55019790R939) in #41. ",
+          "createdAt": "2024-10-15T08:57:38Z",
+          "updatedAt": "2024-10-15T08:57:38Z"
         }
       ],
       "reviews": []
@@ -1781,15 +1788,49 @@
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
-      "body": "So far this PR introduces:\r\n- a new section called Optimization Strategies, where (1) broadcast and (2) advertisement solutions are presented\r\n- a new appendix for the protocol with EDHOC reverse flow\r\n- a new appendix to hold example advertisement strategies (intention is to list a few possible strategies, sampling from what we have discussed at length already)\r\n\r\nNote that although this PR does not build on top of #40, I am using the abbreviated form ELA to refer to the protocol. The idea is to rebase it once #40 gets merged. ",
+      "body": "Summary of the changes:\r\n\r\n**new** Section 5: Optimization Strategies, where broadcast and advertisement -based solutions are presented:\r\n- 5.1 U anycasts message_1 (previously approach A4)\r\n    - explains the approach and mention associated security/congestion considerations.\r\n- 5.2 V advertises support for ELA: \r\n    - describe the idea of adversiting ELA (sharing a V_INFO struct, whose definition depends on network/application)\r\n    - propose ELA_ID and DOMAIN_ID as guideline for implementers.\r\n\r\n**new** Appendix A: use with EDHOC reverse flow (Goran's PR [#36](https://github.com/lake-wg/authz/pull/36))\r\n\r\n**new** Appendix C: advertisement strategies\r\n(sampled from what we have discussed at length already)\r\n- C.1. V_INFO in network beacons (previously approach A1)\r\n- C.2. V_INFO in EAD_1 (previously approach A2)\r\n- C.3. V_INFO in a CoAP Multicast Packet (previously approach A3)\r\n\r\n---\r\n\r\nNote that although this PR **does not** build on top of #40, I am using the abbreviated form ELA to refer to the protocol. The idea is to rebase it once #40 gets merged. ",
       "createdAt": "2024-10-10T15:58:40Z",
-      "updatedAt": "2024-10-11T15:32:23Z",
+      "updatedAt": "2024-10-15T15:06:29Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "bf4d0654051494f1b66e0bf99827283677e6db83",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "optimizations-broadcast-advertisement",
-      "headRefOid": "055d6c9245cedf26d50353c485b56cfb172ec70d",
+      "headRefOid": "0fcca9e12d55e992b32f2812c8dbc16331ced46c",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "May still do some changes, but I think it can already receive reviews.",
+          "createdAt": "2024-10-15T13:50:09Z",
+          "updatedAt": "2024-10-15T13:50:09Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 42,
+      "id": "PR_kwDOKiCa6c5-r7WE",
+      "title": "Remove hints",
+      "url": "https://github.com/lake-wg/authz/pull/42",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This removes text related to sharing enrollment hints between U and W, as per privacy issue discussions in #27 and additional discussions during previous IETF and internal meetings.\r\n\r\nNote that this PR builds on top of #41 so, when reviewing, please only consider the latter commits.\r\n\r\nI am also thinking about the impacts on the Error Handling subsection: initially we wanted it to be actionable, that is why it contains the OPAQUE_INFO field, which was supposed to carry hints (e.g. a list of V's). If we remove that, the information conveyed by the error message will be limited to \"Access Denied\". One alternative would be to completely remove the new EDHOC Error definition, and just send \"Unspecified Error\" in case of failure at W (the limitation being that U has a bit less information about what went wrong).\r\nSo the question is: should we keep the \"Access Denied\" error, given that we are getting rid of the OPAQUE_INFO field in REJECT_INFO?",
+      "createdAt": "2024-10-15T14:33:00Z",
+      "updatedAt": "2024-10-15T14:33:00Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "bf4d0654051494f1b66e0bf99827283677e6db83",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "remove-hints",
+      "headRefOid": "7e6efd83b055895cf17f31dea921010eb4fe6629",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
