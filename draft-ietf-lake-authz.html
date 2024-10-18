@@ -4,21 +4,24 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE</title>
+<title>Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)</title>
 <meta content="Göran Selander" name="author">
 <meta content="John Preuß Mattsson" name="author">
 <meta content="Mališa Vučinić" name="author">
 <meta content="Geovane Fedrecheski" name="author">
 <meta content="Michael Richardson" name="author">
 <meta content="
-       This document describes a procedure for authorizing enrollment of new devices using the lightweight authenticated key exchange protocol Ephemeral Diffie-Hellman Over COSE (EDHOC). The procedure is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time. 
+       Ephemeral Diffie-Hellman Over COSE (EDHOC) is a lightweight authenticated key exchange protocol intended for use in constrained scenarios.
+This document specifies Lightweight Authorization using EDHOC (ELA).
+The procedure allows authorizing enrollment of new devices using the extension point defined in EDHOC.
+ELA is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time. 
     " name="description">
-<meta content="xml2rfc 3.23.1" name="generator">
+<meta content="xml2rfc 3.23.2" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-lake-authz-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.23.1
-    Python 3.12.6
+  xml2rfc 3.23.2
+    Python 3.12.7
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
@@ -1027,12 +1030,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <table class="ears">
 <thead><tr>
 <td class="left">Internet-Draft</td>
-<td class="center">Lightweight Authorization using EDHOC</td>
-<td class="right">September 2024</td>
+<td class="center">ELA</td>
+<td class="right">October 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Selander, et al.</td>
-<td class="center">Expires 23 March 2025</td>
+<td class="center">Expires 21 April 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1045,12 +1048,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-lake-authz-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-09-19" class="published">19 September 2024</time>
+<time datetime="2024-10-18" class="published">18 October 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-03-23">23 March 2025</time></dd>
+<dd class="expires"><time datetime="2025-04-21">21 April 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1076,10 +1079,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </dd>
 </dl>
 </div>
-<h1 id="title">Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE</h1>
+<h1 id="title">Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document describes a procedure for authorizing enrollment of new devices using the lightweight authenticated key exchange protocol Ephemeral Diffie-Hellman Over COSE (EDHOC). The procedure is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">Ephemeral Diffie-Hellman Over COSE (EDHOC) is a lightweight authenticated key exchange protocol intended for use in constrained scenarios.
+This document specifies Lightweight Authorization using EDHOC (ELA).
+The procedure allows authorizing enrollment of new devices using the extension point defined in EDHOC.
+ELA is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1116,7 +1122,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 23 March 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 21 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1296,14 +1302,14 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
 <p id="section-1-1">For constrained IoT deployments <span>[<a href="#RFC7228" class="cite xref">RFC7228</a>]</span> the overhead and processing contributed by security protocols may be significant, which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see <span>[<a href="#I-D.ietf-lake-reqs" class="cite xref">I-D.ietf-lake-reqs</a>]</span>).
-This document describes a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> with third party-assisted authorization.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">The procedure involves a device, a domain authenticator, and an enrollment server.
+This document describes Lightweight Authorization using EDHOC (ELA), a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> with third party-assisted authorization.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">ELA involves a device, a domain authenticator, and an enrollment server.
 The device and domain authenticator perform mutual authentication and authorization, assisted by the enrollment server that provides relevant authorization information to the device (a "voucher") and to the authenticator. The high-level model is similar to BRSKI <span>[<a href="#RFC8995" class="cite xref">RFC8995</a>]</span>.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">In this document, we consider the target interaction for which authorization is needed to be "enrollment", for example joining a network for the first time (e.g., <span>[<a href="#RFC9031" class="cite xref">RFC9031</a>]</span>), but it can be applied to authorize other target interactions.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <p id="section-1-4">The enrollment server may represent the manufacturer of the device, or some other party with information about the device from which a trust anchor has been pre-provisioned into the device.
 The (domain) authenticator may represent the service provider or some other party controlling access to the network in which the device is enrolling.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">The protocol assumes that authentication between device and authenticator is performed with EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) fields defined in EDHOC.<a href="#section-1-5" class="pilcrow">¶</a></p>
-<p id="section-1-6">The protocol enables a low message count by performing authorization and enrollment in parallel with authentication, instead of in sequence, which is common for network access.
+<p id="section-1-5">ELA assumes that authentication between device and authenticator is performed with EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) fields defined in EDHOC.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">ELA enables a low message count by performing authorization and enrollment in parallel with authentication, instead of in sequence, which is common for network access.
 It further reuses protocol elements from EDHOC, leading to reduced message sizes on constrained links.<a href="#section-1-6" class="pilcrow">¶</a></p>
 <p id="section-1-7">This protocol is applicable to a wide variety of settings, and can be mapped to different authorization architectures.<a href="#section-1-7" class="pilcrow">¶</a></p>
 <div id="terminology">
@@ -1323,7 +1329,7 @@ Appendix C.1 of <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> 
       <h2 id="name-protocol-outline">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-protocol-outline" class="section-name selfRef">Protocol Outline</a>
       </h2>
-<p id="section-2-1">The goal of this protocol is to enable a (potentially constrained) device (U) to enroll into a domain over a constrained link.
+<p id="section-2-1">The goal of ELA is to enable a (potentially constrained) device (U) to enroll into a domain over a constrained link.
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator (V) with the help of a voucher conveying authorization information.
 The voucher has a similar role as in <span>[<a href="#RFC8366" class="cite xref">RFC8366</a>]</span> but should be considerably more compact.
 The domain authenticator, in turn, authenticates the device and authorizes its enrollment into the domain.<a href="#section-2-1" class="pilcrow">¶</a></p>
@@ -1579,7 +1585,7 @@ Some of the possible combinations of protocols to secure the connection between 
         <h3 id="name-overview">
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-overview" class="section-name selfRef">Overview</a>
         </h3>
-<p id="section-4.1-1">The protocol consist of three security sessions going on in parallel:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-1">The ELA protocol consist of three security sessions going on in parallel:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-4.1-2">
 <li id="section-4.1-2.1">
             <p id="section-4.1-2.1.1">The EDHOC session between device (U) and (domain) authenticator (V)<a href="#section-4.1-2.1.1" class="pilcrow">¶</a></p>
@@ -1592,7 +1598,7 @@ Some of the possible combinations of protocols to secure the connection between 
 </li>
         </ol>
 <p id="section-4.1-3"><a href="#fig-protocol" class="auto internal xref">Figure 3</a> provides an overview of the message flow detailed in this section. An outline of EDHOC is given in <span><a href="https://rfc-editor.org/rfc/rfc9528#section-2" class="relref">Section 2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
-<span id="name-overview-of-the-protocol-w-"></span><div id="fig-protocol">
+<span id="name-overview-of-ela-w-assisted-"></span><div id="fig-protocol">
 <figure id="figure-3">
           <div id="section-4.1-4.1">
             <div class="alignCenter art-svg artwork" id="section-4.1-4.1.1">
@@ -1710,7 +1716,7 @@ Some of the possible combinations of protocols to secure the connection between 
 </div>
 </div>
 <figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
-<a href="#name-overview-of-the-protocol-w-" class="selfRef">Overview of the protocol: W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, V and W are assumed to have established a secure channel and performed proof-of-possession of relevant keys. Credential lookup of CRED_U may involve W or other credential database.</a>
+<a href="#name-overview-of-ela-w-assisted-" class="selfRef">Overview of ELA: W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, V and W are assumed to have established a secure channel and performed proof-of-possession of relevant keys. Credential lookup of CRED_U may involve W or other credential database.</a>
           </figcaption></figure>
 </div>
 </section>
@@ -1720,7 +1726,7 @@ Some of the possible combinations of protocols to secure the connection between 
         <h3 id="name-reuse-of-edhoc">
 <a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-reuse-of-edhoc" class="section-name selfRef">Reuse of EDHOC</a>
         </h3>
-<p id="section-4.2-1">The protocol illustrated in <a href="#fig-protocol" class="auto internal xref">Figure 3</a> reuses several components of EDHOC:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-1">The ELA protocol illustrated in <a href="#fig-protocol" class="auto internal xref">Figure 3</a> reuses several components of EDHOC:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.2-2.1">
             <p id="section-4.2-2.1.1">G_X, the ephemeral public Diffie-Hellman key of U, is also used in the protocol between U and W.<a href="#section-4.2-2.1.1" class="pilcrow">¶</a></p>
@@ -2197,7 +2203,7 @@ If the voucher response is successfully received from W, then V responds to U wi
         <h3 id="name-error-handling">
 <a href="#section-4.7" class="section-number selfRef">4.7. </a><a href="#name-error-handling" class="section-name selfRef">Error Handling</a>
         </h3>
-<p id="section-4.7-1">This section specifies a new EDHOC error code and how it is used in the proposed protocol.<a href="#section-4.7-1" class="pilcrow">¶</a></p>
+<p id="section-4.7-1">This section specifies a new EDHOC error code and how it is used in ELA.<a href="#section-4.7-1" class="pilcrow">¶</a></p>
 <div id="edhoc-error-access-denied">
 <section id="section-4.7.1">
           <h4 id="name-edhoc-error-access-denied">
@@ -2289,7 +2295,7 @@ error_content = (
           <h4 id="name-error-handling-in-w-v-and-u">
 <a href="#section-4.7.2" class="section-number selfRef">4.7.2. </a><a href="#name-error-handling-in-w-v-and-u" class="section-name selfRef">Error handling in W, V, and U</a>
           </h4>
-<p id="section-4.7.2-1">This protocol uses the EDHOC Error "Access denied" in the following way:<a href="#section-4.7.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.7.2-1">ELA uses the EDHOC Error "Access denied" in the following way:<a href="#section-4.7.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.7.2-2.1">
               <p id="section-4.7.2-2.1.1">W generates error_content and transfers it to V via the secure connection.
@@ -2782,7 +2788,7 @@ No A, AAAA, or PTR record is requested.<a href="#section-7.3-1" class="pilcrow">
       <h2 id="name-use-with-constrained-join-p">
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-use-with-constrained-join-p" class="section-name selfRef">Use with Constrained Join Protocol (CoJP)</a>
       </h2>
-<p id="appendix-A-1">This section outlines how the protocol is used for network enrollment and parameter provisioning.
+<p id="appendix-A-1">This section outlines how ELA is used for network enrollment and parameter provisioning.
 An IEEE 802.15.4 network is used as an example of how a new device (U) can be enrolled into the domain managed by the domain authenticator (V).<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <span id="name-use-of-draft-ietf-lake-auth"></span><div id="fig-cojp">
 <figure id="figure-6">
@@ -3040,7 +3046,7 @@ u_hint = [ + bstr ]
         <h3 id="name-minimal">
 <a href="#appendix-C.1" class="section-number selfRef">C.1. </a><a href="#name-minimal" class="section-name selfRef">Minimal</a>
         </h3>
-<p id="appendix-C.1-1">This is a simple example that demonstrates a successful execution of the protocol.<a href="#appendix-C.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-1">This is a simple example that demonstrates a successful execution of ELA.<a href="#appendix-C.1-1" class="pilcrow">¶</a></p>
 <p id="appendix-C.1-2">Premises:<a href="#appendix-C.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-C.1-3.1">
