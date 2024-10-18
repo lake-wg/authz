@@ -120,12 +120,9 @@ Table of Contents
      C.1.  V_INFO in network beacons
      C.2.  V_INFO in EAD_1
      C.3.  V_INFO in a CoAP Multicast Packet
-   Appendix D.  Enrollment Hints
-     D.1.  Domain Authenticator hints
-     D.2.  Device Hints
-   Appendix E.  Examples
-     E.1.  Minimal
-     E.2.  Wrong gateway
+   Appendix D.  Examples
+     D.1.  Minimal
+     D.2.  Wrong gateway
    Acknowledgments
    Authors' Addresses
 
@@ -595,7 +592,6 @@ U                              V                                       W
 
    plaintext = (
        ID_U:            bstr,
-       ?OPAQUE_INFO:    bstr,
    )
 
    external_aad = (
@@ -605,14 +601,6 @@ U                              V                                       W
    where
 
    *  ID_U is an identifier of the device, see Section 3.1.
-
-   *  OPAQUE_INFO is an opaque field provided by the application.  If
-      present, it will contain application data that U may want to
-      convey to W, e.g., enrollment hints, see Appendix D.  Note that
-      OPAQUE_INFO is opaque when viewed as an information element in
-      EDHOC.  It is opaque to V, while the application in U and W can
-      read its contents.  The same applies to other references of
-      OPAQUE_INFO throughout this document.
 
    *  SS is the selected cipher suite in SUITES_I of EDHOC message_1,
       see Section 4.5.
@@ -675,7 +663,12 @@ U                              V                                       W
 
    where
 
-   *  OPAQUE_INFO is an opaque field provided by the application.
+   *  OPAQUE_INFO is an opaque field provided by the application.  If
+      present, it will contain application data that W may want to
+      convey to U, e.g., a voucher scope.  Note that OPAQUE_INFO is
+      opaque when viewed as an information element in EDHOC.  It is
+      opaque to V, while the application in U and W can read its
+      contents.
 
    *  H_message_1 is the hash of EDHOC message_1, calculated from the
       associated voucher request, see Section 4.6.1.  The hash is
@@ -771,6 +764,8 @@ U                              V                                       W
    Section 4.4.2.  If the verification fails then U MUST abort the EDHOC
    session.
 
+   If OPAQUE_INFO is present, it is made available to the application.
+
 4.5.3.  Message 3
 
 4.5.3.1.  Processing in U
@@ -830,16 +825,12 @@ U                              V                                       W
 
    *  G_X - the ephemeral public key of U
 
-   *  ENC_U_INFO - the encryption of (1) the device identifier ID_U and
-      (2) the optional OPAQUE_INFO field, contained in the Voucher_Info
-      field of the EAD item with ead_label = TBD1 (with minus sign
-      indicating criticality)
+   *  ENC_U_INFO - the encryption of the device identifier ID_U,
+      contained in the Voucher_Info field of the EAD item with ead_label
+      = TBD1 (with minus sign indicating criticality)
 
    W verifies and decrypts ENC_U_INFO using the relevant algorithms of
    the selected cipher suite SS (see Section 4.2), and obtains ID_U.
-
-   In case OPAQUE_INFO is present, it is made available to the
-   application.
 
    W calculates the hash of message_1 H_message_1, and associates this
    session identifier to the device identifier ID_U.  Note that
@@ -1813,40 +1804,7 @@ C.3.  V_INFO in a CoAP Multicast Packet
    the other hand, the periodic multicast may have resource usage
    impacts in the network.
 
-Appendix D.  Enrollment Hints
-
-   This section defines items that can be used in the OPAQUE_INFO field
-   of either EAD_1 or the Access Denied error response.  The purpose of
-   the proposed items is to improve protocol scalability, aiming to
-   reduce battery usage and enrollment delay.  The main use case is when
-   several potential gateways (V) are detected by U's radio, which can
-   lead to U trying to enroll (and failing) several times until it finds
-   a suitable V.
-
-D.1.  Domain Authenticator hints
-
-   In case W denies the enrollment of U to a given V, a list of Domain
-   Authenticator hints (v_hint) can be sent from W to U.  The hint is
-   optional and is included in the REJECT_INFO item in the Access Denied
-   error message.  It consists of a list of application-defined
-   identifiers of V (e.g.  MAC addresses, SSIDs, PAN IDs, etc.), as
-   defined below:
-
-   v_hint = [ + bstr ]
-
-D.2.  Device Hints
-
-   U may send a Device hint (u_hint) so that it can help W to select
-   which Vs to include in v_hint.  This can be useful in large scale
-   scenarios with many gateways (V).  The hint is an optional field
-   included in the OPAQUE_INFO field within EAD_1, and it must be
-   encrypted.  The hint itself is application dependent, and can contain
-   GPS coordinates, application-specific tags, the list of Vs detected
-   by U, or other relevant information.  It is defined as follows:
-
-   u_hint = [ + bstr ]
-
-Appendix E.  Examples
+Appendix D.  Examples
 
    This section presents high level examples of the protocol execution.
 
@@ -1854,7 +1812,7 @@ Appendix E.  Examples
    W.  These are provided for the sake of completeness only, since the
    authorization mechanism used by W is out of scope in this document.
 
-E.1.  Minimal
+D.1.  Minimal
 
    This is a simple example that demonstrates a successful execution of
    ELA.
@@ -1880,7 +1838,7 @@ E.1.  Minimal
    3.  upon receiving the request, W obtains ID_U = 14, authorizes the
        access, and replies with Voucher Response
 
-E.2.  Wrong gateway
+D.2.  Wrong gateway
 
    In this example, a device u1 tries to enroll a domain via gateway v1,
    but W denies the request because the pairing (u1, v1) is not
