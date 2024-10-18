@@ -732,26 +732,24 @@ Security concerns related to this strategy, including potential reuse of G_X and
 ## V advertises support for ELA {#strat-advertise}
 
 In this strategy, V shares some information (V_INFO) with a potential U, that can help it decide whether to try to enroll with that V.
-For example, V may send a V_INFO stating that:
 
-- V implements ELA -- similarly to how EAPOL {{IEEE802.1X}} frames state support for IEEE 802.1X
+The exact contents of the V_INFO structure, as well as the mechanism used to transport it, will depend on the underlying communication technology and also on application needs.
+For example, V_INFO may state that:
+
+- V implements ELA -- similarly to how EAPOL {{IEEE802.1X}} frames state support for IEEE 802.1X.
+
 - V is part of a certain domain -- similarly to how Eduroam {{RFC7593}} is used in the SSID field of IEEE 802.11 packets
 
-The mechanism used to transport V_INFO will depend on the underlying communication technology and also on application needs.
+V_INFO can be sent over a network beacon (see {{adv-beacon}}), which may require technology specific profiling, e.g., the IEEE 802.15.4 enhanced beacon may be extended according to {{RFC8137}}.
+Alternatively, V_INFO can be sent as part of an EAD field, as shown in {{adv-ead1}}.
 
-As a guideline for implementers, we define the following fields that can be included in a V_INFO structure:
+As a guideline for implementers, we define the following field that can be included in a V_INFO structure:
 
 ~~~~~~~~~~~ cddl
-ELA_ID:    int
 DOMAIN_ID: bstr
 ~~~~~~~~~~~
 
-Where:
-
-- ELA_ID identifies the ELA protocol (Editor's note: can we register such an identifier at IANA?)
-- DOMAIN_ID identifies the domain to which V belongs to, for example an URL or UUID
-
-Details on how exatcly these fields are structured are left to the application.
+The DOMAIN_ID field identifies the domain to which V belongs to, for example an URL or UUID.
 
 {{example-advert}} presents three examples of how the advertisement strategy may be applied according to different application needs.
 
@@ -1085,11 +1083,11 @@ This appendix presents three example strategies that can be used to advertise th
 It includes sending V_INFO in network beacons, as part of EAD_1 in reverse message flow, or as part of a periodic CoAP multicast packet.
 It also presents the advantages, costs, and security impacts of each strategy.
 
-## V_INFO in network beacons
+## V_INFO in network beacons {#adv-beacon}
 
 _PR editor's note: this is approach A1_
 
-This approach allows carrying V_INFO in beacons sent over the network layer, as shown in {{fig-adv-a1}}.
+This approach allows carrying V_INFO in beacons sent over the network layer, as shown in {{fig-adv-beacon}}.
 It requires that the network layer offers a mechanism to configure its beacon packets.
 Depending on the network type, a solicitation packet may also be needed, as is the case of non-beaconed IEEE 802.15.4 and BLE with GATT.
 
@@ -1113,7 +1111,7 @@ Depending on the network type, a solicitation packet may also be needed, as is t
 
          ( ... protocol continues normally ... )
 ~~~~~~~~~~~
-{: #fig-adv-a1 title="Advertising ELA using V_INFO in network-layer beacons." artwork-align="center"}
+{: #fig-adv-beacon title="Advertising ELA using V_INFO in network-layer beacons." artwork-align="center"}
 
 This strategy can be used, for example, in IEEE 802.15.4, where an Enhanced Beacon {{IEEE802.15.4}} can be used to transmit V_INFO.
 Specifically, a new information element for carrying V_INFO can be defined according to {{RFC8137}}.
@@ -1121,7 +1119,7 @@ Specifically, a new information element for carrying V_INFO can be defined accor
 This approach has the advantage of requiring minimal changes to the default protocol as presented in {{protocol-overview}}, i.e., no reverse flow.
 It requires, however, some profiling of the lower layer beacons.
 
-## V_INFO in EAD_1
+## V_INFO in EAD_1 {#adv-ead1}
 
 _PR editor's note: this is approach A2_
 
@@ -1145,7 +1143,7 @@ When a suitable V receives the solicitation, if it implements ELA, it should res
 
      ( ... reverse flow continues normally ... )
 ~~~~~~~~~~~
-{: #fig-adv-a2 title="Advertising ELA using V_INFO in EAD_1, eploying the EDHOC reverse flow with U as responder." artwork-align="center"}
+{: #fig-adv-ead1 title="Advertising ELA using V_INFO in EAD_1, eploying the EDHOC reverse flow with U as responder." artwork-align="center"}
 
 Note that V will only reply if it supports ELA, therefore in this strategy there is no need to transport ELA_ID.
 V_INFO can then be structured to contain only the optional domain identifier:
@@ -1161,11 +1159,11 @@ It also encrypts Voucher_Info (as part of EAD_2), wehereas it is sent in the cle
 In addition, it may not require layer-two profiling (in case the network allows transporting data before authorization).
 Finally, note that the reverse flow with U as Responder protects the identity of V (instead of U's as in the forward flow).
 
-## V_INFO in a CoAP Multicast Packet
+## V_INFO in a CoAP Multicast Packet {#adv-coap-mult}
 
 _PR editor's note: this is approach A3_
 
-In this approach, V periodically multicasts a CoAP packet containing V_INFO, see {{fig-adv-a3}}.
+In this approach, V periodically multicasts a CoAP packet containing V_INFO, see {{fig-adv-coap-mult}}.
 Upon receiving one or more CoAP messages and processing V_INFO, U can decide whether or not to initiate the ELA protocol with a given V.
 Next, the application can either keep U acting as a server, and thus employ the EDHOC reverse flow, or implement a CoAP client and use the forward flow.
 
@@ -1176,6 +1174,7 @@ Next, the application can either keep U acting as a server, and thus employ the 
 |        U         |                       |        V         |
 +------------------+                       +------------------+
          |                                          |
+         |          POST /ela-advertisement         |
          |<-----------------------------------------+
          |     CoAP multicast (contains V_INFO)     |
          |                                          |
@@ -1186,14 +1185,13 @@ Next, the application can either keep U acting as a server, and thus employ the 
 
           ( ... protocol continues normally ... )
 ~~~~~~~~~~~
-{: #fig-adv-a3 title="Advertising ELA using the network layer." artwork-align="center"}
+{: #fig-adv-coap-mult title="Advertising ELA using the network layer." artwork-align="center"}
 
 The V_INFO structure is sent as part of the CoAP payload.
 It is encoded as a CBOR sequence:
 
 ~~~ cddl
 V_INFO = (
-  ELA_ID:     int,
   ?DOMAIN_ID: bstr,
 )
 ~~~
