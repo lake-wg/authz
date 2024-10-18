@@ -718,7 +718,7 @@ This strategy consists in U disseminating EDHOC message_1 as anycast (a broadcas
 When each of the V's in radio range of U receive message_1, one of the following can happen:
 
 - V does not implement EDHOC, and drops the message
-- V does not implement ELA, and since EAD_1 is critical, it either responds with an error or drops the message (preferred)
+- V does not implement ELA, and since EAD_1 is critical, it either responds with an error or drops the message (Editor's note: dropping actually conflicts with the EAD field being critical)
 - V forwards message_1 to W as VREQ, but W does not authorize it, and error handling is applied
 - V forwards message_1 to W as VREQ, W authorizes it, and the protocol continues normally
 
