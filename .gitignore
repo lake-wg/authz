@@ -22,3 +22,5 @@ draft-ietf-lake-authz.xml
 package-lock.json
 report.xml
 !requirements.txt
+*.code-workspace
+.vscode/
