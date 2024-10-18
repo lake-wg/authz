@@ -92,30 +92,40 @@ Table of Contents
      4.5.  Device <-> Authenticator (U <-> V)
      4.6.  Authenticator <-> Enrollment Server (V <-> W)
      4.7.  Error Handling
-   5.  REST Interface at W
-     5.1.  Scheme "https"
-     5.2.  Scheme "coaps"
-     5.3.  Scheme "coap"
-     5.4.  URIs
-   6.  Security Considerations
-   7.  IANA Considerations
-     7.1.  EDHOC External Authorization Data Registry
-     7.2.  The Well-Known URI Registry
-     7.3.  Well-Known Name Under ".arpa" Name Space
-     7.4.  Media Types Registry
-     7.5.  CoAP Content-Formats Registry
-   8.  References
-     8.1.  Normative References
-     8.2.  Informative References
-   Appendix A.  Use with Constrained Join Protocol (CoJP)
-     A.1.  Network Discovery
-     A.2.  The Enrollment Protocol with Parameter Provisioning
-   Appendix B.  Enrollment Hints
-     B.1.  Domain Authenticator hints
-     B.2.  Device Hints
-   Appendix C.  Examples
-     C.1.  Minimal
-     C.2.  Wrong gateway
+   5.  Optimization Strategies
+     5.1.  U anycasts message_1
+     5.2.  V advertises support for ELA
+   6.  REST Interface at W
+     6.1.  Scheme "https"
+     6.2.  Scheme "coaps"
+     6.3.  Scheme "coap"
+     6.4.  URIs
+   7.  Security Considerations
+   8.  IANA Considerations
+     8.1.  EDHOC External Authorization Data Registry
+     8.2.  The Well-Known URI Registry
+     8.3.  Well-Known Name Under ".arpa" Name Space
+     8.4.  Media Types Registry
+     8.5.  CoAP Content-Formats Registry
+   9.  References
+     9.1.  Normative References
+     9.2.  Informative References
+   Appendix A.  Use with EDHOC reverse flow
+     A.1.  U is the Initiator
+     A.2.  U is the Responder
+   Appendix B.  Use with Constrained Join Protocol (CoJP)
+     B.1.  Network Discovery
+     B.2.  The Enrollment Protocol with Parameter Provisioning
+   Appendix C.  Example Advertisement Strategies
+     C.1.  V_INFO in network beacons
+     C.2.  V_INFO in EAD_1
+     C.3.  V_INFO in a CoAP Multicast Packet
+   Appendix D.  Enrollment Hints
+     D.1.  Domain Authenticator hints
+     D.2.  Device Hints
+   Appendix E.  Examples
+     E.1.  Minimal
+     E.2.  Wrong gateway
    Acknowledgments
    Authors' Addresses
 
@@ -471,7 +481,7 @@ U                              V                                       W
    *  EAD_1, EAD_2 are the External Authorization Data message fields of
       message_1 and message_2, respectively, see Section 3.8 of
       [RFC9528].  This document specifies the EAD items with ead_label =
-      TBD1, see Section 7.1).
+      TBD1, see Section 8.1).
 
    *  ID_CRED_I and ID_CRED_R are used to identify the authentication
       credentials CRED_U and CRED_V, respectively.  As shown at the
@@ -598,7 +608,7 @@ U                              V                                       W
 
    *  OPAQUE_INFO is an opaque field provided by the application.  If
       present, it will contain application data that U may want to
-      convey to W, e.g., enrollment hints, see Appendix B.  Note that
+      convey to W, e.g., enrollment hints, see Appendix D.  Note that
       OPAQUE_INFO is opaque when viewed as an information element in
       EDHOC.  It is opaque to V, while the application in U and W can
       read its contents.  The same applies to other references of
@@ -838,14 +848,14 @@ U                              V                                       W
 
    If processing fails up until this point, the protocol SHALL be
    aborted with an error code signaling a generic issue with the
-   request, see Section 5.4.1.
+   request, see Section 6.4.1.
 
    W uses ID_U to look up the associated authorization policies for U
    and enforces them.  This is out of scope for the specification.
 
    If ID_U is known by W, but authorization fails, the protocol SHALL be
    aborted with an error code signaling an access control issue, see
-   Section 4.7 and Section 5.4.1.
+   Section 4.7 and Section 6.4.1.
 
 4.6.2.  Voucher Response
 
@@ -876,7 +886,7 @@ U                              V                                       W
       Voucher_Request, if present.
 
    W signals the successful generation of the voucher via a status code
-   in the REST interface, as defined in Section 5.4.1.
+   in the REST interface, as defined in Section 6.4.1.
 
 4.6.2.2.  Processing in V
 
@@ -936,7 +946,7 @@ U                              V                                       W
       connection.  If REJECT_TYPE is 1, then REJECT_INFO is encrypted
       from W to U using the EDHOC AEAD algorithm.  W signals the error
       via an appropriate status code in the REST interface, as defined
-      in Section 5.4.1.
+      in Section 6.4.1.
 
    *  V receives error_content, prepares an EDHOC "Access denied" error,
       and sends it to U.
@@ -965,17 +975,90 @@ U                              V                                       W
    *  H_message_1 is the hash of EDHOC message_1, calculated from the
       associated voucher request, see Section 4.6.1.
 
-5.  REST Interface at W
+5.  Optimization Strategies
+
+   When ELA is used for zero-touch enrollment, U normally has little to
+   no knowledge of the available V's.  This may lead to situations where
+   U has to retry several times at different V's until it finds one that
+   works.  This section presents two optimization strategies for such
+   cases.  They were developed to address scenarios where V's are radio
+   gateways to which U wants to enroll, but may also be applicable to
+   other use cases.
+
+5.1.  U anycasts message_1
+
+   This strategy consists in U disseminating EDHOC message_1 as anycast
+   (a broadcast from which only one successful message_2 response is
+   expected).  When each of the V's in radio range of U receive
+   message_1, one of the following can happen:
+
+   *  V does not implement EDHOC, and drops the message
+
+   *  V does not implement ELA, and since EAD_1 is critical, it either
+      responds with an error or drops the message (Editor's note:
+      dropping actually conflicts with the EAD field being critical)
+
+   *  V forwards message_1 to W as VREQ, but W does not authorize it,
+      and error handling is applied
+
+   *  V forwards message_1 to W as VREQ, W authorizes it, and the
+      protocol continues normally
+
+   U is expected to receive at most one message_2 as response, which
+   contains the Voucher.  In case U receives additional message_2's,
+   they MUST be silently dropped.
+
+   This strategy may increase the number of messages that need to be
+   processed by V and W, in exchange for reducing resource usage in U.
+
+   Security concerns related to this strategy, including potential reuse
+   of G_X and double processing of message_2, are discussed in
+   Section 7.
+
+5.2.  V advertises support for ELA
+
+   In this strategy, V shares some information (V_INFO) with a potential
+   U, that can help it decide whether to try to enroll with that V.
+
+   The exact contents of the V_INFO structure, as well as the mechanism
+   used to transport it, will depend on the underlying communication
+   technology and also on application needs.  For example, V_INFO may
+   state that:
+
+   *  V implements ELA -- similarly to how EAPOL [IEEE802.1X] frames
+      state support for IEEE 802.1X.
+
+   *  V is part of a certain domain -- similarly to how Eduroam
+      [RFC7593] is used in the SSID field of IEEE 802.11 packets
+
+   V_INFO can be sent over a network beacon (see Appendix C.1), which
+   may require technology specific profiling, e.g., the IEEE 802.15.4
+   enhanced beacon may be extended according to [RFC8137].
+   Alternatively, V_INFO can be sent as part of an EAD field, as shown
+   in Appendix C.2.
+
+   As a guideline for implementers, we define the following field that
+   can be included in a V_INFO structure:
+
+   DOMAIN_ID: bstr
+
+   The DOMAIN_ID field identifies the domain to which V belongs to, for
+   example an URL or UUID.
+
+   Appendix C presents three examples of how the advertisement strategy
+   may be applied according to different application needs.
+
+6.  REST Interface at W
 
    The interaction between V and W is enabled through a RESTful
    interface exposed by W.  This RESTful interface MAY be implemented
    using either HTTP or CoAP.  V SHOULD access the resources exposed by
    W through the protocol indicated by the scheme in the LOC_W URI.
 
-5.1.  Scheme "https"
+6.1.  Scheme "https"
 
    In case the scheme indicates "https", V MUST perform a TLS handshake
-   with W and access the resources defined in Section 5.4 using HTTP.
+   with W and access the resources defined in Section 6.4 using HTTP.
    If the authentication credential CRED_V can be used in a TLS
    handshake, e.g., an X.509 certificate of a signature public key, then
    V SHOULD use it to authenticate to W as a client.  If the
@@ -992,22 +1075,22 @@ U                              V                                       W
    V and W that should be reused.  Similar considerations for 5.2 and
    5.3.
 
-5.2.  Scheme "coaps"
+6.2.  Scheme "coaps"
 
    In case the scheme indicates "coaps", V SHOULD perform a DTLS
-   handshake with W and access the resources defined in Section 5.4
-   using CoAP.  The normative requirements in Section 5.1 on performing
+   handshake with W and access the resources defined in Section 6.4
+   using CoAP.  The normative requirements in Section 6.1 on performing
    the DTLS handshake and EDHOC session remain the same, except that TLS
    is replaced with DTLS.
 
-5.3.  Scheme "coap"
+6.3.  Scheme "coap"
 
    In case the scheme indicates "coap", V SHOULD perform an EDHOC
    session with W, as specified in Appendix A of [RFC9528] and access
-   the resources defined in Section 5.4 using OSCORE and CoAP.  The
+   the resources defined in Section 6.4 using OSCORE and CoAP.  The
    authentication credential in this EDHOC session MUST be CRED_V.
 
-5.4.  URIs
+6.4.  URIs
 
    The URIs defined below are valid for both HTTP and CoAP.  W MUST
    support the use of the path-prefix "/.well-known/", as defined in
@@ -1027,7 +1110,7 @@ U                              V                                       W
    Each operation specified in the following is indicated by a path-
    suffix.
 
-5.4.1.  Voucher Request (/voucherrequest)
+6.4.1.  Voucher Request (/voucherrequest)
 
    To request a voucher, V MUST issue a request such that:
 
@@ -1068,7 +1151,7 @@ U                              V                                       W
       vouchererror+cbor".  The payload MAY be used by V to prepare an
       EDHOC error "Access Denied", see Section 4.7.
 
-5.4.2.  Certificate Request (/certrequest)
+6.4.2.  Certificate Request (/certrequest)
 
    V requests the public key certificate of U from W through the
    "/certrequest" path-suffix.  To request U's authentication
@@ -1092,7 +1175,7 @@ U                              V                                       W
    *  Content-Format (Content-Type) is set to "application/lake-authz-
       certresponse+cbor"
 
-6.  Security Considerations
+7.  Security Considerations
 
    This specification builds on and reuses many of the security
    constructions of EDHOC, e.g., shared secret calculation and key
@@ -1128,9 +1211,9 @@ U                              V                                       W
    of W (G_W) and the device identifier of U (ID_U), and then produce
    the encryption of ID_U which is included in Voucher_Info in EAD_1.
 
-7.  IANA Considerations
+8.  IANA Considerations
 
-7.1.  EDHOC External Authorization Data Registry
+8.1.  EDHOC External Authorization Data Registry
 
    IANA has registered the following entry in the "EDHOC External
    Authorization Data" registry under the group name "Ephemeral Diffie-
@@ -1147,7 +1230,7 @@ U                              V                                       W
 
                Table 2: Addition to the EDHOC EAD registry
 
-7.2.  The Well-Known URI Registry
+8.2.  The Well-Known URI Registry
 
    IANA has registered the following entry in "The Well-Known URI
    Registry", using the template from [RFC8615]:
@@ -1160,7 +1243,7 @@ U                              V                                       W
 
    *  Related information: None
 
-7.3.  Well-Known Name Under ".arpa" Name Space
+8.3.  Well-Known Name Under ".arpa" Name Space
 
    This document allocates a well-known name under the .arpa name space
    according to the rules given in [RFC3172] and [RFC6761].  The name
@@ -1168,12 +1251,12 @@ U                              V                                       W
    addition of any such subdomains requires the publication of an IETF
    Standards Track RFC.  No A, AAAA, or PTR record is requested.
 
-7.4.  Media Types Registry
+8.4.  Media Types Registry
 
    IANA has added the media types "application/lake-authz-
    voucherrequest+cbor" to the "Media Types" registry.
 
-7.4.1.  application/lake-authz-voucherrequest+cbor Media Type
+8.4.1.  application/lake-authz-voucherrequest+cbor Media Type
         Registration
 
    *  Type name: application
@@ -1186,7 +1269,7 @@ U                              V                                       W
 
    *  Encoding considerations: binary (CBOR)
 
-   *  Security considerations: See Section 6 of this document.
+   *  Security considerations: See Section 7 of this document.
 
    *  Interoperability considerations: N/A
 
@@ -1215,7 +1298,7 @@ U                              V                                       W
 
    *  Change Controller: IESG
 
-7.5.  CoAP Content-Formats Registry
+8.5.  CoAP Content-Formats Registry
 
    IANA has added the following Content-Format number in the "CoAP
    Content-Formats" registry under the registry group "Constrained
@@ -1231,9 +1314,9 @@ U                              V                                       W
 
            Table 3: Addition to the CoAP Content-Formats registry
 
-8.  References
+9.  References
 
-8.1.  Normative References
+9.1.  Normative References
 
    [NIST-800-56A]
               Barker, E., Chen, L., Roginsky, A., Vassilev, A., and R.
@@ -1272,7 +1355,14 @@ U                              V                                       W
               DOI 10.17487/RFC9528, March 2024,
               <https://www.rfc-editor.org/info/rfc9528>.
 
-8.2.  Informative References
+9.2.  Informative References
+
+   [I-D.amsuess-core-coap-over-gatt]
+              Amsüss, C., "CoAP over GATT (Bluetooth Low Energy Generic
+              Attributes)", Work in Progress, Internet-Draft, draft-
+              amsuess-core-coap-over-gatt-07, 25 September 2024,
+              <https://datatracker.ietf.org/doc/html/draft-amsuess-core-
+              coap-over-gatt-07>.
 
    [I-D.ietf-core-oscore-edhoc]
               Palombini, F., Tiloca, M., Höglund, R., Hristozov, S., and
@@ -1294,6 +1384,11 @@ U                              V                                       W
    [IEEE802.15.4]
               IEEE standard for Information Technology, "IEEE Std
               802.15.4 Standard for Low-Rate Wireless Networks", n.d..
+
+   [IEEE802.1X]
+              IEEE standard for Information Technology, "IEEE Standard
+              for Local and metropolitan area networks - Port-Based
+              Network Access Control", February 2010.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1319,6 +1414,15 @@ U                              V                                       W
               Constrained-Node Networks", RFC 7228,
               DOI 10.17487/RFC7228, May 2014,
               <https://www.rfc-editor.org/info/rfc7228>.
+
+   [RFC7593]  Wierenga, K., Winter, S., and T. Wolniewicz, "The eduroam
+              Architecture for Network Roaming", RFC 7593,
+              DOI 10.17487/RFC7593, September 2015,
+              <https://www.rfc-editor.org/info/rfc7593>.
+
+   [RFC8137]  Kivinen, T. and P. Kinney, "IEEE 802.15.4 Information
+              Element for the IETF", RFC 8137, DOI 10.17487/RFC8137, May
+              2017, <https://www.rfc-editor.org/info/rfc8137>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -1348,7 +1452,84 @@ U                              V                                       W
               RFC 9031, DOI 10.17487/RFC9031, May 2021,
               <https://www.rfc-editor.org/info/rfc9031>.
 
-Appendix A.  Use with Constrained Join Protocol (CoJP)
+Appendix A.  Use with EDHOC reverse flow
+
+   Editor's note: I am not sure if this should be an appendix or an
+   actual section in the main document.
+
+   This appendix describes how the protocol can be used with the EDHOC
+   reverse message flow defined in Appendix A.2.2 of [RFC9528], where
+   the CoAP client is the Responder and the CoAP server is the
+   initiator.
+
+A.1.  U is the Initiator
+
+   The reverse flow can be applied when U implements a CoAP server, but
+   acts as an EDHOC Initiator.  In this case, U awaits for a CoAP
+   request to be sent from V, which will act as a trigger message to
+   start the EDHOC handshake with ELA.  Next, U replies with an EDHOC
+   message_1, thus executing the protocol normally.
+
+           +-------+--------+                +-------+--------+
+           | Init  | Server |                | Resp  | Client |
+           +-------+--------+                +----------------+
+           |       U        |                |       V        |
+           +----------------+                +----------------+
+                   |                                 |
+                   |          CoAP request           |
+                   |<--------------------------------|
+                   |                                 |
+                   |        EDHOC message_1          |
+                   +-------------------------------->|
+                   |     (EAD_1 = Voucher_Info)      |
+                   |                                 |
+
+                 ( ... protocol continues normally ... )
+
+     Figure 6: ELA with EDHOC reverse mesasge flow when U is initiator.
+
+   One use case is to perform ELA over Bluetooth Low Energy, as
+   discussed in [I-D.amsuess-core-coap-over-gatt].
+
+A.2.  U is the Responder
+
+   The reverse flow can also be used when U implements a CoAP client,
+   but acts as a Responder, as illustrated in Figure 7.  The main
+   changes in this case are:
+
+   *  Instead of sending EDHOC message_1, U sends an initial trigger
+      packet to V, e.g., a CoAP request, which then initiates the
+      handshake by replying with an EDHOC message_1.
+
+   *  The Voucher_Info and Voucher structs are sent over EAD_2 and
+      EAD_3, respectively (instead of over EAD_1 and EAD_2).
+
+           +-------+--------+          +-------+--------+
+           | Resp  | Client |          | Init  | Server |
+           +-------+--------+          +----------------+
+           |       U        |          |       V        |
+           +----------------+          +----------------+
+                   |                           |
+                   |       CoAP request        |
+                   +-------------------------->|
+                   |                           |
+                   |     EDHOC message_1       |
+                   +<--------------------------|
+                   |                           |
+                   |     EDHOC message_2       |               W
+                   +-------------------------->|               |
+                   |   (EAD_2 = Voucher_Info)  |               |
+                   |                           +-------------->|
+                   |                           |  VREQ / VRES  |
+                   |                           |<------------->|
+                   |                           |               |
+                   |     EDHOC message_3       |               |
+                   +<--------------------------|
+                   |     (EAD_3 = Voucher)     |
+
+     Figure 7: ELA with EDHOC reverse mesasge flow when U is responder.
+
+Appendix B.  Use with Constrained Join Protocol (CoJP)
 
    This section outlines how ELA is used for network enrollment and
    parameter provisioning.  An IEEE 802.15.4 network is used as an
@@ -1380,9 +1561,9 @@ Appendix A.  Use with Constrained Join Protocol (CoJP)
    |            CoJP response           |                              |
    |
 
-             Figure 6: Use of draft-ietf-lake-authz with CoJP.
+             Figure 8: Use of draft-ietf-lake-authz with CoJP.
 
-A.1.  Network Discovery
+B.1.  Network Discovery
 
    When a device first boots, it needs to discover the network it
    attempts to join.  The network discovery procedure is defined by the
@@ -1402,13 +1583,13 @@ A.1.  Network Discovery
    away from the domain authenticator (V), in which case it plays the
    role of a Join Proxy (see [RFC9031]).  The Join Proxy does not
    participate in the protocol and acts as a transparent router between
-   the device and the domain authenticator.  For simplicity, Figure 6
+   the device and the domain authenticator.  For simplicity, Figure 8
    illustrates the case when the device and the domain authenticator are
    a single hop away and can communicate directly.
 
-A.2.  The Enrollment Protocol with Parameter Provisioning
+B.2.  The Enrollment Protocol with Parameter Provisioning
 
-A.2.1.  Flight 1
+B.2.1.  Flight 1
 
    Once the device has discovered the network it wants to join, it
    constructs EDHOC message_1, as described in Section 4.5.  The device
@@ -1430,7 +1611,7 @@ A.2.1.  Flight 1
    *  The payload is the (true, EDHOC message_1) CBOR sequence, where
       EDHOC message_1 is constructed as defined in Section 4.5.
 
-A.2.2.  Flight 2
+B.2.2.  Flight 2
 
    The domain authenticator receives message_1 and processes it as
    described in Section 4.5.  The message triggers the exchange with the
@@ -1443,7 +1624,7 @@ A.2.2.  Flight 2
 
    *  The payload is the EDHOC message_2, as defined in Section 4.5.
 
-A.2.3.  Flight 3
+B.2.3.  Flight 3
 
    The device receives EDHOC message_2 and processes it as described in
    Section 4.5.  Upon successful processing of message_2, the device
@@ -1491,12 +1672,148 @@ A.2.3.  Flight 3
    obtains the device identity from the execution of the authorization
    protocol.
 
-A.2.4.  Flight 4
+B.2.4.  Flight 4
 
    Flight 4 is the OSCORE response carrying CoJP response message.  The
    message is processed as specified in Section 8.4.2 of [RFC9031].
 
-Appendix B.  Enrollment Hints
+Appendix C.  Example Advertisement Strategies
+
+   This appendix presents three example strategies that can be used to
+   advertise the presence of a V.  It includes sending V_INFO in network
+   beacons, as part of EAD_1 in reverse message flow, or as part of a
+   periodic CoAP multicast packet.  It also presents the advantages,
+   costs, and security impacts of each strategy.
+
+C.1.  V_INFO in network beacons
+
+   _PR editor's note: this is approach A1_
+
+   This approach allows carrying V_INFO in beacons sent over the network
+   layer, as shown in Figure 9.  It requires that the network layer
+   offers a mechanism to configure its beacon packets.  Depending on the
+   network type, a solicitation packet may also be needed, as is the
+   case of non-beaconed IEEE 802.15.4 and BLE with GATT.
+
+        +-------+--------+                       +-------+--------+
+        | Init  | Client |                       | Resp  | Server |
+        +-------+--------+                       +----------------+
+        |       U        |                       |       V        |
+        +----------------+                       +----------------+
+                |                                        |
+                + - - - - - - - - - - - - - - - - - - -->|
+                |     Optional network solicitation      |
+                |                                        |
+                |<---------------------------------------+
+                |   Network discovery (contains V_INFO)  |
+                |                                        |
+                |            EDHOC message_1             |
+                +--------------------------------------->|
+                |        (?EAD_1 = Voucher_Info)         |
+                |                                        |
+
+                 ( ... protocol continues normally ... )
+
+      Figure 9: Advertising ELA using V_INFO in network-layer beacons.
+
+   This strategy can be used, for example, in IEEE 802.15.4, where an
+   Enhanced Beacon [IEEE802.15.4] can be used to transmit V_INFO.
+   Specifically, a new information element for carrying V_INFO can be
+   defined according to [RFC8137].
+
+   This approach has the advantage of requiring minimal changes to the
+   default protocol as presented in Section 4.1, i.e., no reverse flow.
+   It requires, however, some profiling of the lower layer beacons.
+
+C.2.  V_INFO in EAD_1
+
+   _PR editor's note: this is approach A2_
+
+   ELA with EDHOC in the reverse flow allows implementing advertising
+   where U first sends a trigger packet, in the format of a CoAP request
+   that is broadcasted to the newtork.  When a suitable V receives the
+   solicitation, if it implements ELA, it should respond with an EDHOC
+   message_1 whose EAD_1 has label TBD1 and value V_INFO (see
+   Section Section 5).
+
+           +-------+--------+                +-------+--------+
+           | Resp  | Client |                | Init  | Server |
+           +-------+--------+                +----------------+
+           |       U        |                |       V        |
+           +----------------+                +----------------+
+                   |                                 |
+                   +-------------------------------->|
+                   |   CoAP discovery/solicitation   |
+                   |                                 |
+                   |        EDHOC message_1          |
+                   +<--------------------------------|
+                   |       (?EAD_1 = V_INFO)         |
+                   |                                 |
+
+                ( ... reverse flow continues normally ... )
+
+       Figure 10: Advertising ELA using V_INFO in EAD_1, eploying the
+                  EDHOC reverse flow with U as responder.
+
+   Note that V will only reply if it supports ELA, therefore in this
+   strategy there is no need to transport ELA_ID.  V_INFO can then be
+   structured to contain only the optional domain identifier:
+
+   V_INFO = (
+     ?DOMAIN_ID: bstr,
+   )
+
+   This approach enables a simple filtering mechanism, where only V's
+   that support ELA will reply.  It also encrypts Voucher_Info (as part
+   of EAD_2), wehereas it is sent in the clear in the original flow.  In
+   addition, it may not require layer-two profiling (in case the network
+   allows transporting data before authorization).  Finally, note that
+   the reverse flow with U as Responder protects the identity of V
+   (instead of U's as in the forward flow).
+
+C.3.  V_INFO in a CoAP Multicast Packet
+
+   _PR editor's note: this is approach A3_
+
+   In this approach, V periodically multicasts a CoAP packet containing
+   V_INFO, see Figure 11.  Upon receiving one or more CoAP messages and
+   processing V_INFO, U can decide whether or not to initiate the ELA
+   protocol with a given V.  Next, the application can either keep U
+   acting as a server, and thus employ the EDHOC reverse flow, or
+   implement a CoAP client and use the forward flow.
+
+      +--------+---------+                       +--------+---------+
+      |  Init  | Cli/Ser |                       |  Resp  | Cli/Ser |
+      +--------+---------+                       +------------------+
+      |        U         |                       |        V         |
+      +------------------+                       +------------------+
+               |                                          |
+               |          POST /ela-advertisement         |
+               |<-----------------------------------------+
+               |     CoAP multicast (contains V_INFO)     |
+               |                                          |
+               |              EDHOC message_1             |
+               +----------------------------------------->|
+               |          (?EAD_1 = Voucher_Info)         |
+               |                                          |
+
+                ( ... protocol continues normally ... )
+
+            Figure 11: Advertising ELA using the network layer.
+
+   The V_INFO structure is sent as part of the CoAP payload.  It is
+   encoded as a CBOR sequence:
+
+   V_INFO = (
+     ?DOMAIN_ID: bstr,
+   )
+
+   One advantage of this approach is that, since U is the initiator,
+   it's identity is protected in the context of the EDHOC handshake.  On
+   the other hand, the periodic multicast may have resource usage
+   impacts in the network.
+
+Appendix D.  Enrollment Hints
 
    This section defines items that can be used in the OPAQUE_INFO field
    of either EAD_1 or the Access Denied error response.  The purpose of
@@ -1506,7 +1823,7 @@ Appendix B.  Enrollment Hints
    lead to U trying to enroll (and failing) several times until it finds
    a suitable V.
 
-B.1.  Domain Authenticator hints
+D.1.  Domain Authenticator hints
 
    In case W denies the enrollment of U to a given V, a list of Domain
    Authenticator hints (v_hint) can be sent from W to U.  The hint is
@@ -1517,7 +1834,7 @@ B.1.  Domain Authenticator hints
 
    v_hint = [ + bstr ]
 
-B.2.  Device Hints
+D.2.  Device Hints
 
    U may send a Device hint (u_hint) so that it can help W to select
    which Vs to include in v_hint.  This can be useful in large scale
@@ -1529,7 +1846,7 @@ B.2.  Device Hints
 
    u_hint = [ + bstr ]
 
-Appendix C.  Examples
+Appendix E.  Examples
 
    This section presents high level examples of the protocol execution.
 
@@ -1537,7 +1854,7 @@ Appendix C.  Examples
    W.  These are provided for the sake of completeness only, since the
    authorization mechanism used by W is out of scope in this document.
 
-C.1.  Minimal
+E.1.  Minimal
 
    This is a simple example that demonstrates a successful execution of
    ELA.
@@ -1563,7 +1880,7 @@ C.1.  Minimal
    3.  upon receiving the request, W obtains ID_U = 14, authorizes the
        access, and replies with Voucher Response
 
-C.2.  Wrong gateway
+E.2.  Wrong gateway
 
    In this example, a device u1 tries to enroll a domain via gateway v1,
    but W denies the request because the pairing (u1, v1) is not
