@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-17T01:26:36.792241+00:00",
+  "timestamp": "2024-10-20T01:40:30.390018+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -320,7 +320,7 @@
       "labels": [],
       "body": "(Moved from https://github.com/EricssonResearch/ace-ake-authz/issues/27)\r\n\r\nProcessing some deployment scenarios (involving CoAP-over-GATT), I've found that sometimes the roles of I and R would be reversed.\r\n\r\nApart from the aspect of vulnerable-identities, is there anything fundamentally keeping the ENC_U_INFO from being in message 2, and the voucher from being in message 3? The credential database lookup would then be against ID_CRED_R, but that'd be the same interface as for ID_CRED_I.\r\n\r\nLet's not sink too much time into this if it turns out to be complicated -- I'm not sure whether running EDHOC over CoAP in reverse flow may not be the better choice in this situation anyway, but if this has ever been contemplated in other places, this issue might be a good spot to spool ideas.",
       "createdAt": "2024-03-13T12:28:46Z",
-      "updatedAt": "2024-03-19T11:13:30Z",
+      "updatedAt": "2024-10-18T12:56:50Z",
       "closedAt": null,
       "comments": [
         {
@@ -343,6 +343,13 @@
           "body": "At a first glance I think it could work. \r\n\r\nApart from just using EAD_2 / EAD_3 instead of EAD_1 / EAD_2, it would also have some impact on the VREQ/VRES protocol, which currently sends message_1 to W, which is then used in the composition of the Voucher:\r\n\r\n```\r\nexternal_aad = (\r\n    H(message_1): bstr, / could be changed to `H(message_1 || message_2)` (or even just reuse `TH_3`) /\r\n    CRED_V:       bstr,\r\n)\r\n```\r\n",
           "createdAt": "2024-03-19T11:13:29Z",
           "updatedAt": "2024-03-19T11:13:29Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "If you think #41 addresses your comment, could you please close this issue @chrysn?",
+          "createdAt": "2024-10-18T12:56:49Z",
+          "updatedAt": "2024-10-18T12:56:49Z"
         }
       ]
     },
@@ -351,16 +358,24 @@
       "id": "I_kwDOKiCa6c6Cs3ic",
       "title": "Can we turn opaque_info into more concrete fields, in EAD_1?",
       "url": "https://github.com/lake-wg/authz/issues/23",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "I am interested in exploring how we can reduce, as much as possible, the use of opaque_info, for the following reasons:\r\n1. interoperability\r\n2. the problem of providing \"free connectivity\" in EAD_1\r\n\r\n## Proposal\r\nThe proposal so far is to replace `opaque_info` by `nearby_vs`:\r\n```\r\nnearby_vs = {\r\n  / macs-addrs   /     1: [ + bstr ],\r\n  / pan-ids      /     2: [ + bstr ],\r\n  / ipv4-addrs   /     3: [ + bstr ],\r\n  / ipv6-addrs   /     4: [ + bstr ],\r\n  / app-specific / 16-31: [ + bstr ],\r\n}\r\n```\r\n\r\nSome comments:\r\n1. the idea is to satisfy the problem of sending a list of \"nearby Vs\", while achieving better interoperability, in a way that is agnostic to the type of network identifier\r\n2. for now, the proposal assumes that \"nearby Vs\" is the **only** type of contextual data that U would ever want to send to W\r\n3. do we have concrete examples of other kind of contextual data that should be sent to W?\r\n",
       "createdAt": "2024-03-18T17:08:13Z",
-      "updatedAt": "2024-03-19T09:48:42Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2024-10-18T12:57:27Z",
+      "closedAt": "2024-10-18T12:57:27Z",
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Closing as obsolete after merging of #41.",
+          "createdAt": "2024-10-18T12:57:27Z",
+          "updatedAt": "2024-10-18T12:57:27Z"
+        }
+      ]
     },
     {
       "number": 24,
@@ -414,7 +429,7 @@
       "labels": [],
       "body": "I'm not fully sure where this should go, but authz is probably a good starting point, because it is part of the solution I have in mind right now.\r\n\r\nConsider two parties establishing a connection where both have sensitive identities (in terms of being tracked, of ownership, and both actively solicit connections continuously).\r\nAs an example, a service worker's phone might be constantly listening for beacons of installed equipment, which would report their latest logs, but neither do we want to allow tracking of the worker by identity or affiliation, nor do we want that arbitrary people driving through the city can map where they have equipment installed.\r\n(I figure airtags probably do something similar, but it's easier when reporting your manufacturer just is 2-3 bits of information).\r\n\r\nOne way to solve this is to defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information, and promise to only relay that to other parties in your organization. The organization may run that on their own (in which case they'd probably pick LOC_W=\"\" and take the risk of just seeing many decryption failures whenever they encounter devices of someone else who does the same), or they may use any global provider, where the number of providers should be smaller than the number of organizations using them in any area (maybe 4=len(\"GAMA\")...).\r\n\r\nUsing authz, this could be used like this:\r\n(U = machine, V = phone, W = trustservice; as part of their enrollment, U has learned the public key of W and W knows the mapping from ID_U to CRED_U plus which account this is on, V has a secure channel with W associated with a customer account)\r\n* U sends message 1 with its ID_U\r\n* V sends the ENC_U_INFO to W\r\n* W verifies that V is on the same customer account as U, and returns CRED_U as well as a voucher response.\r\n  I'm not sure we even need to use the voucher here -- all that V needed to know that this is \"one of its own\", and knowing this it can now send its CRED_V (probably by value), and that will suffice to U\r\n* V sends its CRED_U\r\n* U recognizes the CRED_U and ... either sends a KID ID_CRED_V which suffices for this V, or if it turns out that V didn't contact W and just was generous with its CRED_V, maybe V sent something to ask for the full certificate.\r\n\r\nIs that in scope as an application for authz? I think it'd work with authz as-is, and at most need some wording that \"it is fine if the voucher response comes back OK without containing a voucher, V should then just continue like that\". (Maybe the voucher is also just empty, and in the last step U takes that as the hint that even though V sent a credential, itself it can just send ID_CRED_I=b\"\").",
       "createdAt": "2024-03-21T16:53:08Z",
-      "updatedAt": "2024-03-25T13:36:00Z",
+      "updatedAt": "2024-10-18T13:05:35Z",
       "closedAt": null,
       "comments": [
         {
@@ -437,6 +452,13 @@
           "body": "> One way to solve this ...\r\n\r\nI also find it hard to understand this paragraph. It appears the main change is that W has a business logic commitment to not share ids with _other organizations_ which could act as unintended trackers? If yes, I fail to see how to integrate it in the protocol.\r\n\r\n> defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information\r\n\r\nWho is attacking here? The trusted party? (that doesn't make sense to me)\r\nWho can read the information?\r\n\r\n> I'm not sure we even need to use the voucher here -- all that V needed to know that this is \"one of its own\"\r\n\r\nI don't understand this part, as V already does not use the voucher ([Section 4.6.2.2](https://www.ietf.org/archive/id/draft-ietf-lake-authz-01.html#section-4.6.2.2)) -- the voucher's intended audience is U. \r\nV simply knows that the authorization has worked by receiving an \"ok\" answer from W (we need to actually define this, as tracked in #19).",
           "createdAt": "2024-03-25T13:35:43Z",
           "updatedAt": "2024-03-25T13:36:00Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@chrysn any comments on this? if you want we can discuss during the next IETF meeting.",
+          "createdAt": "2024-10-18T13:05:33Z",
+          "updatedAt": "2024-10-18T13:05:33Z"
         }
       ]
     },
@@ -452,7 +474,7 @@
       "labels": [],
       "body": "During the IETF 119 LAKE meeting (see [minutes here](https://datatracker.ietf.org/doc/minutes-119-lake-202403210530/)), some comments were raised about the privacy aspects of hints (identifiers of V passed from U to W and vice-versa).\r\nThis issue is intended as a place for discussion of the raised points.\r\n\r\nCurrently in version -01 of the draft, there are two kinds of hints:\r\n1. `u_hints`, meaning radio identifiers of Vs that are discovered by U and communicated to W via an encrypted channel (carried within EAD_1 and then VREQ).\r\n2. `v_hints`, meaning radio identifiers of Vs that are pre-populated in W and are communicated to U via an encrypted channel (carried within VRES and then EDHOC error Access Denied).\r\n\r\nBelow I explore whether or not there are privacy issues regarding hints, from the perspectives of U, V and W, as well as when data is in transit.\r\n\r\n### 1. Privacy of `u_hints`\r\n- At U: gateways (Vs) normally advertise their radio identifiers in beacons -> no issue.\r\n- At V: the hint is encrypted -> no issue.\r\n- At W: the radio identifiers of any V will be read by W\r\n  - \u26a0\ufe0f potential issue: if W shares the identifiers with 3rd parties\r\n  - mitigation: W should commit to not share the received identifiers.\r\n- in transit between U <-> V and V <-> W: the hint is encrypted -> no issue.\r\n\r\n### 2. Privacy of `v_hints`\r\n- At W: the radio identifiers of Vs that are securely associated with W will be read by W\r\n  - \u26a0\ufe0f potential issue: if W shares the identifiers with 3rd parties\r\n  - mitigation: W should commit to not share the received identifiers.\r\n  - \u2753note: since Vs are already associated with W, the Vs should already trust W to not share any information with 3rd parties. Thus I think this is a non-issue.\r\n- At V: the hint is encrypted -> no issue.\r\n- At U: the device U will gain information about Vs that allow U to enroll. \r\n  - \u26a0\ufe0f potential issue: if the device is malicious, it would be learning new information about the system\r\n  - mitigation: only return hints when U is known to W.\r\n    - example 1: device u1 is listed in W's ACL, but the V through which it tried to join is not in the ACL (leading to error \"Access Denied\"). Since W knows u1, it MAY return `v_hints`.\r\n    - example 2: device u2 is not listed in W's ACL (leading to error \"Access Denied\"). Since W does not know u2, it MUST NOT return `v_hints`.\r\n  - \u2753 note: is there an issue when U is known by W (as in example 1 above)? It would be learning about radio identifiers of Vs that might or might not be in its radio range and are expected to be authorized to enroll U. Personally I think this is a non-issue.\r\n- in transit between W <-> V and V <-> U: the hint is encrypted -> no issue.\r\n\r\n### Discussion\r\nI think that the only issues that we need to address in the document are `1. Privacy of u_hints at W` and `2. Privacy of v_hints at U (when U is unknown to W)`.\r\n\r\nLooking forward to receiving comments from those interested in this topic.",
       "createdAt": "2024-04-02T15:22:57Z",
-      "updatedAt": "2024-04-08T08:50:32Z",
+      "updatedAt": "2024-10-18T13:02:33Z",
       "closedAt": null,
       "comments": [
         {
@@ -552,6 +574,13 @@
           "body": "\r\n\r\nOn 08/04/2024 09:28, Geovane Fedrecheski wrote:\r\n> In certain use cases, such as [Example 2](https://www.ietf.org/archive/id/draft-ietf-lake-authz-01.html#name-wrong-gateway) in the draft, we consider that the authorization policies may contain mappings from U to V's:\r\n> \r\n> ```\r\n> the access policy in W specifies, via a mapping of shape (ID_U; MAC1, MAC2, ...) that device u1\r\n> can only join via gateway v3, i.e., the mapping is: (14; 39-63-C9-D0-5C-62)\r\n> ```\r\n> \r\n> In this case, W already has the full graph connecting U's and V's -- it has to have it, to enforce some business logic.\r\n\r\nFor me, the above is too abstract to enable analysis of privacy\r\nissues, or business logic.\r\n\r\nCheers,\r\nS.\r\n",
           "createdAt": "2024-04-08T08:50:31Z",
           "updatedAt": "2024-04-08T08:50:31Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Merging of #42 fixes most issues raised in this thread. Still up for discussion if we should keep the opaque_info field in the Access Denied error message. (to be discussed during the IETF 121 in Dublin)",
+          "createdAt": "2024-10-18T13:02:31Z",
+          "updatedAt": "2024-10-18T13:02:31Z"
         }
       ]
     },
@@ -1245,21 +1274,21 @@
       "id": "PR_kwDOKiCa6c5rk-Si",
       "title": "Replace OPAQUE_INFO by NEARBY_VS in EAD_1",
       "url": "https://github.com/lake-wg/authz/pull/29",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This is a sketch towards issue #23.\r\n\r\nStill not sure how to handle the possible representations of network identifiers listed in the table. For example: should MAC Addresses be sent only as bytes? And what about IPv6 address, should it always be 128 bits or also support compressed notation? (I think we don't want to over-engineer this).\r\n\r\n",
       "createdAt": "2024-04-03T14:35:09Z",
-      "updatedAt": "2024-04-03T15:44:15Z",
+      "updatedAt": "2024-10-18T12:54:58Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b7b276bbecea58ee0e547ef72e48c16bd9451261",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "make-opaque-concrete-ead1",
       "headRefOid": "642cf542b8dd43834019435fb350cfd7b8325158",
-      "closedAt": null,
+      "closedAt": "2024-10-18T12:54:57Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -1284,6 +1313,13 @@
           "body": "Just to clarify, I don't think of changing the representation of the identifiers, just how they are grouped with respect to a given tag.",
           "createdAt": "2024-04-03T15:44:14Z",
           "updatedAt": "2024-04-03T15:44:14Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Closing as obsolete, as result of discussions over privacy (#27) and after merging of #41. ",
+          "createdAt": "2024-10-18T12:54:57Z",
+          "updatedAt": "2024-10-18T12:54:57Z"
         }
       ],
       "reviews": []
@@ -1526,7 +1562,7 @@
       "labels": [],
       "body": "For discussion. \r\n\r\nInstead of sending message_1, U sends a trigger over multicast/broadcast which leads to V sending message_1 to U. This allows a discovery process where EAD_1 could contain an EAD item specified in lake-authz, allowing advertisement of the use of the authz protocol, or certain deployment of authz, independent of underlying layer. This allows U to detect gateways supporting the authz protocol ,or certain deployment, and provide such information to W using the \"hints\" and allow an effficient deployment.\r\n\r\nEDHOC messages then follow with EAD_x having the content of EAD_(x-1) of the forward flow. \r\n\r\nNote that ID_CRED_R, sent in message_2, can now be empty because V will now run VREQ/VRES with W and in this case CRED_U can be returned without changing the basic identity protection assumption of EDHOC.",
       "createdAt": "2024-04-24T09:58:09Z",
-      "updatedAt": "2024-10-15T08:57:39Z",
+      "updatedAt": "2024-10-18T12:54:03Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
@@ -1600,6 +1636,13 @@
           "body": "Thanks for referencing it there @chrysn, I added a back-reference to [here](https://github.com/lake-wg/authz/pull/41/files#diff-d6b094b88f44995cdbae2dd5a4b533e7a9a45cfe05bd8bf53017251c55019790R939) in #41. ",
           "createdAt": "2024-10-15T08:57:38Z",
           "updatedAt": "2024-10-15T08:57:38Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "An appendix explaining use with the EDHOC reverse flow was added and merged in #41. I believe this PR can now be closed.",
+          "createdAt": "2024-10-18T12:54:01Z",
+          "updatedAt": "2024-10-18T12:54:01Z"
         }
       ],
       "reviews": []
@@ -1757,24 +1800,26 @@
       "id": "PR_kwDOKiCa6c5-L2gC",
       "title": "Protocol name: introduce abbreviated form 'ELA'",
       "url": "https://github.com/lake-wg/authz/pull/40",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Applying the ELA abbreviation as discussed with @malishav and @gselander. ",
       "createdAt": "2024-10-10T08:38:00Z",
-      "updatedAt": "2024-10-10T09:03:58Z",
+      "updatedAt": "2024-10-18T08:31:47Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "bf4d0654051494f1b66e0bf99827283677e6db83",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "name-it-ela",
       "headRefOid": "e1f3a78b270ec63823fe5ea7cac13fa90f32c072",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-10-18T08:31:41Z",
+      "mergedAt": "2024-10-18T08:31:41Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "365fc3cc08b1aff2c906dc0b4d10b77892fe8fa8"
+      },
       "comments": [],
       "reviews": []
     },
@@ -1783,24 +1828,26 @@
       "id": "PR_kwDOKiCa6c5-PmRl",
       "title": "Add section Optimization Strategies",
       "url": "https://github.com/lake-wg/authz/pull/41",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
-      "body": "Summary of the changes:\r\n\r\n**new** Section 5: Optimization Strategies, where broadcast and advertisement -based solutions are presented:\r\n- 5.1 U anycasts message_1 (previously approach A4)\r\n    - explains the approach and mention associated security/congestion considerations.\r\n- 5.2 V advertises support for ELA: \r\n    - describe the idea of adversiting ELA (sharing a V_INFO struct, whose definition depends on network/application)\r\n    - propose ELA_ID and DOMAIN_ID as guideline for implementers.\r\n\r\n**new** Appendix A: use with EDHOC reverse flow (Goran's PR [#36](https://github.com/lake-wg/authz/pull/36))\r\n\r\n**new** Appendix C: advertisement strategies\r\n(sampled from what we have discussed at length already)\r\n- C.1. V_INFO in network beacons (previously approach A1)\r\n- C.2. V_INFO in EAD_1 (previously approach A2)\r\n- C.3. V_INFO in a CoAP Multicast Packet (previously approach A3)\r\n\r\n---\r\n\r\nNote that although this PR **does not** build on top of #40, I am using the abbreviated form ELA to refer to the protocol. The idea is to rebase it once #40 gets merged. ",
+      "body": "Summary of the changes:\r\n\r\n**new** Section 5: Optimization Strategies, where broadcast and advertisement -based solutions are presented:\r\n- 5.1 U anycasts message_1 (previously approach A4)\r\n    - explains the approach and mention associated security/congestion considerations.\r\n- 5.2 V advertises support for ELA: \r\n    - describe the idea of adversiting ELA (sharing a V_INFO struct, whose definition depends on network/application)\r\n    - propose ELA_ID and DOMAIN_ID as guideline for implementers.\r\n\r\n**new** Appendix A: use with EDHOC reverse flow (Goran's PR [#36](https://github.com/lake-wg/authz/pull/36))\r\n\r\n**new** Appendix C: advertisement strategies\r\n(sampled from what we have discussed at length already)\r\n- C.1. V_INFO in network beacons (previously approach A1)\r\n- C.2. V_INFO in EAD_1 (previously approach A2)\r\n- C.3. V_INFO in a CoAP Multicast Packet (previously approach A3)\r\n",
       "createdAt": "2024-10-10T15:58:40Z",
-      "updatedAt": "2024-10-15T15:06:29Z",
+      "updatedAt": "2024-10-18T12:35:21Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
-      "baseRefOid": "bf4d0654051494f1b66e0bf99827283677e6db83",
+      "baseRefOid": "365fc3cc08b1aff2c906dc0b4d10b77892fe8fa8",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "optimizations-broadcast-advertisement",
-      "headRefOid": "0fcca9e12d55e992b32f2812c8dbc16331ced46c",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "e311b336c8b6b20ee89f5346c1f71c9f8189a049",
+      "closedAt": "2024-10-18T12:35:17Z",
+      "mergedAt": "2024-10-18T12:35:17Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "0fee49f1b55c89db4d1eda24eec994eacf36ee57"
+      },
       "comments": [
         {
           "author": "geonnave",
@@ -1808,6 +1855,13 @@
           "body": "May still do some changes, but I think it can already receive reviews.",
           "createdAt": "2024-10-15T13:50:09Z",
           "updatedAt": "2024-10-15T13:50:09Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Merging -- changes were discussed in meeting with co-authors @gselander and @malishav on Oct 16.",
+          "createdAt": "2024-10-18T12:34:34Z",
+          "updatedAt": "2024-10-18T12:34:34Z"
         }
       ],
       "reviews": []
@@ -1817,25 +1871,35 @@
       "id": "PR_kwDOKiCa6c5-r7WE",
       "title": "Remove hints",
       "url": "https://github.com/lake-wg/authz/pull/42",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This removes text related to sharing enrollment hints between U and W, as per privacy issue discussions in #27 and additional discussions during previous IETF and internal meetings.\r\n\r\nNote that this PR builds on top of #41 so, when reviewing, please only consider the latter commits.\r\n\r\nI am also thinking about the impacts on the Error Handling subsection: initially we wanted it to be actionable, that is why it contains the OPAQUE_INFO field, which was supposed to carry hints (e.g. a list of V's). If we remove that, the information conveyed by the error message will be limited to \"Access Denied\". One alternative would be to completely remove the new EDHOC Error definition, and just send \"Unspecified Error\" in case of failure at W (the limitation being that U has a bit less information about what went wrong).\r\nSo the question is: should we keep the \"Access Denied\" error, given that we are getting rid of the OPAQUE_INFO field in REJECT_INFO?",
       "createdAt": "2024-10-15T14:33:00Z",
-      "updatedAt": "2024-10-15T14:33:00Z",
+      "updatedAt": "2024-10-18T12:52:21Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
-      "baseRefOid": "bf4d0654051494f1b66e0bf99827283677e6db83",
+      "baseRefOid": "0fee49f1b55c89db4d1eda24eec994eacf36ee57",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "remove-hints",
-      "headRefOid": "7e6efd83b055895cf17f31dea921010eb4fe6629",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
+      "headRefOid": "781fe29bc96cccc1b02e8a05391e804801c5fbb9",
+      "closedAt": "2024-10-18T12:52:18Z",
+      "mergedAt": "2024-10-18T12:52:18Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "3026f6e6f5d32f796163b45ae79f7e9c42734a4c"
+      },
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Merging, as discussed with co-authors in a design meeting.\r\n\r\nWe decided to keep the new error definition since \"Access Denied\" is still actionable in that U can choose to not retry enrollment with that same V again.",
+          "createdAt": "2024-10-18T12:51:42Z",
+          "updatedAt": "2024-10-18T12:51:42Z"
+        }
+      ],
       "reviews": []
     }
   ]
