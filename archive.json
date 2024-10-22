@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-20T01:40:30.390018+00:00",
+  "timestamp": "2024-10-22T01:35:01.458681+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1900,6 +1900,34 @@
           "updatedAt": "2024-10-18T12:51:42Z"
         }
       ],
+      "reviews": []
+    },
+    {
+      "number": 43,
+      "id": "PR_kwDOKiCa6c5_ShBs",
+      "title": "No need for DTLS client auth when DTLS+EDHOC used for PoP",
+      "url": "https://github.com/lake-wg/authz/pull/43",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixing an issue raised by Marco Tiloca during the last IETF meeting.\r\n\r\nRationale: client authentication is not needed for DTLS in the case that EDHOC is used for PoP.",
+      "createdAt": "2024-10-21T09:27:19Z",
+      "updatedAt": "2024-10-21T09:31:18Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "3026f6e6f5d32f796163b45ae79f7e9c42734a4c",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "fix-table-dtls-and-edhoc-case",
+      "headRefOid": "251fd98bb232da586cece0ad6ebe86b6abc73f49",
+      "closedAt": "2024-10-21T09:31:18Z",
+      "mergedAt": "2024-10-21T09:31:18Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "bf8a84fa018e1be4d495348b9519cc5a2822ae73"
+      },
+      "comments": [],
       "reviews": []
     }
   ]
