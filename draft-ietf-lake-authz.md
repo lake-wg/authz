@@ -632,6 +632,78 @@ If present, V decrypts and verifies opaque_state as received from W. If that ver
 with U is aborted.
 If the voucher response is successfully received from W, then V responds to U with EDHOC message_2 as described in {{V_2}}.
 
+## Use with U as Initiator or Responder {#u-init-resp}
+
+This section discusses how the protocol can be used with U as either EDHOC Initiator or Responder.
+The decision on which approach to use will depend on the use case.
+For example, it can be applicable to using ELA with CoAP in the EDHOC reverse message flow defined in {{Appendix A.2.2 of RFC9528}}.
+
+### U is the Initiator {#u-initiator}
+
+Editor's note: this case is already covered in {{fig-protocol}}.
+
+The scenario when U is the Initiator is the same as the one described in {{fig-protocol}}.
+
+~~~~~~~~~~~ aasvg
++--------+--------+          +-----------------+
+|        U        |          |        V        |
+| EDHOC Initiator |          | EDHOC Responder |
++--------+--------+          +--------+--------+
+         |                            |
+         |                            |
+         |     EDHOC message_1        |               W
+         +--------------------------->|               |
+         |  (EAD_1 = Voucher_Info)    |               |
+         |                            |               |
+         |                            +-------------->|
+         |                            |  VREQ / VRES  |
+         |                            +<------------->|
+         |     EDHOC message_2        |
+         +<---------------------------|
+         |    (EAD_2 = Voucher)       |
+         |                            |
+         |     EDHOC message_3        |
+         +--------------------------->|
+         |                            |
+~~~~~~~~~~~
+{: #fig-u-initiator title="ELA when U is initiator." artwork-align="center"}
+
+### U is the Responder {#u-responder}
+
+ELA also works with U is the EDHOC Responder.
+The main changes in this case are:
+
+- Instead of sending EDHOC message_1, U sends an initial trigger packet to V, e.g., a CoAP request. Upon receiving this trigger, V initiates the handshake by replying with an EDHOC message_1.
+- When U answers with EDHOC message_2, it contains the Voucher_Info struct as part of EAD_2.
+- Finally, EDHOC message_3 carries Voucher in the EAD_3 field.
+
+~~~~~~~~~~~ aasvg
++--------+--------+          +-----------------+
+|        U        |          |        V        |
+| EDHOC Responder |          | EDHOC Initiator |
++--------+--------+          +--------+--------+
+         |                            |
+         |     Trigger Message        |
+         +- - - - - - - - - - - - - ->|
+         |                            |
+         |     EDHOC message_1        |
+         +<---------------------------|
+         |                            |
+         |     EDHOC message_2        |               W
+         +--------------------------->|               |
+         |   (EAD_2 = Voucher_Info)   |               |
+         |                            |               |
+         |                            +-------------->|
+         |                            |  VREQ / VRES  |
+         |                            |<------------->|
+         |                            |               |
+         |     EDHOC message_3        |               |
+         +<---------------------------|
+         |     (EAD_3 = Voucher)      |
+~~~~~~~~~~~
+{: #fig-u-responder title="ELA when U is the EDHOC responder." artwork-align="center"}
+
+
 ## Error Handling {#err-handling}
 This section specifies a new EDHOC error code and how it is used in ELA.
 
