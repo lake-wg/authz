@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-20T01:27:09.181989+00:00",
+  "timestamp": "2025-02-23T01:39:46.039448+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1927,6 +1927,32 @@
       "mergeCommit": {
         "oid": "bf8a84fa018e1be4d495348b9519cc5a2822ae73"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 44,
+      "id": "PR_kwDOKiCa6c6L28EU",
+      "title": "Ackowledge partial funding from EU's OpenSwarm project",
+      "url": "https://github.com/lake-wg/authz/pull/44",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As the title says.",
+      "createdAt": "2025-02-20T08:14:11Z",
+      "updatedAt": "2025-02-20T08:14:12Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "bf8a84fa018e1be4d495348b9519cc5a2822ae73",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "ack-openswarm",
+      "headRefOid": "9ad22343a05da3862de93be59d54a30184e84a2a",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
