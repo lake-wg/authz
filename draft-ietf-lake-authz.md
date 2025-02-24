@@ -1245,4 +1245,6 @@ Execution:
 
 The authors sincerely thank {{{Aurelio Schellenbaum}}} for his contribution in the initial phase of this work, and Marco Tiloca for extensively reviewing the document.
 
+Work on this document has in part been supported by the Horizon Europe Framework Programme project OpenSwarm (grant agreement No. 101093046).
+
 --- fluff
