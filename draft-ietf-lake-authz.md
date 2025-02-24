@@ -341,7 +341,9 @@ The ELA protocol illustrated in {{fig-protocol}} reuses several components of ED
     * EDHOC hash algorithm: used for key derivation
     * EDHOC key exchange algorithm: used to calculate the shared secret between U and W
 
-* EAD_1, EAD_2 are the External Authorization Data message fields of message_1 and message_2, respectively, see {{Section 3.8 of RFC9528}}. This document specifies the EAD items with ead_label = TBD1, see {{iana-ead}}).
+* EAD_1, EAD_2 are the External Authorization Data message fields of message_1 and message_2, respectively, see {{Section 3.8 of RFC9528}}.
+In case U acts as Responder (see {{u-init-resp}}), EAD_2 and EAD_3 are used in message_2 and message_3, respectively.
+This document specifies two new EAD items, with ead_label = TBD1 and TBD2, see {{iana-ead}}.
 
 * ID_CRED_I and ID_CRED_R are used to identify the authentication credentials CRED_U and CRED_V, respectively. As shown at the bottom of {{fig-protocol}}, V may use W to obtain CRED_U. CRED_V is transported in ID_CRED_R in message_2, see {{V_2}}.
 
@@ -640,9 +642,8 @@ For example, it can be applicable to using ELA with CoAP in the EDHOC reverse me
 
 ### U is the Initiator {#u-initiator}
 
-Editor's note: this case is already covered in {{fig-protocol}}.
-
-The scenario when U is the Initiator is the same as the one described in {{fig-protocol}}.
+This scenario is the same as the one already described in {{protocol-overview}}.
+We reproduce it again here just for the sake of clarity, since it facilitates comparison with the scenario where U is the Responder.
 
 ~~~~~~~~~~~ aasvg
 +--------+--------+          +-----------------+
@@ -670,12 +671,13 @@ The scenario when U is the Initiator is the same as the one described in {{fig-p
 
 ### U is the Responder {#u-responder}
 
-ELA also works with U is the EDHOC Responder.
+ELA also works with U as the EDHOC Responder, a setup we refer to as the ELA reverse flow.
 The main changes in this case are:
 
-- Instead of sending EDHOC message_1, U sends an initial trigger packet to V, e.g., a CoAP request. Upon receiving this trigger, V initiates the handshake by replying with an EDHOC message_1.
-- When U answers with EDHOC message_2, it contains the Voucher_Info struct as part of EAD_2.
-- Finally, EDHOC message_3 carries Voucher in the EAD_3 field.
+- Instead of having Voucher_Info sent in EAD_1, it is sent in EAD_2 as part of EDHOC message_2.
+- Instead of having Voucher sent in EAD_2, it is sent in EAD_3 as part of EDHOC message_3.
+- Optionally, U may send a trigger message, e.g., a CoAP request, to let V know that it is available to execute an EDHOC handshake.
+Specifying this trigger message is out of scope, and is left to application.
 
 ~~~~~~~~~~~ aasvg
 +--------+--------+          +-----------------+
@@ -701,8 +703,18 @@ The main changes in this case are:
          +<---------------------------|
          |     (EAD_3 = Voucher)      |
 ~~~~~~~~~~~
-{: #fig-u-responder title="ELA when U is the EDHOC responder." artwork-align="center"}
+{: #fig-u-responder title="The ELA reverse flow, when U is the EDHOC responder." artwork-align="center"}
 
+### Interoperability considerations
+
+A Device (U) MUST implement one of the ELA flows, and it MAY chose to implement both.
+
+The Domain Authenticator (V) MUST support both flows, that is, a Voucher_Info may arrive as either part of an EAD_1 or EAD_2 field.
+Similarly, V must be able to send a Voucher as either part of EAD_2 or EAD_3, depending on the selected flow.
+
+### Security impllications
+
+TODO.
 
 ## Error Handling {#err-handling}
 This section specifies a new EDHOC error code and how it is used in ELA.
@@ -914,13 +926,17 @@ The private ephemeral key is thus used in the device for calculations of key mat
 
 ## EDHOC External Authorization Data Registry {#iana-ead}
 
-IANA has registered the following entry in the "EDHOC External Authorization Data" registry under the group name "Ephemeral Diffie-
+IANA has registered the following entries in the "EDHOC External Authorization Data" registry under the group name "Ephemeral Diffie-
    Hellman Over COSE (EDHOC)".
-The ead_label = TBD1 corresponds to the ead_value Voucher_Info in EAD_1, and Voucher in EAD_2 with processing specified in {{m1}} and {{m2}}, respectively, of this document.
 
 | Label | Value Type | Description |
-| TBD1 | bstr | Voucher related information |
+| TBD1 | bstr | Voucher_Info structure, prepared by the Device (U). |
+| TBD2 | bstr | Voucher structure, prepared by the Enrollment Server (W). |
 {: #ead-table title="Addition to the EDHOC EAD registry" cols="r l l"}
+
+The ead_label = TBD1 corresponds to the ead_value = Voucher_Info, which can be carried in either EAD_1 or EAD_2, depending on whether U acts as EDHOC Initiator or Responder, see {{u-init-resp}}.
+
+The ead_label = TBD2 corresponds to ead_value = Voucher, and can be carried in either EAD_2 or EAD_3, see {{u-init-resp}}.
 
 ## The Well-Known URI Registry
 
