@@ -453,6 +453,8 @@ The derivation of IV_1 = EDHOC_Expand(PRK, info, length) uses the following inpu
 
 ### Voucher {#voucher}
 
+The external authorization data EAD_2 contains an EAD item with ead_label = TBD2 and ead_value = Voucher.
+
 The voucher is an assertion to U that W has authorized V.
 It is encrypted using the EDHOC AEAD algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1.
 It consists of the 'ciphertext' field of a COSE_Encrypt0 object, which is a byte string, as defined below.
@@ -642,8 +644,8 @@ For example, it can be applicable to using ELA with CoAP in the EDHOC reverse me
 
 ### U is the Initiator {#u-initiator}
 
-This scenario is the same as the one already described in {{protocol-overview}}.
-We reproduce it again here just for the sake of clarity, since it facilitates comparison with the scenario where U is the Responder.
+This scenario is the same as the one already described in {{protocol-overview}}, with the processing in U and V is as described in {{U-V}}.
+We replicate the scenario here just for the sake of clarity, where {{fig-u-initiator}} facilitates comparison with the scenario where U is the Responder.
 
 ~~~~~~~~~~~ aasvg
 +--------+--------+          +-----------------+
@@ -671,13 +673,7 @@ We reproduce it again here just for the sake of clarity, since it facilitates co
 
 ### U is the Responder {#u-responder}
 
-ELA also works with U as the EDHOC Responder, a setup we refer to as the ELA reverse flow.
-The main changes in this case are:
-
-- Instead of having Voucher_Info sent in EAD_1, it is sent in EAD_2 as part of EDHOC message_2.
-- Instead of having Voucher sent in EAD_2, it is sent in EAD_3 as part of EDHOC message_3.
-- Optionally, U may send a trigger message, e.g., a CoAP request, to let V know that it is available to execute an EDHOC handshake.
-Specifying this trigger message is out of scope, and is left to application.
+ELA also works with U as the EDHOC Responder, a setup we refer to as the ELA reverse flow, as shown in {{fig-u-responder}}.
 
 ~~~~~~~~~~~ aasvg
 +--------+--------+          +-----------------+
@@ -704,6 +700,47 @@ Specifying this trigger message is out of scope, and is left to application.
          |     (EAD_3 = Voucher)      |
 ~~~~~~~~~~~
 {: #fig-u-responder title="The ELA reverse flow, when U is the EDHOC responder." artwork-align="center"}
+
+The following subsections explain how the processing of the elements in U and V differ from the description in {{U-V}}.
+
+#### Message 1
+
+Processing in V:
+
+- V composes EDHOC message_1 according to an agreed application profile, see {{Section 3.9 of RFC9528}}.
+
+Processing in U:
+
+- U processes EDHOC message_1...
+
+#### Message 2
+
+Processing in U:
+
+- As part of the normal EDHOC processing, U generates the ephemeral public key G_Y that is reused in the interaction with W, see {{U-W}}.
+- The device sends EDHOC message_2 with EAD item (-TBD1, Voucher_Info) included in EAD_2, where Voucher_Info is specified in {{U-W}}. The negative sign indicates that the EAD item is critical, see {{Section 3.8 of RFC9528}}.
+
+Processing in V:
+
+- V receives EDHOC message_2 from U and processes it as specified in {{Section 5.3.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_2.
+- V MUST properly process the criticality of the EAD item, see {{Section 3.8 of RFC9528}}.
+- Otherwise, the ead_label = TBD1 triggers the voucher request to W as described in {{V-W}}.
+- The exchange between V and W needs to be completed successfully for the EDHOC session to be continued.
+
+#### Message 3
+
+Processing in V:
+
+- V receives the voucher response from W as described in {{V-W}}.
+- V sends EDHOC message_3 to U with the critical EAD item (-TBD2, Voucher) included in EAD_3, i.e., ead_label = TBD2 and ead_value = Voucher, as specified in {{voucher}}.
+
+Processing in U:
+
+- U receives EDHOC message_3 from V and processes it as specified in {{Section 5.4.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_3.
+- V MUST properly process the criticality of the EAD item, see {{Section 3.8 of RFC9528}}.
+- Otherwise, U MUST verify the Voucher using H_message_1, CRED_V, and the keys derived as in {{voucher}}. If the verification fails then U MUST abort the EDHOC session.
+
+TODO: in the u-is-responder flow, should we use TH_2 instead of H_message_1?
 
 ### Interoperability considerations
 
