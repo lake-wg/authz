@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-25T01:36:58.623441+00:00",
+  "timestamp": "2025-02-27T01:36:50.560710+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -1961,7 +1961,7 @@
     {
       "number": 45,
       "id": "PR_kwDOKiCa6c6MUpiF",
-      "title": "Support U as EDHOC Initiator / Responder as a core section",
+      "title": "New subsection: U as EDHOC Initiator or Responder",
       "url": "https://github.com/lake-wg/authz/pull/45",
       "state": "OPEN",
       "author": "geonnave",
@@ -1970,13 +1970,13 @@
       "labels": [],
       "body": "and all the implications that come from it:\r\n- dedicated EAD labels for Voucher/Voucher_Info\r\n- security / interoperability considerations ",
       "createdAt": "2025-02-24T16:47:11Z",
-      "updatedAt": "2025-02-24T16:47:11Z",
+      "updatedAt": "2025-02-25T17:04:48Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "6da9920a1737171ead0ea22b96b3cf671bb91219",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "re-organize-sections",
-      "headRefOid": "1e36f86519336207fa23bca6307fb2533d969c16",
+      "headRefOid": "4b3cf0e0028bd56605e02adbc23afeeecbd4246f",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
