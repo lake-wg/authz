@@ -342,7 +342,7 @@ The ELA protocol illustrated in {{fig-protocol}} reuses several components of ED
     * EDHOC key exchange algorithm: used to calculate the shared secret between U and W
 
 * EAD_1, EAD_2 are the External Authorization Data message fields of message_1 and message_2, respectively, see {{Section 3.8 of RFC9528}}.
-In case U acts as Responder (see {{u-init-resp}}), EAD_2 and EAD_3 are used in message_2 and message_3, respectively.
+In case U acts as Responder (see {{reverse-u-responder}}), EAD_2 and EAD_3 are used in message_2 and message_3, respectively.
 This document specifies two new EAD items, with ead_label = TBD1 and TBD2, see {{iana-ead}}.
 
 * ID_CRED_I and ID_CRED_R are used to identify the authentication credentials CRED_U and CRED_V, respectively. As shown at the bottom of {{fig-protocol}}, V may use W to obtain CRED_U. CRED_V is transported in ID_CRED_R in message_2, see {{V_2}}.
@@ -354,7 +354,7 @@ The protocol also reuses the EDHOC_Extract and EDHOC_Expand key derivation from 
          * where salt = 0x (the zero-length byte string)
          * IKM is computed as an ECDH cofactor Diffie-Hellman shared secret from the public key of W, G_W, and the private key corresponding to G_X (or v.v.), see Section 5.7.1.2 of {{NIST-800-56A}}.
 
-The output keying material OKM is derived from PRK using EDHOC_Expand(), which is defined in terms of the EDHOC hash algorithm of the selected cipher suite, see {{Section 4.1.2 of RFC9528}}:
+The output keying material OKM is derived from PRK using EDHOC_Expand(), which is defined in terms of the EDHOC hash algorithm of the selected cipher suite SS, see {{Section 4.1.2 of RFC9528}}:
 
 * OKM = EDHOC_Expand(PRK, info, length)
 
@@ -411,7 +411,7 @@ where
 * LOC_W is a text string used by V to locate W, e.g., a URI or a domain name.
 * ENC_U_INFO is a byte string containing an encrypted identifier of U and, optionally, opaque application data prepared by U. It is calculated as follows:
 
-ENC_U_INFO is encrypted using the EDHOC AEAD algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
+ENC_U_INFO is encrypted using the EDHOC AEAD algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1.
 It consists of 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) computed from the following:
 
 * The encryption key K_1 and nonce IV_1 are derived as specified below.
@@ -574,29 +574,35 @@ The Voucher Request SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~ cddl
 Voucher_Request = [
-    message_1:      bstr,
+    SS:             int,
+    G_U:            bstr,
+    Voucher_Info:   bstr,
+    H_handshake:    bstr,
     ? opaque_state: bstr
 ]
 ~~~~~~~~~~~
 
 where
 
-* message_1 is a CBOR byte string whose value is the byte serialization of EDHOC message_1 as it was received from U.
+* SS is the selected cipher suite used in the EDHOC session between U and V
+* G_U is the ephemeral public key (G_X) of U
+* Voucher_Info is as extracted from the EAD_1 field of message_1
+* H_handshake is the hash of message_1, computed using the algorithm defined by SS
 * opaque_state is OPTIONAL and represents the serialized and encrypted opaque state needed by V to statelessly respond to U after the reception of Voucher_Response.
 
 #### Processing in W
 
-W receives and parses the voucher request received over the secure connection with V. The voucher request essentially contains EDHOC message_1 as sent by U to V. W SHALL NOT process message_1 as if it was an EDHOC message intended for W.
-
-W extracts from message_1:
+W receives and parses the voucher request received over the secure connection with V.
+W extracts from Voucher_Request:
 
 * SS - the selected cipher suite, which is the (last) integer of SUITES_I.
-* G_X - the ephemeral public key of U
-* ENC_U_INFO - the encryption of the device identifier ID_U, contained in the Voucher_Info field of the EAD item with ead_label = TBD1 (with minus sign indicating criticality)
+* G_U - the ephemeral public key of U.
+* ENC_U_INFO - the encryption of the device identifier ID_U, contained in the Voucher_Info field of Voucher_Request.
+* H_handshake - the hash of message_1.
 
 W verifies and decrypts ENC_U_INFO using the relevant algorithms of the selected cipher suite SS (see {{reuse}}), and obtains ID_U.
 
-W calculates the hash of message_1 H_message_1, and associates this session identifier to the device identifier ID_U.
+W uses H_handshake as a session identifier, and associates it to the device identifier ID_U.
 Note that message_1 contains a unique ephemeral key, therefore H_message_1 is expected to be unique.
 
 If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see {{rest-voucher-request}}.
@@ -615,7 +621,6 @@ W generates the voucher response and sends it to V over the secure connection. T
 
 ~~~~~~~~~~~ cddl
 Voucher_Response = [
-    message_1:      bstr,
     Voucher:        bstr,
     ? opaque_state: bstr
 ]
@@ -623,7 +628,6 @@ Voucher_Response = [
 
 where
 
-* message_1 is a CBOR byte string whose value is the byte serialization of EDHOC message_1 as it was received from V.
 * The Voucher is defined in {{voucher}}.
 * opaque_state is the echoed byte string opaque_state from Voucher_Request, if present.
 
@@ -636,16 +640,18 @@ If present, V decrypts and verifies opaque_state as received from W. If that ver
 with U is aborted.
 If the voucher response is successfully received from W, then V responds to U with EDHOC message_2 as described in {{V_2}}.
 
-## Use with U as Initiator or Responder {#u-init-resp}
+## Reverse use with U as Responder {#reverse-u-responder}
 
-This section discusses how the protocol can be used with U as either EDHOC Initiator or Responder.
-The decision on which approach to use will depend on the use case.
-For example, it can be applicable to using ELA with CoAP in the EDHOC reverse message flow defined in {{Appendix A.2.2 of RFC9528}}.
+This section presents a protocol variant in which U is the EDHOC Responder.
+This can allow optimizations in certain constrained network technologies.
+For example, one use case is having V broadcast message_1, to which U responds with an EAD item containing Voucher_Info.
+
+This is different from the EDHOC reverse message flow defined in {{Appendix A.2.2 of RFC9528}}, since we make no assumption about whether U or V is a CoAP server.
 
 ### U is the Initiator {#u-initiator}
 
-This scenario is the same as the one already described in {{protocol-overview}}, with the processing in U and V is as described in {{U-V}}.
-We replicate the scenario here just for the sake of clarity, where {{fig-u-initiator}} facilitates comparison with the scenario where U is the Responder.
+For clarity, we first present the default scenario with U as Initiator, as described in {{protocol-overview}} and {{U-V}}.
+Note that Voucher_Info and Voucher are carried in EDHOC message_1 and message_2, respectively.
 
 ~~~~~~~~~~~ aasvg
 +--------+--------+          +-----------------+
@@ -674,6 +680,13 @@ We replicate the scenario here just for the sake of clarity, where {{fig-u-initi
 ### U is the Responder {#u-responder}
 
 ELA also works with U as the EDHOC Responder, a setup we refer to as the ELA reverse flow, as shown in {{fig-u-responder}}.
+Among the differences to the default configuration, are:
+
+* Voucher_Info and Voucher are transported in EDHOC message_2 and message_3, respectively (instead of message_1 and message_2).
+* The EAD_2 field is identified with ead_label = TBD1.
+* The EAD_3 field is identified with ead_label = TBD2.
+* The VREQ / VRES protocol takes place between message_2 and message_3.
+* The Voucher_Request carries G_Y instead of G_X, and the transcript hash TH_2 instead of the hash H_message_1.
 
 ~~~~~~~~~~~ aasvg
 +--------+--------+          +-----------------+
@@ -701,7 +714,7 @@ ELA also works with U as the EDHOC Responder, a setup we refer to as the ELA rev
 ~~~~~~~~~~~
 {: #fig-u-responder title="The ELA reverse flow, when U is the EDHOC responder." artwork-align="center"}
 
-The following subsections explain how the processing of the elements in U and V differ from the description in {{U-V}}.
+The following subsections detail how the processing of the elements in U and V differ from the description in {{U-V}}.
 
 #### Message 1
 
@@ -717,8 +730,8 @@ Processing in U:
 
 Processing in U:
 
-- As part of the normal EDHOC processing, U generates the ephemeral public key G_Y that is reused in the interaction with W, see {{U-W}}.
-- The device sends EDHOC message_2 with EAD item (-TBD1, Voucher_Info) included in EAD_2, where Voucher_Info is specified in {{U-W}}. The negative sign indicates that the EAD item is critical, see {{Section 3.8 of RFC9528}}.
+- As part of the normal EDHOC processing, U generates the ephemeral public key G_Y. This key is reused in the interaction with W as G_U, see {{U-W}}.
+- The device sends EDHOC message_2 with EAD item (-TBD1, Voucher_Info) included in EAD_2, where Voucher_Info is specified in {{voucher_info}}. The negative sign indicates that the EAD item is critical, see {{Section 3.8 of RFC9528}}.
 
 Processing in V:
 
@@ -731,7 +744,7 @@ Processing in V:
 
 Processing in V:
 
-- V receives the voucher response from W as described in {{V-W}}.
+- V receives the Voucher_Response from W as described in {{V-W}}.
 - V sends EDHOC message_3 to U with the critical EAD item (-TBD2, Voucher) included in EAD_3, i.e., ead_label = TBD2 and ead_value = Voucher, as specified in {{voucher}}.
 
 Processing in U:
@@ -971,9 +984,9 @@ IANA has registered the following entries in the "EDHOC External Authorization D
 | TBD2 | bstr | Voucher structure, prepared by the Enrollment Server (W). |
 {: #ead-table title="Addition to the EDHOC EAD registry" cols="r l l"}
 
-The ead_label = TBD1 corresponds to the ead_value = Voucher_Info, which can be carried in either EAD_1 or EAD_2, depending on whether U acts as EDHOC Initiator or Responder, see {{u-init-resp}}.
+The ead_label = TBD1 corresponds to the ead_value = Voucher_Info, which can be carried in either EAD_1 or EAD_2, depending on whether U acts as EDHOC Initiator or Responder, see {{reverse-u-responder}}.
 
-The ead_label = TBD2 corresponds to ead_value = Voucher, and can be carried in either EAD_2 or EAD_3, see {{u-init-resp}}.
+The ead_label = TBD2 corresponds to ead_value = Voucher, and can be carried in either EAD_2 or EAD_3, see {{reverse-u-responder}}.
 
 ## The Well-Known URI Registry
 
