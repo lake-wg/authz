@@ -1239,6 +1239,95 @@ Execution:
 3. gateway v1 assembles an EDHOC error "Access Denied" with error_content, and sends it to u1
 4. device u1 processes the error, decrypts REJECT_INFO, and retries the protocol via gateway v3
 
+# Reverse EDHOC Message Flow
+
+For discussion.
+
+## Outline
+
+~~~~~~~~~~~ aasvg
+                Advertisment
+                     |
+            Voucher  |
+               Info  |
++----------+      |  |  +---------------+  Voucher  +---------------+
+|          |      |  |  |               |  Request  |               |
+|  Device  |<-----+--o--|    Domain     +---------->|   Enrollment  |
+|          |------o---->| Authenticator |<----------+     Server    |
+|   (U)    |<--o--------+      (V)      |<----------+      (W)      |
+|          +---+------->|               |  Voucher  |               |
+|          |   |        |               |  Response |               |
++----------+   |        +---------------+           +---------------+
+            Voucher
+~~~~~~~~~~~
+{: #fig-overview-reverse title="Overview of the reverse message flow. The EDHOC message flow is triggered by an advertisment." artwork-align="center"}
+
+
+## Overview
+
+{{fig-protocol-reverse}} provides an overview of the reverse message flow detailed in this section.
+
+~~~~~~~~~~~ aasvg
+U                              V                                       W
+|                              |                                       |
+|                              |                                       |
+|                              |        Establish secure channel       |
+|                              +<---  ---  ---  ---  ---  ---  ---  -->|
+|                              |      (e.g., TLS with server cert.)    |
+|                              |                                       |
+|                              |   Proof of possession w.r.t. CRED_V   |
+|                              +<---  ---  ---  ---  ---  ---  ---  -->|
+|                              |            (e.g., EDHOC)              |
+|                              |                                       |
+|                              |                                       |
+|                              |                                       |
+------------------------------------------------------------------------
+                          CORE PROTOCOL
+|                              |                                       |
+|    Trigger / Advertisement   |                                       |
+|<-----------------------------+                                       |
+|                              |                                       |
+|         EDHOC message_1      |                                       |
++----------------------------->|                                       |
+|  (EAD_1 = LOC_W, ENC_U_INFO) |                                       |
+|                              |                                       |
+|                              |        Voucher Request (VREQ)         |
+|                              +-------------------------------------->|
+|                              |       (message_1, ?opaque_state)      |
+|                              |                                       |
+|                              |        Voucher Response (VRES)        |
+|                              |<--------------------------------------+
+|                              |  (message_1, Voucher, ?opaque_state)  |
+|                              |                                       |
+|         EDHOC message_2      |                                       |
+|<-----------------------------+                                       |
+|        (EAD_2 = Voucher)     |                                       |
+|                              |                                       |
+|                              |                                       |
+|         EDHOC message_3      |                                       |
++----------------------------->|                                       |
+|                              |                                       |
+
+------------------------------------------------------------------------
+
+|                              |
+|                              |                              Credential
+|                              |                                Database
+|                              |                                       |
+|                              |       ID_CRED_I from message_3        |
+|                              +---  ---  ---  ---   ---  ---  ---  -->|
+|                              |                                       |
+|                              |                 CRED_U                |
+|                              |<--  ---  ---  ---  ---   ---  ---  ---+
+|                              |                                       |
+|                              |                                       |
+
+~~~~~~~~~~~
+{: #fig-protocol-reverse title="Overview of the protocol: W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, V and W are assumed to have established a secure channel and performed proof-of-possession of relevant keys. W is assumed to perform lookup of CRED_U." artwork-align="center"}
+
+
+
+
 
 # Acknowledgments
 {: numbered="no"}
