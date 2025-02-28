@@ -691,7 +691,7 @@ We present this variant as a set of changes to the regular protocol flow, so tha
 The changes include:
 
 * Voucher_Info and Voucher are transported in EDHOC message_2 and message_3, respectively (instead of message_1 and message_2).
-* The EAD_2 and EAD_3 fields are identified with labels TBD1 and TBD2, respectively.
+* The EAD_2 and EAD_3 fields carry EAD items identified with labels TBD1 and TBD2, respectively.
 * The VREQ / VRES protocol takes place between message_2 and message_3.
 * The Voucher_Request carries G_Y instead of G_X, and the transcript hash TH_2 instead of the hash H_message_1.
 
@@ -713,8 +713,8 @@ The changes include:
       | EAD_2 = (TBD1, Voucher_info) |                              |
       |                              |             VREQ             |
       |                              +----------------------------->|
-      |                              | (SS, G_X, Voucher_Info,      |
-      |                              |  H_message_1, ?opaque_state) |
+      |                              | (SS, G_Y, Voucher_Info,      |
+      |                              |  TH_2, ?opaque_state)        |
       |                              |                              |
       |                              |             VRES             |
       |                              +<---------------------------->|
