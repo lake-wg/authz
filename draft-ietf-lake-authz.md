@@ -817,12 +817,19 @@ TODO: in the u-is-responder flow, should we use TH_2 instead of H_message_1?
 
 A Device (U) MUST implement one of the ELA flows, and it MAY chose to implement both.
 
-The Domain Authenticator (V) MUST support both flows, that is, a Voucher_Info may arrive as either part of an EAD_1 or EAD_2 field.
-Similarly, V must be able to send a Voucher as either part of EAD_2 or EAD_3, depending on the selected flow.
+Editor's note: what about V?
+
+* Either (1) V MUST support both flows, or (2) V MUST support the regular flow and MAY support the reverse flow.
+
+From the point of view of W, there is no difference whether U and V run as EDHOC Initiator or Responder.
 
 ### Security impllications
 
-TODO.
+When using the reverse flow, U shares its identity before it can learn (1) V's identity and (2) whether or not the Voucher is valid.
+
+Editor's note:
+
+* TH_2 is internal EDHOC state, and it is being passed around in VREQ. Is this an issue? Note that TH_2 is simply H( G_U, H_message_1 ), which is all public information.
 
 ## Error Handling {#err-handling}
 This section specifies a new EDHOC error code and how it is used in ELA.
