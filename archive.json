@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-27T01:36:50.560710+00:00",
+  "timestamp": "2025-03-02T01:41:11.379660+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -320,7 +320,7 @@
       "labels": [],
       "body": "(Moved from https://github.com/EricssonResearch/ace-ake-authz/issues/27)\r\n\r\nProcessing some deployment scenarios (involving CoAP-over-GATT), I've found that sometimes the roles of I and R would be reversed.\r\n\r\nApart from the aspect of vulnerable-identities, is there anything fundamentally keeping the ENC_U_INFO from being in message 2, and the voucher from being in message 3? The credential database lookup would then be against ID_CRED_R, but that'd be the same interface as for ID_CRED_I.\r\n\r\nLet's not sink too much time into this if it turns out to be complicated -- I'm not sure whether running EDHOC over CoAP in reverse flow may not be the better choice in this situation anyway, but if this has ever been contemplated in other places, this issue might be a good spot to spool ideas.",
       "createdAt": "2024-03-13T12:28:46Z",
-      "updatedAt": "2024-10-18T12:56:50Z",
+      "updatedAt": "2025-02-28T14:20:13Z",
       "closedAt": null,
       "comments": [
         {
@@ -350,6 +350,13 @@
           "body": "If you think #41 addresses your comment, could you please close this issue @chrysn?",
           "createdAt": "2024-10-18T12:56:49Z",
           "updatedAt": "2024-10-18T12:56:49Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@chrysn FYI in PR #45, I went into all the details of what changes during each processing step, if this change is to be supported.",
+          "createdAt": "2025-02-28T14:20:12Z",
+          "updatedAt": "2025-02-28T14:20:12Z"
         }
       ]
     },
@@ -598,6 +605,22 @@
       "createdAt": "2024-04-23T14:32:51Z",
       "updatedAt": "2024-07-05T15:46:02Z",
       "closedAt": "2024-07-05T15:46:02Z",
+      "comments": []
+    },
+    {
+      "number": 46,
+      "id": "I_kwDOKiCa6c6sEAfe",
+      "title": "Clarify use of pre-agreed cipher suites",
+      "url": "https://github.com/lake-wg/authz/issues/46",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Add a consideration about cipher suites, where V must be ready to use the same cipher suite used between U and W.\n\nSee https://github.com/lake-wg/authz/pull/45#discussion_r1975124784",
+      "createdAt": "2025-02-28T10:04:22Z",
+      "updatedAt": "2025-02-28T10:04:22Z",
+      "closedAt": null,
       "comments": []
     }
   ],
@@ -1970,19 +1993,188 @@
       "labels": [],
       "body": "and all the implications that come from it:\r\n- dedicated EAD labels for Voucher/Voucher_Info\r\n- security / interoperability considerations ",
       "createdAt": "2025-02-24T16:47:11Z",
-      "updatedAt": "2025-02-25T17:04:48Z",
+      "updatedAt": "2025-02-28T18:11:49Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "6da9920a1737171ead0ea22b96b3cf671bb91219",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "re-organize-sections",
-      "headRefOid": "4b3cf0e0028bd56605e02adbc23afeeecbd4246f",
+      "headRefOid": "532c216067766b7192c565a92a1aa150ede6a403",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "There is actually a significant amount of changes needed to the protocol when U is Responder. \r\nI hope to have updated the protocol with all the needed changes.\r\nImplications are yet to be written down.",
+          "createdAt": "2025-02-28T09:26:39Z",
+          "updatedAt": "2025-02-28T09:26:39Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c6d93f9",
+          "commit": {
+            "abbreviatedOid": "3f76194"
+          },
+          "author": "malishav",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-28T09:37:33Z",
+          "updatedAt": "2025-02-28T09:37:33Z",
+          "comments": [
+            {
+              "originalPosition": 192,
+              "body": "EAD_2 and EAD_3 are generic EDHOC fields. They are not identified with labels, they *carry* labels TBD1 and TBD2 in this protocol variant to denote Vocuher_Info and Voucher are within the field.",
+              "createdAt": "2025-02-28T09:37:33Z",
+              "updatedAt": "2025-02-28T09:37:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c6d94F4",
+          "commit": {
+            "abbreviatedOid": "3f76194"
+          },
+          "author": "malishav",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-28T09:38:35Z",
+          "updatedAt": "2025-02-28T09:38:35Z",
+          "comments": [
+            {
+              "originalPosition": 214,
+              "body": "Figure shows G_X is carried between U and V, should be G_Y?",
+              "createdAt": "2025-02-28T09:38:35Z",
+              "updatedAt": "2025-02-28T09:38:35Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c6d96b9",
+          "commit": {
+            "abbreviatedOid": "3f76194"
+          },
+          "author": "malishav",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-28T09:42:31Z",
+          "updatedAt": "2025-02-28T09:42:31Z",
+          "comments": [
+            {
+              "originalPosition": 214,
+              "body": "Same for H_message_1 which should be updated",
+              "createdAt": "2025-02-28T09:42:31Z",
+              "updatedAt": "2025-02-28T09:42:31Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c6d9-MA",
+          "commit": {
+            "abbreviatedOid": "3f76194"
+          },
+          "author": "malishav",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-28T09:48:19Z",
+          "updatedAt": "2025-02-28T09:48:20Z",
+          "comments": [
+            {
+              "originalPosition": 249,
+              "body": "A more general note here: V has no idea what ciphersuite W and U have pre-agreed to. It may therefore select a cipher suite that is different from the one selected by W and U. In this situation, U needs to reject the proposed cipher suite and start EDHOC session anew, as described in RFC 9528. In this draft, we clearly need to have a consideration somewhere on cipher suite negotiation and the assumption we make in the protocol that whatever cipher suite is used between U and W must also be used by V.",
+              "createdAt": "2025-02-28T09:48:19Z",
+              "updatedAt": "2025-02-28T09:48:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c6d-DIr",
+          "commit": {
+            "abbreviatedOid": "3f76194"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-28T09:56:02Z",
+          "updatedAt": "2025-02-28T09:56:02Z",
+          "comments": [
+            {
+              "originalPosition": 192,
+              "body": "Thanks, fixed.",
+              "createdAt": "2025-02-28T09:56:02Z",
+              "updatedAt": "2025-02-28T09:56:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c6d-DKo",
+          "commit": {
+            "abbreviatedOid": "3f76194"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-28T09:56:05Z",
+          "updatedAt": "2025-02-28T09:56:06Z",
+          "comments": [
+            {
+              "originalPosition": 214,
+              "body": "Thanks, fixed.",
+              "createdAt": "2025-02-28T09:56:05Z",
+              "updatedAt": "2025-02-28T09:56:06Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c6d_zX1",
+          "commit": {
+            "abbreviatedOid": "3f76194"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-28T13:27:50Z",
+          "updatedAt": "2025-02-28T13:27:50Z",
+          "comments": [
+            {
+              "originalPosition": 249,
+              "body": "Thanks for the comment. Tracking it in #46. ",
+              "createdAt": "2025-02-28T13:27:50Z",
+              "updatedAt": "2025-02-28T13:27:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c6eCmyK",
+          "commit": {
+            "abbreviatedOid": "532c216"
+          },
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "This PR seems to mix in a bunch of small edits with the new section.\r\nMaybe split into two PRs.",
+          "createdAt": "2025-02-28T18:10:52Z",
+          "updatedAt": "2025-02-28T18:11:49Z",
+          "comments": [
+            {
+              "originalPosition": 202,
+              "body": "Given the trigger message, put the voucher_info in it.",
+              "createdAt": "2025-02-28T18:10:52Z",
+              "updatedAt": "2025-02-28T18:11:49Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
