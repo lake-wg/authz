@@ -604,7 +604,7 @@ W extracts from Voucher_Request:
 W verifies and decrypts ENC_U_INFO using the relevant algorithms of the selected cipher suite SS (see {{reuse}}), and obtains ID_U.
 
 W uses H_handshake as a session identifier, and associates it to the device identifier ID_U.
-Note that message_1 contains a unique ephemeral key, therefore H_message_1 is expected to be unique.
+Note that message_1 contains a unique ephemeral key, therefore H_handshake is expected to be unique.
 
 If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see {{rest-voucher-request}}.
 
@@ -700,7 +700,7 @@ plaintext = (
 ~~~~~~~~~~~
 ~~~~~~~~~~~ cddl
 external_aad = (
-    H_message_1:    bstr,
+    H_handshake:    bstr,
  )
 ~~~~~~~~~~~
 
@@ -709,7 +709,7 @@ where
 * OPAQUE_INFO is an opaque field that contains actionable information about the error.
   It may contain, for example, a list of suggested Vs through which U should join instead.
 
-* H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
+* H_handshake is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 
 ## Reverse use with U as Responder {#reverse-u-responder}
 
@@ -878,8 +878,8 @@ Processing in V:
 Processing in U:
 
 - U receives EDHOC message_3 from V and processes it as specified in {{Section 5.4.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_3.
-- V MUST properly process the criticality of the EAD item, see {{Section 3.8 of RFC9528}}.
-- Otherwise, U MUST verify the Voucher using H_message_1, CRED_V, and the keys derived as in {{voucher}}. If the verification fails then U MUST abort the EDHOC session.
+- U MUST properly process the criticality of the EAD item, see {{Section 3.8 of RFC9528}}.
+- U MUST verify the Voucher using H_message_1, CRED_V, and the keys derived as in {{voucher}}. If the verification fails then U MUST abort the EDHOC session.
 
 TODO: in the u-is-responder flow, should we use TH_2 instead of H_message_1?
 
