@@ -844,45 +844,6 @@ Processing in V:
 
 Processing in W happens as specified in {{voucher_request}}.
 
-#### Message 1
-
-Processing in V:
-
-- V composes EDHOC message_1 according to an agreed application profile, see {{Section 3.9 of RFC9528}}.
-
-Processing in U:
-
-- U processes EDHOC message_1 and extracts the selected cipher suite SS.
-
-#### Message 2
-
-Processing in U:
-
-- As part of the normal EDHOC processing, U generates the ephemeral public key G_Y. This key is reused in the interaction with W as G_U, see {{U-W}}.
-- The device sends EDHOC message_2 with EAD item (-TBD1, Voucher_Info) included in EAD_2, where Voucher_Info is specified in {{voucher_info}}. The negative sign indicates that the EAD item is critical, see {{Section 3.8 of RFC9528}}.
-
-Processing in V:
-
-- V receives EDHOC message_2 from U and processes it as specified in {{Section 5.3.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_2.
-- V MUST properly process the criticality of the EAD item, see {{Section 3.8 of RFC9528}}.
-- Otherwise, the ead_label = TBD1 triggers the voucher request to W as described in {{V-W}}.
-- The exchange between V and W needs to be completed successfully for the EDHOC session to be continued.
-
-#### Message 3
-
-Processing in V:
-
-- V receives the Voucher_Response from W as described in {{V-W}}.
-- V sends EDHOC message_3 to U with the critical EAD item (-TBD2, Voucher) included in EAD_3, i.e., ead_label = TBD2 and ead_value = Voucher, as specified in {{voucher}}.
-
-Processing in U:
-
-- U receives EDHOC message_3 from V and processes it as specified in {{Section 5.4.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_3.
-- U MUST properly process the criticality of the EAD item, see {{Section 3.8 of RFC9528}}.
-- U MUST verify the Voucher using H_message_1, CRED_V, and the keys derived as in {{voucher}}. If the verification fails then U MUST abort the EDHOC session.
-
-TODO: in the u-is-responder flow, should we use TH_2 instead of H_message_1?
-
 ### Interoperability considerations
 
 A Device (U) MUST implement one of the ELA flows, and it MAY chose to implement both.
