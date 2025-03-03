@@ -334,6 +334,7 @@ U                              V                                       W
 The ELA protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
 
 * G_X, the ephemeral public Diffie-Hellman key of U, is also used in the protocol between U and W.
+In case U acts as Responder (see {{reverse-u-responder}}), G_Y is used instead.
 
 * SUITES_I includes the cipher suite for EDHOC selected by U, and also defines the algorithms used between U and W (see {{Section 3.6 of RFC9528}}):
 
@@ -345,7 +346,9 @@ The ELA protocol illustrated in {{fig-protocol}} reuses several components of ED
 In case U acts as Responder (see {{reverse-u-responder}}), EAD_2 and EAD_3 are used in message_2 and message_3, respectively.
 This document specifies two new EAD items, with ead_label = TBD1 and TBD2, see {{iana-ead}}.
 
-* ID_CRED_I and ID_CRED_R are used to identify the authentication credentials CRED_U and CRED_V, respectively. As shown at the bottom of {{fig-protocol}}, V may use W to obtain CRED_U. CRED_V is transported in ID_CRED_R in message_2, see {{V_2}}.
+* ID_CRED_I and ID_CRED_R are used to identify the authentication credentials CRED_U and CRED_V, respectively. As shown at the bottom of {{fig-protocol}}, V may use W to obtain CRED_U.
+By default, CRED_V is transported in ID_CRED_R in message_2, see {{V_2}}.
+In case U is Responder, CRED_V is transported in ID_CRED_I in message_3.
 
 The protocol also reuses the EDHOC_Extract and EDHOC_Expand key derivation from EDHOC (see {{Section 4 of RFC9528}}).
 
