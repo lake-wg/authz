@@ -641,6 +641,76 @@ If present, V decrypts and verifies opaque_state as received from W. If that ver
 with U is aborted.
 If the voucher response is successfully received from W, then V responds to U with EDHOC message_2 as described in {{V_2}}.
 
+## Error Handling {#err-handling}
+This section specifies a new EDHOC error code and how it is used in ELA.
+
+### EDHOC Error "Access denied"
+
+This section specifies the new EDHOC error "Access denied", see {{fig-error-codes}}.
+
+~~~~~~~~~~~ aasvg
++----------+----------------+----------------------------------------+
+| ERR_CODE | ERR_INFO Type  | Description                            |
++==========+================+========================================+
+|     TBD3 | error_content  | Access denied                          |
++----------+----------------+----------------------------------------+
+~~~~~~~~~~~
+{: #fig-error-codes title="EDHOC error code and error information for ‘Access denied’."}
+
+Error code TBD3 is used to indicate to the receiver that access control has been applied and the sender has aborted the EDHOC session.
+The ERR_INFO field contains error_content which is a CBOR Sequence consisting of an integer and an optional byte string.
+
+~~~~~~~~~~~ cddl
+error_content = (
+  REJECT_TYPE : int,
+  ? REJECT_INFO : bstr,
+)
+~~~~~~~~~~~
+
+The purpose of REJECT_INFO is for the sender to provide verifiable and actionable information to the receiver about the error, so that an automated action may be taken to enable access.
+
+~~~~~~~~~~~ aasvg
++-------------+---------------+--------------------------------------+
+| REJECT_TYPE | REJECT_INFO   | Description                          |
++=============+===============+======================================+
+|           0 | -             | No REJECT_INFO                       |
++-------------+---------------+--------------------------------------+
+|           1 | bstr          | REJECT_INFO from trusted third party |
++-------------+---------------+--------------------------------------+
+~~~~~~~~~~~
+{: #fig-reject title="REJECT_TYPE and REJECT_INFO for ‘Access denied’."}
+
+### Error handling in W, V, and U
+
+ELA uses the EDHOC Error "Access denied" in the following way:
+
+* W generates error_content and transfers it to V via the secure connection.
+  If REJECT_TYPE is 1, then REJECT_INFO is encrypted from W to U using the EDHOC AEAD algorithm.
+  W signals the error via an appropriate status code in the REST interface, as defined in {{rest-voucher-request}}.
+* V receives error_content, prepares an EDHOC "Access denied" error, and sends it to U.
+* U receives the error message and extracts the error_content.
+  If REJECT_TYPE is 1, then U decrypts REJECT_INFO, based on which it may retry to gain access.
+
+The encryption of REJECT_INFO follows a procedure analogous to the one defined in {{voucher}}, with the following differences:
+
+~~~~~~~~~~~ cddl
+plaintext = (
+    OPAQUE_INFO:     bstr,
+ )
+~~~~~~~~~~~
+~~~~~~~~~~~ cddl
+external_aad = (
+    H_message_1:    bstr,
+ )
+~~~~~~~~~~~
+
+where
+
+* OPAQUE_INFO is an opaque field that contains actionable information about the error.
+  It may contain, for example, a list of suggested Vs through which U should join instead.
+
+* H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
+
 ## Reverse use with U as Responder {#reverse-u-responder}
 
 This section presents a protocol variant in which U is the EDHOC Responder.
@@ -830,76 +900,6 @@ When using the reverse flow, U shares its identity before it can learn (1) V's i
 Editor's note:
 
 * TH_2 is internal EDHOC state, and it is being passed around in VREQ. Is this an issue? Note that TH_2 is simply H( G_U, H_message_1 ), which is all public information.
-
-## Error Handling {#err-handling}
-This section specifies a new EDHOC error code and how it is used in ELA.
-
-### EDHOC Error "Access denied"
-
-This section specifies the new EDHOC error "Access denied", see {{fig-error-codes}}.
-
-~~~~~~~~~~~ aasvg
-+----------+----------------+----------------------------------------+
-| ERR_CODE | ERR_INFO Type  | Description                            |
-+==========+================+========================================+
-|     TBD3 | error_content  | Access denied                          |
-+----------+----------------+----------------------------------------+
-~~~~~~~~~~~
-{: #fig-error-codes title="EDHOC error code and error information for ‘Access denied’."}
-
-Error code TBD3 is used to indicate to the receiver that access control has been applied and the sender has aborted the EDHOC session.
-The ERR_INFO field contains error_content which is a CBOR Sequence consisting of an integer and an optional byte string.
-
-~~~~~~~~~~~ cddl
-error_content = (
-  REJECT_TYPE : int,
-  ? REJECT_INFO : bstr,
-)
-~~~~~~~~~~~
-
-The purpose of REJECT_INFO is for the sender to provide verifiable and actionable information to the receiver about the error, so that an automated action may be taken to enable access.
-
-~~~~~~~~~~~ aasvg
-+-------------+---------------+--------------------------------------+
-| REJECT_TYPE | REJECT_INFO   | Description                          |
-+=============+===============+======================================+
-|           0 | -             | No REJECT_INFO                       |
-+-------------+---------------+--------------------------------------+
-|           1 | bstr          | REJECT_INFO from trusted third party |
-+-------------+---------------+--------------------------------------+
-~~~~~~~~~~~
-{: #fig-reject title="REJECT_TYPE and REJECT_INFO for ‘Access denied’."}
-
-### Error handling in W, V, and U
-
-ELA uses the EDHOC Error "Access denied" in the following way:
-
-* W generates error_content and transfers it to V via the secure connection.
-  If REJECT_TYPE is 1, then REJECT_INFO is encrypted from W to U using the EDHOC AEAD algorithm.
-  W signals the error via an appropriate status code in the REST interface, as defined in {{rest-voucher-request}}.
-* V receives error_content, prepares an EDHOC "Access denied" error, and sends it to U.
-* U receives the error message and extracts the error_content.
-  If REJECT_TYPE is 1, then U decrypts REJECT_INFO, based on which it may retry to gain access.
-
-The encryption of REJECT_INFO follows a procedure analogous to the one defined in {{voucher}}, with the following differences:
-
-~~~~~~~~~~~ cddl
-plaintext = (
-    OPAQUE_INFO:     bstr,
- )
-~~~~~~~~~~~
-~~~~~~~~~~~ cddl
-external_aad = (
-    H_message_1:    bstr,
- )
-~~~~~~~~~~~
-
-where
-
-* OPAQUE_INFO is an opaque field that contains actionable information about the error.
-  It may contain, for example, a list of suggested Vs through which U should join instead.
-
-* H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 
 # Optimization Strategies {#optimization-strat}
 
