@@ -334,6 +334,7 @@ U                              V                                       W
 The ELA protocol illustrated in {{fig-protocol}} reuses several components of EDHOC:
 
 * G_X, the ephemeral public Diffie-Hellman key of U, is also used in the protocol between U and W.
+In case U acts as Responder (see {{reverse-u-responder}}), G_Y is used instead.
 
 * SUITES_I includes the cipher suite for EDHOC selected by U, and also defines the algorithms used between U and W (see {{Section 3.6 of RFC9528}}):
 
@@ -341,9 +342,13 @@ The ELA protocol illustrated in {{fig-protocol}} reuses several components of ED
     * EDHOC hash algorithm: used for key derivation
     * EDHOC key exchange algorithm: used to calculate the shared secret between U and W
 
-* EAD_1, EAD_2 are the External Authorization Data message fields of message_1 and message_2, respectively, see {{Section 3.8 of RFC9528}}. This document specifies the EAD items with ead_label = TBD1, see {{iana-ead}}).
+* EAD_1, EAD_2 are the External Authorization Data message fields of message_1 and message_2, respectively, see {{Section 3.8 of RFC9528}}.
+In case U acts as Responder (see {{reverse-u-responder}}), EAD_2 and EAD_3 are used in message_2 and message_3, respectively.
+This document specifies two new EAD items, with ead_label = TBD1 and TBD2, see {{iana-ead}}.
 
-* ID_CRED_I and ID_CRED_R are used to identify the authentication credentials CRED_U and CRED_V, respectively. As shown at the bottom of {{fig-protocol}}, V may use W to obtain CRED_U. CRED_V is transported in ID_CRED_R in message_2, see {{V_2}}.
+* ID_CRED_I and ID_CRED_R are used to identify the authentication credentials CRED_U and CRED_V, respectively. As shown at the bottom of {{fig-protocol}}, V may use W to obtain CRED_U.
+By default, CRED_V is transported in ID_CRED_R in message_2, see {{V_2}}.
+In case U is Responder, CRED_V is transported in ID_CRED_I in message_3.
 
 The protocol also reuses the EDHOC_Extract and EDHOC_Expand key derivation from EDHOC (see {{Section 4 of RFC9528}}).
 
@@ -352,7 +357,7 @@ The protocol also reuses the EDHOC_Extract and EDHOC_Expand key derivation from 
          * where salt = 0x (the zero-length byte string)
          * IKM is computed as an ECDH cofactor Diffie-Hellman shared secret from the public key of W, G_W, and the private key corresponding to G_X (or v.v.), see Section 5.7.1.2 of {{NIST-800-56A}}.
 
-The output keying material OKM is derived from PRK using EDHOC_Expand(), which is defined in terms of the EDHOC hash algorithm of the selected cipher suite, see {{Section 4.1.2 of RFC9528}}:
+The output keying material OKM is derived from PRK using EDHOC_Expand(), which is defined in terms of the EDHOC hash algorithm of the selected cipher suite SS, see {{Section 4.1.2 of RFC9528}}:
 
 * OKM = EDHOC_Expand(PRK, info, length)
 
@@ -367,7 +372,7 @@ info = (
 ~~~~~~~~~~
 
 
-## Stateless Operation of V
+## Stateless Operation of V {#stateless-v}
 
 V may act statelessly with respect to U: the state of the EDHOC session started by U may be dropped at V until authorization from W is received.
 Once V has received EDHOC message_1 from U and extracted LOC_W from EAD_1, message_1 is forwarded unmodified to W in the form of a Voucher Request (see {{voucher_request}}).
@@ -386,6 +391,8 @@ W sends to V the voucher together with the echoed message_1, as received from U,
 This allows V to act as a simple message relay until it has obtained the authorization from W to enroll U.
 The reception of a successful Voucher Response at V from W implies the authorization for V to enroll U.
 At this point, V can initialize a new EDHOC session with U, based on the message and the state retrieved from the Voucher Response from W.
+
+Noet that while stateless operation is supported in the default flow, it is not supported in the reverse flow (see {{reverse-u-responder}}).
 
 ## Device <-> Enrollment Server (U <-> W) {#U-W}
 
@@ -409,7 +416,7 @@ where
 * LOC_W is a text string used by V to locate W, e.g., a URI or a domain name.
 * ENC_U_INFO is a byte string containing an encrypted identifier of U and, optionally, opaque application data prepared by U. It is calculated as follows:
 
-ENC_U_INFO is encrypted using the EDHOC AEAD algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
+ENC_U_INFO is encrypted using the EDHOC AEAD algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1.
 It consists of 'ciphertext' of COSE_Encrypt0 ({{Section 5.2 of RFC9052}}) computed from the following:
 
 * The encryption key K_1 and nonce IV_1 are derived as specified below.
@@ -451,6 +458,8 @@ The derivation of IV_1 = EDHOC_Expand(PRK, info, length) uses the following inpu
 
 ### Voucher {#voucher}
 
+The external authorization data EAD_2 contains an EAD item with ead_label = TBD2 and ead_value = Voucher.
+
 The voucher is an assertion to U that W has authorized V.
 It is encrypted using the EDHOC AEAD algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1.
 It consists of the 'ciphertext' field of a COSE_Encrypt0 object, which is a byte string, as defined below.
@@ -473,7 +482,7 @@ plaintext = (
 ~~~~~~~~~~~
 ~~~~~~~~~~~ cddl
 external_aad = (
-    H_message_1:  bstr,
+    H_handshake:  bstr,
     CRED_V:        bstr,
 )
 ~~~~~~~~~~~
@@ -485,8 +494,7 @@ If present, it will contain application data that W may want to convey to U, e.g
 Note that OPAQUE_INFO is opaque when viewed as an information element in EDHOC.
 It is opaque to V, while the application in U and W can read its contents.
 
-* H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
-The hash is computed by using the EDHOC hash algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1.
+* H_handshake is the hash of EDHOC message_1, sent by V as part of the voucher request, see {{voucher_request}}.
 
 * CRED_V is the credential used by V to authenticate to U and W, see {{V_2}} and {{creds-table}}.
 
@@ -529,7 +537,7 @@ Since V has a pre-established trusted channel with W, it has the opportunity to 
 
 V receives the voucher response from W as described in {{V-W}}.
 
-V sends EDHOC message_2 to U with the critical EAD item (-TBD1, Voucher) included in EAD_2, i.e., ead_label = TBD1 and ead_value = Voucher, as specified in {{voucher}}.
+V sends EDHOC message_2 to U with the critical EAD item (-TBD2, Voucher) included in EAD_2, i.e., ead_label = TBD2 and ead_value = Voucher, as specified in {{voucher}}.
 
 The type of CRED_V may depend on the selected mechanism for the establishment of a secure channel between V and W, See {{creds-table}}.
 
@@ -574,30 +582,36 @@ The Voucher Request SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~ cddl
 Voucher_Request = [
-    message_1:      bstr,
+    SS:             int,
+    G_U:            bstr,
+    Voucher_Info:   bstr,
+    H_handshake:    bstr,
     ? opaque_state: bstr
 ]
 ~~~~~~~~~~~
 
 where
 
-* message_1 is a CBOR byte string whose value is the byte serialization of EDHOC message_1 as it was received from U.
+* SS is the selected cipher suite used in the EDHOC session between U and V
+* G_U is the ephemeral public key (G_X) of U
+* Voucher_Info is as extracted from the EAD_1 field of message_1
+* H_handshake is the hash of message_1. It is computed using the EDHOC hash algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1.
 * opaque_state is OPTIONAL and represents the serialized and encrypted opaque state needed by V to statelessly respond to U after the reception of Voucher_Response.
 
 #### Processing in W
 
-W receives and parses the voucher request received over the secure connection with V. The voucher request essentially contains EDHOC message_1 as sent by U to V. W SHALL NOT process message_1 as if it was an EDHOC message intended for W.
-
-W extracts from message_1:
+W receives and parses the voucher request received over the secure connection with V.
+W extracts from Voucher_Request:
 
 * SS - the selected cipher suite, which is the (last) integer of SUITES_I.
-* G_X - the ephemeral public key of U
-* ENC_U_INFO - the encryption of the device identifier ID_U, contained in the Voucher_Info field of the EAD item with ead_label = TBD1 (with minus sign indicating criticality)
+* G_U - the ephemeral public key of U.
+* ENC_U_INFO - the encryption of the device identifier ID_U, contained in the Voucher_Info field of Voucher_Request.
+* H_handshake - the hash of message_1.
 
 W verifies and decrypts ENC_U_INFO using the relevant algorithms of the selected cipher suite SS (see {{reuse}}), and obtains ID_U.
 
-W calculates the hash of message_1 H_message_1, and associates this session identifier to the device identifier ID_U.
-Note that message_1 contains a unique ephemeral key, therefore H_message_1 is expected to be unique.
+W uses H_handshake as a session identifier, and associates it to the device identifier ID_U.
+Note that message_1 contains a unique ephemeral key, therefore H_handshake is expected to be unique.
 
 If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see {{rest-voucher-request}}.
 
@@ -615,7 +629,6 @@ W generates the voucher response and sends it to V over the secure connection. T
 
 ~~~~~~~~~~~ cddl
 Voucher_Response = [
-    message_1:      bstr,
     Voucher:        bstr,
     ? opaque_state: bstr
 ]
@@ -623,7 +636,6 @@ Voucher_Response = [
 
 where
 
-* message_1 is a CBOR byte string whose value is the byte serialization of EDHOC message_1 as it was received from V.
 * The Voucher is defined in {{voucher}}.
 * opaque_state is the echoed byte string opaque_state from Voucher_Request, if present.
 
@@ -695,7 +707,7 @@ plaintext = (
 ~~~~~~~~~~~
 ~~~~~~~~~~~ cddl
 external_aad = (
-    H_message_1:    bstr,
+    H_handshake:    bstr,
  )
 ~~~~~~~~~~~
 
@@ -704,7 +716,168 @@ where
 * OPAQUE_INFO is an opaque field that contains actionable information about the error.
   It may contain, for example, a list of suggested Vs through which U should join instead.
 
-* H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
+* H_handshake is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
+
+## Reverse flow with U as Responder {#reverse-u-responder}
+
+This section presents a protocol variant in which U is the EDHOC Responder.
+This may allow optimizations in certain constrained network technologies.
+For example, one use case is having V broadcast message_1, to which U responds with a message_2 whose EAD_2 field contains Voucher_Info.
+
+Note that this is different from the EDHOC reverse message flow defined in {{Appendix A.2.2 of RFC9528}}, since we make no assumption about whether U or V is a CoAP server.
+
+### U is the Initiator {#u-initiator}
+
+For clarity, we first present the "default flow" with U as Initiator, as described in {{protocol-overview}} and {{U-V}}.
+Note that Voucher_Info and Voucher are carried in EDHOC message_1 and message_2, respectively.
+
+~~~~~~~~~~~ aasvg
++-----+-----+                  +-----------+
+|     U     |                  |     V     |
+| Initiator |                  | Responder |
++-----+-----+                  +-----+-----+
+      |                              |
+      |                              |
+      |       EDHOC message_1        |                              W
+      +----------------------------->|                              |
+      | EAD_1 = (TBD1, Voucher_info) |                              |
+      |                              |             VREQ             |
+      |                              +----------------------------->|
+      |                              | (SS, G_X, Voucher_Info,      |
+      |                              |  H_message_1, ?opaque_state) |
+      |                              |                              |
+      |                              |             VRES             |
+      |                              +<---------------------------->|
+      |                              |    (Voucher, ?opaque_state)
+      |       EDHOC message_2        |
+      +<-----------------------------|
+      |   EAD_2 = (TBD2, Voucher)    |
+      |                              |
+      |       EDHOC message_3        |
+      +----------------------------->|
+      |                              |
+      |                              |
+~~~~~~~~~~~
+{: #fig-u-initiator title="In ELA default flow, U is the EDHOC Initiator." artwork-align="center"}
+
+In the ELA default flow, once message_2 processing is finalized (including processing of EAD_2), U considers V authenticated through W.
+
+### U is the Responder {#u-responder}
+
+ELA also works with U as the EDHOC Responder, a setup we refer to as the "ELA reverse flow", as shown in {{fig-u-responder}}.
+
+We present this variant as a set of changes to the regular protocol flow.
+That is, here we only describe the differences in processing, when compared to the ELA default flow.
+
+Here is a summary of the changes needed in the ELA reverse flow:
+
+* Voucher_Info and Voucher are transported in EDHOC message_2 and message_3, respectively (instead of message_1 and message_2).
+* The EAD_2 and EAD_3 fields carry EAD items identified with labels TBD1 and TBD2, respectively.
+* The VREQ / VRES protocol takes place between message_2 and message_3.
+* The Voucher_Request carries G_Y instead of G_X, and the transcript hash TH_2 instead of the hash H_message_1.
+* Stateless operation of V (see {{stateless-v}}) is not supported
+
+~~~~~~~~~~~ aasvg
++-----+-----+                  +-----------+
+|     U     |                  |     V     |
+| Initiator |                  | Responder |
++-----+-----+                  +-----+-----+
+      |                              |
+      |       Trigger Message        |
+      +- - - - - - - - - - - - - - ->|
+      |                              |
+      |       EDHOC message_1        |
+      +<-----------------------------|
+      |                              |
+      |                              |
+      |       EDHOC message_2        |                              W
+      +----------------------------->|                              |
+      | EAD_2 = (TBD1, Voucher_info) |                              |
+      |                              |             VREQ             |
+      |                              +----------------------------->|
+      |                              | (SS, G_Y, Voucher_Info,      |
+      |                              |  TH_2, ?opaque_state)        |
+      |                              |                              |
+      |                              |             VRES             |
+      |                              +<---------------------------->|
+      |                              |    (Voucher, ?opaque_state)
+      |     EDHOC message_3          |
+      +<-----------------------------|
+      |   EAD_3 = (TBD2, Voucher)    |
+      |                              |
+      |                              |
+~~~~~~~~~~~
+{: #fig-u-responder title="ELA when U is the EDHOC Responder." artwork-align="center"}
+
+The following detail how the processing changes in each of the three security sessions.
+
+The way to interpret the subsections below is as follows.
+The ELA reverse flow works uses the ELA default flow processing ({{protocol-overview}} to {{err-handling}}), except by the changes detailed in {{reverse-u-w}},  {{reverse-u-v}}, and  {{reverse-v-w}}.
+
+#### Reverse U <-> W {#reverse-u-w}
+
+The protocol between U and W is carried between U and V in message_2 and message_3, and between V and W in the Voucher Request/Response ({{V-W}}).
+
+Voucher Info:
+
+* The EAD_2 item has ead_label = TBD1 and ead_value = Voucher_Info.
+
+Voucher:
+
+* H_handshake is the transcript hash TH_2, sent by V as part of the voucher request, see {{reverse-v-w}}.
+
+#### Reverse U <-> V {#reverse-u-v}
+
+Message 1:
+
+* V composes message_1 and sents it to U.
+* U processes message_1 and extracts SS.
+
+Message 2:
+
+* U composes message_2 and generates G_Y, which is reused in the interaction with W.
+* U sends message_2 with EAD item (-TBD1, Voucher_Info) included in EAD_2.
+* V processes message_2 and the EAD item in EAD_2, extracting the Voucher_Info struct.
+* V sends the voucher request to W.
+
+Message 3:
+
+* V receives the voucher response from W.
+* V sends message_3 with EAD item (-TBD2, Voucher) included in EAD_3.
+* Y processes message_3 and the EAD item in EAD_3.
+
+#### Reverse V <-> W {#reverse-v-w}
+
+Processing in V:
+
+* The Voucher_Request fields are prepared as defined in {{voucher_request}}, with the following changes:
+  * G_U is set to G_Y, which is the ephemeral public key of U as extracted from message_2.
+  * Voucher_Info is as extracted from the EAD_2 field of message_2.
+  * H_handshake is the transcript hash TH_2, computed by V as specified in {{Section 5.3.2 of RFC9528}}.
+
+Processing in W happens as specified in {{voucher_request}}.
+
+### Interoperability considerations
+
+A Device (U) MUST implement one of the ELA flows, and it MAY chose to implement both.
+
+Editor's note: what about V?
+
+* Either (1) V MUST support both flows, or (2) V MUST support the regular flow and MAY support the reverse flow.
+
+From the point of view of W, there is no difference whether U and V run as EDHOC Initiator or Responder.
+
+### Security impllications
+
+When using the reverse flow, U shares its identity before it can learn (1) V's identity and (2) whether or not the Voucher is valid.
+
+Editor's note:
+
+* TH_2 is internal EDHOC state, and it is being passed around in VREQ. Is this an issue? Note that TH_2 is simply H( G_U, H_message_1 ), which is all public information.
+
+In the reverse flow, Voucher_Info is confidentiality and integrity protected, while Voucher is also authenticated.
+These properties are inherited from EDHOC message_2 and message_3.
+This is a higher level of protection than with the regular flow.
 
 # Optimization Strategies {#optimization-strat}
 
@@ -846,13 +1019,17 @@ The private ephemeral key is thus used in the device for calculations of key mat
 
 ## EDHOC External Authorization Data Registry {#iana-ead}
 
-IANA has registered the following entry in the "EDHOC External Authorization Data" registry under the group name "Ephemeral Diffie-
+IANA has registered the following entries in the "EDHOC External Authorization Data" registry under the group name "Ephemeral Diffie-
    Hellman Over COSE (EDHOC)".
-The ead_label = TBD1 corresponds to the ead_value Voucher_Info in EAD_1, and Voucher in EAD_2 with processing specified in {{m1}} and {{m2}}, respectively, of this document.
 
 | Label | Value Type | Description |
-| TBD1 | bstr | Voucher related information |
+| TBD1 | bstr | Voucher_Info structure, prepared by the Device (U). |
+| TBD2 | bstr | Voucher structure, prepared by the Enrollment Server (W). |
 {: #ead-table title="Addition to the EDHOC EAD registry" cols="r l l"}
+
+The ead_label = TBD1 corresponds to the ead_value = Voucher_Info, which can be carried in either EAD_1 or EAD_2, depending on whether U acts as EDHOC Initiator or Responder, see {{reverse-u-responder}}.
+
+The ead_label = TBD2 corresponds to ead_value = Voucher, and can be carried in either EAD_2 or EAD_3, see {{reverse-u-responder}}.
 
 ## The Well-Known URI Registry
 
@@ -905,74 +1082,6 @@ IANA has added the following Content-Format number in the "CoAP Content-Formats"
 {: #coap-content-formats title="Addition to the CoAP Content-Formats registry" cols="l l l"}
 
 --- back
-
-# Use with EDHOC reverse flow {#edhoc-reverse}
-
-Editor's note: I am not sure if this should be an appendix or an actual section in the main document.
-
-This appendix describes how the protocol can be used with the EDHOC reverse message flow defined in {{Appendix A.2.2 of RFC9528}}, where the CoAP client is the Responder and the CoAP server is the initiator.
-
-## U is the Initiator {#reverse-u-init}
-
-The reverse flow can be applied when U implements a CoAP server, but acts as an EDHOC Initiator.
-In this case, U awaits for a CoAP request to be sent from V, which will act as a trigger message to start the EDHOC handshake with ELA.
-Next, U replies with an EDHOC message_1, thus executing the protocol normally.
-
-~~~~~~~~~~~ aasvg
-+-------+--------+                +-------+--------+
-| Init  | Server |                | Resp  | Client |
-+-------+--------+                +----------------+
-|       U        |                |       V        |
-+----------------+                +----------------+
-        |                                 |
-        |          CoAP request           |
-        |<--------------------------------|
-        |                                 |
-        |        EDHOC message_1          |
-        +-------------------------------->|
-        |     (EAD_1 = Voucher_Info)      |
-        |                                 |
-
-      ( ... protocol continues normally ... )
-
-~~~~~~~~~~~
-{: #fig-reverse-u-init title="ELA with EDHOC reverse mesasge flow when U is initiator." artwork-align="center"}
-
-One use case is to perform ELA over Bluetooth Low Energy, as discussed in {{I-D.amsuess-core-coap-over-gatt}}.
-
-## U is the Responder {#reverse-u-resp}
-
-The reverse flow can also be used when U implements a CoAP client, but acts as a Responder, as illustrated in {{fig-reverse}}.
-The main changes in this case are:
-
-- Instead of sending EDHOC message_1, U sends an initial trigger packet to V, e.g., a CoAP request, which then initiates the handshake by replying with an EDHOC message_1.
-- The Voucher_Info and Voucher structs are sent over EAD_2 and EAD_3, respectively (instead of over EAD_1 and EAD_2).
-
-~~~~~~~~~~~ aasvg
-+-------+--------+          +-------+--------+
-| Resp  | Client |          | Init  | Server |
-+-------+--------+          +----------------+
-|       U        |          |       V        |
-+----------------+          +----------------+
-        |                           |
-        |       CoAP request        |
-        +-------------------------->|
-        |                           |
-        |     EDHOC message_1       |
-        +<--------------------------|
-        |                           |
-        |     EDHOC message_2       |               W
-        +-------------------------->|               |
-        |   (EAD_2 = Voucher_Info)  |               |
-        |                           +-------------->|
-        |                           |  VREQ / VRES  |
-        |                           |<------------->|
-        |                           |               |
-        |     EDHOC message_3       |               |
-        +<--------------------------|
-        |     (EAD_3 = Voucher)     |
-~~~~~~~~~~~
-{: #fig-reverse title="ELA with EDHOC reverse mesasge flow when U is responder." artwork-align="center"}
 
 # Use with Constrained Join Protocol (CoJP)
 
