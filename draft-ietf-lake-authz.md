@@ -812,7 +812,7 @@ Here is a summary of the changes needed in the ELA reverse flow:
 The following detail how the processing changes in each of the three security sessions.
 
 The way to interpret the subsections below is as follows.
-The ELA reverse flow works uses the ELA default flow processing ({{protocol-overview}} to {{err-handling}}), except by the changes detailed in {{reverse-u-w}},  {{reverse-u-v}}, and  {{reverse-v-w}}.
+The ELA reverse flow described in this section uses most of the ELA default flow processing ({{protocol-overview}} to {{err-handling}}), except by the changes detailed in {{reverse-u-w}},  {{reverse-u-v}}, and  {{reverse-v-w}}.
 
 #### Reverse U <-> W {#reverse-u-w}
 
@@ -830,7 +830,7 @@ Voucher:
 
 Message 1:
 
-* V composes message_1 and sents it to U.
+* V composes message_1 and sends it to U.
 * U processes message_1 and extracts SS.
 
 Message 2:
@@ -859,7 +859,7 @@ Processing in W happens as specified in {{voucher_request}}.
 
 ### Interoperability considerations
 
-A Device (U) MUST implement one of the ELA flows, and it MAY chose to implement both.
+A Device (U) MUST implement one of the ELA flows, and it MAY choose to implement both.
 
 Editor's note: what about V?
 
@@ -867,7 +867,7 @@ Editor's note: what about V?
 
 From the point of view of W, there is no difference whether U and V run as EDHOC Initiator or Responder.
 
-### Security impllications
+### Security implications
 
 When using the reverse flow, U shares its identity before it can learn (1) V's identity and (2) whether or not the Voucher is valid.
 
@@ -1143,8 +1143,8 @@ When a suitable V receives the solicitation, if it implements ELA, it should res
 ~~~~~~~~~~~
 {: #fig-adv-ead1 title="Advertising ELA using V_INFO in EAD_1, eploying the EDHOC reverse flow with U as responder." artwork-align="center"}
 
-Note that V will only reply if it supports ELA, therefore in this strategy there is no need to transport ELA_ID.
-V_INFO can then be structured to contain only the optional domain identifier:
+Note that V will only reply if it supports ELA.
+V_INFO can be structured to contain only an optional domain identifier:
 
 ~~~ cddl
 V_INFO = (
@@ -1153,7 +1153,7 @@ V_INFO = (
 ~~~
 
 This approach enables a simple filtering mechanism, where only V's that support ELA will reply.
-It also encrypts Voucher_Info (as part of EAD_2), wehereas it is sent in the clear in the original flow.
+It also encrypts Voucher_Info (as part of EAD_2), whereas it is sent in the clear in the original flow.
 In addition, it may not require layer-two profiling (in case the network allows transporting data before authorization).
 Finally, note that the reverse flow with U as Responder protects the identity of V (instead of U's as in the forward flow).
 
@@ -1192,7 +1192,7 @@ V_INFO = (
 )
 ~~~
 
-One advantage of this approach is that, since U is the initiator, it's identity is protected in the context of the EDHOC handshake.
+One advantage of this approach is that, since U is the initiator, its identity is protected in the context of the EDHOC handshake.
 On the other hand, the periodic multicast may have resource usage impacts in the network.
 
 # Use with Constrained Join Protocol (CoJP)
