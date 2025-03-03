@@ -452,7 +452,7 @@ The derivation of IV_1 = EDHOC_Expand(PRK, info, length) uses the following inpu
 ### Voucher {#voucher}
 
 The voucher is an assertion to U that W has authorized V.
-It is encrypted using the EDHOC AEAD algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
+It is encrypted using the EDHOC AEAD algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1.
 It consists of the 'ciphertext' field of a COSE_Encrypt0 object, which is a byte string, as defined below.
 
 ~~~~~~~~~~~ cddl
@@ -486,7 +486,7 @@ Note that OPAQUE_INFO is opaque when viewed as an information element in EDHOC.
 It is opaque to V, while the application in U and W can read its contents.
 
 * H_message_1 is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
-The hash is computed by using the EDHOC hash algorithm of the selected cipher suite specified in SUITE_I of EDHOC message_1.
+The hash is computed by using the EDHOC hash algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1.
 
 * CRED_V is the credential used by V to authenticate to U and W, see {{V_2}} and {{creds-table}}.
 
