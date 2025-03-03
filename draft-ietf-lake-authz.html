@@ -2061,6 +2061,9 @@ The hash is computed by using the EDHOC hash algorithm of the selected cipher su
 <a href="#section-4.5.1.2" class="section-number selfRef">4.5.1.2. </a><a href="#name-processing-in-v" class="section-name selfRef">Processing in V</a>
             </h5>
 <p id="section-4.5.1.2-1">V receives EDHOC message_1 from U and processes it as specified in <span><a href="https://rfc-editor.org/rfc/rfc9528#section-5.2.3" class="relref">Section 5.2.3</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, with the additional step of processing the EAD item in EAD_1. Since the EAD item is critical, if V does not recognize it or it contains information that V cannot process, then V MUST abort the EDHOC session, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.8" class="relref">Section 3.8</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>. Otherwise, the ead_label = TBD1 triggers the voucher request to W as described in <a href="#V-W" class="auto internal xref">Section 4.6</a>. The exchange between V and W needs to be completed successfully for the EDHOC session to be continued.<a href="#section-4.5.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.5.1.2-2">Note that the selected cipher suite SS is used both in the U &lt;-&gt; W and U &lt;-&gt; V interactions, therefore V must be ready to use the cipher suite SS set by U in message_1.
+That is, ELA restricts the cipher suite negotiation in order to provide a streamlined authorization flow from the perspective of U.
+Since V has a pre-established trusted channel with W, it has the opportunity to learn which cipher suites should be supported before any authorization attempt begins to take place.<a href="#section-4.5.1.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>

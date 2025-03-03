@@ -730,6 +730,15 @@ U                              V                                       W
    described in Section 4.6.  The exchange between V and W needs to be
    completed successfully for the EDHOC session to be continued.
 
+   Note that the selected cipher suite SS is used both in the U <-> W
+   and U <-> V interactions, therefore V must be ready to use the cipher
+   suite SS set by U in message_1.  That is, ELA restricts the cipher
+   suite negotiation in order to provide a streamlined authorization
+   flow from the perspective of U.  Since V has a pre-established
+   trusted channel with W, it has the opportunity to learn which cipher
+   suites should be supported before any authorization attempt begins to
+   take place.
+
 4.5.2.  Message 2
 
 4.5.2.1.  Processing in V
