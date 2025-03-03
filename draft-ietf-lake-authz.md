@@ -369,7 +369,7 @@ info = (
 ~~~~~~~~~~
 
 
-## Stateless Operation of V
+## Stateless Operation of V {#stateless-v}
 
 V may act statelessly with respect to U: the state of the EDHOC session started by U may be dropped at V until authorization from W is received.
 Once V has received EDHOC message_1 from U and extracted LOC_W from EAD_1, message_1 is forwarded unmodified to W in the form of a Voucher Request (see {{voucher_request}}).
@@ -711,17 +711,17 @@ where
 
 * H_handshake is the hash of EDHOC message_1, calculated from the associated voucher request, see {{voucher_request}}.
 
-## Reverse use with U as Responder {#reverse-u-responder}
+## Reverse flow with U as Responder {#reverse-u-responder}
 
 This section presents a protocol variant in which U is the EDHOC Responder.
 This may allow optimizations in certain constrained network technologies.
 For example, one use case is having V broadcast message_1, to which U responds with a message_2 whose EAD_2 field contains Voucher_Info.
 
-This is different from the EDHOC reverse message flow defined in {{Appendix A.2.2 of RFC9528}}, since we make no assumption about whether U or V is a CoAP server.
+Note that this is different from the EDHOC reverse message flow defined in {{Appendix A.2.2 of RFC9528}}, since we make no assumption about whether U or V is a CoAP server.
 
 ### U is the Initiator {#u-initiator}
 
-For clarity, we first present the default scenario with U as Initiator, as described in {{protocol-overview}} and {{U-V}}.
+For clarity, we first present the "default flow" with U as Initiator, as described in {{protocol-overview}} and {{U-V}}.
 Note that Voucher_Info and Voucher are carried in EDHOC message_1 and message_2, respectively.
 
 ~~~~~~~~~~~ aasvg
@@ -751,19 +751,24 @@ Note that Voucher_Info and Voucher are carried in EDHOC message_1 and message_2,
       |                              |
       |                              |
 ~~~~~~~~~~~
-{: #fig-u-initiator title="ELA when U is the EDHOC Initiator." artwork-align="center"}
+{: #fig-u-initiator title="In ELA default flow, U is the EDHOC Initiator." artwork-align="center"}
+
+In the ELA default flow, once message_2 processing is finalized (including processing of EAD_2), U considers V authenticated through W.
 
 ### U is the Responder {#u-responder}
 
-ELA also works with U as the EDHOC Responder, a setup we refer to as the ELA reverse flow, as shown in {{fig-u-responder}}.
+ELA also works with U as the EDHOC Responder, a setup we refer to as the "ELA reverse flow", as shown in {{fig-u-responder}}.
 
-We present this variant as a set of changes to the regular protocol flow, so that U can run as the EDHOC Responder.
-The changes include:
+We present this variant as a set of changes to the regular protocol flow.
+That is, here we only describe the differences in processing, when compared to the ELA default flow.
+
+Here is a summary of the changes needed in the ELA reverse flow:
 
 * Voucher_Info and Voucher are transported in EDHOC message_2 and message_3, respectively (instead of message_1 and message_2).
 * The EAD_2 and EAD_3 fields carry EAD items identified with labels TBD1 and TBD2, respectively.
 * The VREQ / VRES protocol takes place between message_2 and message_3.
 * The Voucher_Request carries G_Y instead of G_X, and the transcript hash TH_2 instead of the hash H_message_1.
+* Stateless operation of V (see {{stateless-v}}) is not supported
 
 ~~~~~~~~~~~ aasvg
 +-----+-----+                  +-----------+
@@ -797,9 +802,10 @@ The changes include:
 ~~~~~~~~~~~
 {: #fig-u-responder title="ELA when U is the EDHOC Responder." artwork-align="center"}
 
-The following subsections detail how the processing changes in each of the three security sessions.
+The following detail how the processing changes in each of the three security sessions.
 
-Unless otherwise specified, the processing is the same as described in other subsections of {{protocol}}.
+The way to interpret the subsections below is as follows.
+The ELA reverse flow works uses the ELA default flow processing ({{protocol-overview}} to {{err-handling}}), except by the changes detailed in {{reverse-u-w}},  {{reverse-u-v}}, and  {{reverse-v-w}}.
 
 #### Reverse U <-> W {#reverse-u-w}
 
@@ -838,9 +844,9 @@ Message 3:
 Processing in V:
 
 * The Voucher_Request fields are prepared as defined in {{voucher_request}}, with the following changes:
-  * G_U is set to G_Y, the ephemeral public key of U which is extracted from message_2.
+  * G_U is set to G_Y, which is the ephemeral public key of U as extracted from message_2.
   * Voucher_Info is as extracted from the EAD_2 field of message_2.
-  * H_handshake is the transcript hash TH_2 (TODO: who calculates it?).
+  * H_handshake is the transcript hash TH_2, computed by V as specified in {{Section 5.3.2 of RFC9528}}.
 
 Processing in W happens as specified in {{voucher_request}}.
 
