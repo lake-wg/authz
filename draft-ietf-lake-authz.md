@@ -519,6 +519,10 @@ The device sends EDHOC message_1 with EAD item (-TBD1, Voucher_Info) included in
 
 V receives EDHOC message_1 from U and processes it as specified in {{Section 5.2.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_1. Since the EAD item is critical, if V does not recognize it or it contains information that V cannot process, then V MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}. Otherwise, the ead_label = TBD1 triggers the voucher request to W as described in {{V-W}}. The exchange between V and W needs to be completed successfully for the EDHOC session to be continued.
 
+Note that the selected cipher suite SS is used both in the U <-> W and U <-> V interactions, therefore V must be ready to use the cipher suite SS set by U in message_1.
+That is, ELA restricts the cipher suite negotiation in order to provide a streamlined authorization flow from the perspective of U.
+Since V has a pre-established trusted channel with W, it has the opportunity to learn which cipher suites should be supported before any authorization attempt begins to take place.
+
 ### Message 2 {#m2}
 
 #### Processing in V  {#V_2}
