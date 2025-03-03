@@ -862,6 +862,10 @@ Editor's note:
 
 * TH_2 is internal EDHOC state, and it is being passed around in VREQ. Is this an issue? Note that TH_2 is simply H( G_U, H_message_1 ), which is all public information.
 
+In the reverse flow, Voucher_Info is confidentiality and integrity protected, while Voucher is also authenticated.
+These properties are inherited from EDHOC message_2 and message_3.
+This is a higher level of protection than with the regular flow.
+
 # Optimization Strategies {#optimization-strat}
 
 When ELA is used for zero-touch enrollment, U normally has little to no knowledge of the available V's.
