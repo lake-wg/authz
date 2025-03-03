@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 28 August 2025                                       M. Vučinić
+Expires: 4 September 2025                                     M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                        24 February 2025
+                                                            3 March 2025
 
 
 Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 August 2025.
+   This Internet-Draft will expire on 4 September 2025.
 
 Copyright Notice
 
@@ -633,7 +633,7 @@ U                              V                                       W
 
    The voucher is an assertion to U that W has authorized V.  It is
    encrypted using the EDHOC AEAD algorithm of the selected cipher suite
-   specified in SUITE_I of EDHOC message_1.  It consists of the
+   SS specified in SUITE_I of EDHOC message_1.  It consists of the
    'ciphertext' field of a COSE_Encrypt0 object, which is a byte string,
    as defined below.
 
@@ -672,7 +672,7 @@ U                              V                                       W
    *  H_message_1 is the hash of EDHOC message_1, calculated from the
       associated voucher request, see Section 4.6.1.  The hash is
       computed by using the EDHOC hash algorithm of the selected cipher
-      suite specified in SUITE_I of EDHOC message_1.
+      suite SS specified in SUITE_I of EDHOC message_1.
 
    *  CRED_V is the credential used by V to authenticate to U and W, see
       Section 4.5.2.1 and Table 1.
