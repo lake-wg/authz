@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-02T01:41:11.379660+00:00",
+  "timestamp": "2025-03-04T01:38:10.109299+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -612,15 +612,15 @@
       "id": "I_kwDOKiCa6c6sEAfe",
       "title": "Clarify use of pre-agreed cipher suites",
       "url": "https://github.com/lake-wg/authz/issues/46",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Add a consideration about cipher suites, where V must be ready to use the same cipher suite used between U and W.\n\nSee https://github.com/lake-wg/authz/pull/45#discussion_r1975124784",
       "createdAt": "2025-02-28T10:04:22Z",
-      "updatedAt": "2025-02-28T10:04:22Z",
-      "closedAt": null,
+      "updatedAt": "2025-03-03T15:35:34Z",
+      "closedAt": "2025-03-03T15:35:34Z",
       "comments": []
     }
   ],
@@ -1578,21 +1578,21 @@
       "id": "PR_kwDOKiCa6c5tlOsh",
       "title": "Using EDHOC reverse message flow",
       "url": "https://github.com/lake-wg/authz/pull/36",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "gselander",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "For discussion. \r\n\r\nInstead of sending message_1, U sends a trigger over multicast/broadcast which leads to V sending message_1 to U. This allows a discovery process where EAD_1 could contain an EAD item specified in lake-authz, allowing advertisement of the use of the authz protocol, or certain deployment of authz, independent of underlying layer. This allows U to detect gateways supporting the authz protocol ,or certain deployment, and provide such information to W using the \"hints\" and allow an effficient deployment.\r\n\r\nEDHOC messages then follow with EAD_x having the content of EAD_(x-1) of the forward flow. \r\n\r\nNote that ID_CRED_R, sent in message_2, can now be empty because V will now run VREQ/VRES with W and in this case CRED_U can be returned without changing the basic identity protection assumption of EDHOC.",
       "createdAt": "2024-04-24T09:58:09Z",
-      "updatedAt": "2024-10-18T12:54:03Z",
+      "updatedAt": "2025-03-03T15:49:56Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b34568662436fae3f64e93437a7b3514e84d862c",
       "headRepository": "lake-wg/authz",
       "headRefName": "reverse-flow",
       "headRefOid": "f7c4a95ab2560f4bcbcb9f5517efa6edc91b6b7c",
-      "closedAt": null,
+      "closedAt": "2025-03-03T15:49:55Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -1666,6 +1666,13 @@
           "body": "An appendix explaining use with the EDHOC reverse flow was added and merged in #41. I believe this PR can now be closed.",
           "createdAt": "2024-10-18T12:54:01Z",
           "updatedAt": "2024-10-18T12:54:01Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Closing as obsolete after the merge of #45. Discussion can continue in new issues if needed.",
+          "createdAt": "2025-03-03T15:49:55Z",
+          "updatedAt": "2025-03-03T15:49:55Z"
         }
       ],
       "reviews": []
@@ -1986,24 +1993,26 @@
       "id": "PR_kwDOKiCa6c6MUpiF",
       "title": "New subsection: U as EDHOC Initiator or Responder",
       "url": "https://github.com/lake-wg/authz/pull/45",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "and all the implications that come from it:\r\n- dedicated EAD labels for Voucher/Voucher_Info\r\n- security / interoperability considerations ",
       "createdAt": "2025-02-24T16:47:11Z",
-      "updatedAt": "2025-02-28T18:11:49Z",
+      "updatedAt": "2025-03-03T15:44:28Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
-      "baseRefOid": "6da9920a1737171ead0ea22b96b3cf671bb91219",
+      "baseRefOid": "69d5af53024ef25fa65b2792c7cdadb72cd15609",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "re-organize-sections",
-      "headRefOid": "532c216067766b7192c565a92a1aa150ede6a403",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "61314ea2abd022a3250a2f99c5d3707b477c776d",
+      "closedAt": "2025-03-03T15:44:23Z",
+      "mergedAt": "2025-03-03T15:44:23Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "b244e61398ff594ac497146cee37c9e1f18b0228"
+      },
       "comments": [
         {
           "author": "geonnave",
@@ -2011,6 +2020,20 @@
           "body": "There is actually a significant amount of changes needed to the protocol when U is Responder. \r\nI hope to have updated the protocol with all the needed changes.\r\nImplications are yet to be written down.",
           "createdAt": "2025-02-28T09:26:39Z",
           "updatedAt": "2025-02-28T09:26:39Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@mcr I've moved the editorial changes to a separate PR (#47) and rebased this one on top of the new master.",
+          "createdAt": "2025-03-03T08:47:11Z",
+          "updatedAt": "2025-03-03T08:47:11Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Fixed some final details in this PR, and it is now ready.\r\nI am merging this now so that a new version can be published before draft cut-off for IETF 122.",
+          "createdAt": "2025-03-03T15:43:50Z",
+          "updatedAt": "2025-03-03T15:43:50Z"
         }
       ],
       "reviews": [
@@ -2173,8 +2196,140 @@
               "updatedAt": "2025-02-28T18:11:49Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOKiCa6c6eHk23",
+          "commit": {
+            "abbreviatedOid": "532c216"
+          },
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-02T18:17:42Z",
+          "updatedAt": "2025-03-02T18:17:43Z",
+          "comments": [
+            {
+              "originalPosition": 202,
+              "body": "The thing is that certain network technologies are (1) device sends first and others are (2) gateway sends first. That's why the trigger is optional. \r\nThe case for U as Responder addresses the case when gateway sends first. ",
+              "createdAt": "2025-03-02T18:17:42Z",
+              "updatedAt": "2025-03-02T18:17:43Z"
+            }
+          ]
         }
       ]
+    },
+    {
+      "number": 47,
+      "id": "PR_kwDOKiCa6c6NHWnw",
+      "title": "Editorial: mention 'SS' as selected cipher suite in more places",
+      "url": "https://github.com/lake-wg/authz/pull/47",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-03-03T08:44:18Z",
+      "updatedAt": "2025-03-03T08:45:08Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "6da9920a1737171ead0ea22b96b3cf671bb91219",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "editorial-ss",
+      "headRefOid": "b2219a3c0df81d10adaabb1aa0fd08cc4001cf19",
+      "closedAt": "2025-03-03T08:45:04Z",
+      "mergedAt": "2025-03-03T08:45:04Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "69d5af53024ef25fa65b2792c7cdadb72cd15609"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 48,
+      "id": "PR_kwDOKiCa6c6NH0j4",
+      "title": "Move optimization and advertisement sections to appendix",
+      "url": "https://github.com/lake-wg/authz/pull/48",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Move all to appendix, and unify sections.\r\n\r\nBuilds on #45 ",
+      "createdAt": "2025-03-03T09:39:30Z",
+      "updatedAt": "2025-03-03T15:48:41Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b244e61398ff594ac497146cee37c9e1f18b0228",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "rework-optimization-advertisement-sections",
+      "headRefOid": "6d661e8a652ceae04b85b82f9792f089625d4b43",
+      "closedAt": "2025-03-03T15:48:38Z",
+      "mergedAt": "2025-03-03T15:48:38Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "cb509d3b25262d558807344d5e3d2aa57e66957c"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 49,
+      "id": "PR_kwDOKiCa6c6NKx0v",
+      "title": "Add note about pre-agreed cipher suites",
+      "url": "https://github.com/lake-wg/authz/pull/49",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #46 ",
+      "createdAt": "2025-03-03T15:17:25Z",
+      "updatedAt": "2025-03-03T15:35:33Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "69d5af53024ef25fa65b2792c7cdadb72cd15609",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "46-clarify-cipher-suites",
+      "headRefOid": "2880f8b427ea4e25149e72e9936b780faed80bed",
+      "closedAt": "2025-03-03T15:35:33Z",
+      "mergedAt": "2025-03-03T15:35:33Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "9f490862cd8941e1c8fa931a29998cf6ae4596bc"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 50,
+      "id": "PR_kwDOKiCa6c6NLZmR",
+      "title": "Editorial: fix typos and improve sentences",
+      "url": "https://github.com/lake-wg/authz/pull/50",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-03-03T16:32:02Z",
+      "updatedAt": "2025-03-03T16:32:49Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "cb509d3b25262d558807344d5e3d2aa57e66957c",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "editorial-fixes-before-04",
+      "headRefOid": "d7cfd33ef58d9efc3cb13ae7e28fa5ffe3f35c19",
+      "closedAt": "2025-03-03T16:32:42Z",
+      "mergedAt": "2025-03-03T16:32:42Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "b36dc1de0403696846c298a39f8f2047b09ece94"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
