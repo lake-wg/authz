@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-16T01:44:41.081726+00:00",
+  "timestamp": "2025-03-18T01:40:06.209380+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -621,6 +621,38 @@
       "createdAt": "2025-02-28T10:04:22Z",
       "updatedAt": "2025-03-03T15:35:34Z",
       "closedAt": "2025-03-03T15:35:34Z",
+      "comments": []
+    },
+    {
+      "number": 51,
+      "id": "I_kwDOKiCa6c6uO3CG",
+      "title": "Address IANA review",
+      "url": "https://github.com/lake-wg/authz/issues/51",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Reproducing the email received:\n\n---\n\nBefore the IETF meeting, we check working group agendas for documents with IANA-related issues. Notes about this document:\n\nhttps://datatracker.ietf.org/doc/html/draft-ietf-lake-authz-04\n\n1) Section 7.1: Please specify the preferred value range (0-23 or 24-65535). See\n\nhttps://www.iana.org/assignments/edhoc\n\n2) Section 7.2: Please add the \u201cStatus\u201d field for the Well-Known URI.\n\n3) Section 7.3: Please add the \u201cDomain Name Reservation Considerations\u201d subsection required by RFC 6761 (see Section 5) for the lake-authz.arpa registration.\n\n4) Section 7.4: Please replace the IESG with the IETF in the media type\u2019s change controller field.\n\n5) Section 7.5: Please specify a preferred value range the CoAP Content-Format registration. See\n\nhttps://www.iana.org/assignments/core-parameters\n\nIf you have any questions, just let us know. If you'd like to talk in person, you can find us next to the RFC Editor's table from Monday through Thursday. You can also request another review at any time by contacting us at iana@iana.org.\n\nFor more information about IANA Considerations section requirements, please see\n\nhttps://www.iana.org/help/protocol-registration\n",
+      "createdAt": "2025-03-16T15:21:44Z",
+      "updatedAt": "2025-03-16T15:21:44Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 52,
+      "id": "I_kwDOKiCa6c6uO3OX",
+      "title": "Define EAD label values to replace TBD1, TBD2",
+      "url": "https://github.com/lake-wg/authz/issues/52",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-03-16T15:23:06Z",
+      "updatedAt": "2025-03-16T15:23:06Z",
+      "closedAt": null,
       "comments": []
     }
   ],
