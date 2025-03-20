@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-18T01:40:06.209380+00:00",
+  "timestamp": "2025-03-20T01:39:00.719318+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -474,15 +474,15 @@
       "id": "I_kwDOKiCa6c6EXuCP",
       "title": "Privacy of hints",
       "url": "https://github.com/lake-wg/authz/issues/27",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "During the IETF 119 LAKE meeting (see [minutes here](https://datatracker.ietf.org/doc/minutes-119-lake-202403210530/)), some comments were raised about the privacy aspects of hints (identifiers of V passed from U to W and vice-versa).\r\nThis issue is intended as a place for discussion of the raised points.\r\n\r\nCurrently in version -01 of the draft, there are two kinds of hints:\r\n1. `u_hints`, meaning radio identifiers of Vs that are discovered by U and communicated to W via an encrypted channel (carried within EAD_1 and then VREQ).\r\n2. `v_hints`, meaning radio identifiers of Vs that are pre-populated in W and are communicated to U via an encrypted channel (carried within VRES and then EDHOC error Access Denied).\r\n\r\nBelow I explore whether or not there are privacy issues regarding hints, from the perspectives of U, V and W, as well as when data is in transit.\r\n\r\n### 1. Privacy of `u_hints`\r\n- At U: gateways (Vs) normally advertise their radio identifiers in beacons -> no issue.\r\n- At V: the hint is encrypted -> no issue.\r\n- At W: the radio identifiers of any V will be read by W\r\n  - \u26a0\ufe0f potential issue: if W shares the identifiers with 3rd parties\r\n  - mitigation: W should commit to not share the received identifiers.\r\n- in transit between U <-> V and V <-> W: the hint is encrypted -> no issue.\r\n\r\n### 2. Privacy of `v_hints`\r\n- At W: the radio identifiers of Vs that are securely associated with W will be read by W\r\n  - \u26a0\ufe0f potential issue: if W shares the identifiers with 3rd parties\r\n  - mitigation: W should commit to not share the received identifiers.\r\n  - \u2753note: since Vs are already associated with W, the Vs should already trust W to not share any information with 3rd parties. Thus I think this is a non-issue.\r\n- At V: the hint is encrypted -> no issue.\r\n- At U: the device U will gain information about Vs that allow U to enroll. \r\n  - \u26a0\ufe0f potential issue: if the device is malicious, it would be learning new information about the system\r\n  - mitigation: only return hints when U is known to W.\r\n    - example 1: device u1 is listed in W's ACL, but the V through which it tried to join is not in the ACL (leading to error \"Access Denied\"). Since W knows u1, it MAY return `v_hints`.\r\n    - example 2: device u2 is not listed in W's ACL (leading to error \"Access Denied\"). Since W does not know u2, it MUST NOT return `v_hints`.\r\n  - \u2753 note: is there an issue when U is known by W (as in example 1 above)? It would be learning about radio identifiers of Vs that might or might not be in its radio range and are expected to be authorized to enroll U. Personally I think this is a non-issue.\r\n- in transit between W <-> V and V <-> U: the hint is encrypted -> no issue.\r\n\r\n### Discussion\r\nI think that the only issues that we need to address in the document are `1. Privacy of u_hints at W` and `2. Privacy of v_hints at U (when U is unknown to W)`.\r\n\r\nLooking forward to receiving comments from those interested in this topic.",
       "createdAt": "2024-04-02T15:22:57Z",
-      "updatedAt": "2024-10-18T13:02:33Z",
-      "closedAt": null,
+      "updatedAt": "2025-03-18T07:53:07Z",
+      "closedAt": "2025-03-18T07:53:06Z",
       "comments": [
         {
           "author": "sftcd",
@@ -588,6 +588,13 @@
           "body": "Merging of #42 fixes most issues raised in this thread. Still up for discussion if we should keep the opaque_info field in the Access Denied error message. (to be discussed during the IETF 121 in Dublin)",
           "createdAt": "2024-10-18T13:02:31Z",
           "updatedAt": "2024-10-18T13:02:31Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Hints are gone from the document, thus closing this issue.",
+          "createdAt": "2025-03-18T07:53:06Z",
+          "updatedAt": "2025-03-18T07:53:06Z"
         }
       ]
     },
