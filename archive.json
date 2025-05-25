@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-30T01:47:43.556674+00:00",
+  "timestamp": "2025-05-25T01:57:06.767158+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -313,15 +313,15 @@
       "id": "I_kwDOKiCa6c6CK3YP",
       "title": " authz with U as R and V as I",
       "url": "https://github.com/lake-wg/authz/issues/21",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "chrysn",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "(Moved from https://github.com/EricssonResearch/ace-ake-authz/issues/27)\r\n\r\nProcessing some deployment scenarios (involving CoAP-over-GATT), I've found that sometimes the roles of I and R would be reversed.\r\n\r\nApart from the aspect of vulnerable-identities, is there anything fundamentally keeping the ENC_U_INFO from being in message 2, and the voucher from being in message 3? The credential database lookup would then be against ID_CRED_R, but that'd be the same interface as for ID_CRED_I.\r\n\r\nLet's not sink too much time into this if it turns out to be complicated -- I'm not sure whether running EDHOC over CoAP in reverse flow may not be the better choice in this situation anyway, but if this has ever been contemplated in other places, this issue might be a good spot to spool ideas.",
       "createdAt": "2024-03-13T12:28:46Z",
-      "updatedAt": "2025-02-28T14:20:13Z",
-      "closedAt": null,
+      "updatedAt": "2025-05-23T16:19:54Z",
+      "closedAt": "2025-05-23T16:19:53Z",
       "comments": [
         {
           "author": "mcr",
@@ -357,6 +357,13 @@
           "body": "@chrysn FYI in PR #45, I went into all the details of what changes during each processing step, if this change is to be supported.",
           "createdAt": "2025-02-28T14:20:12Z",
           "updatedAt": "2025-02-28T14:20:12Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This looks well supported in the editor's copy through the ELA reverse flow. Thanks, closing.",
+          "createdAt": "2025-05-23T16:19:53Z",
+          "updatedAt": "2025-05-23T16:19:53Z"
         }
       ]
     },
@@ -434,9 +441,9 @@
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
-      "body": "I'm not fully sure where this should go, but authz is probably a good starting point, because it is part of the solution I have in mind right now.\r\n\r\nConsider two parties establishing a connection where both have sensitive identities (in terms of being tracked, of ownership, and both actively solicit connections continuously).\r\nAs an example, a service worker's phone might be constantly listening for beacons of installed equipment, which would report their latest logs, but neither do we want to allow tracking of the worker by identity or affiliation, nor do we want that arbitrary people driving through the city can map where they have equipment installed.\r\n(I figure airtags probably do something similar, but it's easier when reporting your manufacturer just is 2-3 bits of information).\r\n\r\nOne way to solve this is to defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information, and promise to only relay that to other parties in your organization. The organization may run that on their own (in which case they'd probably pick LOC_W=\"\" and take the risk of just seeing many decryption failures whenever they encounter devices of someone else who does the same), or they may use any global provider, where the number of providers should be smaller than the number of organizations using them in any area (maybe 4=len(\"GAMA\")...).\r\n\r\nUsing authz, this could be used like this:\r\n(U = machine, V = phone, W = trustservice; as part of their enrollment, U has learned the public key of W and W knows the mapping from ID_U to CRED_U plus which account this is on, V has a secure channel with W associated with a customer account)\r\n* U sends message 1 with its ID_U\r\n* V sends the ENC_U_INFO to W\r\n* W verifies that V is on the same customer account as U, and returns CRED_U as well as a voucher response.\r\n  I'm not sure we even need to use the voucher here -- all that V needed to know that this is \"one of its own\", and knowing this it can now send its CRED_V (probably by value), and that will suffice to U\r\n* V sends its CRED_U\r\n* U recognizes the CRED_U and ... either sends a KID ID_CRED_V which suffices for this V, or if it turns out that V didn't contact W and just was generous with its CRED_V, maybe V sent something to ask for the full certificate.\r\n\r\nIs that in scope as an application for authz? I think it'd work with authz as-is, and at most need some wording that \"it is fine if the voucher response comes back OK without containing a voucher, V should then just continue like that\". (Maybe the voucher is also just empty, and in the last step U takes that as the hint that even though V sent a credential, itself it can just send ID_CRED_I=b\"\").",
+      "body": "I'm not fully sure where this should go, but authz is probably a good starting point, because it is part of the solution I have in mind right now.\n\nConsider two parties establishing a connection where both have sensitive identities (in terms of being tracked, of ownership, and both actively solicit connections continuously).\nAs an example, a service worker's phone might be constantly listening for beacons of installed equipment, which would report their latest logs, but neither do we want to allow tracking of the worker by identity or affiliation, nor do we want that arbitrary people driving through the city can map where they have equipment installed.\n(I figure airtags probably do something similar, but it's easier when reporting your manufacturer just is 2-3 bits of information).\n\nOne way to solve this is to defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information, and promise to only relay that to other parties in your organization. The organization may run that on their own (in which case they'd probably pick LOC_W=\"\" and take the risk of just seeing many decryption failures whenever they encounter devices of someone else who does the same), or they may use any global provider, where the number of providers should be smaller than the number of organizations using them in any area (maybe 5=len(\"GAMAM\")...).\n\nUsing authz, this could be used like this:\n(U = machine, V = phone, W = trustservice; as part of their enrollment, U has learned the public key of W and W knows the mapping from ID_U to CRED_U plus which account this is on, V has a secure channel with W associated with a customer account)\n* U sends message 1 with its ID_U\n* V sends the ENC_U_INFO to W\n* W verifies that V is on the same customer account as U, and returns CRED_U as well as a voucher response.\n  I'm not sure we even need to use the voucher here -- all that V needed to know that this is \"one of its own\", and knowing this it can now send its CRED_V (probably by value), and that will suffice to U\n* V sends its CRED_U\n* U recognizes the CRED_U and ... either sends a KID ID_CRED_V which suffices for this V, or if it turns out that V didn't contact W and just was generous with its CRED_V, maybe V sent something to ask for the full certificate.\n\nIs that in scope as an application for authz? I think it'd work with authz as-is, and at most need some wording that \"it is fine if the voucher response comes back OK without containing a voucher, V should then just continue like that\". (Maybe the voucher is also just empty, and in the last step U takes that as the hint that even though V sent a credential, itself it can just send ID_CRED_I=b\"\").",
       "createdAt": "2024-03-21T16:53:08Z",
-      "updatedAt": "2024-10-18T13:05:35Z",
+      "updatedAt": "2025-05-23T16:54:47Z",
       "closedAt": null,
       "comments": [
         {
@@ -466,6 +473,20 @@
           "body": "@chrysn any comments on this? if you want we can discuss during the next IETF meeting.",
           "createdAt": "2024-10-18T13:05:33Z",
           "updatedAt": "2024-10-18T13:05:33Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Sorry, I missed a few notifications here.\n\nApart from answering open questions (see next post), my question (or request to support) is that as far as ELA is concerned, *sening* a voucher should be optional (like, typically present, but allow that applications building on it do not need to convey any information from W to U).",
+          "createdAt": "2025-05-23T16:28:50Z",
+          "updatedAt": "2025-05-23T16:28:50Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": ">  has a business logic commitment to not share ids with other organizations which could act as unintended trackers? If yes, I fail to see how to integrate it in the protocol.\n\nNo need to integrate that into the protocol, that is just policy.\n\n> >  defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information\n> Who is attacking here?\n\nLet me rephrase: W is a trusted third party, but we do not have *much* trust in them. (About as much as you can trust any global organization that may be subject to any country's legislation). So *if* that third party were compromised in any way, all they can do is\n\n* deny service to their users\n* perform their duties as intended but monitor which parties V apparently saw which parties U (kind of necessary because that's what they're used to do, it's just that they should tell the *V*) or relay that information\n* \"wardrive\", going around and correlate messages 1 with physical locations (and thus devices); unlike any untrusted party they can not only see *that* there is a party U around, but which user (eg. company) it belongs to\n\n> I don't understand this part, as V already does not use the voucher ([Section 4.6.2.2](https://www.ietf.org/archive/id/draft-ietf-lake-authz-01.html#section-4.6.2.2)) -- the voucher's intended audience is U.\nV simply knows that the authorization has worked by receiving an \"ok\" answer from W (we need to actually define this, as tracked in https://github.com/lake-wg/authz/issues/19).\n\nThe point here is that there can be cases where W's statement towards V is not \"That peer is OK, here is a voucher to send on\", but it is \"That peer is OK, *and no need to send any voucher*\" (because U is already equipped to process V's ID_CRED_V -- it's just that V is holding back on sending ID_CRED_V until W said that U is authorized to receive ID_CRED_V). This is not an error case, it's more a case of \"yes that's null and that's fine, no need to send it\".\n\nI'm not so much worried about the V-W leg here -- IIUC, neither the cryptographic parts nor the U-V leg rely on that precise REST interface. But that U-V can go on after U sent an ELA EAD even if there is no response ELA EAD (because W knows the concrete application and can confidently know that there is nothing for U to process further) is something that the original EAD item description should enable.\n\n---\n\nSo as I said, I hope this could be allowed in the document.\n\nSpeaking of allowing things: Anything wrong with having multiple voucher requests in the EAD1?",
+          "createdAt": "2025-05-23T16:54:46Z",
+          "updatedAt": "2025-05-23T16:54:46Z"
         }
       ]
     },
