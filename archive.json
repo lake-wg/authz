@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-25T01:57:06.767158+00:00",
+  "timestamp": "2025-05-27T01:47:51.202369+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -396,15 +396,15 @@
       "id": "I_kwDOKiCa6c6CzUrf",
       "title": "Can we turn opaque_info into more concrete fields, in the Voucher?",
       "url": "https://github.com/lake-wg/authz/issues/24",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The idea here is the same as in #23.\r\n\r\n## Proposal\r\nUpdate Voucher so that instead of carrying `opaque_info`, it looks like this:\r\n```\r\nplaintext of Voucher = (\r\n  role-of-v:        uint,  / choice(access-provider=1, owner=2) /\r\n  directives-for-u: bstr,  / application-specific, e.g. frequencies, operation mode, etc /\r\n)\r\n```\r\n\r\nComments:\r\n- the field `role-of-v` tells U whether V should be considered an owner/administrator, or simply a connectivity provider. This is more or less equivalent to the \"assertion\" item in BRSKI's Voucher, with the difference that no claim is made about \"how to verify the ownership of V upon U\". Another reason that motivated me in considering this field was a discussion I had with @chrysn about the \"admin status of V\".\r\n- `directives-for-u` should contain any information that W may find useful to transmit to U. In a way, this is still equivalent to `opaque_data`, but just with a name that conveys the intention of the field.\r\n\r\nQuestions:\r\n- does `role-of-v` make sense? are there other roles that should be considered?\r\n- is there anything else that is missing? is there other type of information that should / could be sent in the Voucher, that would not be covered by the suggested fields?",
       "createdAt": "2024-03-19T09:48:20Z",
-      "updatedAt": "2024-04-15T14:56:39Z",
-      "closedAt": null,
+      "updatedAt": "2025-05-26T07:52:33Z",
+      "closedAt": "2025-05-26T07:52:32Z",
       "comments": [
         {
           "author": "geonnave",
@@ -412,6 +412,13 @@
           "body": "Logging some updates here.\r\n\r\n### 1. Specifying the fields `role-of-v` and `directives-for-u`\r\nDuring a design team meeting on April 11, we discussed that the two items discussed above could be specified in an appendix (therefore keeping `OPAQUE_INFO` as part of the Voucher).\r\n\r\nThe concern here is making the protocol too closed, while we are still not sure of all potential use cases and needs.\r\n\r\nJust as a quick note, to me this starts to resemble a bit the case of EAP, where the main protocol is specified in a higher level, and then certain details are defined in later specifications. It differs from EAP as the authentication *is defined* (it relies on EDHOC's), but is similar to EAP as the underlying transport *is not defined*. Might bring this discussion into a separate issue.\r\n\r\n### 2. `directives-for-u`: use case with LoRaWAN\r\nThe Join-accept message defined in LoRaWAN v1.1 \u00b9 is sent as a response to a successful Join-request.\r\nJoin-accept contains the following fields: JoinNonce, Home_NetID, DevAddr, DownLinkSettings, RxDelay, ChannelFrequencyList.\r\n\r\nThus, when using `lake-authz` with LoRaWAN, the `directives-for-u` field could contain the fields of a Join-accept message.\r\n\r\n\u00b9 https://resources.lora-alliance.org/technical-specifications/lorawan-specification-v1-1",
           "createdAt": "2024-04-15T14:56:37Z",
           "updatedAt": "2024-04-15T14:56:37Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I now think this is really an application issue, so closing it.",
+          "createdAt": "2025-05-26T07:52:32Z",
+          "updatedAt": "2025-05-26T07:52:32Z"
         }
       ]
     },
@@ -420,16 +427,24 @@
       "id": "I_kwDOKiCa6c6Czb9b",
       "title": "Can we turn opaque_info into more concrete fields, in the Error message?",
       "url": "https://github.com/lake-wg/authz/issues/25",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The rationale is similar to #23.\r\n\r\n## Proposal\r\nIn the EDHOC error \"Access Denied\", when REJECT_TYPE = 1, have REJECT_INFO look like this:\r\n```\r\nplaintext of REJECT_INFO = (\r\n  suggested-vs:              map,  / same format as `nearby_vs` /\r\n  additional-recovery-info:  bstr, / application-specific actionable information for error recovery /\r\n)\r\n```\r\n\r\nComments:\r\n- `suggested-vs` is equivalent to the current `v_hint` field ([Appendix B](https://www.ietf.org/archive/id/draft-ietf-lake-authz-01.html#appendix-B)), but following the map-based serialization for network identifiers defined in [issue 23](https://github.com/lake-wg/authz/issues/23).\r\n- `additional-recovery-info` -- just like in [issue 24](https://github.com/lake-wg/authz/issues/24), I am merely renaming the open-ended field `opaque_info` to something more intentional.",
       "createdAt": "2024-03-19T10:01:13Z",
-      "updatedAt": "2024-03-19T10:01:13Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-05-26T08:33:51Z",
+      "closedAt": "2025-05-26T08:33:50Z",
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Just came back to this, and I think we can close this as is and leave the details for the application.\n\nNote that we currently already have in the text: `It may contain, for example, a list of suggested Vs through which U should join instead.`.",
+          "createdAt": "2025-05-26T08:33:50Z",
+          "updatedAt": "2025-05-26T08:33:50Z"
+        }
+      ]
     },
     {
       "number": 26,
@@ -443,7 +458,7 @@
       "labels": [],
       "body": "I'm not fully sure where this should go, but authz is probably a good starting point, because it is part of the solution I have in mind right now.\n\nConsider two parties establishing a connection where both have sensitive identities (in terms of being tracked, of ownership, and both actively solicit connections continuously).\nAs an example, a service worker's phone might be constantly listening for beacons of installed equipment, which would report their latest logs, but neither do we want to allow tracking of the worker by identity or affiliation, nor do we want that arbitrary people driving through the city can map where they have equipment installed.\n(I figure airtags probably do something similar, but it's easier when reporting your manufacturer just is 2-3 bits of information).\n\nOne way to solve this is to defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information, and promise to only relay that to other parties in your organization. The organization may run that on their own (in which case they'd probably pick LOC_W=\"\" and take the risk of just seeing many decryption failures whenever they encounter devices of someone else who does the same), or they may use any global provider, where the number of providers should be smaller than the number of organizations using them in any area (maybe 5=len(\"GAMAM\")...).\n\nUsing authz, this could be used like this:\n(U = machine, V = phone, W = trustservice; as part of their enrollment, U has learned the public key of W and W knows the mapping from ID_U to CRED_U plus which account this is on, V has a secure channel with W associated with a customer account)\n* U sends message 1 with its ID_U\n* V sends the ENC_U_INFO to W\n* W verifies that V is on the same customer account as U, and returns CRED_U as well as a voucher response.\n  I'm not sure we even need to use the voucher here -- all that V needed to know that this is \"one of its own\", and knowing this it can now send its CRED_V (probably by value), and that will suffice to U\n* V sends its CRED_U\n* U recognizes the CRED_U and ... either sends a KID ID_CRED_V which suffices for this V, or if it turns out that V didn't contact W and just was generous with its CRED_V, maybe V sent something to ask for the full certificate.\n\nIs that in scope as an application for authz? I think it'd work with authz as-is, and at most need some wording that \"it is fine if the voucher response comes back OK without containing a voucher, V should then just continue like that\". (Maybe the voucher is also just empty, and in the last step U takes that as the hint that even though V sent a credential, itself it can just send ID_CRED_I=b\"\").",
       "createdAt": "2024-03-21T16:53:08Z",
-      "updatedAt": "2025-05-23T16:54:47Z",
+      "updatedAt": "2025-05-26T14:50:57Z",
       "closedAt": null,
       "comments": [
         {
@@ -487,6 +502,27 @@
           "body": ">  has a business logic commitment to not share ids with other organizations which could act as unintended trackers? If yes, I fail to see how to integrate it in the protocol.\n\nNo need to integrate that into the protocol, that is just policy.\n\n> >  defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information\n> Who is attacking here?\n\nLet me rephrase: W is a trusted third party, but we do not have *much* trust in them. (About as much as you can trust any global organization that may be subject to any country's legislation). So *if* that third party were compromised in any way, all they can do is\n\n* deny service to their users\n* perform their duties as intended but monitor which parties V apparently saw which parties U (kind of necessary because that's what they're used to do, it's just that they should tell the *V*) or relay that information\n* \"wardrive\", going around and correlate messages 1 with physical locations (and thus devices); unlike any untrusted party they can not only see *that* there is a party U around, but which user (eg. company) it belongs to\n\n> I don't understand this part, as V already does not use the voucher ([Section 4.6.2.2](https://www.ietf.org/archive/id/draft-ietf-lake-authz-01.html#section-4.6.2.2)) -- the voucher's intended audience is U.\nV simply knows that the authorization has worked by receiving an \"ok\" answer from W (we need to actually define this, as tracked in https://github.com/lake-wg/authz/issues/19).\n\nThe point here is that there can be cases where W's statement towards V is not \"That peer is OK, here is a voucher to send on\", but it is \"That peer is OK, *and no need to send any voucher*\" (because U is already equipped to process V's ID_CRED_V -- it's just that V is holding back on sending ID_CRED_V until W said that U is authorized to receive ID_CRED_V). This is not an error case, it's more a case of \"yes that's null and that's fine, no need to send it\".\n\nI'm not so much worried about the V-W leg here -- IIUC, neither the cryptographic parts nor the U-V leg rely on that precise REST interface. But that U-V can go on after U sent an ELA EAD even if there is no response ELA EAD (because W knows the concrete application and can confidently know that there is nothing for U to process further) is something that the original EAD item description should enable.\n\n---\n\nSo as I said, I hope this could be allowed in the document.\n\nSpeaking of allowing things: Anything wrong with having multiple voucher requests in the EAD1?",
           "createdAt": "2025-05-23T16:54:46Z",
           "updatedAt": "2025-05-23T16:54:46Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thanks for the clarifications. Some comments:\n\n1. if the Voucher is there, and gets processed normally, is it doing any harm? is it preventing this use case to be implemented?\n2. `Anything wrong with having multiple voucher requests?` I don't know what is the use case for that, but one technically could put more EAD_1 items in the EAD_1 field, and each could have a different LOC_W/ENC_U_INFO.",
+          "createdAt": "2025-05-26T12:00:16Z",
+          "updatedAt": "2025-05-26T12:00:16Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> if the Voucher is there, and gets processed normally, is it doing any harm?\n\nNo strong harm, it's just two extra bytes that are sent without technical need, and describing an application of it would be \"Please ignore that EAD option (or maybe raise an error if there's more than 0 bytes in it), it's really just there because the base spec expects something to be in there and we can't leave it out\", and that'd seem a bit ugly.\n\n> more than one EAD_1 items\n\nI wasn't sure if it's ruled out; if it isn't ruled out, that's fine.\n\nUse case is mainly for reliability -- eg. in the enrollment case, a vendor picks MASAs because they are more longlived, but everything has a chance of crashing, and if a device were to sit with two MASAs, there's twice (yes mathematicians around please don't fry me!) the chance one gets hacked, but also twice (yes that's a different twice actually) the chance one survives the next tech bubble burst. (Or, in the identity protection case: I don't want my information flow to stand still just b/c that service decided it can't do business with me any more).",
+          "createdAt": "2025-05-26T12:12:17Z",
+          "updatedAt": "2025-05-26T12:12:17Z"
+        },
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> One way to solve this is to defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information, and promise to only relay that to other parties in your organization. The organization may run that on their own (in which case they'd probably pick LOC_W=\"\" and take the risk of just seeing many decryption failures whenever they encounter devices of someone else who does the same), or they may use any global provider, where the number of providers should be smaller than the number of organizations using them in any area (maybe 5=len(\"GAMAM\")...).\n\nIt seems that this is a useful service/thiing, which ELA would be one specific user of.\nDULT is indeed dealing with this problem, and it's a hard nut to crack in a general way.\nI think that the things DULT will do will not be generally applicable, however.\n",
+          "createdAt": "2025-05-26T14:50:57Z",
+          "updatedAt": "2025-05-26T14:50:57Z"
         }
       ]
     },
