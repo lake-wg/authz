@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-24T01:53:31.538801+00:00",
+  "timestamp": "2025-06-26T01:52:25.862835+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -731,9 +731,17 @@
       "labels": [],
       "body": "(This issue is a replication of https://mailarchive.ietf.org/arch/msg/lake/ho1AMXUOEQEuEvoxDu_nfOINZpI considering input from there and )\n\nThe current draft (tacitly, unless I missed it) assumes that the keys V and W (i.e., the private keys of the domain authenticator and the private key of the enrollment server) are distinct.\n\nThis is a sensible assumption to make under the premise of the pledge-domain-enrollment role distribution, but as discussed around IETF121, I'd hope that the protocol describes the data sent and the requirements, whereas pledge-domain-enrollment is one application but the components can be reused. (This is particularly important because the seccons of 9528 say that \"Any new uses of EAD should be subject to careful review.\" \u2013 defining new EAD items is dangerous if their mechanism reaches into the EDHOC secrets as this spec does, so let's get the 3-party dance right here for all users of the same cryptographic tricks).\n\nIn other applications, parties V and W may be held by the same host, and using the same key there could be operationally beneficial.\n\nPlease clarify in the document whether there is any cryptographic danger of using identical keys V and W.\n\nMy impression is that there is no danger as long as (and then this document can make this a requirement) the info values for the G_X W = G_W X exporter are distinct from those of the G_X V = G_V W exporter defined in EDHOC.",
       "createdAt": "2025-06-23T14:10:10Z",
-      "updatedAt": "2025-06-23T14:10:10Z",
+      "updatedAt": "2025-06-24T19:24:58Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I don't quite understand V==W.     I don't see the use case.    If V==W, then that supposes that the Registrar was involved\nI have no objection to it, conceptually.  It's just a degenerate situation.    \nFor the Registrar to have the W private key, (distinct from V), could result from the manufacturer going out of business, and then providing the W private key under escrow to the customer.  That probably shouldn't be done for more than one customer, but it could be better than alternatives.\nI agree that we should make sure that any derived keys are unique, and I imagine that this could be done by making sure we are using an appropriate PRF to derive keys. I haven't looked into that myself; trusting Goran eats and sleeps that kind of stuff.\n",
+          "createdAt": "2025-06-24T19:24:58Z",
+          "updatedAt": "2025-06-24T19:24:58Z"
+        }
+      ]
     }
   ],
   "pulls": [
