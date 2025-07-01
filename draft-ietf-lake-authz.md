@@ -1031,8 +1031,10 @@ IANA has added the media types "application/lake-authz-voucherrequest+cbor" to t
 IANA has added the following Content-Format number in the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".
 
 | Content Type | Content Encoding | ID | Reference |
-| application/lake-authz-voucherrequest+cbor | - | TBD2 | [[this document]] |
+| application/lake-authz-voucherrequest+cbor | - | TBD3 | [[this document]] |
 {: #coap-content-formats title="Addition to the CoAP Content-Formats registry" cols="l l l"}
+
+Note for IANA reviewers: the preferred value range is 0-255 (Expert Review).
 
 --- back
 
