@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-26T01:52:25.862835+00:00",
+  "timestamp": "2025-07-01T02:04:08.213431+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -458,7 +458,7 @@
       "labels": [],
       "body": "I'm not fully sure where this should go, but authz is probably a good starting point, because it is part of the solution I have in mind right now.\n\nConsider two parties establishing a connection where both have sensitive identities (in terms of being tracked, of ownership, and both actively solicit connections continuously).\nAs an example, a service worker's phone might be constantly listening for beacons of installed equipment, which would report their latest logs, but neither do we want to allow tracking of the worker by identity or affiliation, nor do we want that arbitrary people driving through the city can map where they have equipment installed.\n(I figure airtags probably do something similar, but it's easier when reporting your manufacturer just is 2-3 bits of information).\n\nOne way to solve this is to defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information, and promise to only relay that to other parties in your organization. The organization may run that on their own (in which case they'd probably pick LOC_W=\"\" and take the risk of just seeing many decryption failures whenever they encounter devices of someone else who does the same), or they may use any global provider, where the number of providers should be smaller than the number of organizations using them in any area (maybe 5=len(\"GAMAM\")...).\n\nUsing authz, this could be used like this:\n(U = machine, V = phone, W = trustservice; as part of their enrollment, U has learned the public key of W and W knows the mapping from ID_U to CRED_U plus which account this is on, V has a secure channel with W associated with a customer account)\n* U sends message 1 with its ID_U\n* V sends the ENC_U_INFO to W\n* W verifies that V is on the same customer account as U, and returns CRED_U as well as a voucher response.\n  I'm not sure we even need to use the voucher here -- all that V needed to know that this is \"one of its own\", and knowing this it can now send its CRED_V (probably by value), and that will suffice to U\n* V sends its CRED_U\n* U recognizes the CRED_U and ... either sends a KID ID_CRED_V which suffices for this V, or if it turns out that V didn't contact W and just was generous with its CRED_V, maybe V sent something to ask for the full certificate.\n\nIs that in scope as an application for authz? I think it'd work with authz as-is, and at most need some wording that \"it is fine if the voucher response comes back OK without containing a voucher, V should then just continue like that\". (Maybe the voucher is also just empty, and in the last step U takes that as the hint that even though V sent a credential, itself it can just send ID_CRED_I=b\"\").",
       "createdAt": "2024-03-21T16:53:08Z",
-      "updatedAt": "2025-06-23T14:23:49Z",
+      "updatedAt": "2025-06-30T14:17:27Z",
       "closedAt": null,
       "comments": [
         {
@@ -523,6 +523,13 @@
           "body": "> One way to solve this is to defer to a third party that is trusted with exactly one task: They can, when actively attacking (or just being used) read your identifying information, and promise to only relay that to other parties in your organization. The organization may run that on their own (in which case they'd probably pick LOC_W=\"\" and take the risk of just seeing many decryption failures whenever they encounter devices of someone else who does the same), or they may use any global provider, where the number of providers should be smaller than the number of organizations using them in any area (maybe 5=len(\"GAMAM\")...).\n\nIt seems that this is a useful service/thiing, which ELA would be one specific user of.\nDULT is indeed dealing with this problem, and it's a hard nut to crack in a general way.\nI think that the things DULT will do will not be generally applicable, however.\n",
           "createdAt": "2025-05-26T14:50:57Z",
           "updatedAt": "2025-05-26T14:50:57Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "So, ELA is about authorization. We defined it as being applicable for Enrollment. After reading the proposal in this issue, I think it can be extended and used for such an identity protection service, which is a good thing.\nThat said, I don't see a strong point in making the Voucher optional in order to better support the use case of ELA for identity protection. \nNote that by making the Voucher optional, then it needs to be implemented and handled across implementations that must interoperate. Also note that we want simplicity, especially in the U side, so that the implementation is as lean as possible. ",
+          "createdAt": "2025-06-30T14:17:27Z",
+          "updatedAt": "2025-06-30T14:17:27Z"
         }
       ]
     },
@@ -731,7 +738,7 @@
       "labels": [],
       "body": "(This issue is a replication of https://mailarchive.ietf.org/arch/msg/lake/ho1AMXUOEQEuEvoxDu_nfOINZpI considering input from there and )\n\nThe current draft (tacitly, unless I missed it) assumes that the keys V and W (i.e., the private keys of the domain authenticator and the private key of the enrollment server) are distinct.\n\nThis is a sensible assumption to make under the premise of the pledge-domain-enrollment role distribution, but as discussed around IETF121, I'd hope that the protocol describes the data sent and the requirements, whereas pledge-domain-enrollment is one application but the components can be reused. (This is particularly important because the seccons of 9528 say that \"Any new uses of EAD should be subject to careful review.\" \u2013 defining new EAD items is dangerous if their mechanism reaches into the EDHOC secrets as this spec does, so let's get the 3-party dance right here for all users of the same cryptographic tricks).\n\nIn other applications, parties V and W may be held by the same host, and using the same key there could be operationally beneficial.\n\nPlease clarify in the document whether there is any cryptographic danger of using identical keys V and W.\n\nMy impression is that there is no danger as long as (and then this document can make this a requirement) the info values for the G_X W = G_W X exporter are distinct from those of the G_X V = G_V W exporter defined in EDHOC.",
       "createdAt": "2025-06-23T14:10:10Z",
-      "updatedAt": "2025-06-24T19:24:58Z",
+      "updatedAt": "2025-06-30T13:08:03Z",
       "closedAt": null,
       "comments": [
         {
@@ -740,6 +747,13 @@
           "body": "I don't quite understand V==W.     I don't see the use case.    If V==W, then that supposes that the Registrar was involved\nI have no objection to it, conceptually.  It's just a degenerate situation.    \nFor the Registrar to have the W private key, (distinct from V), could result from the manufacturer going out of business, and then providing the W private key under escrow to the customer.  That probably shouldn't be done for more than one customer, but it could be better than alternatives.\nI agree that we should make sure that any derived keys are unique, and I imagine that this could be done by making sure we are using an appropriate PRF to derive keys. I haven't looked into that myself; trusting Goran eats and sleeps that kind of stuff.\n",
           "createdAt": "2025-06-24T19:24:58Z",
           "updatedAt": "2025-06-24T19:24:58Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "As far as I remember, in IETF 121 we agreed that ELA should describe an Authorization protocol on top of EDHOC, with Enrollment being a particular use case. On top of that, we also discussed how the reverse flow would fit there. Currently, the draft does incorporate changes resulting from both discussions. \n\nRegarding co-locating V and W, the current state is, you can just run both as different services in a single machine. One benefit of that is that you can just reuse any existing implementation of ELA and it will just work. \nIf V and W *are* the same, then I assume you need a particular implementation which supports coupling both modules. \n\n> using the same key there could be operationally beneficial\n\nI don't see a significant operational benefit in managing one key pair vs. managing two key pairs, especially given that this is an optional (as in \"it also could work like this\") mode. I think having a single key pair for the use case of V == W could be more elegant, but I don't see it bringing a significant operational benefit. ",
+          "createdAt": "2025-06-30T13:08:03Z",
+          "updatedAt": "2025-06-30T13:08:03Z"
         }
       ]
     }
