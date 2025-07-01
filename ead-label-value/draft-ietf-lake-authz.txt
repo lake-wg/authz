@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 4 September 2025                                     M. Vučinić
+Expires: 2 January 2026                                       M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                            3 March 2025
+                                                             1 July 2025
 
 
 Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 September 2025.
+   This Internet-Draft will expire on 2 January 2026.
 
 Copyright Notice
 
@@ -1375,6 +1375,9 @@ U                              V                                       W
 
    The ead_label = TBD2 corresponds to ead_value = Voucher, and can be
    carried in either EAD_2 or EAD_3, see Section 4.8.
+
+   Note for IANA reviewers: the preferred value range is 0-23 (Standards
+   Action with Expert Review).
 
 7.2.  The Well-Known URI Registry
 
