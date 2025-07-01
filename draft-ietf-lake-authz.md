@@ -1024,7 +1024,7 @@ IANA has added the media types "application/lake-authz-voucherrequest+cbor" to t
 * Intended usage: COMMON
 * Restrictions on usage: N/A
 * Author: LAKE WG
-* Change Controller: IESG
+* Change Controller: IETF
 
 ## CoAP Content-Formats Registry
 
