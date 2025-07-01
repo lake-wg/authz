@@ -990,6 +990,7 @@ IANA has registered the following entry in "The Well-Known URI Registry", using 
 * URI suffix: lake-authz
 * Change controller: IETF
 * Specification document: \[\[this document\]\]
+* Status: permanent
 * Related information: None
 
 ## Well-Known Name Under ".arpa" Name Space
