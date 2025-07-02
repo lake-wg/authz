@@ -983,6 +983,8 @@ The ead_label = TBD1 corresponds to the ead_value = Voucher_Info, which can be c
 
 The ead_label = TBD2 corresponds to ead_value = Voucher, and can be carried in either EAD_2 or EAD_3, see {{reverse-u-responder}}.
 
+Note for IANA reviewers: the preferred value range is 0-23 (Standards Action with Expert Review).
+
 ## The Well-Known URI Registry
 
 IANA has registered the following entry in "The Well-Known URI Registry", using the template from {{RFC8615}}:
