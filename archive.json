@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-01T02:04:08.213431+00:00",
+  "timestamp": "2025-07-03T01:53:16.739433+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -706,25 +706,41 @@
       "labels": [],
       "body": "Reproducing the email received:\n\n---\n\nBefore the IETF meeting, we check working group agendas for documents with IANA-related issues. Notes about this document:\n\nhttps://datatracker.ietf.org/doc/html/draft-ietf-lake-authz-04\n\n1) Section 7.1: Please specify the preferred value range (0-23 or 24-65535). See\n\nhttps://www.iana.org/assignments/edhoc\n\n2) Section 7.2: Please add the \u201cStatus\u201d field for the Well-Known URI.\n\n3) Section 7.3: Please add the \u201cDomain Name Reservation Considerations\u201d subsection required by RFC 6761 (see Section 5) for the lake-authz.arpa registration.\n\n4) Section 7.4: Please replace the IESG with the IETF in the media type\u2019s change controller field.\n\n5) Section 7.5: Please specify a preferred value range the CoAP Content-Format registration. See\n\nhttps://www.iana.org/assignments/core-parameters\n\nIf you have any questions, just let us know. If you'd like to talk in person, you can find us next to the RFC Editor's table from Monday through Thursday. You can also request another review at any time by contacting us at iana@iana.org.\n\nFor more information about IANA Considerations section requirements, please see\n\nhttps://www.iana.org/help/protocol-registration\n",
       "createdAt": "2025-03-16T15:21:44Z",
-      "updatedAt": "2025-03-16T15:21:44Z",
+      "updatedAt": "2025-07-01T08:04:39Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Regarding comment 3 (_Please add the \u201cDomain Name Reservation Considerations\u201d_):\n\n- We are asked to answer the 7 questions [listed here](https://www.rfc-editor.org/rfc/rfc6761.html#section-5). Before starting to do that, I want to ask: do we need this .arpa reservation? why? I understand the purpose of the .arpa domain name is not IP resolution, but DNS-based discovery. So maybe it is useful, but I want to consult the co-authors. I checked RFCs like EDHOC and BRSKI and they do not do this reservation. \n\ncc @gselander @malishav @mcr ",
+          "createdAt": "2025-07-01T08:04:39Z",
+          "updatedAt": "2025-07-01T08:04:39Z"
+        }
+      ]
     },
     {
       "number": 52,
       "id": "I_kwDOKiCa6c6uO3OX",
       "title": "Define EAD label values to replace TBD1, TBD2",
       "url": "https://github.com/lake-wg/authz/issues/52",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-03-16T15:23:06Z",
-      "updatedAt": "2025-03-16T15:23:06Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-07-01T08:35:31Z",
+      "closedAt": "2025-07-01T08:35:31Z",
+      "comments": [
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Closing as obsolete, IANA will do the assignments.",
+          "createdAt": "2025-07-01T08:35:31Z",
+          "updatedAt": "2025-07-01T08:35:31Z"
+        }
+      ]
     },
     {
       "number": 53,
@@ -756,6 +772,102 @@
           "updatedAt": "2025-06-30T13:08:03Z"
         }
       ]
+    },
+    {
+      "number": 57,
+      "id": "I_kwDOKiCa6c6-ct-V",
+      "title": "Editor's note: Consider to include an example of serialized internal state.",
+      "url": "https://github.com/lake-wg/authz/issues/57",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See https://www.ietf.org/archive/id/draft-ietf-lake-authz-04.html#section-4.3 ",
+      "createdAt": "2025-07-02T09:14:34Z",
+      "updatedAt": "2025-07-02T09:14:34Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 58,
+      "id": "I_kwDOKiCa6c6-cuMb",
+      "title": "Editor's note: Add more context to external_aad.",
+      "url": "https://github.com/lake-wg/authz/issues/58",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See https://www.ietf.org/archive/id/draft-ietf-lake-authz-04.html#section-4.4.1",
+      "createdAt": "2025-07-02T09:14:53Z",
+      "updatedAt": "2025-07-02T09:14:53Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 59,
+      "id": "I_kwDOKiCa6c6-cvGp",
+      "title": "Editor's note: interoperability of V supporting one or both flows",
+      "url": "https://github.com/lake-wg/authz/issues/59",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See https://www.ietf.org/archive/id/draft-ietf-lake-authz-04.html#section-4.8.3",
+      "createdAt": "2025-07-02T09:16:09Z",
+      "updatedAt": "2025-07-02T09:16:09Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 60,
+      "id": "I_kwDOKiCa6c6-cvwe",
+      "title": "Editor's note: TH_2 is internal EDHOC state",
+      "url": "https://github.com/lake-wg/authz/issues/60",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See https://www.ietf.org/archive/id/draft-ietf-lake-authz-04.html#section-4.8.4\n\nI think we discussed that it is all public information anyway, and it is not a problem. To be double-checked, and if yes, remove that note.",
+      "createdAt": "2025-07-02T09:17:04Z",
+      "updatedAt": "2025-07-02T09:17:04Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 61,
+      "id": "I_kwDOKiCa6c6-cwFm",
+      "title": "Editor's note: Clarify that performing TLS handshake is not necessary for each device request",
+      "url": "https://github.com/lake-wg/authz/issues/61",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See https://www.ietf.org/archive/id/draft-ietf-lake-authz-04.html#section-5.1",
+      "createdAt": "2025-07-02T09:17:32Z",
+      "updatedAt": "2025-07-02T09:17:32Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 62,
+      "id": "I_kwDOKiCa6c6-cxAg",
+      "title": "Editor's note: dropping message_1 actually conflicts with the EAD field being critical",
+      "url": "https://github.com/lake-wg/authz/issues/62",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See https://www.ietf.org/archive/id/draft-ietf-lake-authz-04.html#appendix-A.1\n\nI am pretty sure we discussed that this is a non-issue when handled at the network layer (because broadcast messages should not have an ack anyway).",
+      "createdAt": "2025-07-02T09:18:49Z",
+      "updatedAt": "2025-07-02T09:18:49Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -2462,6 +2574,101 @@
       "mergeCommit": {
         "oid": "b36dc1de0403696846c298a39f8f2047b09ece94"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 54,
+      "id": "PR_kwDOKiCa6c6c1hl3",
+      "title": "Add note for IANA regarding preferred value range of EAD labels",
+      "url": "https://github.com/lake-wg/authz/pull/54",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #52, addresses comment in #51.\r\n\r\n@gselander, I am not sure if the correct procedure is to specify concrete EAD labels now, directly in the draft.\r\n\r\nNevertheless, I checked the [IANA EDHOC External Authorization Data Registry](https://www.iana.org/assignments/edhoc/edhoc.xhtml#edhoc-ead) and the next available label is 1, so I am proposing to use 1 and 2 for Voucher_Info and Voucher, respectively. \r\n\r\nPlease let me know whether this is the right way to proceed or some adjustment is needed.",
+      "createdAt": "2025-07-01T07:38:53Z",
+      "updatedAt": "2025-07-02T08:49:57Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b36dc1de0403696846c298a39f8f2047b09ece94",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "ead-label-value",
+      "headRefOid": "7bc0ae209592fc5053447247dfc5c34172c6c18c",
+      "closedAt": "2025-07-02T08:49:56Z",
+      "mergedAt": "2025-07-02T08:49:56Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "c7ad537b455b09268bb75d7087001a6af13d1a63"
+      },
+      "comments": [
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "These numbers are assigned by IANA during the review process, please leave them unassigned. (It is also possible to request \"early allocation\", in that case IANA performs preliminary assignment earlier in the review process and then we can insert those values in the draft.)\r\n",
+          "createdAt": "2025-07-01T07:45:08Z",
+          "updatedAt": "2025-07-01T07:45:08Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thanks for the reply. I reverted my change, and pushed instead a note for IANA indicating the preferred value range, as asked in their comment listed in #51. ",
+          "createdAt": "2025-07-01T08:30:57Z",
+          "updatedAt": "2025-07-01T08:31:53Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 55,
+      "id": "PR_kwDOKiCa6c6c2bk3",
+      "title": "Addressing IANA review comments",
+      "url": "https://github.com/lake-wg/authz/pull/55",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Address comments from #51:\r\n\r\n\r\n1) :heavy_check_mark:  :arrow_right:  addressed in PR #54 \r\n\r\n2) :heavy_check_mark:  Section 7.2: Please add the \u201cStatus\u201d field for the Well-Known URI.\r\n\r\n3) :warning: [under discussion in #51]  Section 7.3: Please add the \u201cDomain Name Reservation Considerations\u201d subsection\r\n\r\n4) :heavy_check_mark:  Section 7.4: Please replace the IESG with the IETF in the media type\u2019s change controller field.\r\n\r\n5) :heavy_check_mark:  Section 7.5: Please specify a preferred value range the CoAP Content-Format registration. \r\n",
+      "createdAt": "2025-07-01T08:46:17Z",
+      "updatedAt": "2025-07-01T08:46:18Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "b36dc1de0403696846c298a39f8f2047b09ece94",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "iana-review",
+      "headRefOid": "160cb12e64fab7f8ef80163b315d9e2b676fe6e8",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 56,
+      "id": "PR_kwDOKiCa6c6dDD4_",
+      "title": "Update Acknowledgments section",
+      "url": "https://github.com/lake-wg/authz/pull/56",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-07-02T09:12:17Z",
+      "updatedAt": "2025-07-02T09:12:18Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "c7ad537b455b09268bb75d7087001a6af13d1a63",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "update-acks",
+      "headRefOid": "754fc3d54d9a4ace85827e664e4c4f92963eb089",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
