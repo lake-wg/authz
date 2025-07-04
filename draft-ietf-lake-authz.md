@@ -892,16 +892,18 @@ If the authentication credential CRED_V cannot be used in a TLS handshake, e.g.,
 V MUST then perform an EDHOC session over the TLS connection proving to W the possession of the private key corresponding to CRED_V.
 Performing the EDHOC session is only necessary if V did not authenticate with CRED_V in the TLS handshake with W.
 
-Editor's note: Clarify that performing TLS handshake is not necessary for each device request; if there already is a TLS connection between V and W that should be reused. Similar considerations for 5.2 and 5.3.
-
+Since the relationship between V and W is long-lived, it is RECOMMENDED to establish the TLS connection once and reuse it for multiple VREQ/VRES exchanges.
+While a policy for renewal of the TLS connection should be applied, it is out of scope of this document.
 
 ## Scheme "coaps"
 In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the resources defined in {{uris}} using CoAP.
 The normative requirements in {{scheme-https}} on performing the DTLS handshake and EDHOC session remain the same, except that TLS is replaced with DTLS.
+As in {{scheme-https}}, it is RECOMMENDED to allow reuse of the DTLS session.
 
 ## Scheme "coap"
 In case the scheme indicates "coap", V SHOULD perform an EDHOC session with W, as specified in {{Appendix A of RFC9528}} and access the resources defined in {{uris}} using OSCORE and CoAP.
 The authentication credential in this EDHOC session MUST be CRED_V.
+As in {{scheme-https}}, it is RECOMMENDED to allow reuse of the EDHOC session.
 
 ## URIs {#uris}
 
