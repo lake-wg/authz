@@ -1304,7 +1304,25 @@ The authenticator playing the role of the {{RFC9031}} JRC obtains the device ide
 Flight 4 is the OSCORE response carrying CoJP response message.
 The message is processed as specified in {{Section 8.4.2 of RFC9031}}.
 
-# Examples
+# Example of opaque_state
+
+As per {{stateless-v}}, V may act statelessly and transmit a opaque_state to W during the VREQ call.
+The example below contains an IPv4 address, a port number, and a timestamp, serialized as CBOR:
+
+~~~
+83             # array(3)
+   84          # array(4)
+      18 C0    # unsigned(192)
+      18 A8    # unsigned(168)
+      00       # unsigned(0)
+      05       # unsigned(5)
+   19 5A18     # unsigned(23064)
+   1A 6867EEE4 # unsigned(1751641828)
+~~~
+
+The above plaintext state can be encrypted using COSE.
+
+# Examples of protocol execution
 This section presents high level examples of the protocol execution.
 
 Note: the examples below include samples of access policies used by W. These are provided for the sake of completeness only, since the authorization mechanism used by W is out of scope in this document.
