@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 3 January 2026                                       M. Vučinić
+Expires: 5 January 2026                                       M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                             2 July 2025
+                                                             4 July 2025
 
 
 Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 January 2026.
+   This Internet-Draft will expire on 5 January 2026.
 
 Copyright Notice
 
@@ -2034,7 +2034,9 @@ Acknowledgments
 
    The authors sincerely thank Aurelio Schellenbaum for his contribution
    in the initial phase of this work, and Marco Tiloca for extensively
-   reviewing the document.
+   reviewing the document.  We also thank Christian Amsüss for his
+   active participation in discussions that led to improvements in the
+   document.
 
    Work on this document has in part been supported by the Horizon
    Europe Framework Programme project OpenSwarm (grant agreement No.
