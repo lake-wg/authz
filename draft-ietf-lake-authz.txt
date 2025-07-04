@@ -1390,6 +1390,8 @@ U                              V                                       W
 
    *  Specification document: [[this document]]
 
+   *  Status: permanent
+
    *  Related information: None
 
 7.3.  Well-Known Name Under ".arpa" Name Space
@@ -1445,7 +1447,7 @@ U                              V                                       W
 
    *  Author: LAKE WG
 
-   *  Change Controller: IESG
+   *  Change Controller: IETF
 
 7.5.  CoAP Content-Formats Registry
 
@@ -1457,11 +1459,14 @@ U                              V                                       W
      | Content Type                   | Content  | ID   | Reference  |
      |                                | Encoding |      |            |
      +================================+==========+======+============+
-     | application/lake-authz-        | -        | TBD2 | [[this     |
+     | application/lake-authz-        | -        | TBD3 | [[this     |
      | voucherrequest+cbor            |          |      | document]] |
      +--------------------------------+----------+------+------------+
 
            Table 3: Addition to the CoAP Content-Formats registry
+
+   Note for IANA reviewers: the preferred value range is 0-255 (Expert
+   Review).
 
 8.  References
 
