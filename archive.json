@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-03T01:53:16.739433+00:00",
+  "timestamp": "2025-07-06T02:01:32.541150+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -706,7 +706,7 @@
       "labels": [],
       "body": "Reproducing the email received:\n\n---\n\nBefore the IETF meeting, we check working group agendas for documents with IANA-related issues. Notes about this document:\n\nhttps://datatracker.ietf.org/doc/html/draft-ietf-lake-authz-04\n\n1) Section 7.1: Please specify the preferred value range (0-23 or 24-65535). See\n\nhttps://www.iana.org/assignments/edhoc\n\n2) Section 7.2: Please add the \u201cStatus\u201d field for the Well-Known URI.\n\n3) Section 7.3: Please add the \u201cDomain Name Reservation Considerations\u201d subsection required by RFC 6761 (see Section 5) for the lake-authz.arpa registration.\n\n4) Section 7.4: Please replace the IESG with the IETF in the media type\u2019s change controller field.\n\n5) Section 7.5: Please specify a preferred value range the CoAP Content-Format registration. See\n\nhttps://www.iana.org/assignments/core-parameters\n\nIf you have any questions, just let us know. If you'd like to talk in person, you can find us next to the RFC Editor's table from Monday through Thursday. You can also request another review at any time by contacting us at iana@iana.org.\n\nFor more information about IANA Considerations section requirements, please see\n\nhttps://www.iana.org/help/protocol-registration\n",
       "createdAt": "2025-03-16T15:21:44Z",
-      "updatedAt": "2025-07-01T08:04:39Z",
+      "updatedAt": "2025-07-04T14:28:27Z",
       "closedAt": null,
       "comments": [
         {
@@ -715,6 +715,20 @@
           "body": "Regarding comment 3 (_Please add the \u201cDomain Name Reservation Considerations\u201d_):\n\n- We are asked to answer the 7 questions [listed here](https://www.rfc-editor.org/rfc/rfc6761.html#section-5). Before starting to do that, I want to ask: do we need this .arpa reservation? why? I understand the purpose of the .arpa domain name is not IP resolution, but DNS-based discovery. So maybe it is useful, but I want to consult the co-authors. I checked RFCs like EDHOC and BRSKI and they do not do this reservation. \n\ncc @gselander @malishav @mcr ",
           "createdAt": "2025-07-01T08:04:39Z",
           "updatedAt": "2025-07-01T08:04:39Z"
+        },
+        {
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Geovane Fedrecheski ***@***.***> wrote:\n    > - We are asked to answer the 7 questions [listed\n    > here](https://www.rfc-editor.org/rfc/rfc6761.html#section-5). Before\n    > starting to do that, I want to ask: do we need this .arpa reservation?\n    > why? I understand the purpose of the .arpa domain name is not IP\n    > resolution, but DNS-based discovery. So maybe it is useful, but I want\n    > to consult the co-authors. I checked RFCs like EDHOC and BRSKI and they\n    > do not do this reservation.\n\narpa is not DNS-based discovery.... It's infrastructure, including reverse\nnames.  draft-ietf-emu-eap-arpa-07 is another example.\n\nEDHOC is too generic to have to pick something for the CoAP Host option.\nEDHOC users, like us, need that.\nBRSKI uses /.well-known/brski, and because of join proxies, says to ignore\nthe Host: header. Clients put whatever they like, or nothing, which HTTP\npermits.\n\nRFC9031 is the best model.\nSection 8.1.1, for the Uri-Host.\nThe Uri-Host option is mandatory in CoAP, but because U reaches V likely\nthrough a join-proxy, it doesn't know the name, or even the IPv6 address of\nV.\n\n--\n]               Never tell me the odds!                 | ipv6 mesh networks [\n]   Michael Richardson, Sandelman Software Works        |    IoT architect   [\n]     ***@***.***  http://www.sandelman.ca/        |   ruby on rails    [\n\n\n\n",
+          "createdAt": "2025-07-03T23:19:20Z",
+          "updatedAt": "2025-07-03T23:19:20Z"
+        },
+        {
+          "author": "geonnave",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@mcr thanks. I just sent PR #63 in response.",
+          "createdAt": "2025-07-04T14:28:27Z",
+          "updatedAt": "2025-07-04T14:28:27Z"
         }
       ]
     },
@@ -2625,20 +2639,324 @@
       "id": "PR_kwDOKiCa6c6c2bk3",
       "title": "Addressing IANA review comments",
       "url": "https://github.com/lake-wg/authz/pull/55",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Address comments from #51:\r\n\r\n\r\n1) :heavy_check_mark:  :arrow_right:  addressed in PR #54 \r\n\r\n2) :heavy_check_mark:  Section 7.2: Please add the \u201cStatus\u201d field for the Well-Known URI.\r\n\r\n3) :warning: [under discussion in #51]  Section 7.3: Please add the \u201cDomain Name Reservation Considerations\u201d subsection\r\n\r\n4) :heavy_check_mark:  Section 7.4: Please replace the IESG with the IETF in the media type\u2019s change controller field.\r\n\r\n5) :heavy_check_mark:  Section 7.5: Please specify a preferred value range the CoAP Content-Format registration. \r\n",
       "createdAt": "2025-07-01T08:46:17Z",
-      "updatedAt": "2025-07-01T08:46:18Z",
+      "updatedAt": "2025-07-04T08:06:34Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
       "baseRefOid": "b36dc1de0403696846c298a39f8f2047b09ece94",
       "headRepository": "geonnave/lake-authz",
       "headRefName": "iana-review",
       "headRefOid": "160cb12e64fab7f8ef80163b315d9e2b676fe6e8",
+      "closedAt": "2025-07-04T08:06:34Z",
+      "mergedAt": "2025-07-04T08:06:34Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "cf3d45cce22e8624b66e48efa1f46b1655e1c351"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c6x6pqJ",
+          "commit": {
+            "abbreviatedOid": "160cb12"
+          },
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-07-03T23:20:48Z",
+          "updatedAt": "2025-07-03T23:20:48Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 56,
+      "id": "PR_kwDOKiCa6c6dDD4_",
+      "title": "Update Acknowledgments section",
+      "url": "https://github.com/lake-wg/authz/pull/56",
+      "state": "MERGED",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-07-02T09:12:17Z",
+      "updatedAt": "2025-07-04T08:05:41Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "c7ad537b455b09268bb75d7087001a6af13d1a63",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "update-acks",
+      "headRefOid": "754fc3d54d9a4ace85827e664e4c4f92963eb089",
+      "closedAt": "2025-07-04T08:05:41Z",
+      "mergedAt": "2025-07-04T08:05:41Z",
+      "mergedBy": "geonnave",
+      "mergeCommit": {
+        "oid": "f4c77fd717cbd9ce504eda735c405f36f8d9a807"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c6x6z7C",
+          "commit": {
+            "abbreviatedOid": "754fc3d"
+          },
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-07-04T00:04:55Z",
+          "updatedAt": "2025-07-04T00:04:55Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 63,
+      "id": "PR_kwDOKiCa6c6ddOpf",
+      "title": "Add Considerations for .arpa domain",
+      "url": "https://github.com/lake-wg/authz/pull/63",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Solves item 3 of #51. \r\n\r\nI am not sure if I need to reproduce the questions here when the answer is \"No\", or if I should give more details. ",
+      "createdAt": "2025-07-04T14:27:43Z",
+      "updatedAt": "2025-07-04T19:17:40Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "cf3d45cce22e8624b66e48efa1f46b1655e1c351",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "iana-arpa-considerations",
+      "headRefOid": "62c360c967fbea3f9b41810e03374b9f119547cb",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c6yG6VZ",
+          "commit": {
+            "abbreviatedOid": "62c360c"
+          },
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-07-04T19:17:40Z",
+          "updatedAt": "2025-07-04T19:17:40Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 64,
+      "id": "PR_kwDOKiCa6c6ddS_L",
+      "title": "Remove Editor's Note about TH_2 in reverse flow",
+      "url": "https://github.com/lake-wg/authz/pull/64",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #60 ",
+      "createdAt": "2025-07-04T14:34:21Z",
+      "updatedAt": "2025-07-05T02:24:56Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "cf3d45cce22e8624b66e48efa1f46b1655e1c351",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "60-editors-note-th_2-is-internal-edhoc-state",
+      "headRefOid": "558513a7b177dabf92e1428e134faf3f87b2667b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c6yG6v0",
+          "commit": {
+            "abbreviatedOid": "558513a"
+          },
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-07-04T19:18:15Z",
+          "updatedAt": "2025-07-04T19:18:15Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKiCa6c6yJYb9",
+          "commit": {
+            "abbreviatedOid": "558513a"
+          },
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-07-05T02:24:56Z",
+          "updatedAt": "2025-07-05T02:24:56Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 65,
+      "id": "PR_kwDOKiCa6c6ddavU",
+      "title": "Interoperability of V: enforce regular flow and have reverse be optional",
+      "url": "https://github.com/lake-wg/authz/pull/65",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #59 ",
+      "createdAt": "2025-07-04T14:47:01Z",
+      "updatedAt": "2025-07-04T19:18:46Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "cf3d45cce22e8624b66e48efa1f46b1655e1c351",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "59-editors-note-interoperability-of-v-supporting-one-or-both-flows",
+      "headRefOid": "722f81903021814a2babd0d75ef6e7105790fff0",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c6yG7L4",
+          "commit": {
+            "abbreviatedOid": "722f819"
+          },
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-07-04T19:18:46Z",
+          "updatedAt": "2025-07-04T19:18:46Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 66,
+      "id": "PR_kwDOKiCa6c6ddrK0",
+      "title": "Add example opaque state for stateless V",
+      "url": "https://github.com/lake-wg/authz/pull/66",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #57 ",
+      "createdAt": "2025-07-04T15:15:15Z",
+      "updatedAt": "2025-07-04T19:21:40Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "cf3d45cce22e8624b66e48efa1f46b1655e1c351",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "57-editors-note-example-of-serialized-internal-state",
+      "headRefOid": "9d7114106e7ed43b9e96c62909ccdae8b74d78ba",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c6yG92p",
+          "commit": {
+            "abbreviatedOid": "9d71141"
+          },
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "When we did this in draft-ietf-anima-join-proxy, we realized that the *can* be encrypted, but what counts is that it's authenticated.   We were more bytes sensitive than I think the V->W connection here is, so COSE is fine, but probably we should say one can use COSE_Mac0, with a symmetric key known only to V.",
+          "createdAt": "2025-07-04T19:21:40Z",
+          "updatedAt": "2025-07-04T19:21:40Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 67,
+      "id": "PR_kwDOKiCa6c6deVmM",
+      "title": "Clarification about reuse of TLS in V<->W",
+      "url": "https://github.com/lake-wg/authz/pull/67",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #61 ",
+      "createdAt": "2025-07-04T16:50:11Z",
+      "updatedAt": "2025-07-05T02:21:46Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "cf3d45cce22e8624b66e48efa1f46b1655e1c351",
+      "headRepository": "geonnave/lake-authz",
+      "headRefName": "61-editors-note-tls-reuse",
+      "headRefOid": "6907fa61d16bb285d515e04cfd353520adcad22f",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c6yJVo3",
+          "commit": {
+            "abbreviatedOid": "6907fa6"
+          },
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-05T02:21:45Z",
+          "updatedAt": "2025-07-05T02:21:46Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "```suggestion\r\nThe relationship between V and W is long-lived.  HTTP/1.1 and higher support persistent connections, and SHOULD be used in order to reduce overhead if a flood of new devices need to be onboarded.  Support for TLS session resumptions tickets {{RFC8446, Section 2.2}} is appropriate for longer term associations.\r\nWhile a policy for renewal of the TLS connection should be applied, it is out of scope of this document.\r\n```\r\n\r\n{Do we really need to say anything?  This connection between non-constrained systems on non-challenged networks should not be controversial}\r\n",
+              "createdAt": "2025-07-05T02:21:45Z",
+              "updatedAt": "2025-07-05T02:21:46Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 68,
+      "id": "PR_kwDOKiCa6c6deYEr",
+      "title": "Solve editor note about dropping msg_1",
+      "url": "https://github.com/lake-wg/authz/pull/68",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #62 ",
+      "createdAt": "2025-07-04T16:57:18Z",
+      "updatedAt": "2025-07-04T16:57:19Z",
+      "baseRepository": "lake-wg/authz",
+      "baseRefName": "master",
+      "baseRefOid": "cf3d45cce22e8624b66e48efa1f46b1655e1c351",
+      "headRepository": "lake-wg/authz",
+      "headRefName": "62-editors-note-dropping-message_1",
+      "headRefOid": "d7dec432f65e6c7a78cd0d04c1f05ba7ba8613c3",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -2647,30 +2965,44 @@
       "reviews": []
     },
     {
-      "number": 56,
-      "id": "PR_kwDOKiCa6c6dDD4_",
-      "title": "Update Acknowledgments section",
-      "url": "https://github.com/lake-wg/authz/pull/56",
+      "number": 69,
+      "id": "PR_kwDOKiCa6c6dehUI",
+      "title": "Add more context to external_aad in Voucher_Info",
+      "url": "https://github.com/lake-wg/authz/pull/69",
       "state": "OPEN",
       "author": "geonnave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
-      "body": "",
-      "createdAt": "2025-07-02T09:12:17Z",
-      "updatedAt": "2025-07-02T09:12:18Z",
+      "body": "Fixes #58 \r\n\r\nI simply added more context from the EDHOC message_1, in addition to a fixed label for this specific message. I appreciate expert reviews on whether this really makes sense, cc @gselander @emanjon. ",
+      "createdAt": "2025-07-04T17:23:17Z",
+      "updatedAt": "2025-07-05T02:24:45Z",
       "baseRepository": "lake-wg/authz",
       "baseRefName": "master",
-      "baseRefOid": "c7ad537b455b09268bb75d7087001a6af13d1a63",
+      "baseRefOid": "cf3d45cce22e8624b66e48efa1f46b1655e1c351",
       "headRepository": "geonnave/lake-authz",
-      "headRefName": "update-acks",
-      "headRefOid": "754fc3d54d9a4ace85827e664e4c4f92963eb089",
+      "headRefName": "58-editors-note-add-more-context-to-external_aad",
+      "headRefOid": "dc5fceda637293929fdb40cb6f9f852bf7f2932d",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKiCa6c6yJYQi",
+          "commit": {
+            "abbreviatedOid": "dc5fced"
+          },
+          "author": "mcr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-07-05T02:24:45Z",
+          "updatedAt": "2025-07-05T02:24:45Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
