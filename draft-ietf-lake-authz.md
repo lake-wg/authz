@@ -1321,6 +1321,8 @@ The example below contains an IPv4 address, a port number, and a timestamp, seri
 ~~~
 
 The above plaintext state can be encrypted using COSE.
+Speficially, it is useful that the plaintext is not only encrypted but also authenticated.
+That can be achieved using COSE_Encrypt0 using an AEAD algorithm.
 
 # Examples of protocol execution
 This section presents high level examples of the protocol execution.
