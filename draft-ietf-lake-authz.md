@@ -892,7 +892,7 @@ If the authentication credential CRED_V cannot be used in a TLS handshake, e.g.,
 V MUST then perform an EDHOC session over the TLS connection proving to W the possession of the private key corresponding to CRED_V.
 Performing the EDHOC session is only necessary if V did not authenticate with CRED_V in the TLS handshake with W.
 
-Since the relationship between V and W is long-lived, it is RECOMMENDED to establish the TLS connection once and reuse it for multiple VREQ/VRES exchanges.
+The relationship between V and W is long-lived.  HTTP/1.1 and higher support persistent connections, and SHOULD be used in order to reduce overhead if a flood of new devices need to be onboarded.  Support for TLS session resumptions tickets {{RFC8446, Section 2.2}} is appropriate for longer term associations.
 While a policy for renewal of the TLS connection should be applied, it is out of scope of this document.
 
 ## Scheme "coaps"
