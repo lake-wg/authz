@@ -385,8 +385,6 @@ The encapsulated state MUST be protected using a uniformly-distributed (pseudo-)
 How V serializes and encrypts its internal state is out of scope in this specification.
 For example, V may use CBOR and COSE.
 
-Editor's note: Consider to include an example of serialized internal state.
-
 W sends to V the voucher together with the echoed message_1, as received from U, and V's internal state, see {{voucher_response}}.
 This allows V to act as a simple message relay until it has obtained the authorization from W to enroll U.
 The reception of a successful Voucher Response at V from W implies the authorization for V to enroll U.
@@ -450,8 +448,6 @@ where
 * C_I is the connection identifier of EDHOC message_1.
 
 The external_aad is wrapped in an enc_structure as defined in {{Section 5.3 of RFC9052}}.
-
-Editor's note: Add more context to external_aad.
 
 The derivation of K_1 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see OKM in {{reuse}}):
 
