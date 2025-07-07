@@ -1299,21 +1299,24 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-examples" class="internal xref">Examples</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
-                <p id="section-toc.1-1.11.2.1.1"><a href="#appendix-C.1" class="auto internal xref">C.1</a>.  <a href="#name-minimal" class="internal xref">Minimal</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-example-of-opaque_state" class="internal xref">Example of opaque_state</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
-                <p id="section-toc.1-1.11.2.2.1"><a href="#appendix-C.2" class="auto internal xref">C.2</a>.  <a href="#name-wrong-gateway" class="internal xref">Wrong gateway</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#appendix-D" class="auto internal xref">Appendix D</a>.  <a href="#name-examples-of-protocol-execut" class="internal xref">Examples of protocol execution</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
+                <p id="section-toc.1-1.12.2.1.1"><a href="#appendix-D.1" class="auto internal xref">D.1</a>.  <a href="#name-minimal" class="internal xref">Minimal</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
+                <p id="section-toc.1-1.12.2.2.1"><a href="#appendix-D.2" class="auto internal xref">D.2</a>.  <a href="#name-wrong-gateway" class="internal xref">Wrong gateway</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#appendix-D" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
-</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#appendix-E" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#appendix-E" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-F" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -3746,92 +3749,116 @@ The message is processed as specified in <span><a href="https://rfc-editor.org/r
 </div>
 </section>
 </div>
-<div id="examples">
+<div id="example-of-opaquestate">
 <section id="appendix-C">
-      <h2 id="name-examples">
-<a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
+      <h2 id="name-example-of-opaque_state">
+<a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-example-of-opaque_state" class="section-name selfRef">Example of opaque_state</a>
       </h2>
-<p id="appendix-C-1">This section presents high level examples of the protocol execution.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
-<p id="appendix-C-2">Note: the examples below include samples of access policies used by W. These are provided for the sake of completeness only, since the authorization mechanism used by W is out of scope in this document.<a href="#appendix-C-2" class="pilcrow">¶</a></p>
+<p id="appendix-C-1">As per <a href="#stateless-v" class="auto internal xref">Section 4.3</a>, V may act statelessly and transmit a opaque_state to W during the VREQ call.
+The example below contains an IPv4 address, a port number, and a timestamp, serialized as CBOR:<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-C-2">
+<pre>
+83             # array(3)
+   84          # array(4)
+      18 C0    # unsigned(192)
+      18 A8    # unsigned(168)
+      00       # unsigned(0)
+      05       # unsigned(5)
+   19 5A18     # unsigned(23064)
+   1A 6867EEE4 # unsigned(1751641828)
+</pre><a href="#appendix-C-2" class="pilcrow">¶</a>
+</div>
+<p id="appendix-C-3">The above plaintext state can be encrypted using COSE.
+Speficially, it is useful that the plaintext is not only encrypted but also authenticated.
+That can be achieved using COSE_Encrypt0 using an AEAD algorithm.<a href="#appendix-C-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="examples-of-protocol-execution">
+<section id="appendix-D">
+      <h2 id="name-examples-of-protocol-execut">
+<a href="#appendix-D" class="section-number selfRef">Appendix D. </a><a href="#name-examples-of-protocol-execut" class="section-name selfRef">Examples of protocol execution</a>
+      </h2>
+<p id="appendix-D-1">This section presents high level examples of the protocol execution.<a href="#appendix-D-1" class="pilcrow">¶</a></p>
+<p id="appendix-D-2">Note: the examples below include samples of access policies used by W. These are provided for the sake of completeness only, since the authorization mechanism used by W is out of scope in this document.<a href="#appendix-D-2" class="pilcrow">¶</a></p>
 <div id="example_minimal">
-<section id="appendix-C.1">
+<section id="appendix-D.1">
         <h3 id="name-minimal">
-<a href="#appendix-C.1" class="section-number selfRef">C.1. </a><a href="#name-minimal" class="section-name selfRef">Minimal</a>
+<a href="#appendix-D.1" class="section-number selfRef">D.1. </a><a href="#name-minimal" class="section-name selfRef">Minimal</a>
         </h3>
-<p id="appendix-C.1-1">This is a simple example that demonstrates a successful execution of ELA.<a href="#appendix-C.1-1" class="pilcrow">¶</a></p>
-<p id="appendix-C.1-2">Premises:<a href="#appendix-C.1-2" class="pilcrow">¶</a></p>
+<p id="appendix-D.1-1">This is a simple example that demonstrates a successful execution of ELA.<a href="#appendix-D.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-D.1-2">Premises:<a href="#appendix-D.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.1-3.1">
-            <p id="appendix-C.1-3.1.1">device u1 has ID_U = key id = 14<a href="#appendix-C.1-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-D.1-3.1">
+            <p id="appendix-D.1-3.1.1">device u1 has ID_U = key id = 14<a href="#appendix-D.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.1-3.2">
-            <p id="appendix-C.1-3.2.1">the access policy in W specifies, via a list of ID_U, that device u1 can enroll via any domain authenticator, i.e., the list contains ID_U = 14.
-In this case, the policy only specifies a restriction in terms of U, effectively allowing enrollment via any V.<a href="#appendix-C.1-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-D.1-3.2">
+            <p id="appendix-D.1-3.2.1">the access policy in W specifies, via a list of ID_U, that device u1 can enroll via any domain authenticator, i.e., the list contains ID_U = 14.
+In this case, the policy only specifies a restriction in terms of U, effectively allowing enrollment via any V.<a href="#appendix-D.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="appendix-C.1-4">Execution:<a href="#appendix-C.1-4" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="appendix-C.1-5">
-<li id="appendix-C.1-5.1">
-            <p id="appendix-C.1-5.1.1">device u1 discovers a gateway (v1) and tries to enroll<a href="#appendix-C.1-5.1.1" class="pilcrow">¶</a></p>
+<p id="appendix-D.1-4">Execution:<a href="#appendix-D.1-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="appendix-D.1-5">
+<li id="appendix-D.1-5.1">
+            <p id="appendix-D.1-5.1.1">device u1 discovers a gateway (v1) and tries to enroll<a href="#appendix-D.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.1-5.2">
-            <p id="appendix-C.1-5.2.1">gateway v1 identifies the zero-touch join attempt by checking that the label of EAD_1 = TBD1, and prepares a Voucher Request using the information contained in the value of EAD_1<a href="#appendix-C.1-5.2.1" class="pilcrow">¶</a></p>
+          <li id="appendix-D.1-5.2">
+            <p id="appendix-D.1-5.2.1">gateway v1 identifies the zero-touch join attempt by checking that the label of EAD_1 = TBD1, and prepares a Voucher Request using the information contained in the value of EAD_1<a href="#appendix-D.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.1-5.3">
-            <p id="appendix-C.1-5.3.1">upon receiving the request, W obtains ID_U = 14, authorizes the access, and replies with Voucher Response<a href="#appendix-C.1-5.3.1" class="pilcrow">¶</a></p>
+          <li id="appendix-D.1-5.3">
+            <p id="appendix-D.1-5.3.1">upon receiving the request, W obtains ID_U = 14, authorizes the access, and replies with Voucher Response<a href="#appendix-D.1-5.3.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
 </div>
 <div id="example_wrong_gateway">
-<section id="appendix-C.2">
+<section id="appendix-D.2">
         <h3 id="name-wrong-gateway">
-<a href="#appendix-C.2" class="section-number selfRef">C.2. </a><a href="#name-wrong-gateway" class="section-name selfRef">Wrong gateway</a>
+<a href="#appendix-D.2" class="section-number selfRef">D.2. </a><a href="#name-wrong-gateway" class="section-name selfRef">Wrong gateway</a>
         </h3>
-<p id="appendix-C.2-1">In this example, a device u1 tries to enroll a domain via gateway v1, but W denies the request because the pairing (u1, v1) is not configured in its access policies.<a href="#appendix-C.2-1" class="pilcrow">¶</a></p>
-<p id="appendix-C.2-2">This example also illustrates how the REJECT_INFO field of the EDHOC error Access Denied could be used, in this case to suggest that the device should select another gateway for the join procedure.<a href="#appendix-C.2-2" class="pilcrow">¶</a></p>
-<p id="appendix-C.2-3">Premises:<a href="#appendix-C.2-3" class="pilcrow">¶</a></p>
+<p id="appendix-D.2-1">In this example, a device u1 tries to enroll a domain via gateway v1, but W denies the request because the pairing (u1, v1) is not configured in its access policies.<a href="#appendix-D.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-D.2-2">This example also illustrates how the REJECT_INFO field of the EDHOC error Access Denied could be used, in this case to suggest that the device should select another gateway for the join procedure.<a href="#appendix-D.2-2" class="pilcrow">¶</a></p>
+<p id="appendix-D.2-3">Premises:<a href="#appendix-D.2-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.2-4.1">
-            <p id="appendix-C.2-4.1.1">devices and gateways communicate via Bluetooth Low Energy (BLE), therefore their network identifiers are MAC addresses (EUI-48)<a href="#appendix-C.2-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-D.2-4.1">
+            <p id="appendix-D.2-4.1.1">devices and gateways communicate via Bluetooth Low Energy (BLE), therefore their network identifiers are MAC addresses (EUI-48)<a href="#appendix-D.2-4.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.2-4.2">
-            <p id="appendix-C.2-4.2.1">device u1 has ID_U = key id = 14<a href="#appendix-C.2-4.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-D.2-4.2">
+            <p id="appendix-D.2-4.2.1">device u1 has ID_U = key id = 14<a href="#appendix-D.2-4.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.2-4.3">
-            <p id="appendix-C.2-4.3.1">there are 3 gateways in the radio range of u1:<a href="#appendix-C.2-4.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-D.2-4.3">
+            <p id="appendix-D.2-4.3.1">there are 3 gateways in the radio range of u1:<a href="#appendix-D.2-4.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.2-4.3.2.1">
-                <p id="appendix-C.2-4.3.2.1.1">v1 with MAC address = A2-A1-88-EE-97-75<a href="#appendix-C.2-4.3.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-D.2-4.3.2.1">
+                <p id="appendix-D.2-4.3.2.1.1">v1 with MAC address = A2-A1-88-EE-97-75<a href="#appendix-D.2-4.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.2-4.3.2.2">
-                <p id="appendix-C.2-4.3.2.2.1">v2 with MAC address = 28-0F-70-84-51-E4<a href="#appendix-C.2-4.3.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-D.2-4.3.2.2">
+                <p id="appendix-D.2-4.3.2.2.1">v2 with MAC address = 28-0F-70-84-51-E4<a href="#appendix-D.2-4.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.2-4.3.2.3">
-                <p id="appendix-C.2-4.3.2.3.1">v3 with MAC address = 39-63-C9-D0-5C-62<a href="#appendix-C.2-4.3.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-D.2-4.3.2.3">
+                <p id="appendix-D.2-4.3.2.3.1">v3 with MAC address = 39-63-C9-D0-5C-62<a href="#appendix-D.2-4.3.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li class="normal" id="appendix-C.2-4.4">
-            <p id="appendix-C.2-4.4.1">the access policy in W specifies, via a mapping of shape (ID_U; MAC1, MAC2, ...) that device u1 can only join via gateway v3, i.e., the mapping is: (14; 39-63-C9-D0-5C-62)<a href="#appendix-C.2-4.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-D.2-4.4">
+            <p id="appendix-D.2-4.4.1">the access policy in W specifies, via a mapping of shape (ID_U; MAC1, MAC2, ...) that device u1 can only join via gateway v3, i.e., the mapping is: (14; 39-63-C9-D0-5C-62)<a href="#appendix-D.2-4.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.2-4.5">
-            <p id="appendix-C.2-4.5.1">W is able to map the PoP key of the gateways to their respective MAC addresses<a href="#appendix-C.2-4.5.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-D.2-4.5">
+            <p id="appendix-D.2-4.5.1">W is able to map the PoP key of the gateways to their respective MAC addresses<a href="#appendix-D.2-4.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="appendix-C.2-5">Execution:<a href="#appendix-C.2-5" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="appendix-C.2-6">
-<li id="appendix-C.2-6.1">
-            <p id="appendix-C.2-6.1.1">device u1 tries to join via gateway v1, which forwards the request to W<a href="#appendix-C.2-6.1.1" class="pilcrow">¶</a></p>
+<p id="appendix-D.2-5">Execution:<a href="#appendix-D.2-5" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="appendix-D.2-6">
+<li id="appendix-D.2-6.1">
+            <p id="appendix-D.2-6.1.1">device u1 tries to join via gateway v1, which forwards the request to W<a href="#appendix-D.2-6.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.2-6.2">
-            <p id="appendix-C.2-6.2.1">W determines that MAC address A2-A1-88-EE-97-75 is not in the access policy mapping, and replies with an error. The error_content has REJECT_TYPE = 1, and the plaintext OPAQUE_INFO (used to compute the encrypted REJECT_INFO) specifies a list of suggested gateways = [h'3963C9D05C62']. The single element in the list is the 6-byte MAC address of v3, serialized as a bstr.<a href="#appendix-C.2-6.2.1" class="pilcrow">¶</a></p>
+          <li id="appendix-D.2-6.2">
+            <p id="appendix-D.2-6.2.1">W determines that MAC address A2-A1-88-EE-97-75 is not in the access policy mapping, and replies with an error. The error_content has REJECT_TYPE = 1, and the plaintext OPAQUE_INFO (used to compute the encrypted REJECT_INFO) specifies a list of suggested gateways = [h'3963C9D05C62']. The single element in the list is the 6-byte MAC address of v3, serialized as a bstr.<a href="#appendix-D.2-6.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.2-6.3">
-            <p id="appendix-C.2-6.3.1">gateway v1 assembles an EDHOC error "Access Denied" with error_content, and sends it to u1<a href="#appendix-C.2-6.3.1" class="pilcrow">¶</a></p>
+          <li id="appendix-D.2-6.3">
+            <p id="appendix-D.2-6.3.1">gateway v1 assembles an EDHOC error "Access Denied" with error_content, and sends it to u1<a href="#appendix-D.2-6.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.2-6.4">
-            <p id="appendix-C.2-6.4.1">device u1 processes the error, decrypts REJECT_INFO, and retries the protocol via gateway v3<a href="#appendix-C.2-6.4.1" class="pilcrow">¶</a></p>
+          <li id="appendix-D.2-6.4">
+            <p id="appendix-D.2-6.4.1">device u1 processes the error, decrypts REJECT_INFO, and retries the protocol via gateway v3<a href="#appendix-D.2-6.4.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -3839,17 +3866,17 @@ In this case, the policy only specifies a restriction in terms of U, effectively
 </section>
 </div>
 <div id="acknowledgments">
-<section id="appendix-D">
+<section id="appendix-E">
       <h2 id="name-acknowledgments">
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-D-1">The authors sincerely thank <span class="contact-name">Aurelio Schellenbaum</span> for his contribution in the initial phase of this work, and Marco Tiloca for extensively reviewing the document.
-We also thank Christian Amsüss for his active participation in discussions that led to improvements in the document.<a href="#appendix-D-1" class="pilcrow">¶</a></p>
-<p id="appendix-D-2">Work on this document has in part been supported by the Horizon Europe Framework Programme project OpenSwarm (grant agreement No. 101093046).<a href="#appendix-D-2" class="pilcrow">¶</a></p>
+<p id="appendix-E-1">The authors sincerely thank <span class="contact-name">Aurelio Schellenbaum</span> for his contribution in the initial phase of this work, and Marco Tiloca for extensively reviewing the document.
+We also thank Christian Amsüss for his active participation in discussions that led to improvements in the document.<a href="#appendix-E-1" class="pilcrow">¶</a></p>
+<p id="appendix-E-2">Work on this document has in part been supported by the Horizon Europe Framework Programme project OpenSwarm (grant agreement No. 101093046).<a href="#appendix-E-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
-<section id="appendix-E">
+<section id="appendix-F">
       <h2 id="name-authors-addresses">
 <a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
       </h2>

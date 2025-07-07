@@ -114,9 +114,10 @@ Table of Contents
    Appendix B.  Use with Constrained Join Protocol (CoJP)
      B.1.  Network Discovery
      B.2.  The Enrollment Protocol with Parameter Provisioning
-   Appendix C.  Examples
-     C.1.  Minimal
-     C.2.  Wrong gateway
+   Appendix C.  Example of opaque_state
+   Appendix D.  Examples of protocol execution
+     D.1.  Minimal
+     D.2.  Wrong gateway
    Acknowledgments
    Authors' Addresses
 
@@ -2022,7 +2023,27 @@ B.2.4.  Flight 4
    Flight 4 is the OSCORE response carrying CoJP response message.  The
    message is processed as specified in Section 8.4.2 of [RFC9031].
 
-Appendix C.  Examples
+Appendix C.  Example of opaque_state
+
+   As per Section 4.3, V may act statelessly and transmit a opaque_state
+   to W during the VREQ call.  The example below contains an IPv4
+   address, a port number, and a timestamp, serialized as CBOR:
+
+   83             # array(3)
+      84          # array(4)
+         18 C0    # unsigned(192)
+         18 A8    # unsigned(168)
+         00       # unsigned(0)
+         05       # unsigned(5)
+      19 5A18     # unsigned(23064)
+      1A 6867EEE4 # unsigned(1751641828)
+
+   The above plaintext state can be encrypted using COSE.  Speficially,
+   it is useful that the plaintext is not only encrypted but also
+   authenticated.  That can be achieved using COSE_Encrypt0 using an
+   AEAD algorithm.
+
+Appendix D.  Examples of protocol execution
 
    This section presents high level examples of the protocol execution.
 
@@ -2030,7 +2051,7 @@ Appendix C.  Examples
    W.  These are provided for the sake of completeness only, since the
    authorization mechanism used by W is out of scope in this document.
 
-C.1.  Minimal
+D.1.  Minimal
 
    This is a simple example that demonstrates a successful execution of
    ELA.
@@ -2056,7 +2077,7 @@ C.1.  Minimal
    3.  upon receiving the request, W obtains ID_U = 14, authorizes the
        access, and replies with Voucher Response
 
-C.2.  Wrong gateway
+D.2.  Wrong gateway
 
    In this example, a device u1 tries to enroll a domain via gateway v1,
    but W denies the request because the pairing (u1, v1) is not
