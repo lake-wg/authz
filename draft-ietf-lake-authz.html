@@ -1834,12 +1834,11 @@ At this point, V can drop the EDHOC session that was initiated by U.<a href="#se
 <p id="section-4.3-2">The encapsulated state MUST be protected using a uniformly-distributed (pseudo-)random key, known only to itself and specific for the current EDHOC session to prevent replay attacks of old encapsulated state.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
 <p id="section-4.3-3">How V serializes and encrypts its internal state is out of scope in this specification.
 For example, V may use CBOR and COSE.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
-<p id="section-4.3-4">Editor's note: Consider to include an example of serialized internal state.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
-<p id="section-4.3-5">W sends to V the voucher together with the echoed message_1, as received from U, and V's internal state, see <a href="#voucher_response" class="auto internal xref">Section 4.6.2</a>.
+<p id="section-4.3-4">W sends to V the voucher together with the echoed message_1, as received from U, and V's internal state, see <a href="#voucher_response" class="auto internal xref">Section 4.6.2</a>.
 This allows V to act as a simple message relay until it has obtained the authorization from W to enroll U.
 The reception of a successful Voucher Response at V from W implies the authorization for V to enroll U.
-At this point, V can initialize a new EDHOC session with U, based on the message and the state retrieved from the Voucher Response from W.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
-<p id="section-4.3-6">Noet that while stateless operation is supported in the default flow, it is not supported in the reverse flow (see <a href="#reverse-u-responder" class="auto internal xref">Section 4.8</a>).<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+At this point, V can initialize a new EDHOC session with U, based on the message and the state retrieved from the Voucher Response from W.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
+<p id="section-4.3-5">Noet that while stateless operation is supported in the default flow, it is not supported in the reverse flow (see <a href="#reverse-u-responder" class="auto internal xref">Section 4.8</a>).<a href="#section-4.3-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="U-W">
@@ -1922,29 +1921,28 @@ external_aad = [ ; used as a CBOR sequence, not array
 </li>
           </ul>
 <p id="section-4.4.1-11">The external_aad is wrapped in an enc_structure as defined in <span><a href="https://rfc-editor.org/rfc/rfc9052#section-5.3" class="relref">Section 5.3</a> of [<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>.<a href="#section-4.4.1-11" class="pilcrow">¶</a></p>
-<p id="section-4.4.1-12">Editor's note: Add more context to external_aad.<a href="#section-4.4.1-12" class="pilcrow">¶</a></p>
-<p id="section-4.4.1-13">The derivation of K_1 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see OKM in <a href="#reuse" class="auto internal xref">Section 4.2</a>):<a href="#section-4.4.1-13" class="pilcrow">¶</a></p>
+<p id="section-4.4.1-12">The derivation of K_1 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see OKM in <a href="#reuse" class="auto internal xref">Section 4.2</a>):<a href="#section-4.4.1-12" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.4.1-14.1">
-              <p id="section-4.4.1-14.1.1">info_label = 0<a href="#section-4.4.1-14.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-4.4.1-13.1">
+              <p id="section-4.4.1-13.1.1">info_label = 0<a href="#section-4.4.1-13.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-4.4.1-14.2">
-              <p id="section-4.4.1-14.2.1">context  = h'' (the empty CBOR string)<a href="#section-4.4.1-14.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-4.4.1-13.2">
+              <p id="section-4.4.1-13.2.1">context  = h'' (the empty CBOR string)<a href="#section-4.4.1-13.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-4.4.1-14.3">
-              <p id="section-4.4.1-14.3.1">length is length of the key of the EDHOC AEAD algorithm in bytes (which is the length of K_1)<a href="#section-4.4.1-14.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-4.4.1-13.3">
+              <p id="section-4.4.1-13.3.1">length is length of the key of the EDHOC AEAD algorithm in bytes (which is the length of K_1)<a href="#section-4.4.1-13.3.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-4.4.1-15">The derivation of IV_1 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see OKM in <a href="#reuse" class="auto internal xref">Section 4.2</a>):<a href="#section-4.4.1-15" class="pilcrow">¶</a></p>
+<p id="section-4.4.1-14">The derivation of IV_1 = EDHOC_Expand(PRK, info, length) uses the following input to the info struct (see OKM in <a href="#reuse" class="auto internal xref">Section 4.2</a>):<a href="#section-4.4.1-14" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.4.1-16.1">
-              <p id="section-4.4.1-16.1.1">info_label = 1<a href="#section-4.4.1-16.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-4.4.1-15.1">
+              <p id="section-4.4.1-15.1.1">info_label = 1<a href="#section-4.4.1-15.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-4.4.1-16.2">
-              <p id="section-4.4.1-16.2.1">context = h''  (the empty CBOR string)<a href="#section-4.4.1-16.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-4.4.1-15.2">
+              <p id="section-4.4.1-15.2.1">context = h''  (the empty CBOR string)<a href="#section-4.4.1-15.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-4.4.1-16.3">
-              <p id="section-4.4.1-16.3.1">length is length of the nonce of the EDHOC AEAD algorithm in bytes (which is the length of IV_1)<a href="#section-4.4.1-16.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-4.4.1-15.3">
+              <p id="section-4.4.1-15.3.1">length is length of the nonce of the EDHOC AEAD algorithm in bytes (which is the length of IV_1)<a href="#section-4.4.1-15.3.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
