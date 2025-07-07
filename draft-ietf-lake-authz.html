@@ -2715,7 +2715,8 @@ If the authentication credential CRED_V can be used in a TLS handshake, e.g., an
 If the authentication credential CRED_V cannot be used in a TLS handshake, e.g., if the public key is a static Diffie-Hellman key, then V SHOULD first perform a TLS handshake with W using available compatible keys.
 V MUST then perform an EDHOC session over the TLS connection proving to W the possession of the private key corresponding to CRED_V.
 Performing the EDHOC session is only necessary if V did not authenticate with CRED_V in the TLS handshake with W.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.1-2">Editor's note: Clarify that performing TLS handshake is not necessary for each device request; if there already is a TLS connection between V and W that should be reused. Similar considerations for 5.2 and 5.3.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<p id="section-5.1-2">The relationship between V and W is long-lived.  HTTP/1.1 and higher support persistent connections, and SHOULD be used in order to reduce overhead if a flood of new devices need to be onboarded.  Support for TLS session resumptions tickets <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>], <a href="https://rfc-editor.org/rfc/rfc8446#section-2.2" class="relref">Section 2.2</a></span> is appropriate for longer term associations.
+While a policy for renewal of the TLS connection should be applied, it is out of scope of this document.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="scheme-coaps">
@@ -2724,7 +2725,8 @@ Performing the EDHOC session is only necessary if V did not authenticate with CR
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-scheme-coaps" class="section-name selfRef">Scheme "coaps"</a>
         </h3>
 <p id="section-5.2-1">In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the resources defined in <a href="#uris" class="auto internal xref">Section 5.4</a> using CoAP.
-The normative requirements in <a href="#scheme-https" class="auto internal xref">Section 5.1</a> on performing the DTLS handshake and EDHOC session remain the same, except that TLS is replaced with DTLS.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+The normative requirements in <a href="#scheme-https" class="auto internal xref">Section 5.1</a> on performing the DTLS handshake and EDHOC session remain the same, except that TLS is replaced with DTLS.
+As in <a href="#scheme-https" class="auto internal xref">Section 5.1</a>, it is RECOMMENDED to allow reuse of the DTLS session.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="scheme-coap">
@@ -2733,7 +2735,8 @@ The normative requirements in <a href="#scheme-https" class="auto internal xref"
 <a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-scheme-coap" class="section-name selfRef">Scheme "coap"</a>
         </h3>
 <p id="section-5.3-1">In case the scheme indicates "coap", V SHOULD perform an EDHOC session with W, as specified in <span><a href="https://rfc-editor.org/rfc/rfc9528#appendix-A" class="relref">Appendix A</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> and access the resources defined in <a href="#uris" class="auto internal xref">Section 5.4</a> using OSCORE and CoAP.
-The authentication credential in this EDHOC session MUST be CRED_V.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+The authentication credential in this EDHOC session MUST be CRED_V.
+As in <a href="#scheme-https" class="auto internal xref">Section 5.1</a>, it is RECOMMENDED to allow reuse of the EDHOC session.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="uris">
