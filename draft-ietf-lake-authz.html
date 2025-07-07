@@ -1892,18 +1892,30 @@ plaintext = (
 </div>
 <div class="lang-cddl sourcecode" id="section-4.4.1-8">
 <pre>
-external_aad = (
-    SS:              int,
-)
+external_aad = [ ; used as a CBOR sequence, not array
+    "ELA-voucher-info": tstr, ; fixed label
+    METHOD:             int,
+    SS:                 int,
+    C_I:                bstr
+]
 </pre><a href="#section-4.4.1-8" class="pilcrow">¶</a>
 </div>
 <p id="section-4.4.1-9">where<a href="#section-4.4.1-9" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.4.1-10.1">
-              <p id="section-4.4.1-10.1.1">ID_U is an identifier of the device, see <a href="#device" class="auto internal xref">Section 3.1</a>.<a href="#section-4.4.1-10.1.1" class="pilcrow">¶</a></p>
+              <p id="section-4.4.1-10.1.1">"ELA-voucher-info" is a string literal for the Voucher_Info struct.<a href="#section-4.4.1-10.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.4.1-10.2">
-              <p id="section-4.4.1-10.2.1">SS is the selected cipher suite in SUITES_I of EDHOC message_1, see <a href="#U-V" class="auto internal xref">Section 4.5</a>.<a href="#section-4.4.1-10.2.1" class="pilcrow">¶</a></p>
+              <p id="section-4.4.1-10.2.1">ID_U is an identifier of the device, see <a href="#device" class="auto internal xref">Section 3.1</a>.<a href="#section-4.4.1-10.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4.4.1-10.3">
+              <p id="section-4.4.1-10.3.1">METHOD is the authentication method of EDHOC message_1.<a href="#section-4.4.1-10.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4.4.1-10.4">
+              <p id="section-4.4.1-10.4.1">SS is the selected cipher suite in SUITES_I of EDHOC message_1, see <a href="#U-V" class="auto internal xref">Section 4.5</a>.<a href="#section-4.4.1-10.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4.4.1-10.5">
+              <p id="section-4.4.1-10.5.1">C_I is the connection identifier of EDHOC message_1.<a href="#section-4.4.1-10.5.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-4.4.1-11">The external_aad is wrapped in an enc_structure as defined in <span><a href="https://rfc-editor.org/rfc/rfc9052#section-5.3" class="relref">Section 5.3</a> of [<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>.<a href="#section-4.4.1-11" class="pilcrow">¶</a></p>
