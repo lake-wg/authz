@@ -3244,7 +3244,7 @@ When each of the V's in radio range of U receive message_1, one of the following
             <p id="appendix-A.1-2.1.1">V does not implement EDHOC, and drops the message<a href="#appendix-A.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-A.1-2.2">
-            <p id="appendix-A.1-2.2.1">V does not implement ELA, and since EAD_1 is critical, it either responds with an error or drops the message (Editor's note: dropping actually conflicts with the EAD field being critical)<a href="#appendix-A.1-2.2.1" class="pilcrow">¶</a></p>
+            <p id="appendix-A.1-2.2.1">V does not implement ELA, and drops the message (even though the EAD_1 option is critical, broadcast messages should not have error replies)<a href="#appendix-A.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-A.1-2.3">
             <p id="appendix-A.1-2.3.1">V forwards message_1 to W as VREQ, but W does not authorize it, and error handling is applied<a href="#appendix-A.1-2.3.1" class="pilcrow">¶</a></p>
