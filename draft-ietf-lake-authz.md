@@ -429,16 +429,25 @@ plaintext = (
 )
 ~~~~~~~~~~~
 ~~~~~~~~~~~ cddl
-external_aad = (
-    SS:              int,
-)
+external_aad = [ ; used as a CBOR sequence, not array
+    "ELA-voucher-info": tstr, ; fixed label
+    METHOD:             int,
+    SS:                 int,
+    C_I:                bstr
+]
 ~~~~~~~~~~~
 
 where
 
+* "ELA-voucher-info" is a string literal for the Voucher_Info struct.
+
 * ID_U is an identifier of the device, see {{device}}.
 
+* METHOD is the authentication method of EDHOC message_1.
+
 * SS is the selected cipher suite in SUITES_I of EDHOC message_1, see {{U-V}}.
+
+* C_I is the connection identifier of EDHOC message_1.
 
 The external_aad is wrapped in an enc_structure as defined in {{Section 5.3 of RFC9052}}.
 
