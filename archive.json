@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-08T01:53:52.537042+00:00",
+  "timestamp": "2025-07-22T01:59:57.979518+00:00",
   "repo": "lake-wg/authz",
   "labels": [
     {
@@ -882,6 +882,30 @@
       "updatedAt": "2025-07-07T11:30:53Z",
       "closedAt": "2025-07-07T11:30:53Z",
       "comments": []
+    },
+    {
+      "number": 71,
+      "id": "I_kwDOKiCa6c7BpQZ7",
+      "title": "Support for EDHOC with PQ cipher suites",
+      "url": "https://github.com/lake-wg/authz/issues/71",
+      "state": "OPEN",
+      "author": "geonnave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Tracking this here, according to email exchanges and discussions during IETF 123 Hackathon.\n\nTL;DR: changes needed to make ELA compatible with EDHOC's (upcoming) post-quantum cipher suites:\n- add an optional KEM ciphertext element to EAD_1 and EAD_2\n- G_W can either be a DH public key or a KEM encapsulation key\n\nInitial proposal with a bit more details:\n\n> As we have discussed, without any protocol change, EDHOC method 0 can be used with a post-quantum cipher suite, and it retains its security properties by replacing the content of the ephemeral DH key exchange with a KEM exchange (details in upcoming draft, see the figure in section \u201cKEM versus Diffie-Hellman\u201d in https://blog.cloudflare.com/nist-post-quantum-surprise/).\n> A heads up about applications of EDHOC using the ephemeral DH-keys for other Diffie-Hellman exchanges, like ELA where an ephemeral key is used with a static DH key of the third party W to derive a shared secret. In the above case this doesn\u2019t work anymore, so there needs to be another KEM exchange embedded in the EDHOC protocol. Fortunately this is also straightforward, since G_W can play the role of provisioned encapsulation key.\n> However, to support this case, the ELA protocol messages would need to add another element containing an optional KEM \u201cciphertext\u201d (add to both EAD_1 & EAD_2 to cover both forward and reverse flow). Needless to say the sizes of messages increases, but that already happens with the pq signatures.\n",
+      "createdAt": "2025-07-21T14:07:27Z",
+      "updatedAt": "2025-07-21T17:15:50Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "gselander",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Another change is that:\n\n- G_Y can either be a ephemeral DH public key or a KEM ciphertext.\n\nBut that info should go into the pq-suites draft.\n\n",
+          "createdAt": "2025-07-21T16:27:24Z",
+          "updatedAt": "2025-07-21T16:27:24Z"
+        }
+      ]
     }
   ],
   "pulls": [
