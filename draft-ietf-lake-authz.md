@@ -405,6 +405,8 @@ Voucher_Info = bstr .cborseq Voucher_Info_Seq
 
 Voucher_Info_Seq = [ ; used as a CBOR sequence, not array
     LOC_W:      tstr,
+    DH_EPH_Key_or_KEM_CT:      bstr,    # W decapsulates CT and gets the secret key; W uses DH to generate secret key
+# --> note: by sending DH_EPH_Key, we lose the optimization of re-using the EDHOC DH Ephemeral Key
     ENC_U_INFO:     bstr
 ]
 ~~~~~~~~~~~
