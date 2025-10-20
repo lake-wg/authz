@@ -399,7 +399,7 @@ The protocol between U and W is carried between U and V in message_1 and message
 
 ### Voucher Info {#voucher_info}
 
-The external authorization data EAD_1 contains an EAD item with ead_label = TBD1 and ead_value = Voucher_Info, which is a CBOR byte string:
+The external authorization data EAD_1 contains a critical EAD item with ead_label = -TBD1 and ead_value = Voucher_Info, which is a CBOR byte string:
 
 ~~~~~~~~~~~ cddl
 Voucher_Info = bstr .cborseq Voucher_Info_Seq
@@ -464,7 +464,7 @@ The derivation of IV_1 = EDHOC_Expand(PRK, info, length) uses the following inpu
 
 ### Voucher {#voucher}
 
-The external authorization data EAD_2 contains an EAD item with ead_label = TBD2.
+The external authorization data EAD_2 contains a critical EAD item with ead_label = -TBD2.
 If W generates a Voucher, the EAD item also contains ead_value = Voucher, otherwise ead_value is absent.
 
 The voucher is an assertion to U that W has authorized V.
@@ -532,7 +532,7 @@ The device sends EDHOC message_1 with EAD item (-TBD1, Voucher_Info) included in
 
 #### Processing in V
 
-V receives EDHOC message_1 from U and processes it as specified in {{Section 5.2.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_1. Since the EAD item is critical, if V does not recognize it or it contains information that V cannot process, then V MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}. Otherwise, the ead_label = TBD1 triggers the voucher request to W as described in {{V-W}}. The exchange between V and W needs to be completed successfully for the EDHOC session to be continued.
+V receives EDHOC message_1 from U and processes it as specified in {{Section 5.2.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_1. Since the EAD item is critical, if V does not recognize it or it contains information that V cannot process, then V MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}. Otherwise, the ead_label = -TBD1 triggers the voucher request to W as described in {{V-W}}. The exchange between V and W needs to be completed successfully for the EDHOC session to be continued.
 
 Note that the selected cipher suite SS is used both in the U <-> W and U <-> V interactions, therefore V must be ready to use the cipher suite SS set by U in message_1.
 That is, ELA restricts the cipher suite negotiation in order to provide a streamlined authorization flow from the perspective of U.
@@ -544,7 +544,7 @@ Since V has a pre-established trusted channel with W, it has the opportunity to 
 
 V receives the voucher response from W as described in {{V-W}}.
 
-V sends EDHOC message_2 to U with the critical EAD item (-TBD2, ?Voucher) included in EAD_2, i.e., ead_label = TBD2 and, if the Voucher is present, ead_value = Voucher, as specified in {{voucher}}.
+V sends EDHOC message_2 to U with the critical EAD item (-TBD2, ?Voucher) included in EAD_2, i.e., ead_label = -TBD2 and, if the Voucher is present, ead_value = Voucher, as specified in {{voucher}}.
 
 The type of CRED_V may depend on the selected mechanism for the establishment of a secure channel between V and W, See {{creds-table}}.
 
@@ -751,7 +751,7 @@ Note that Voucher_Info and Voucher are carried in EDHOC message_1 and message_2,
       |                              |
       |       EDHOC message_1        |                              W
       +----------------------------->|                              |
-      | EAD_1 = (TBD1, Voucher_info) |                              |
+      | EAD_1 = (-TBD1, Voucher_info) |                              |
       |                              |             VREQ             |
       |                              +----------------------------->|
       |                              | (SS, G_X, Voucher_Info,      |
@@ -762,7 +762,7 @@ Note that Voucher_Info and Voucher are carried in EDHOC message_1 and message_2,
       |                              |    (?Voucher, ?opaque_state)
       |       EDHOC message_2        |
       +<-----------------------------|
-      |   EAD_2 = (TBD2, ?Voucher)   |
+      |   EAD_2 = (-TBD2, ?Voucher)   |
       |                              |
       |       EDHOC message_3        |
       +----------------------------->|
@@ -783,7 +783,7 @@ That is, here we only describe the differences in processing, when compared to t
 Here is a summary of the changes needed in the ELA reverse flow:
 
 * Voucher_Info and Voucher are transported in EDHOC message_2 and message_3, respectively (instead of message_1 and message_2).
-* The EAD_2 and EAD_3 fields carry EAD items identified with labels TBD1 and TBD2, respectively.
+* The EAD_2 and EAD_3 fields carry critical EAD items identified with labels -TBD1 and -TBD2, respectively.
 * The VREQ / VRES protocol takes place between message_2 and message_3.
 * The Voucher_Request carries G_Y instead of G_X, and the transcript hash TH_2 instead of the hash H_message_1.
 * Stateless operation of V (see {{stateless-v}}) is not supported
@@ -803,7 +803,7 @@ Here is a summary of the changes needed in the ELA reverse flow:
       |                              |
       |       EDHOC message_2        |                              W
       +----------------------------->|                              |
-      | EAD_2 = (TBD1, Voucher_info) |                              |
+      | EAD_2 = (-TBD1, Voucher_info) |                              |
       |                              |             VREQ             |
       |                              +----------------------------->|
       |                              | (SS, G_Y, Voucher_Info,      |
@@ -814,7 +814,7 @@ Here is a summary of the changes needed in the ELA reverse flow:
       |                              |    (Voucher, ?opaque_state)
       |     EDHOC message_3          |
       +<-----------------------------|
-      |   EAD_3 = (TBD2, ?Voucher)   |
+      |   EAD_3 = (-TBD2, ?Voucher)   |
       |                              |
       |                              |
 ~~~~~~~~~~~
@@ -831,7 +831,7 @@ The protocol between U and W is carried between U and V in message_2 and message
 
 Voucher Info:
 
-* The EAD_2 item has ead_label = TBD1 and ead_value = Voucher_Info.
+* The EAD_2 item has ead_label = -TBD1 and ead_value = Voucher_Info.
 
 Voucher:
 
@@ -847,14 +847,14 @@ Message 1:
 Message 2:
 
 * U composes message_2 and generates G_Y, which is reused in the interaction with W.
-* U sends message_2 with EAD item (-TBD1, Voucher_Info) included in EAD_2.
+* U sends message_2 with critical EAD item (-TBD1, Voucher_Info) included in EAD_2.
 * V processes message_2 and the EAD item in EAD_2, extracting the Voucher_Info struct.
 * V sends the voucher request to W.
 
 Message 3:
 
 * V receives the voucher response from W.
-* V sends message_3 with EAD item (-TBD2, ?Voucher) included in EAD_3.
+* V sends message_3 with critical EAD item (-TBD2, ?Voucher) included in EAD_3.
 * Y processes message_3 and the EAD item in EAD_3.
 
 #### Reverse V <-> W {#reverse-v-w}
@@ -1174,7 +1174,7 @@ It requires, however, some profiling of the lower layer beacons.
 ### V_INFO in EAD_1 {#adv-ead1}
 
 The ELA reverse flow (see {{reverse-u-responder}}) allows implementing advertising where U first sends a trigger packet, in the format of a CoAP request that is broadcasted to the newtork.
-When a suitable V receives the solicitation, if it implements ELA, it should respond with an EDHOC message_1 whose EAD_1 has label TBD1 and value V_INFO (see Section {{optimization-strat}}).
+When a suitable V receives the solicitation, if it implements ELA, it should respond with an EDHOC message_1 whose EAD_1 has label -TBD1 and value V_INFO (see Section {{optimization-strat}}).
 
 ~~~~~~~~~~~ aasvg
 +-------+--------+                +-------+--------+
@@ -1388,7 +1388,7 @@ In this case, the policy only specifies a restriction in terms of U, effectively
 Execution:
 
 1. device u1 discovers a gateway (v1) and tries to enroll
-2. gateway v1 identifies the zero-touch join attempt by checking that the label of EAD_1 = TBD1, and prepares a Voucher Request using the information contained in the value of EAD_1
+2. gateway v1 identifies the zero-touch join attempt by checking that the label of EAD_1 = -TBD1, and prepares a Voucher Request using the information contained in the value of EAD_1
 2. upon receiving the request, W obtains ID_U = 14, authorizes the access, and replies with Voucher Response
 
 ## Wrong gateway {#example_wrong_gateway}
