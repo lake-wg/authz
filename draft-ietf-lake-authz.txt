@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 8 January 2026                                       M. Vučinić
+Expires: 23 April 2026                                        M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                             7 July 2025
+                                                         20 October 2025
 
 
 Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 January 2026.
+   This Internet-Draft will expire on 23 April 2026.
 
 Copyright Notice
 
@@ -184,7 +184,8 @@ Table of Contents
    authorization information.  The voucher has a similar role as in
    [RFC8366] but should be considerably more compact.  The domain
    authenticator, in turn, authenticates the device and authorizes its
-   enrollment into the domain.
+   enrollment into the domain.  ELA also enables scenarios where only V
+   needs to authorize U, by allowing the voucher to be optional.
 
    The procedure is assisted by a (non-constrained) enrollment server
    (W) located in a non-constrained network behind the domain
@@ -417,7 +418,7 @@ U                              V                                       W
 |                              |                                       |
 |                              |        Voucher Response (VRES)        |
 |                              |<--------------------------------------+
-|                              |  (message_1, Voucher, ?opaque_state)  |
+|                              | (message_1, ?Voucher, ?opaque_state)  |
 |                              |                                       |
 |         EDHOC message_2      |                                       |
 |<-----------------------------+                                       |
@@ -557,9 +558,9 @@ U                              V                                       W
 
 4.4.1.  Voucher Info
 
-   The external authorization data EAD_1 contains an EAD item with
-   ead_label = TBD1 and ead_value = Voucher_Info, which is a CBOR byte
-   string:
+   The external authorization data EAD_1 contains a critical EAD item
+   with ead_label = -TBD1 and ead_value = Voucher_Info, which is a CBOR
+   byte string:
 
    Voucher_Info = bstr .cborseq Voucher_Info_Seq
 
@@ -639,8 +640,9 @@ U                              V                                       W
 
 4.4.2.  Voucher
 
-   The external authorization data EAD_2 contains an EAD item with
-   ead_label = TBD2 and ead_value = Voucher.
+   The external authorization data EAD_2 contains a critical EAD item
+   with ead_label = -TBD2.  If W generates a Voucher, the EAD item also
+   contains ead_value = Voucher, otherwise ead_value is absent.
 
    The voucher is an assertion to U that W has authorized V.  It is
    encrypted using the EDHOC AEAD algorithm of the selected cipher suite
@@ -735,7 +737,7 @@ U                              V                                       W
    the EAD item in EAD_1.  Since the EAD item is critical, if V does not
    recognize it or it contains information that V cannot process, then V
    MUST abort the EDHOC session, see Section 3.8 of [RFC9528].
-   Otherwise, the ead_label = TBD1 triggers the voucher request to W as
+   Otherwise, the ead_label = -TBD1 triggers the voucher request to W as
    described in Section 4.6.  The exchange between V and W needs to be
    completed successfully for the EDHOC session to be continued.
 
@@ -755,8 +757,9 @@ U                              V                                       W
    V receives the voucher response from W as described in Section 4.6.
 
    V sends EDHOC message_2 to U with the critical EAD item (-TBD2,
-   Voucher) included in EAD_2, i.e., ead_label = TBD2 and ead_value =
-   Voucher, as specified in Section 4.4.2.
+   ?Voucher) included in EAD_2, i.e., ead_label = -TBD2 and, if the
+   Voucher is present, ead_value = Voucher, as specified in
+   Section 4.4.2.
 
    The type of CRED_V may depend on the selected mechanism for the
    establishment of a secure channel between V and W, See Table 1.
@@ -774,12 +777,16 @@ U                              V                                       W
    Section 5.3.3 of [RFC9528], with the additional step of processing
    the EAD item in EAD_2.
 
+   U first verifies that the EAD item contains the expected ead_label,
+   see Section 7.1.
+
    If U does not recognize the EAD item or the EAD item contains
    information that U cannot process, then U MUST abort the EDHOC
-   session, see Section 3.8 of [RFC9528].  Otherwise, U MUST verify the
-   Voucher using H_message_1, CRED_V, and the keys derived as in
-   Section 4.4.2.  If the verification fails then U MUST abort the EDHOC
-   session.
+   session, see Section 3.8 of [RFC9528].
+
+   When the Voucher is present, U MUST verify the Voucher using
+   H_message_1, CRED_V, and the keys derived as in Section 4.4.2.  If
+   the Voucher verification fails then U MUST abort the EDHOC session.
 
    If OPAQUE_INFO is present, it is made available to the application.
 
@@ -876,7 +883,8 @@ U                              V                                       W
 
 4.6.2.1.  Processing in W
 
-   W retrieves CRED_V associated with the secure connection with V, and
+   In case a Voucher is needed (as determined by the application), W
+   retrieves CRED_V associated with the secure connection with V, and
    constructs the Voucher for the device with identifier ID_U (see
    Section 4.4.2).
 
@@ -885,19 +893,19 @@ U                              V                                       W
    below:
 
    Voucher_Response = [
-       Voucher:        bstr,
+       ? Voucher:        bstr,
        ? opaque_state: bstr
    ]
 
    where
 
-   *  The Voucher is defined in Section 4.4.2.
+   *  The Voucher is defined in Section 4.4.2, if present.
 
    *  opaque_state is the echoed byte string opaque_state from
       Voucher_Request, if present.
 
-   W signals the successful generation of the voucher via a status code
-   in the REST interface, as defined in Section 5.4.1.
+   W signals the successful processing of Voucher_Request via a status
+   code in the REST interface, as defined in Section 5.4.1.
 
 4.6.2.2.  Processing in V
 
@@ -1005,33 +1013,33 @@ U                              V                                       W
    and Voucher are carried in EDHOC message_1 and message_2,
    respectively.
 
-   +-----+-----+                  +-----------+
-   |     U     |                  |     V     |
-   | Initiator |                  | Responder |
-   +-----+-----+                  +-----+-----+
-         |                              |
-         |                              |
-         |       EDHOC message_1        |                              W
-         +----------------------------->|                              |
-         | EAD_1 = (TBD1, Voucher_info) |                              |
-         |                              |             VREQ             |
-         |                              +----------------------------->|
-         |                              | (SS, G_X, Voucher_Info,      |
-         |                              |  H_message_1, ?opaque_state) |
-         |                              |                              |
-         |                              |             VRES             |
-         |                              +<---------------------------->|
-         |                              |    (Voucher, ?opaque_state)
-         |       EDHOC message_2        |
-         +<-----------------------------|
-         |   EAD_2 = (TBD2, Voucher)    |
-         |                              |
-         |       EDHOC message_3        |
-         +----------------------------->|
-         |                              |
-         |                              |
+  +-----+-----+                   +-----------+
+  |     U     |                   |     V     |
+  | Initiator |                   | Responder |
+  +-----+-----+                   +-----+-----+
+        |                               |
+        |                               |
+        |       EDHOC message_1         |                              W
+        +------------------------------>|                              |
+        | EAD_1 = (-TBD1, Voucher_info) |                              |
+        |                               |             VREQ             |
+        |                               +----------------------------->|
+        |                               | (SS, G_X, Voucher_Info,      |
+        |                               |  H_message_1, ?opaque_state) |
+        |                               |                              |
+        |                               |             VRES             |
+        |                               +<---------------------------->|
+        |                               |    (?Voucher, ?opaque_state) |
+        |       EDHOC message_2         |
+        +<------------------------------|
+        |   EAD_2 = (-TBD2, ?Voucher)   |
+        |                               |
+        |       EDHOC message_3         |
+        +------------------------------>|
+        |                               |
+        |                               |
 
-          Figure 6: In ELA default flow, U is the EDHOC Initiator.
+         Figure 6: In ELA default flow, U is the EDHOC Initiator.
 
    In the ELA default flow, once message_2 processing is finalized
    (including processing of EAD_2), U considers V authenticated through
@@ -1051,8 +1059,8 @@ U                              V                                       W
    *  Voucher_Info and Voucher are transported in EDHOC message_2 and
       message_3, respectively (instead of message_1 and message_2).
 
-   *  The EAD_2 and EAD_3 fields carry EAD items identified with labels
-      TBD1 and TBD2, respectively.
+   *  The EAD_2 and EAD_3 fields carry critical EAD items identified
+      with labels -TBD1 and -TBD2, respectively.
 
    *  The VREQ / VRES protocol takes place between message_2 and
       message_3.
@@ -1062,36 +1070,36 @@ U                              V                                       W
 
    *  Stateless operation of V (see Section 4.3) is not supported
 
-   +-----+-----+                  +-----------+
-   |     U     |                  |     V     |
-   | Initiator |                  | Responder |
-   +-----+-----+                  +-----+-----+
-         |                              |
-         |       Trigger Message        |
-         +- - - - - - - - - - - - - - ->|
-         |                              |
-         |       EDHOC message_1        |
-         +<-----------------------------|
-         |                              |
-         |                              |
-         |       EDHOC message_2        |                              W
-         +----------------------------->|                              |
-         | EAD_2 = (TBD1, Voucher_info) |                              |
-         |                              |             VREQ             |
-         |                              +----------------------------->|
-         |                              | (SS, G_Y, Voucher_Info,      |
-         |                              |  TH_2, ?opaque_state)        |
-         |                              |                              |
-         |                              |             VRES             |
-         |                              +<---------------------------->|
-         |                              |    (Voucher, ?opaque_state)
-         |     EDHOC message_3          |
-         +<-----------------------------|
-         |   EAD_3 = (TBD2, Voucher)    |
-         |                              |
-         |                              |
+  +-----+-----+                   +-----------+
+  |     U     |                   |     V     |
+  | Initiator |                   | Responder |
+  +-----+-----+                   +-----+-----+
+        |                               |
+        |       Trigger Message         |
+        +- - - - - - - - - - - - - - - >|
+        |                               |
+        |       EDHOC message_1         |
+        +<------------------------------|
+        |                               |
+        |                               |
+        |       EDHOC message_2         |                              W
+        +------------------------------>|                              |
+        | EAD_2 = (-TBD1, Voucher_info) |                              |
+        |                               |             VREQ             |
+        |                               +----------------------------->|
+        |                               | (SS, G_Y, Voucher_Info,      |
+        |                               |  TH_2, ?opaque_state)        |
+        |                               |                              |
+        |                               |             VRES             |
+        |                               +<---------------------------->|
+        |                               |    (Voucher, ?opaque_state)  |
+        |     EDHOC message_3           |
+        +<------------------------------|
+        |   EAD_3 = (-TBD2, ?Voucher)   |
+        |                               |
+        |                               |
 
-                Figure 7: ELA when U is the EDHOC Responder.
+               Figure 7: ELA when U is the EDHOC Responder.
 
    The following detail how the processing changes in each of the three
    security sessions.
@@ -1109,7 +1117,7 @@ U                              V                                       W
 
    Voucher Info:
 
-   *  The EAD_2 item has ead_label = TBD1 and ead_value = Voucher_Info.
+   *  The EAD_2 item has ead_label = -TBD1 and ead_value = Voucher_Info.
 
    Voucher:
 
@@ -1129,8 +1137,8 @@ U                              V                                       W
    *  U composes message_2 and generates G_Y, which is reused in the
       interaction with W.
 
-   *  U sends message_2 with EAD item (-TBD1, Voucher_Info) included in
-      EAD_2.
+   *  U sends message_2 with critical EAD item (-TBD1, Voucher_Info)
+      included in EAD_2.
 
    *  V processes message_2 and the EAD item in EAD_2, extracting the
       Voucher_Info struct.
@@ -1141,8 +1149,8 @@ U                              V                                       W
 
    *  V receives the voucher response from W.
 
-   *  V sends message_3 with EAD item (-TBD2, Voucher) included in
-      EAD_3.
+   *  V sends message_3 with critical EAD item (-TBD2, ?Voucher)
+      included in EAD_3.
 
    *  Y processes message_3 and the EAD item in EAD_3.
 
@@ -1793,7 +1801,7 @@ A.2.2.  V_INFO in EAD_1
    advertising where U first sends a trigger packet, in the format of a
    CoAP request that is broadcasted to the newtork.  When a suitable V
    receives the solicitation, if it implements ELA, it should respond
-   with an EDHOC message_1 whose EAD_1 has label TBD1 and value V_INFO
+   with an EDHOC message_1 whose EAD_1 has label -TBD1 and value V_INFO
    (see Section Appendix A).
 
            +-------+--------+                +-------+--------+
@@ -2066,7 +2074,7 @@ D.1.  Minimal
    1.  device u1 discovers a gateway (v1) and tries to enroll
 
    2.  gateway v1 identifies the zero-touch join attempt by checking
-       that the label of EAD_1 = TBD1, and prepares a Voucher Request
+       that the label of EAD_1 = -TBD1, and prepares a Voucher Request
        using the information contained in the value of EAD_1
 
    3.  upon receiving the request, W obtains ID_U = 14, authorizes the

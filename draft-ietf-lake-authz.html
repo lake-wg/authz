@@ -16,23 +16,22 @@ This document specifies Lightweight Authorization using EDHOC (ELA).
 The procedure allows authorizing enrollment of new devices using the extension point defined in EDHOC.
 ELA is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time. 
     " name="description">
-<meta content="xml2rfc 3.29.0" name="generator">
+<meta content="xml2rfc 3.31.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-lake-authz-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.29.0
-    Python 3.12.11
+  xml2rfc 3.31.0
+    Python 3.12.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
     lxml 5.3.1
-    platformdirs 4.3.8
+    platformdirs 4.5.0
     pycountry 24.6.1
     PyYAML 6.0.2
-    requests 2.32.4
-    setuptools 80.9.0
-    wcwidth 0.2.13
+    requests 2.32.5
+    wcwidth 0.2.14
 -->
 <link href="draft-ietf-lake-authz.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1051,11 +1050,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">ELA</td>
-<td class="right">July 2025</td>
+<td class="right">October 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Selander, et al.</td>
-<td class="center">Expires 8 January 2026</td>
+<td class="center">Expires 23 April 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1068,12 +1067,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-lake-authz-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-07-07" class="published">7 July 2025</time>
+<time datetime="2025-10-20" class="published">20 October 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-01-08">8 January 2026</time></dd>
+<dd class="expires"><time datetime="2026-04-23">23 April 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1142,7 +1141,7 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 8 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 23 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1358,7 +1357,8 @@ Appendix C.1 of <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> 
 <p id="section-2-1">The goal of ELA is to enable a (potentially constrained) device (U) to enroll into a domain over a constrained link.
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator (V) with the help of a voucher conveying authorization information.
 The voucher has a similar role as in <span>[<a href="#RFC8366" class="cite xref">RFC8366</a>]</span> but should be considerably more compact.
-The domain authenticator, in turn, authenticates the device and authorizes its enrollment into the domain.<a href="#section-2-1" class="pilcrow">¶</a></p>
+The domain authenticator, in turn, authenticates the device and authorizes its enrollment into the domain.
+ELA also enables scenarios where only V needs to authorize U, by allowing the voucher to be optional.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">The procedure is assisted by a (non-constrained) enrollment server (W) located in a non-constrained network behind the domain authenticator, e.g., on the Internet, providing information to the device (conveyed in the voucher) and to the domain authenticator as part of the protocol.<a href="#section-2-2" class="pilcrow">¶</a></p>
 <p id="section-2-3">The objective of this document is to specify such a protocol that is lightweight over the constrained link, by reusing elements of EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> and by shifting message overhead to the non-constrained side of the network.
 See illustration in <a href="#fig-overview" class="auto internal xref">Figure 1</a>.<a href="#section-2-3" class="pilcrow">¶</a></p>
@@ -1721,8 +1721,8 @@ Some of the possible combinations of protocols to secure the connection between 
                   <text x="352" y="452">Voucher</text>
                   <text x="420" y="452">Response</text>
                   <text x="484" y="452">(VRES)</text>
-                  <text x="320" y="484">(message_1,</text>
-                  <text x="404" y="484">Voucher,</text>
+                  <text x="312" y="484">(message_1,</text>
+                  <text x="400" y="484">?Voucher,</text>
                   <text x="500" y="484">?opaque_state)</text>
                   <text x="104" y="516">EDHOC</text>
                   <text x="168" y="516">message_2</text>
@@ -1852,7 +1852,7 @@ At this point, V can initialize a new EDHOC session with U, based on the message
           <h4 id="name-voucher-info">
 <a href="#section-4.4.1" class="section-number selfRef">4.4.1. </a><a href="#name-voucher-info" class="section-name selfRef">Voucher Info</a>
           </h4>
-<p id="section-4.4.1-1">The external authorization data EAD_1 contains an EAD item with ead_label = TBD1 and ead_value = Voucher_Info, which is a CBOR byte string:<a href="#section-4.4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.4.1-1">The external authorization data EAD_1 contains a critical EAD item with ead_label = -TBD1 and ead_value = Voucher_Info, which is a CBOR byte string:<a href="#section-4.4.1-1" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-4.4.1-2">
 <pre>
 Voucher_Info = bstr .cborseq Voucher_Info_Seq
@@ -1952,7 +1952,8 @@ external_aad = [ ; used as a CBOR sequence, not array
           <h4 id="name-voucher">
 <a href="#section-4.4.2" class="section-number selfRef">4.4.2. </a><a href="#name-voucher" class="section-name selfRef">Voucher</a>
           </h4>
-<p id="section-4.4.2-1">The external authorization data EAD_2 contains an EAD item with ead_label = TBD2 and ead_value = Voucher.<a href="#section-4.4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.4.2-1">The external authorization data EAD_2 contains a critical EAD item with ead_label = -TBD2.
+If W generates a Voucher, the EAD item also contains ead_value = Voucher, otherwise ead_value is absent.<a href="#section-4.4.2-1" class="pilcrow">¶</a></p>
 <p id="section-4.4.2-2">The voucher is an assertion to U that W has authorized V.
 It is encrypted using the EDHOC AEAD algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1.
 It consists of the 'ciphertext' field of a COSE_Encrypt0 object, which is a byte string, as defined below.<a href="#section-4.4.2-2" class="pilcrow">¶</a></p>
@@ -2057,7 +2058,7 @@ It is opaque to V, while the application in U and W can read its contents.<a hre
             <h5 id="name-processing-in-v">
 <a href="#section-4.5.1.2" class="section-number selfRef">4.5.1.2. </a><a href="#name-processing-in-v" class="section-name selfRef">Processing in V</a>
             </h5>
-<p id="section-4.5.1.2-1">V receives EDHOC message_1 from U and processes it as specified in <span><a href="https://rfc-editor.org/rfc/rfc9528#section-5.2.3" class="relref">Section 5.2.3</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, with the additional step of processing the EAD item in EAD_1. Since the EAD item is critical, if V does not recognize it or it contains information that V cannot process, then V MUST abort the EDHOC session, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.8" class="relref">Section 3.8</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>. Otherwise, the ead_label = TBD1 triggers the voucher request to W as described in <a href="#V-W" class="auto internal xref">Section 4.6</a>. The exchange between V and W needs to be completed successfully for the EDHOC session to be continued.<a href="#section-4.5.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.5.1.2-1">V receives EDHOC message_1 from U and processes it as specified in <span><a href="https://rfc-editor.org/rfc/rfc9528#section-5.2.3" class="relref">Section 5.2.3</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, with the additional step of processing the EAD item in EAD_1. Since the EAD item is critical, if V does not recognize it or it contains information that V cannot process, then V MUST abort the EDHOC session, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.8" class="relref">Section 3.8</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>. Otherwise, the ead_label = -TBD1 triggers the voucher request to W as described in <a href="#V-W" class="auto internal xref">Section 4.6</a>. The exchange between V and W needs to be completed successfully for the EDHOC session to be continued.<a href="#section-4.5.1.2-1" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-2">Note that the selected cipher suite SS is used both in the U &lt;-&gt; W and U &lt;-&gt; V interactions, therefore V must be ready to use the cipher suite SS set by U in message_1.
 That is, ELA restricts the cipher suite negotiation in order to provide a streamlined authorization flow from the perspective of U.
 Since V has a pre-established trusted channel with W, it has the opportunity to learn which cipher suites should be supported before any authorization attempt begins to take place.<a href="#section-4.5.1.2-2" class="pilcrow">¶</a></p>
@@ -2076,7 +2077,7 @@ Since V has a pre-established trusted channel with W, it has the opportunity to 
 <a href="#section-4.5.2.1" class="section-number selfRef">4.5.2.1. </a><a href="#name-processing-in-v-2" class="section-name selfRef">Processing in V</a>
             </h5>
 <p id="section-4.5.2.1-1">V receives the voucher response from W as described in <a href="#V-W" class="auto internal xref">Section 4.6</a>.<a href="#section-4.5.2.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.5.2.1-2">V sends EDHOC message_2 to U with the critical EAD item (-TBD2, Voucher) included in EAD_2, i.e., ead_label = TBD2 and ead_value = Voucher, as specified in <a href="#voucher" class="auto internal xref">Section 4.4.2</a>.<a href="#section-4.5.2.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.5.2.1-2">V sends EDHOC message_2 to U with the critical EAD item (-TBD2, ?Voucher) included in EAD_2, i.e., ead_label = -TBD2 and, if the Voucher is present, ead_value = Voucher, as specified in <a href="#voucher" class="auto internal xref">Section 4.4.2</a>.<a href="#section-4.5.2.1-2" class="pilcrow">¶</a></p>
 <p id="section-4.5.2.1-3">The type of CRED_V may depend on the selected mechanism for the establishment of a secure channel between V and W, See <a href="#creds-table" class="auto internal xref">Table 1</a>.<a href="#section-4.5.2.1-3" class="pilcrow">¶</a></p>
 <p id="section-4.5.2.1-4">In case the network between U and V is constrained, it is recommended that CRED_V be a CWT Claims Set (CCS) <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span>.
 The CCS contains the public authentication key of V encoded as a COSE_Key in the 'cnf' claim, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.2" class="relref">Section 3.5.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.
@@ -2089,8 +2090,11 @@ ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map, see <span>
 <a href="#section-4.5.2.2" class="section-number selfRef">4.5.2.2. </a><a href="#name-processing-in-u-2" class="section-name selfRef">Processing in U</a>
             </h5>
 <p id="section-4.5.2.2-1">U receives EDHOC message_2 from V and processes it as specified in <span><a href="https://rfc-editor.org/rfc/rfc9528#section-5.3.3" class="relref">Section 5.3.3</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, with the additional step of processing the EAD item in EAD_2.<a href="#section-4.5.2.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.5.2.2-2">If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.8" class="relref">Section 3.8</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>. Otherwise, U MUST verify the Voucher using H_message_1, CRED_V, and the keys derived as in <a href="#voucher" class="auto internal xref">Section 4.4.2</a>. If the verification fails then U MUST abort the EDHOC session.<a href="#section-4.5.2.2-2" class="pilcrow">¶</a></p>
-<p id="section-4.5.2.2-3">If OPAQUE_INFO is present, it is made available to the application.<a href="#section-4.5.2.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.5.2.2-2">U first verifies that the EAD item contains the expected ead_label, see <a href="#iana-ead" class="auto internal xref">Section 7.1</a>.<a href="#section-4.5.2.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.5.2.2-3">If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.8" class="relref">Section 3.8</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.<a href="#section-4.5.2.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.5.2.2-4">When the Voucher is present, U MUST verify the Voucher using H_message_1, CRED_V, and the keys derived as in <a href="#voucher" class="auto internal xref">Section 4.4.2</a>.
+If the Voucher verification fails then U MUST abort the EDHOC session.<a href="#section-4.5.2.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.5.2.2-5">If OPAQUE_INFO is present, it is made available to the application.<a href="#section-4.5.2.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2212,12 +2216,12 @@ Note that message_1 contains a unique ephemeral key, therefore H_handshake is ex
             <h5 id="name-processing-in-w-2">
 <a href="#section-4.6.2.1" class="section-number selfRef">4.6.2.1. </a><a href="#name-processing-in-w-2" class="section-name selfRef">Processing in W</a>
             </h5>
-<p id="section-4.6.2.1-1">W retrieves CRED_V associated with the secure connection with V, and constructs the Voucher for the device with identifier ID_U (see <a href="#voucher" class="auto internal xref">Section 4.4.2</a>).<a href="#section-4.6.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.6.2.1-1">In case a Voucher is needed (as determined by the application), W retrieves CRED_V associated with the secure connection with V, and constructs the Voucher for the device with identifier ID_U (see <a href="#voucher" class="auto internal xref">Section 4.4.2</a>).<a href="#section-4.6.2.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.6.2.1-2">W generates the voucher response and sends it to V over the secure connection. The Voucher_Response SHALL be a CBOR array as defined below:<a href="#section-4.6.2.1-2" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-4.6.2.1-3">
 <pre>
 Voucher_Response = [
-    Voucher:        bstr,
+    ? Voucher:        bstr,
     ? opaque_state: bstr
 ]
 </pre><a href="#section-4.6.2.1-3" class="pilcrow">¶</a>
@@ -2225,13 +2229,13 @@ Voucher_Response = [
 <p id="section-4.6.2.1-4">where<a href="#section-4.6.2.1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.6.2.1-5.1">
-                <p id="section-4.6.2.1-5.1.1">The Voucher is defined in <a href="#voucher" class="auto internal xref">Section 4.4.2</a>.<a href="#section-4.6.2.1-5.1.1" class="pilcrow">¶</a></p>
+                <p id="section-4.6.2.1-5.1.1">The Voucher is defined in <a href="#voucher" class="auto internal xref">Section 4.4.2</a>, if present.<a href="#section-4.6.2.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.6.2.1-5.2">
                 <p id="section-4.6.2.1-5.2.1">opaque_state is the echoed byte string opaque_state from Voucher_Request, if present.<a href="#section-4.6.2.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
-<p id="section-4.6.2.1-6">W signals the successful generation of the voucher via a status code in the REST interface, as defined in <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.6.2.1-6" class="pilcrow">¶</a></p>
+<p id="section-4.6.2.1-6">W signals the successful processing of Voucher_Request via a status code in the REST interface, as defined in <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.6.2.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="processing-in-v-3">
@@ -2240,8 +2244,7 @@ Voucher_Response = [
 <a href="#section-4.6.2.2" class="section-number selfRef">4.6.2.2. </a><a href="#name-processing-in-v-5" class="section-name selfRef">Processing in V</a>
             </h5>
 <p id="section-4.6.2.2-1">V receives the voucher response from W over the secure connection.
-If present, V decrypts and verifies opaque_state as received from W. If that verification fails, then the EDHOC session
-with U is aborted.
+If present, V decrypts and verifies opaque_state as received from W. If that verification fails, then the EDHOC session with U is aborted.
 If the voucher response is successfully received from W, then V responds to U with EDHOC message_2 as described in <a href="#V_2" class="auto internal xref">Section 4.5.2.1</a>.<a href="#section-4.6.2.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2410,56 +2413,56 @@ Note that Voucher_Info and Voucher are carried in EDHOC message_1 and message_2,
 <figure id="figure-6">
             <div id="section-4.8.1-2.1">
               <div class="alignCenter art-svg artwork" id="section-4.8.1-2.1.1">
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="432" width="560" viewBox="0 0 560 432" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="432" width="568" viewBox="0 0 568 432" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
                   <path d="M 8,32 L 8,80" fill="none" stroke="black"></path>
                   <path d="M 56,80 L 56,416" fill="none" stroke="black"></path>
                   <path d="M 104,32 L 104,80" fill="none" stroke="black"></path>
-                  <path d="M 256,32 L 256,80" fill="none" stroke="black"></path>
-                  <path d="M 304,80 L 304,416" fill="none" stroke="black"></path>
-                  <path d="M 352,32 L 352,80" fill="none" stroke="black"></path>
-                  <path d="M 552,144 L 552,272" fill="none" stroke="black"></path>
+                  <path d="M 264,32 L 264,80" fill="none" stroke="black"></path>
+                  <path d="M 312,80 L 312,416" fill="none" stroke="black"></path>
+                  <path d="M 360,32 L 360,80" fill="none" stroke="black"></path>
+                  <path d="M 560,144 L 560,288" fill="none" stroke="black"></path>
                   <path d="M 8,32 L 104,32" fill="none" stroke="black"></path>
-                  <path d="M 256,32 L 352,32" fill="none" stroke="black"></path>
+                  <path d="M 264,32 L 360,32" fill="none" stroke="black"></path>
                   <path d="M 8,80 L 104,80" fill="none" stroke="black"></path>
-                  <path d="M 256,80 L 352,80" fill="none" stroke="black"></path>
-                  <path d="M 56,144 L 296,144" fill="none" stroke="black"></path>
-                  <path d="M 304,192 L 544,192" fill="none" stroke="black"></path>
-                  <path d="M 312,272 L 544,272" fill="none" stroke="black"></path>
-                  <path d="M 64,320 L 296,320" fill="none" stroke="black"></path>
-                  <path d="M 56,384 L 296,384" fill="none" stroke="black"></path>
-                  <polygon class="arrowhead" points="552,272 540,266.4 540,277.6" fill="black" transform="rotate(0,544,272)"></polygon>
-                  <polygon class="arrowhead" points="552,192 540,186.4 540,197.6" fill="black" transform="rotate(0,544,192)"></polygon>
-                  <polygon class="arrowhead" points="320,272 308,266.4 308,277.6" fill="black" transform="rotate(180,312,272)"></polygon>
-                  <polygon class="arrowhead" points="304,384 292,378.4 292,389.6" fill="black" transform="rotate(0,296,384)"></polygon>
-                  <polygon class="arrowhead" points="304,144 292,138.4 292,149.6" fill="black" transform="rotate(0,296,144)"></polygon>
+                  <path d="M 264,80 L 360,80" fill="none" stroke="black"></path>
+                  <path d="M 56,144 L 304,144" fill="none" stroke="black"></path>
+                  <path d="M 312,192 L 552,192" fill="none" stroke="black"></path>
+                  <path d="M 320,272 L 552,272" fill="none" stroke="black"></path>
+                  <path d="M 64,320 L 304,320" fill="none" stroke="black"></path>
+                  <path d="M 56,384 L 304,384" fill="none" stroke="black"></path>
+                  <polygon class="arrowhead" points="560,272 548,266.4 548,277.6" fill="black" transform="rotate(0,552,272)"></polygon>
+                  <polygon class="arrowhead" points="560,192 548,186.4 548,197.6" fill="black" transform="rotate(0,552,192)"></polygon>
+                  <polygon class="arrowhead" points="328,272 316,266.4 316,277.6" fill="black" transform="rotate(180,320,272)"></polygon>
+                  <polygon class="arrowhead" points="312,384 300,378.4 300,389.6" fill="black" transform="rotate(0,304,384)"></polygon>
+                  <polygon class="arrowhead" points="312,144 300,138.4 300,149.6" fill="black" transform="rotate(0,304,144)"></polygon>
                   <polygon class="arrowhead" points="72,320 60,314.4 60,325.6" fill="black" transform="rotate(180,64,320)"></polygon>
                   <g class="text">
                     <text x="56" y="52">U</text>
-                    <text x="304" y="52">V</text>
+                    <text x="312" y="52">V</text>
                     <text x="56" y="68">Initiator</text>
-                    <text x="304" y="68">Responder</text>
+                    <text x="312" y="68">Responder</text>
                     <text x="136" y="132">EDHOC</text>
                     <text x="200" y="132">message_1</text>
-                    <text x="552" y="132">W</text>
+                    <text x="560" y="132">W</text>
                     <text x="88" y="164">EAD_1</text>
                     <text x="120" y="164">=</text>
-                    <text x="156" y="164">(TBD1,</text>
-                    <text x="240" y="164">Voucher_info)</text>
-                    <text x="428" y="180">VREQ</text>
-                    <text x="332" y="212">(SS,</text>
-                    <text x="372" y="212">G_X,</text>
-                    <text x="448" y="212">Voucher_Info,</text>
-                    <text x="372" y="228">H_message_1,</text>
-                    <text x="484" y="228">?opaque_state)</text>
-                    <text x="428" y="260">VRES</text>
-                    <text x="376" y="292">(Voucher,</text>
-                    <text x="476" y="292">?opaque_state)</text>
+                    <text x="160" y="164">(-TBD1,</text>
+                    <text x="248" y="164">Voucher_info)</text>
+                    <text x="436" y="180">VREQ</text>
+                    <text x="340" y="212">(SS,</text>
+                    <text x="380" y="212">G_X,</text>
+                    <text x="456" y="212">Voucher_Info,</text>
+                    <text x="380" y="228">H_message_1,</text>
+                    <text x="492" y="228">?opaque_state)</text>
+                    <text x="436" y="260">VRES</text>
+                    <text x="388" y="292">(?Voucher,</text>
+                    <text x="492" y="292">?opaque_state)</text>
                     <text x="136" y="308">EDHOC</text>
                     <text x="200" y="308">message_2</text>
                     <text x="104" y="340">EAD_2</text>
                     <text x="136" y="340">=</text>
-                    <text x="172" y="340">(TBD2,</text>
-                    <text x="236" y="340">Voucher)</text>
+                    <text x="176" y="340">(-TBD2,</text>
+                    <text x="248" y="340">?Voucher)</text>
                     <text x="136" y="372">EDHOC</text>
                     <text x="200" y="372">message_3</text>
                   </g>
@@ -2487,7 +2490,7 @@ That is, here we only describe the differences in processing, when compared to t
               <p id="section-4.8.2-4.1.1">Voucher_Info and Voucher are transported in EDHOC message_2 and message_3, respectively (instead of message_1 and message_2).<a href="#section-4.8.2-4.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.8.2-4.2">
-              <p id="section-4.8.2-4.2.1">The EAD_2 and EAD_3 fields carry EAD items identified with labels TBD1 and TBD2, respectively.<a href="#section-4.8.2-4.2.1" class="pilcrow">¶</a></p>
+              <p id="section-4.8.2-4.2.1">The EAD_2 and EAD_3 fields carry critical EAD items identified with labels -TBD1 and -TBD2, respectively.<a href="#section-4.8.2-4.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.8.2-4.3">
               <p id="section-4.8.2-4.3.1">The VREQ / VRES protocol takes place between message_2 and message_3.<a href="#section-4.8.2-4.3.1" class="pilcrow">¶</a></p>
@@ -2503,34 +2506,34 @@ That is, here we only describe the differences in processing, when compared to t
 <figure id="figure-7">
             <div id="section-4.8.2-5.1">
               <div class="alignCenter art-svg artwork" id="section-4.8.2-5.1.1">
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="480" width="560" viewBox="0 0 560 480" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="480" width="568" viewBox="0 0 568 480" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
                   <path d="M 8,32 L 8,80" fill="none" stroke="black"></path>
                   <path d="M 56,80 L 56,464" fill="none" stroke="black"></path>
                   <path d="M 104,32 L 104,80" fill="none" stroke="black"></path>
-                  <path d="M 256,32 L 256,80" fill="none" stroke="black"></path>
-                  <path d="M 304,80 L 304,464" fill="none" stroke="black"></path>
-                  <path d="M 352,32 L 352,80" fill="none" stroke="black"></path>
-                  <path d="M 552,240 L 552,368" fill="none" stroke="black"></path>
+                  <path d="M 264,32 L 264,80" fill="none" stroke="black"></path>
+                  <path d="M 312,80 L 312,464" fill="none" stroke="black"></path>
+                  <path d="M 360,32 L 360,80" fill="none" stroke="black"></path>
+                  <path d="M 560,240 L 560,384" fill="none" stroke="black"></path>
                   <path d="M 8,32 L 104,32" fill="none" stroke="black"></path>
-                  <path d="M 256,32 L 352,32" fill="none" stroke="black"></path>
+                  <path d="M 264,32 L 360,32" fill="none" stroke="black"></path>
                   <path d="M 8,80 L 104,80" fill="none" stroke="black"></path>
-                  <path d="M 256,80 L 352,80" fill="none" stroke="black"></path>
-                  <path d="M 64,176 L 296,176" fill="none" stroke="black"></path>
-                  <path d="M 56,240 L 296,240" fill="none" stroke="black"></path>
-                  <path d="M 304,288 L 544,288" fill="none" stroke="black"></path>
-                  <path d="M 312,368 L 544,368" fill="none" stroke="black"></path>
-                  <path d="M 64,416 L 296,416" fill="none" stroke="black"></path>
-                  <polygon class="arrowhead" points="552,368 540,362.4 540,373.6" fill="black" transform="rotate(0,544,368)"></polygon>
-                  <polygon class="arrowhead" points="552,288 540,282.4 540,293.6" fill="black" transform="rotate(0,544,288)"></polygon>
-                  <polygon class="arrowhead" points="320,368 308,362.4 308,373.6" fill="black" transform="rotate(180,312,368)"></polygon>
-                  <polygon class="arrowhead" points="304,240 292,234.4 292,245.6" fill="black" transform="rotate(0,296,240)"></polygon>
+                  <path d="M 264,80 L 360,80" fill="none" stroke="black"></path>
+                  <path d="M 64,176 L 304,176" fill="none" stroke="black"></path>
+                  <path d="M 56,240 L 304,240" fill="none" stroke="black"></path>
+                  <path d="M 312,288 L 552,288" fill="none" stroke="black"></path>
+                  <path d="M 320,368 L 552,368" fill="none" stroke="black"></path>
+                  <path d="M 64,416 L 304,416" fill="none" stroke="black"></path>
+                  <polygon class="arrowhead" points="560,368 548,362.4 548,373.6" fill="black" transform="rotate(0,552,368)"></polygon>
+                  <polygon class="arrowhead" points="560,288 548,282.4 548,293.6" fill="black" transform="rotate(0,552,288)"></polygon>
+                  <polygon class="arrowhead" points="328,368 316,362.4 316,373.6" fill="black" transform="rotate(180,320,368)"></polygon>
+                  <polygon class="arrowhead" points="312,240 300,234.4 300,245.6" fill="black" transform="rotate(0,304,240)"></polygon>
                   <polygon class="arrowhead" points="72,416 60,410.4 60,421.6" fill="black" transform="rotate(180,64,416)"></polygon>
                   <polygon class="arrowhead" points="72,176 60,170.4 60,181.6" fill="black" transform="rotate(180,64,176)"></polygon>
                   <g class="text">
                     <text x="56" y="52">U</text>
-                    <text x="304" y="52">V</text>
+                    <text x="312" y="52">V</text>
                     <text x="56" y="68">Initiator</text>
-                    <text x="304" y="68">Responder</text>
+                    <text x="312" y="68">Responder</text>
                     <text x="144" y="116">Trigger</text>
                     <text x="208" y="116">Message</text>
                     <text x="64" y="132">-</text>
@@ -2547,31 +2550,32 @@ That is, here we only describe the differences in processing, when compared to t
                     <text x="240" y="132">-</text>
                     <text x="256" y="132">-</text>
                     <text x="272" y="132">-</text>
-                    <text x="292" y="132">-&gt;</text>
+                    <text x="288" y="132">-</text>
+                    <text x="304" y="132">&gt;</text>
                     <text x="136" y="164">EDHOC</text>
                     <text x="200" y="164">message_1</text>
                     <text x="136" y="228">EDHOC</text>
                     <text x="200" y="228">message_2</text>
-                    <text x="552" y="228">W</text>
+                    <text x="560" y="228">W</text>
                     <text x="88" y="260">EAD_2</text>
                     <text x="120" y="260">=</text>
-                    <text x="156" y="260">(TBD1,</text>
-                    <text x="240" y="260">Voucher_info)</text>
-                    <text x="428" y="276">VREQ</text>
-                    <text x="332" y="308">(SS,</text>
-                    <text x="372" y="308">G_Y,</text>
-                    <text x="448" y="308">Voucher_Info,</text>
-                    <text x="344" y="324">TH_2,</text>
-                    <text x="428" y="324">?opaque_state)</text>
-                    <text x="428" y="356">VRES</text>
-                    <text x="376" y="388">(Voucher,</text>
-                    <text x="476" y="388">?opaque_state)</text>
+                    <text x="160" y="260">(-TBD1,</text>
+                    <text x="248" y="260">Voucher_info)</text>
+                    <text x="436" y="276">VREQ</text>
+                    <text x="340" y="308">(SS,</text>
+                    <text x="380" y="308">G_Y,</text>
+                    <text x="456" y="308">Voucher_Info,</text>
+                    <text x="352" y="324">TH_2,</text>
+                    <text x="436" y="324">?opaque_state)</text>
+                    <text x="436" y="356">VRES</text>
+                    <text x="384" y="388">(Voucher,</text>
+                    <text x="484" y="388">?opaque_state)</text>
                     <text x="120" y="404">EDHOC</text>
                     <text x="184" y="404">message_3</text>
                     <text x="104" y="436">EAD_3</text>
                     <text x="136" y="436">=</text>
-                    <text x="172" y="436">(TBD2,</text>
-                    <text x="236" y="436">Voucher)</text>
+                    <text x="176" y="436">(-TBD2,</text>
+                    <text x="248" y="436">?Voucher)</text>
                   </g>
                 </svg><a href="#section-4.8.2-5.1.1" class="pilcrow">¶</a>
 </div>
@@ -2592,7 +2596,7 @@ The ELA reverse flow described in this section uses most of the ELA default flow
 <p id="section-4.8.2.1-2">Voucher Info:<a href="#section-4.8.2.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.8.2.1-3.1">
-                <p id="section-4.8.2.1-3.1.1">The EAD_2 item has ead_label = TBD1 and ead_value = Voucher_Info.<a href="#section-4.8.2.1-3.1.1" class="pilcrow">¶</a></p>
+                <p id="section-4.8.2.1-3.1.1">The EAD_2 item has ead_label = -TBD1 and ead_value = Voucher_Info.<a href="#section-4.8.2.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 <p id="section-4.8.2.1-4">Voucher:<a href="#section-4.8.2.1-4" class="pilcrow">¶</a></p>
@@ -2623,7 +2627,7 @@ The ELA reverse flow described in this section uses most of the ELA default flow
                 <p id="section-4.8.2.2-4.1.1">U composes message_2 and generates G_Y, which is reused in the interaction with W.<a href="#section-4.8.2.2-4.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.8.2.2-4.2">
-                <p id="section-4.8.2.2-4.2.1">U sends message_2 with EAD item (-TBD1, Voucher_Info) included in EAD_2.<a href="#section-4.8.2.2-4.2.1" class="pilcrow">¶</a></p>
+                <p id="section-4.8.2.2-4.2.1">U sends message_2 with critical EAD item (-TBD1, Voucher_Info) included in EAD_2.<a href="#section-4.8.2.2-4.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.8.2.2-4.3">
                 <p id="section-4.8.2.2-4.3.1">V processes message_2 and the EAD item in EAD_2, extracting the Voucher_Info struct.<a href="#section-4.8.2.2-4.3.1" class="pilcrow">¶</a></p>
@@ -2638,7 +2642,7 @@ The ELA reverse flow described in this section uses most of the ELA default flow
                 <p id="section-4.8.2.2-6.1.1">V receives the voucher response from W.<a href="#section-4.8.2.2-6.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.8.2.2-6.2">
-                <p id="section-4.8.2.2-6.2.1">V sends message_3 with EAD item (-TBD2, Voucher) included in EAD_3.<a href="#section-4.8.2.2-6.2.1" class="pilcrow">¶</a></p>
+                <p id="section-4.8.2.2-6.2.1">V sends message_3 with critical EAD item (-TBD2, ?Voucher) included in EAD_3.<a href="#section-4.8.2.2-6.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.8.2.2-6.3">
                 <p id="section-4.8.2.2-6.3.1">Y processes message_3 and the EAD item in EAD_3.<a href="#section-4.8.2.2-6.3.1" class="pilcrow">¶</a></p>
@@ -3388,7 +3392,7 @@ It requires, however, some profiling of the lower layer beacons.<a href="#append
 <a href="#appendix-A.2.2" class="section-number selfRef">A.2.2. </a><a href="#name-v_info-in-ead_1" class="section-name selfRef">V_INFO in EAD_1</a>
           </h4>
 <p id="appendix-A.2.2-1">The ELA reverse flow (see <a href="#reverse-u-responder" class="auto internal xref">Section 4.8</a>) allows implementing advertising where U first sends a trigger packet, in the format of a CoAP request that is broadcasted to the newtork.
-When a suitable V receives the solicitation, if it implements ELA, it should respond with an EDHOC message_1 whose EAD_1 has label TBD1 and value V_INFO (see Section <a href="#optimization-strat" class="auto internal xref">Appendix A</a>).<a href="#appendix-A.2.2-1" class="pilcrow">¶</a></p>
+When a suitable V receives the solicitation, if it implements ELA, it should respond with an EDHOC message_1 whose EAD_1 has label -TBD1 and value V_INFO (see Section <a href="#optimization-strat" class="auto internal xref">Appendix A</a>).<a href="#appendix-A.2.2-1" class="pilcrow">¶</a></p>
 <span id="name-advertising-ela-using-v_info"></span><div id="fig-adv-ead1">
 <figure id="figure-9">
             <div id="appendix-A.2.2-2.1">
@@ -3800,7 +3804,7 @@ In this case, the policy only specifies a restriction in terms of U, effectively
             <p id="appendix-D.1-5.1.1">device u1 discovers a gateway (v1) and tries to enroll<a href="#appendix-D.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="appendix-D.1-5.2">
-            <p id="appendix-D.1-5.2.1">gateway v1 identifies the zero-touch join attempt by checking that the label of EAD_1 = TBD1, and prepares a Voucher Request using the information contained in the value of EAD_1<a href="#appendix-D.1-5.2.1" class="pilcrow">¶</a></p>
+            <p id="appendix-D.1-5.2.1">gateway v1 identifies the zero-touch join attempt by checking that the label of EAD_1 = -TBD1, and prepares a Voucher Request using the information contained in the value of EAD_1<a href="#appendix-D.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="appendix-D.1-5.3">
             <p id="appendix-D.1-5.3.1">upon receiving the request, W obtains ID_U = 14, authorizes the access, and replies with Voucher Response<a href="#appendix-D.1-5.3.1" class="pilcrow">¶</a></p>
