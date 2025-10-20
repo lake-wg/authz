@@ -301,7 +301,7 @@ U                              V                                       W
 |                              |                                       |
 |                              |        Voucher Response (VRES)        |
 |                              |<--------------------------------------+
-|                              |  (message_1, ?Voucher, ?opaque_state)  |
+|                              | (message_1, ?Voucher, ?opaque_state)  |
 |                              |                                       |
 |         EDHOC message_2      |                                       |
 |<-----------------------------+                                       |
@@ -743,31 +743,31 @@ For clarity, we first present the "default flow" with U as Initiator, as describ
 Note that Voucher_Info and Voucher are carried in EDHOC message_1 and message_2, respectively.
 
 ~~~~~~~~~~~ aasvg
-+-----+-----+                  +-----------+
-|     U     |                  |     V     |
-| Initiator |                  | Responder |
-+-----+-----+                  +-----+-----+
-      |                              |
-      |                              |
-      |       EDHOC message_1        |                              W
-      +----------------------------->|                              |
++-----+-----+                   +-----------+
+|     U     |                   |     V     |
+| Initiator |                   | Responder |
++-----+-----+                   +-----+-----+
+      |                               |
+      |                               |
+      |       EDHOC message_1         |                              W
+      +------------------------------>|                              |
       | EAD_1 = (-TBD1, Voucher_info) |                              |
-      |                              |             VREQ             |
-      |                              +----------------------------->|
-      |                              | (SS, G_X, Voucher_Info,      |
-      |                              |  H_message_1, ?opaque_state) |
-      |                              |                              |
-      |                              |             VRES             |
-      |                              +<---------------------------->|
-      |                              |    (?Voucher, ?opaque_state)
-      |       EDHOC message_2        |
-      +<-----------------------------|
+      |                               |             VREQ             |
+      |                               +----------------------------->|
+      |                               | (SS, G_X, Voucher_Info,      |
+      |                               |  H_message_1, ?opaque_state) |
+      |                               |                              |
+      |                               |             VRES             |
+      |                               +<---------------------------->|
+      |                               |    (?Voucher, ?opaque_state) |
+      |       EDHOC message_2         |
+      +<------------------------------|
       |   EAD_2 = (-TBD2, ?Voucher)   |
-      |                              |
-      |       EDHOC message_3        |
-      +----------------------------->|
-      |                              |
-      |                              |
+      |                               |
+      |       EDHOC message_3         |
+      +------------------------------>|
+      |                               |
+      |                               |
 ~~~~~~~~~~~
 {: #fig-u-initiator title="In ELA default flow, U is the EDHOC Initiator." artwork-align="center"}
 
@@ -789,34 +789,34 @@ Here is a summary of the changes needed in the ELA reverse flow:
 * Stateless operation of V (see {{stateless-v}}) is not supported
 
 ~~~~~~~~~~~ aasvg
-+-----+-----+                  +-----------+
-|     U     |                  |     V     |
-| Initiator |                  | Responder |
-+-----+-----+                  +-----+-----+
-      |                              |
-      |       Trigger Message        |
-      +- - - - - - - - - - - - - - ->|
-      |                              |
-      |       EDHOC message_1        |
-      +<-----------------------------|
-      |                              |
-      |                              |
-      |       EDHOC message_2        |                              W
-      +----------------------------->|                              |
++-----+-----+                   +-----------+
+|     U     |                   |     V     |
+| Initiator |                   | Responder |
++-----+-----+                   +-----+-----+
+      |                               |
+      |       Trigger Message         |
+      +- - - - - - - - - - - - - - - >|
+      |                               |
+      |       EDHOC message_1         |
+      +<------------------------------|
+      |                               |
+      |                               |
+      |       EDHOC message_2         |                              W
+      +------------------------------>|                              |
       | EAD_2 = (-TBD1, Voucher_info) |                              |
-      |                              |             VREQ             |
-      |                              +----------------------------->|
-      |                              | (SS, G_Y, Voucher_Info,      |
-      |                              |  TH_2, ?opaque_state)        |
-      |                              |                              |
-      |                              |             VRES             |
-      |                              +<---------------------------->|
-      |                              |    (Voucher, ?opaque_state)
-      |     EDHOC message_3          |
-      +<-----------------------------|
+      |                               |             VREQ             |
+      |                               +----------------------------->|
+      |                               | (SS, G_Y, Voucher_Info,      |
+      |                               |  TH_2, ?opaque_state)        |
+      |                               |                              |
+      |                               |             VRES             |
+      |                               +<---------------------------->|
+      |                               |    (Voucher, ?opaque_state)  |
+      |     EDHOC message_3           |
+      +<------------------------------|
       |   EAD_3 = (-TBD2, ?Voucher)   |
-      |                              |
-      |                              |
+      |                               |
+      |                               |
 ~~~~~~~~~~~
 {: #fig-u-responder title="ELA when U is the EDHOC Responder." artwork-align="center"}
 
