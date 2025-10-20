@@ -152,6 +152,7 @@ The goal of ELA is to enable a (potentially constrained) device (U) to enroll in
 The device authenticates and enforces authorization of the (non-constrained) domain authenticator (V) with the help of a voucher conveying authorization information.
 The voucher has a similar role as in {{RFC8366}} but should be considerably more compact.
 The domain authenticator, in turn, authenticates the device and authorizes its enrollment into the domain.
+ELA also enables scenarios where only V needs to authorize U, by allowing the voucher to be optional.
 
 The procedure is assisted by a (non-constrained) enrollment server (W) located in a non-constrained network behind the domain authenticator, e.g., on the Internet, providing information to the device (conveyed in the voucher) and to the domain authenticator as part of the protocol.
 
@@ -300,7 +301,7 @@ U                              V                                       W
 |                              |                                       |
 |                              |        Voucher Response (VRES)        |
 |                              |<--------------------------------------+
-|                              |  (message_1, Voucher, ?opaque_state)  |
+|                              |  (message_1, ?Voucher, ?opaque_state)  |
 |                              |                                       |
 |         EDHOC message_2      |                                       |
 |<-----------------------------+                                       |
@@ -463,7 +464,8 @@ The derivation of IV_1 = EDHOC_Expand(PRK, info, length) uses the following inpu
 
 ### Voucher {#voucher}
 
-The external authorization data EAD_2 contains an EAD item with ead_label = TBD2 and ead_value = Voucher.
+The external authorization data EAD_2 contains an EAD item with ead_label = TBD2.
+If W generates a Voucher, the EAD item also contains ead_value = Voucher, otherwise ead_value is absent.
 
 The voucher is an assertion to U that W has authorized V.
 It is encrypted using the EDHOC AEAD algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1.
@@ -542,7 +544,7 @@ Since V has a pre-established trusted channel with W, it has the opportunity to 
 
 V receives the voucher response from W as described in {{V-W}}.
 
-V sends EDHOC message_2 to U with the critical EAD item (-TBD2, Voucher) included in EAD_2, i.e., ead_label = TBD2 and ead_value = Voucher, as specified in {{voucher}}.
+V sends EDHOC message_2 to U with the critical EAD item (-TBD2, ?Voucher) included in EAD_2, i.e., ead_label = TBD2 and, if the Voucher is present, ead_value = Voucher, as specified in {{voucher}}.
 
 The type of CRED_V may depend on the selected mechanism for the establishment of a secure channel between V and W, See {{creds-table}}.
 
@@ -555,7 +557,12 @@ ID_CRED_R contains the CWT Claims Set with 'kccs' as COSE header_map, see {{Sect
 
 U receives EDHOC message_2 from V and processes it as specified in {{Section 5.3.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_2.
 
-If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}. Otherwise, U MUST verify the Voucher using H_message_1, CRED_V, and the keys derived as in {{voucher}}. If the verification fails then U MUST abort the EDHOC session.
+U first verifies that the EAD item contains the expected ead_label, see {{iana-ead}}.
+
+If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}.
+
+When the Voucher is present, U MUST verify the Voucher using H_message_1, CRED_V, and the keys derived as in {{voucher}}.
+If the Voucher verification fails then U MUST abort the EDHOC session.
 
 If OPAQUE_INFO is present, it is made available to the application.
 
@@ -628,29 +635,28 @@ If ID_U is known by W, but authorization fails, the protocol SHALL be aborted wi
 
 #### Processing in W
 
-W retrieves CRED_V associated with the secure connection with V, and constructs the Voucher for the device with identifier ID_U (see {{voucher}}).
+In case a Voucher is needed (as determined by the application), W retrieves CRED_V associated with the secure connection with V, and constructs the Voucher for the device with identifier ID_U (see {{voucher}}).
 
 W generates the voucher response and sends it to V over the secure connection. The Voucher_Response SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~ cddl
 Voucher_Response = [
-    Voucher:        bstr,
+    ? Voucher:        bstr,
     ? opaque_state: bstr
 ]
 ~~~~~~~~~~~
 
 where
 
-* The Voucher is defined in {{voucher}}.
+* The Voucher is defined in {{voucher}}, if present.
 * opaque_state is the echoed byte string opaque_state from Voucher_Request, if present.
 
-W signals the successful generation of the voucher via a status code in the REST interface, as defined in {{rest-voucher-request}}.
+W signals the successful processing of Voucher_Request via a status code in the REST interface, as defined in {{rest-voucher-request}}.
 
 #### Processing in V
 
 V receives the voucher response from W over the secure connection.
-If present, V decrypts and verifies opaque_state as received from W. If that verification fails, then the EDHOC session
-with U is aborted.
+If present, V decrypts and verifies opaque_state as received from W. If that verification fails, then the EDHOC session with U is aborted.
 If the voucher response is successfully received from W, then V responds to U with EDHOC message_2 as described in {{V_2}}.
 
 ## Error Handling {#err-handling}
@@ -753,10 +759,10 @@ Note that Voucher_Info and Voucher are carried in EDHOC message_1 and message_2,
       |                              |                              |
       |                              |             VRES             |
       |                              +<---------------------------->|
-      |                              |    (Voucher, ?opaque_state)
+      |                              |    (?Voucher, ?opaque_state)
       |       EDHOC message_2        |
       +<-----------------------------|
-      |   EAD_2 = (TBD2, Voucher)    |
+      |   EAD_2 = (TBD2, ?Voucher)   |
       |                              |
       |       EDHOC message_3        |
       +----------------------------->|
@@ -808,7 +814,7 @@ Here is a summary of the changes needed in the ELA reverse flow:
       |                              |    (Voucher, ?opaque_state)
       |     EDHOC message_3          |
       +<-----------------------------|
-      |   EAD_3 = (TBD2, Voucher)    |
+      |   EAD_3 = (TBD2, ?Voucher)   |
       |                              |
       |                              |
 ~~~~~~~~~~~
@@ -848,7 +854,7 @@ Message 2:
 Message 3:
 
 * V receives the voucher response from W.
-* V sends message_3 with EAD item (-TBD2, Voucher) included in EAD_3.
+* V sends message_3 with EAD item (-TBD2, ?Voucher) included in EAD_3.
 * Y processes message_3 and the EAD item in EAD_3.
 
 #### Reverse V <-> W {#reverse-v-w}
