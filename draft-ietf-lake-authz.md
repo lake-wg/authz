@@ -285,7 +285,7 @@ W provides to U the authorization decision for enrollment with V in the form of 
 Authorization policies are out of scope for this document.
 
 Authentication credentials and communication security with V is described in {{domain-auth}}.
-To calculate the voucher, W needs access to H_handshake, ID_CRED_I, and CRED_V as used in the EDHOC session between U and V, see {{voucher}}.
+To calculate the voucher, W needs access to the hash of EDHOC message_2 and message_1 (H_21), ID_CRED_I, and CRED_V as used in the EDHOC session between U and V, see {{voucher}}.
 
 * W MUST verify that CRED_V is bound to the secure connection between W and V
 * W MUST verify that V is in possession of the private key corresponding to the public key of CRED_V
@@ -338,7 +338,7 @@ U                              V                                       W
 |                              |                                       |
 |                              |        Voucher Request (VREQ)         |
 |                              +-------------------------------------->|
-|                              |       (SS, EK_CT, H_handshake         |
+|                              |           (SS, EK_CT, H_21            |
 |                              |        ID_CRED_I, Fetch_CRED_U)       |
 |                              |                                       |
 |                              |        Voucher Response (VRES)        |
@@ -450,7 +450,7 @@ plaintext = (
 ~~~~~~~~~~~
 ~~~~~~~~~~~ cddl
 external_aad = (
-    H_handshake:  bstr,
+    H_21:         bstr,
     ID_CRED_I:    bstr,
     CRED_V:       bstr,
 )
@@ -463,7 +463,7 @@ If present, it will contain application data that W may want to convey to U, e.g
 Note that OPAQUE_INFO is opaque when viewed as an information element in EDHOC.
 It is opaque to V, while the application in U and W can read its contents.
 
-* H_handshake is H(message_2, message_1), used to bind the voucher to the current EDHOC session. It is computed using the EDHOC hash algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1. H_handshake is sent to W as part of the voucher request, see {{voucher_request}}.
+* H_21 is H(message_2, H(message_1)), used to bind the voucher to the current EDHOC session. It is computed using the EDHOC hash algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1. H_21 is sent to W as part of the voucher request, see {{voucher_request}}.
 
 * ID_CRED_I is the identifier of U transmitted via the voucher request.
 
@@ -553,7 +553,7 @@ V prepares EDHOC message_4 where, if the voucher response contains a voucher, V 
 
 U receives EDHOC message_4 from V and processes it as specified in {{Section 5.5.3 of RFC9528}}, with the additional step of processing EAD_4.
 
-If EAD_4 contains an EAD item with label = -TBD2, U MUST verify the Voucher using H_handshake, ID_CRED_I, CRED_V, and the keys derived as in {{voucher}}.
+If EAD_4 contains an EAD item with label = -TBD2, U MUST verify the Voucher using H_21, ID_CRED_I, CRED_V, and the keys derived as in {{voucher}}.
 If the verification fails then U MUST abort the EDHOC session.
 
 If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}.
@@ -576,7 +576,7 @@ The Voucher Request SHALL be a CBOR array as defined below:
 Voucher_Request = [
     SS:             int,
     EK_CT:          bstr,
-    H_handshake:    bstr,
+    H_21:           bstr,
     ID_CRED_I:      bstr,
     Fetch_CRED_U    bool,
 ]
@@ -586,7 +586,7 @@ where
 
 * SS is the selected cipher suite used in the EDHOC session between U and V.
 * EK_CT is either an ephemeral public key or a KEM ciphertext set by U, as defined in {{U-W}}.
-* H_handshake corresponds to H(message_2, message_1). It is computed as defined in {{voucher}}.
+* H_21 corresponds to H(message_2, H(message_1)). It is computed as defined in {{voucher}}.
 * Fetch_CRED_U is a flag indicating whether W should try to load and return the credential CRED_U corresponding to ID_CRED_I.
 
 #### Processing in W
@@ -596,14 +596,14 @@ W extracts from Voucher_Request:
 
 * SS - the selected cipher suite.
 * EK_CT - either an ephemeral public key or a KEM ciphertext.
-* H_handshake - the hash of message_2 and message_1.
+* H_21 - the hash of message_2 and message_1.
 * ID_CRED_I - the identifier of U.
 * Fetch_CRED_U - flag indicating whether V requests W to return CRED_U.
 
 W verifies that it supports the cipher suite and parses the key or ciphertext in EK_CT.
 
-W uses H_handshake as a session identifier, and associates it to the device identifier ID_CRED_I.
-Note that EK_CT is unique, as the ephemeral key or the ciphertext MUST not be reused, therefore H_handshake is expected to be unique.
+W uses H_21 as a session identifier, and associates it to the device identifier ID_CRED_I.
+Note that EK_CT is unique, as the ephemeral key or the ciphertext MUST not be reused, therefore H_21 is expected to be unique.
 
 If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see {{rest-voucher-request}}.
 
@@ -698,12 +698,12 @@ The encryption of REJECT_INFO follows a procedure analogous to the one defined i
 
 ~~~~~~~~~~~ cddl
 plaintext = (
-    OPAQUE_INFO:     bstr,
+    OPAQUE_INFO:   bstr,
  )
 ~~~~~~~~~~~
 ~~~~~~~~~~~ cddl
 external_aad = (
-    H_handshake:    bstr,
+    H_21:          bstr,
  )
 ~~~~~~~~~~~
 
@@ -712,7 +712,7 @@ where
 * OPAQUE_INFO is an opaque field that contains actionable information about the error.
   It may contain, for example, a list of suggested Vs through which U should join instead.
 
-* H_handshake is the hash of EDHOC message_2 and message_1, obtained from the associated voucher request, see {{voucher_request}}.
+* H_21 is the hash of EDHOC message_2 and message_1, obtained from the associated voucher request, see {{voucher_request}}.
 
 ## Reverse flow with U as Responder {#reverse-u-responder}
 
@@ -744,7 +744,7 @@ Note that Voucher_Info and Voucher are carried in EDHOC message_3 and message_4,
       | EAD_3 = (-TBD1, Voucher_info) |                              |
       |                               |             VREQ             |
       |                               +----------------------------->|
-      |                               |   (SS, EK_CT, H_handshake,   |
+      |                               |        (SS, EK_CT, H_21,     |
       |                               |    ID_CRED_I, Fetch_CRED_U)  |
       |                               |                              |
       |                               |             VRES             |
@@ -790,7 +790,7 @@ Here is a summary of the changes needed in the ELA reverse flow:
       | EAD_2 = (-TBD1, Voucher_info) |                              |
       |                               |             VREQ             |
       |                               +----------------------------->|
-      |                               |   (SS, EK_CT, H_handshake,   |
+      |                               |       (SS, EK_CT, H_21,      |
       |                               |    ID_CRED_I, Fetch_CRED_U)  |
       |                               |                              |
       |                               |             VRES             |
