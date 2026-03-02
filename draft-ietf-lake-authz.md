@@ -343,11 +343,11 @@ U                              V                                       W
 |                              |                                       |
 |                              |        Voucher Response (VRES)        |
 |                              |<--------------------------------------+
-|                              |          (Voucher, ?CRED_U)           |
+|                              |         (?Voucher, ?CRED_U)           |
 |                              |                                       |
 |         EDHOC message_4      |                                       |
 |<-----------------------------+                                       |
-|        (EAD_4 = Voucher)     |                                       |
+|        (?EAD_4 = Voucher)    |                                       |
 |                              |                                       |
 
 ~~~~~~~~~~~
@@ -426,7 +426,7 @@ where
 
 ### Voucher {#voucher}
 
-The external authorization data EAD_4 contains an EAD item with ead_label = -TBD2 and ead_value = Voucher.
+If W generates a Voucher, as determined by the application, the external authorization data EAD_4 contains an EAD item with ead_label = -TBD2 and ead_value = Voucher.
 
 The voucher is an assertion to U that W has authorized V.
 It is encrypted using the EDHOC AEAD algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1.
@@ -526,7 +526,7 @@ The negative sign indicates that the EAD item is critical, see {{Section 3.8 of 
 
 V receives EDHOC message_3 from U and processes it as specified in {{Section 5.4.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_3.
 Since the EAD item is critical, if V does not recognize it or it contains information that V cannot process, then V MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}.
-The ead_label = TBD1 triggers the voucher request to W as described in {{V-W}}.
+The ead_label = -TBD1 triggers the voucher request to W as described in {{V-W}}.
 The exchange between V and W needs to be completed successfully for the EDHOC session to be continued.
 
 As part of normal processing of EDHOC message_3, V must verify the credential of U.
@@ -547,14 +547,16 @@ In this scenario, the EAD item in EAD_3 is processed as a pre-verification item 
 
 At this point, V has authenticated U, and received a valid voucher response from W as described in {{V-W}}.
 
-V sends EDHOC message_4 to U with the critical EAD item (-TBD2, Voucher) included in EAD_4, i.e., ead_label = -TBD2 and ead_value = Voucher, as specified in {{voucher}}.
+V prepares EDHOC message_4 where, if the voucher response contains a voucher, V includes the critical EAD item (-TBD2, Voucher) in EAD_4, i.e., ead_label = -TBD2 and ead_value = Voucher, as specified in {{voucher}}.
 
 #### Processing in U
 
-U receives EDHOC message_4 from V and processes it as specified in {{Section 5.5.3 of RFC9528}}, with the additional step of processing the EAD item in EAD_4.
+U receives EDHOC message_4 from V and processes it as specified in {{Section 5.5.3 of RFC9528}}, with the additional step of processing EAD_4.
+
+If EAD_4 contains an EAD item with label = -TBD2, U MUST verify the Voucher using H_handshake, ID_CRED_I, CRED_V, and the keys derived as in {{voucher}}.
+If the verification fails then U MUST abort the EDHOC session.
 
 If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see {{Section 3.8 of RFC9528}}.
-Otherwise, U MUST verify the Voucher using H_handshake, ID_CRED_I, CRED_V, and the keys derived as in {{voucher}}. If the verification fails then U MUST abort the EDHOC session.
 
 If OPAQUE_INFO is present, it is made available to the application.
 
@@ -622,14 +624,14 @@ The Voucher_Response SHALL be a CBOR array as defined below:
 
 ~~~~~~~~~~~ cddl
 Voucher_Response = [
-    Voucher:        bstr,
+    ? Voucher:        bstr,
     ? CRED_U:       bstr,
 ]
 ~~~~~~~~~~~
 
 where
 
-* The Voucher is defined in {{voucher}}.
+* The Voucher is defined in {{voucher}}, if present.
 * CRED_U is an optional field corresponding to the credential of U extracted according to the ID_CRED_I field passed in the voucher request. W only tries to load and return CRED_U if the flag Fetch_CRED_U was set in the voucher request.
 
 W signals the successful processing of Voucher_Request via a status code in the REST interface, as defined in {{rest-voucher-request}}.
@@ -744,11 +746,11 @@ Note that Voucher_Info and Voucher are carried in EDHOC message_3 and message_4,
       |                               |                              |
       |                               |             VRES             |
       |                               +<---------------------------->|
-      |                               |      (Voucher, ?CRED_U)      |
+      |                               |      (?Voucher, ?CRED_U)     |
       |                               |
       |       EDHOC message_4         |
       +<------------------------------|
-      |   EAD_4 = (-TBD2, Voucher)    |
+      |   ?EAD_4 = (-TBD2, Voucher)   |
       |                               |
 ~~~~~~~~~~~
 {: #fig-u-initiator title="In ELA regular flow, U is the EDHOC Initiator." artwork-align="center"}
@@ -790,11 +792,11 @@ Here is a summary of the changes needed in the ELA reverse flow:
       |                               |                              |
       |                               |             VRES             |
       |                               +<---------------------------->|
-      |                               |    (Voucher, ?CRED_U)  |
+      |                               |      (?Voucher, ?CRED_U)     |
       |                               |
       |     EDHOC message_3           |
       +<------------------------------|
-      |   EAD_3 = (-TBD2, Voucher)   |
+      |   ?EAD_3 = (-TBD2, Voucher)   |
       |                               |
       |                               |
 ~~~~~~~~~~~
