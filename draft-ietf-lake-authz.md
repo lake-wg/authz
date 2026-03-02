@@ -538,7 +538,7 @@ In this scenario, the EAD item in EAD_3 is processed as a post-verification item
 
 Alternatively, V MAY proceed and perform a voucher request and wait for a voucher response.
 If the response contains CRED_U, V then continues processing EDHOC message_3 where it verifies the credential of U.
-Even upon reception of a valid Voucher from W, if the verification of CRED_U fails, the EDHOC session is aborted.
+Even upon reception of a successful voucher response from W, if the verification of CRED_U fails, the EDHOC session is aborted.
 In this scenario, the EAD item in EAD_3 is processed as a pre-verification item {{I-D.ietf-lake-edhoc-impl-cons}}.
 
 ### Message 4 {#m4}
@@ -598,7 +598,7 @@ W extracts from Voucher_Request:
 * EK_CT - either an ephemeral public key or a KEM ciphertext.
 * H_handshake - the hash of message_2 and message_1.
 * ID_CRED_I - the identifier of U.
-* Fetch_CRED_U - flag indicating whether V expects CRED_U in voucher response.
+* Fetch_CRED_U - flag indicating whether V requests W to return CRED_U.
 
 W verifies that it supports the cipher suite and parses the key or ciphertext in EK_CT.
 
@@ -611,7 +611,10 @@ W uses ID_CRED_I to look up the associated authorization policies for U and enfo
 
 If ID_CRED_I is known by W, but authorization fails, the protocol SHALL be aborted with an error code signaling an access control issue, see {{err-handling}} and {{rest-voucher-request}}.
 
-If Fetch_CRED_U is true, W uses ID_CRED_I to try to retrieve the corresponding credential that is optionally sent in the voucher response, see {{voucher_response}}.
+If Fetch_CRED_U is true, W uses ID_CRED_I to retrieve the corresponding credential CRED_U.
+If retrieval succeeds, W MUST include CRED_U in the voucher response, see {{voucher_response}}.
+If the retrieval fails, W sends the voucher response without CRED_U.
+If Fetch_CRED_U is false, W MUST NOT include CRED_U in the voucher response.
 
 ### Voucher Response {#voucher_response}
 
@@ -632,7 +635,7 @@ Voucher_Response = [
 where
 
 * The Voucher is defined in {{voucher}}, if present.
-* CRED_U is an optional field corresponding to the credential of U extracted according to the ID_CRED_I field passed in the voucher request. W only tries to load and return CRED_U if the flag Fetch_CRED_U was set in the voucher request.
+* CRED_U is the credential of U corresponding to ID_CRED_I passed in the voucher request. CRED_U is included only if Fetch_CRED_U was set in the voucher request and W successfully retrieved the credential.
 
 W signals the successful processing of Voucher_Request via a status code in the REST interface, as defined in {{rest-voucher-request}}.
 
