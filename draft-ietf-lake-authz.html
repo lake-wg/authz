@@ -1278,7 +1278,10 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
             <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-optimization-strategies" class="internal xref">Optimization Strategies</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
-                <p id="section-toc.1-1.9.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-v-advertises-support-for-el" class="internal xref">V advertises support for ELA</a></p>
+                <p id="section-toc.1-1.9.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-using-edhoc-application-pro" class="internal xref">Using EDHOC Application Profiles</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-v-advertises-support-for-el" class="internal xref">V advertises support for ELA</a></p>
 </li>
             </ul>
 </li>
@@ -1786,7 +1789,7 @@ info = (
 )
 </pre><a href="#section-4.2-8" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2-9">Finally, since the ELA authorization flow happens in EDHOC message_3 and message_4, the ELA is also compatible with EDHOC application profiles, as defined in <span>[<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> where negotiation of capabilities happen in message_1 and message_2.
+<p id="section-4.2-9">Finally, since the ELA authorization flow happens in EDHOC message_3 and message_4, the ELA is also compatible with EDHOC application profiles, as defined in <span>[<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> where advertisement of supported profiles happens in message_1 and message_2.
 This can be used, for example, to enable U or V to learn about each other's capability for executing the ELA protocol.<a href="#section-4.2-9" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -3178,48 +3181,90 @@ How should DNS Registries/Registrars treat requests to register this reserved do
       </h2>
 <p id="appendix-A-1">When ELA is used for zero-touch enrollment of IoT devices, U may have little to no knowledge about V's available in its vicinity.
 This may lead to situations where U retries several times at different V's until it finds one that works.
-This section presents an optimization strategy and different approaches to implement it.
-They were developed to address scenarios where V's are radio gateways to which U wants to enroll, but may also be applicable to other use cases.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
-<div id="strat-advertise">
+This section presents two optimization strategies and different approaches to implement it.
+These strategies were developed to address scenarios where V's are radio gateways to which U wants to enroll, but may also be applicable to other use cases.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<div id="ela-profile">
 <section id="appendix-A.1">
-        <h3 id="name-v-advertises-support-for-el">
-<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-v-advertises-support-for-el" class="section-name selfRef">V advertises support for ELA</a>
+        <h3 id="name-using-edhoc-application-pro">
+<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-using-edhoc-application-pro" class="section-name selfRef">Using EDHOC Application Profiles</a>
         </h3>
-<p id="appendix-A.1-1">In this strategy, V shares some information (V_INFO) with a potential U, that can help it decide whether to try to enroll with that V.<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
-<p id="appendix-A.1-2">The exact contents of the V_INFO structure, as well as the mechanism used to transport it, will depend on the underlying communication technology and also on application needs.
-For example, V_INFO may state that:<a href="#appendix-A.1-2" class="pilcrow">¶</a></p>
+<p id="appendix-A.1-1">This section provides an example of how support for ELA can be advertised using EDHOC application profiles.<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.1-2">Application Profiles for EDHOC <span>[<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> defines mechanisms to describe and distribute parameters regarding the supported capabilities of EDHOC peers.
+Specifically, <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-04#section-5" class="relref">Section 5</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> describes how EDHOC peers can advertise supported profiles by using fields EAD_1 and EAD_2 in EDHOC message_1 and message_2, respectively.<a href="#appendix-A.1-2" class="pilcrow">¶</a></p>
+<p id="appendix-A.1-3">Since the ELA regular flow uses message_3 and message_4, peers can advertise support for ELA, and refrain from attempting the protocol in case one does not support it.
+In the case of the reverse flow, V can advertise a profile in message_1, while the protocol happens in message_2 and message_3.<a href="#appendix-A.1-3" class="pilcrow">¶</a></p>
+<p id="appendix-A.1-4">For example, to advertise support for ELA in the regular flow, U prepares EAD_1 containing an item where ead_label = TBD_EAD_LABEL and ead_value encodes a profile_id_with_eads, containing the following value:<a href="#appendix-A.1-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.1-5">
+<pre>
+&lt;&lt;
+   true,                                   / reply_flag /
+   [e'APP-PROF-MINIMAL-CS-2', TBD1, TBD2]  / profile_id_with_eads /
+&gt;&gt;
+</pre><a href="#appendix-A.1-5" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.1-6">Where:<a href="#appendix-A.1-6" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-A.1-3.1">
-            <p id="appendix-A.1-3.1.1">V implements ELA -- similarly to how EAPOL <span>[<a href="#IEEE802.1X" class="cite xref">IEEE802.1X</a>]</span> frames state support for IEEE 802.1X.<a href="#appendix-A.1-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-A.1-7.1">
+            <p id="appendix-A.1-7.1.1">true indicates that U expects an application profile response from V in EAD_2, see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-04#section-5.1" class="relref">Section 5.1</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span><a href="#appendix-A.1-7.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-A.1-3.2">
-            <p id="appendix-A.1-3.2.1">V is part of a certain domain -- similarly to how Eduroam <span>[<a href="#RFC7593" class="cite xref">RFC7593</a>]</span> is used in the SSID field of IEEE 802.11 packets<a href="#appendix-A.1-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-A.1-7.2">
+            <p id="appendix-A.1-7.2.1">APP-PROF-MINIMAL-CS-2 corresponds to a well-known EDHOC application profile (Method 3; Cipher Suite 2; CCS; kid), see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-04#section-8" class="relref">Section 8</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span><a href="#appendix-A.1-7.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-A.1-7.3">
+            <p id="appendix-A.1-7.3.1">TBD1 and TBD2 correspond to the EAD labels registered in this document, see <a href="#iana" class="auto internal xref">Section 7</a><a href="#appendix-A.1-7.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="appendix-A.1-4">V_INFO can be sent over a network beacon (see <a href="#adv-beacon" class="auto internal xref">Appendix A.1.1</a>), which may require technology specific profiling, e.g., the IEEE 802.15.4 enhanced beacon may be extended according to <span>[<a href="#RFC8137" class="cite xref">RFC8137</a>]</span>.
-Alternatively, V_INFO can be sent as part of an EAD field, as shown in <a href="#adv-ead1" class="auto internal xref">Appendix A.1.2</a>.<a href="#appendix-A.1-4" class="pilcrow">¶</a></p>
-<p id="appendix-A.1-5">As a guideline for implementers, we define the following field that can be included in a V_INFO structure:<a href="#appendix-A.1-5" class="pilcrow">¶</a></p>
-<div class="lang-cddl sourcecode" id="appendix-A.1-6">
+<p id="appendix-A.1-8">In the reply, V prepares EAD_2 containing an item where ead_label = TBD_EAD_LABEL and ead_value encodes a profile_id_with_eads, containing the following value:<a href="#appendix-A.1-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.1-9">
+<pre>
+&lt;&lt;
+   [e'APP-PROF-EXTENSIVE', TBD1, TBD2]  / profile_id_with_eads /
+&gt;&gt;
+</pre><a href="#appendix-A.1-9" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.1-10">Where APP-PROF-EXTENSIVE corresponds to a well-known EDHOC application profile, see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-04#section-8" class="relref">Section 8</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span>.<a href="#appendix-A.1-10" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="strat-advertise">
+<section id="appendix-A.2">
+        <h3 id="name-v-advertises-support-for-el">
+<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-v-advertises-support-for-el" class="section-name selfRef">V advertises support for ELA</a>
+        </h3>
+<p id="appendix-A.2-1">In this strategy, V shares some information (V_INFO) with a potential U, that can help it decide whether to try to enroll with that V.<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-2">The exact contents of the V_INFO structure, as well as the mechanism used to transport it, will depend on the underlying communication technology and also on application needs.
+For example, V_INFO may state that:<a href="#appendix-A.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A.2-3.1">
+            <p id="appendix-A.2-3.1.1">V implements ELA -- similarly to how EAPOL <span>[<a href="#IEEE802.1X" class="cite xref">IEEE802.1X</a>]</span> frames state support for IEEE 802.1X.<a href="#appendix-A.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-A.2-3.2">
+            <p id="appendix-A.2-3.2.1">V is part of a certain domain -- similarly to how Eduroam <span>[<a href="#RFC7593" class="cite xref">RFC7593</a>]</span> is used in the SSID field of IEEE 802.11 packets<a href="#appendix-A.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-A.2-4">V_INFO can be sent over a network beacon (see <a href="#adv-beacon" class="auto internal xref">Appendix A.2.1</a>), which may require technology specific profiling, e.g., the IEEE 802.15.4 enhanced beacon may be extended according to <span>[<a href="#RFC8137" class="cite xref">RFC8137</a>]</span>.
+Alternatively, V_INFO can be sent as part of an EAD field, as shown in <a href="#adv-ead1" class="auto internal xref">Appendix A.2.2</a>.<a href="#appendix-A.2-4" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-5">As a guideline for implementers, we define the following field that can be included in a V_INFO structure:<a href="#appendix-A.2-5" class="pilcrow">¶</a></p>
+<div class="lang-cddl sourcecode" id="appendix-A.2-6">
 <pre>
 DOMAIN_ID: bstr
-</pre><a href="#appendix-A.1-6" class="pilcrow">¶</a>
+</pre><a href="#appendix-A.2-6" class="pilcrow">¶</a>
 </div>
-<p id="appendix-A.1-7">The DOMAIN_ID field identifies the domain to which V belongs to, for example an URL or UUID.<a href="#appendix-A.1-7" class="pilcrow">¶</a></p>
-<p id="appendix-A.1-8">Below are three examples of how the advertisement strategy may be applied according to different application needs.
+<p id="appendix-A.2-7">The DOMAIN_ID field identifies the domain to which V belongs to, for example an URL or UUID.<a href="#appendix-A.2-7" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-8">Below are three examples of how the advertisement strategy may be applied according to different application needs.
 The examples include sending V_INFO in network beacons, as part of EAD_1 in reverse message flow, or as part of a periodic CoAP multicast packet.
-The advantages, costs, and security impacts of each approach are also discussed.<a href="#appendix-A.1-8" class="pilcrow">¶</a></p>
+The advantages, costs, and security impacts of each approach are also discussed.<a href="#appendix-A.2-8" class="pilcrow">¶</a></p>
 <div id="adv-beacon">
-<section id="appendix-A.1.1">
+<section id="appendix-A.2.1">
           <h4 id="name-v_info-in-network-beacons">
-<a href="#appendix-A.1.1" class="section-number selfRef">A.1.1. </a><a href="#name-v_info-in-network-beacons" class="section-name selfRef">V_INFO in network beacons</a>
+<a href="#appendix-A.2.1" class="section-number selfRef">A.2.1. </a><a href="#name-v_info-in-network-beacons" class="section-name selfRef">V_INFO in network beacons</a>
           </h4>
-<p id="appendix-A.1.1-1">This approach allows carrying V_INFO in beacons sent over the network layer, as shown in <a href="#fig-adv-beacon" class="auto internal xref">Figure 8</a>.
+<p id="appendix-A.2.1-1">This approach allows carrying V_INFO in beacons sent over the network layer, as shown in <a href="#fig-adv-beacon" class="auto internal xref">Figure 8</a>.
 It requires that the network layer offers a mechanism to configure its beacon packets.
-Depending on the network type, a solicitation packet may also be needed, as is the case of non-beaconed IEEE 802.15.4 and BLE with GATT.<a href="#appendix-A.1.1-1" class="pilcrow">¶</a></p>
+Depending on the network type, a solicitation packet may also be needed, as is the case of non-beaconed IEEE 802.15.4 and BLE with GATT.<a href="#appendix-A.2.1-1" class="pilcrow">¶</a></p>
 <span id="name-advertising-ela-using-v_inf"></span><div id="fig-adv-beacon">
 <figure id="figure-8">
-            <div id="appendix-A.1.1-2.1">
-              <div class="alignCenter art-svg artwork" id="appendix-A.1.1-2.1.1">
+            <div id="appendix-A.2.1-2.1">
+              <div class="alignCenter art-svg artwork" id="appendix-A.2.1-2.1.1">
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="432" width="504" viewBox="0 0 504 432" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
                   <path d="M 8,32 L 8,96" fill="none" stroke="black"></path>
                   <path d="M 72,32 L 72,64" fill="none" stroke="black"></path>
@@ -3295,30 +3340,30 @@ Depending on the network type, a solicitation packet may also be needed, as is t
                     <text x="376" y="420">...</text>
                     <text x="400" y="420">)</text>
                   </g>
-                </svg><a href="#appendix-A.1.1-2.1.1" class="pilcrow">¶</a>
+                </svg><a href="#appendix-A.2.1-2.1.1" class="pilcrow">¶</a>
 </div>
 </div>
 <figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
 <a href="#name-advertising-ela-using-v_inf" class="selfRef">Advertising ELA using V_INFO in network-layer beacons.</a>
             </figcaption></figure>
 </div>
-<p id="appendix-A.1.1-3">This strategy can be used, for example, in IEEE 802.15.4, where an Enhanced Beacon <span>[<a href="#IEEE802.15.4" class="cite xref">IEEE802.15.4</a>]</span> can be used to transmit V_INFO.
-Specifically, a new information element for carrying V_INFO can be defined according to <span>[<a href="#RFC8137" class="cite xref">RFC8137</a>]</span>.<a href="#appendix-A.1.1-3" class="pilcrow">¶</a></p>
-<p id="appendix-A.1.1-4">This approach has the advantage of requiring minimal changes to the regular protocol as presented in <a href="#protocol-overview" class="auto internal xref">Section 4.1</a>, i.e., it does not require using the ELA reverse flow.
-It requires, however, some profiling of the lower layer beacons.<a href="#appendix-A.1.1-4" class="pilcrow">¶</a></p>
+<p id="appendix-A.2.1-3">This strategy can be used, for example, in IEEE 802.15.4, where an Enhanced Beacon <span>[<a href="#IEEE802.15.4" class="cite xref">IEEE802.15.4</a>]</span> can be used to transmit V_INFO.
+Specifically, a new information element for carrying V_INFO can be defined according to <span>[<a href="#RFC8137" class="cite xref">RFC8137</a>]</span>.<a href="#appendix-A.2.1-3" class="pilcrow">¶</a></p>
+<p id="appendix-A.2.1-4">This approach has the advantage of requiring minimal changes to the regular protocol as presented in <a href="#protocol-overview" class="auto internal xref">Section 4.1</a>, i.e., it does not require using the ELA reverse flow.
+It requires, however, some profiling of the lower layer beacons.<a href="#appendix-A.2.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="adv-ead1">
-<section id="appendix-A.1.2">
+<section id="appendix-A.2.2">
           <h4 id="name-v_info-in-ead_1">
-<a href="#appendix-A.1.2" class="section-number selfRef">A.1.2. </a><a href="#name-v_info-in-ead_1" class="section-name selfRef">V_INFO in EAD_1</a>
+<a href="#appendix-A.2.2" class="section-number selfRef">A.2.2. </a><a href="#name-v_info-in-ead_1" class="section-name selfRef">V_INFO in EAD_1</a>
           </h4>
-<p id="appendix-A.1.2-1">The ELA reverse flow (see <a href="#reverse-u-responder" class="auto internal xref">Section 4.7</a>) allows implementing advertising where U first sends a trigger packet, in the format of a CoAP request that is broadcasted to the newtork.
-When a suitable V receives the solicitation, if it implements ELA, it should respond with an EDHOC message_1 whose EAD_1 has label -TBD4 and value V_INFO (see <a href="#strat-advertise" class="auto internal xref">Appendix A.1</a>).<a href="#appendix-A.1.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.2.2-1">The ELA reverse flow (see <a href="#reverse-u-responder" class="auto internal xref">Section 4.7</a>) allows implementing advertising where U first sends a trigger packet, in the format of a CoAP request that is broadcasted to the newtork.
+When a suitable V receives the solicitation, if it implements ELA, it should respond with an EDHOC message_1 whose EAD_1 has label -TBD4 and value V_INFO (see <a href="#strat-advertise" class="auto internal xref">Appendix A.2</a>).<a href="#appendix-A.2.2-1" class="pilcrow">¶</a></p>
 <span id="name-advertising-ela-using-v_info"></span><div id="fig-adv-ead1">
 <figure id="figure-9">
-            <div id="appendix-A.1.2-2.1">
-              <div class="alignCenter art-svg artwork" id="appendix-A.1.2-2.1.1">
+            <div id="appendix-A.2.2-2.1">
+              <div class="alignCenter art-svg artwork" id="appendix-A.2.2-2.1.1">
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="272" width="424" viewBox="0 0 424 272" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
                   <path d="M 8,32 L 8,96" fill="none" stroke="black"></path>
                   <path d="M 72,32 L 72,64" fill="none" stroke="black"></path>
@@ -3361,38 +3406,38 @@ When a suitable V receives the solicitation, if it implements ELA, it should res
                     <text x="360" y="260">...</text>
                     <text x="384" y="260">)</text>
                   </g>
-                </svg><a href="#appendix-A.1.2-2.1.1" class="pilcrow">¶</a>
+                </svg><a href="#appendix-A.2.2-2.1.1" class="pilcrow">¶</a>
 </div>
 </div>
 <figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
 <a href="#name-advertising-ela-using-v_info" class="selfRef">Advertising ELA using V_INFO in EAD_1, employing the EDHOC reverse flow with U as responder.</a>
             </figcaption></figure>
 </div>
-<p id="appendix-A.1.2-3">Note that V will only reply if it supports ELA.
-V_INFO can be structured to contain only an optional domain identifier:<a href="#appendix-A.1.2-3" class="pilcrow">¶</a></p>
-<div class="lang-cddl sourcecode" id="appendix-A.1.2-4">
+<p id="appendix-A.2.2-3">Note that V will only reply if it supports ELA.
+V_INFO can be structured to contain only an optional domain identifier:<a href="#appendix-A.2.2-3" class="pilcrow">¶</a></p>
+<div class="lang-cddl sourcecode" id="appendix-A.2.2-4">
 <pre>
 V_INFO = (
   ?DOMAIN_ID: bstr,
 )
-</pre><a href="#appendix-A.1.2-4" class="pilcrow">¶</a>
+</pre><a href="#appendix-A.2.2-4" class="pilcrow">¶</a>
 </div>
-<p id="appendix-A.1.2-5">This approach enables a simple filtering mechanism, where only V's that support ELA will reply.
-In addition, it may not require layer-two profiling (in case the network allows transporting data before authorization).<a href="#appendix-A.1.2-5" class="pilcrow">¶</a></p>
+<p id="appendix-A.2.2-5">This approach enables a simple filtering mechanism, where only V's that support ELA will reply.
+In addition, it may not require layer-two profiling (in case the network allows transporting data before authorization).<a href="#appendix-A.2.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="adv-coap-mult">
-<section id="appendix-A.1.3">
+<section id="appendix-A.2.3">
           <h4 id="name-v_info-in-a-coap-multicast-">
-<a href="#appendix-A.1.3" class="section-number selfRef">A.1.3. </a><a href="#name-v_info-in-a-coap-multicast-" class="section-name selfRef">V_INFO in a CoAP Multicast Packet</a>
+<a href="#appendix-A.2.3" class="section-number selfRef">A.2.3. </a><a href="#name-v_info-in-a-coap-multicast-" class="section-name selfRef">V_INFO in a CoAP Multicast Packet</a>
           </h4>
-<p id="appendix-A.1.3-1">In this approach, V periodically multicasts a CoAP packet containing V_INFO, see <a href="#fig-adv-coap-mult" class="auto internal xref">Figure 10</a>.
+<p id="appendix-A.2.3-1">In this approach, V periodically multicasts a CoAP packet containing V_INFO, see <a href="#fig-adv-coap-mult" class="auto internal xref">Figure 10</a>.
 Upon receiving one or more CoAP messages and processing V_INFO, U can decide whether or not to initiate the ELA protocol with a given V.
-Next, the application can either keep U acting as a server, and thus employ the EDHOC reverse flow, or implement a CoAP client and use the forward flow.<a href="#appendix-A.1.3-1" class="pilcrow">¶</a></p>
+Next, the application can either keep U acting as a server, and thus employ the EDHOC reverse flow, or implement a CoAP client and use the forward flow.<a href="#appendix-A.2.3-1" class="pilcrow">¶</a></p>
 <span id="name-advertising-ela-using-the-n"></span><div id="fig-adv-coap-mult">
 <figure id="figure-10">
-            <div id="appendix-A.1.3-2.1">
-              <div class="alignCenter art-svg artwork" id="appendix-A.1.3-2.1.1">
+            <div id="appendix-A.2.3-2.1">
+              <div class="alignCenter art-svg artwork" id="appendix-A.2.3-2.1.1">
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="400" width="520" viewBox="0 0 520 400" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
                   <path d="M 8,32 L 8,96" fill="none" stroke="black"></path>
                   <path d="M 80,32 L 80,64" fill="none" stroke="black"></path>
@@ -3446,23 +3491,23 @@ Next, the application can either keep U acting as a server, and thus employ the 
                     <text x="384" y="372">...</text>
                     <text x="408" y="372">)</text>
                   </g>
-                </svg><a href="#appendix-A.1.3-2.1.1" class="pilcrow">¶</a>
+                </svg><a href="#appendix-A.2.3-2.1.1" class="pilcrow">¶</a>
 </div>
 </div>
 <figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
 <a href="#name-advertising-ela-using-the-n" class="selfRef">Advertising ELA using the network layer.</a>
             </figcaption></figure>
 </div>
-<p id="appendix-A.1.3-3">The V_INFO structure is sent as part of the CoAP payload.
-It is encoded as a CBOR sequence:<a href="#appendix-A.1.3-3" class="pilcrow">¶</a></p>
-<div class="lang-cddl sourcecode" id="appendix-A.1.3-4">
+<p id="appendix-A.2.3-3">The V_INFO structure is sent as part of the CoAP payload.
+It is encoded as a CBOR sequence:<a href="#appendix-A.2.3-3" class="pilcrow">¶</a></p>
+<div class="lang-cddl sourcecode" id="appendix-A.2.3-4">
 <pre>
 V_INFO = (
   ?DOMAIN_ID: bstr,
 )
-</pre><a href="#appendix-A.1.3-4" class="pilcrow">¶</a>
+</pre><a href="#appendix-A.2.3-4" class="pilcrow">¶</a>
 </div>
-<p id="appendix-A.1.3-5">In this approach, the periodic multicast may have resource usage impacts in the network.<a href="#appendix-A.1.3-5" class="pilcrow">¶</a></p>
+<p id="appendix-A.2.3-5">In this approach, the periodic multicast may have resource usage impacts in the network.<a href="#appendix-A.2.3-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
