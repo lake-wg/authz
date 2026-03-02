@@ -397,7 +397,7 @@ info = (
 )
 ~~~~~~~~~~
 
-Finally, since the ELA authorization flow happens in EDHOC message_3 and message_4, the ELA is also compatible with EDHOC application profiles, as defined in {{I-D.ietf-lake-app-profiles}} where negotiation of capabilities happen in message_1 and message_2.
+Finally, since the ELA authorization flow happens in EDHOC message_3 and message_4, the ELA is also compatible with EDHOC application profiles, as defined in {{I-D.ietf-lake-app-profiles}} where advertisement of supported profiles happens in message_1 and message_2.
 This can be used, for example, to enable U or V to learn about each other's capability for executing the ELA protocol.
 
 ## Device <-> Enrollment Server (U <-> W) {#U-W}
@@ -1087,8 +1087,43 @@ Note for IANA reviewers: the preferred value range is 0-255 (Expert Review).
 
 When ELA is used for zero-touch enrollment of IoT devices, U may have little to no knowledge about V's available in its vicinity.
 This may lead to situations where U retries several times at different V's until it finds one that works.
-This section presents an optimization strategy and different approaches to implement it.
-They were developed to address scenarios where V's are radio gateways to which U wants to enroll, but may also be applicable to other use cases.
+This section presents two optimization strategies and different approaches to implement it.
+These strategies were developed to address scenarios where V's are radio gateways to which U wants to enroll, but may also be applicable to other use cases.
+
+## Using EDHOC Application Profiles {#ela-profile}
+
+This section provides an example of how support for ELA can be advertised using EDHOC application profiles.
+
+Application Profiles for EDHOC {{I-D.ietf-lake-app-profiles}} defines mechanisms to describe and distribute parameters regarding the supported capabilities of EDHOC peers.
+Specifically, {{Section 5 of I-D.ietf-lake-app-profiles}} describes how EDHOC peers can advertise supported profiles by using fields EAD_1 and EAD_2 in EDHOC message_1 and message_2, respectively.
+
+Since the ELA regular flow uses message_3 and message_4, peers can advertise support for ELA, and refrain from attempting the protocol in case one does not support it.
+In the case of the reverse flow, V can advertise a profile in message_1, while the protocol happens in message_2 and message_3.
+
+For example, to advertise support for ELA in the regular flow, U prepares EAD_1 containing an item where ead_label = TBD_EAD_LABEL and ead_value encodes a profile_id_with_eads, containing the following value:
+
+~~~~~~~~~~~
+<<
+   true,                                   / reply_flag /
+   [e'APP-PROF-MINIMAL-CS-2', TBD1, TBD2]  / profile_id_with_eads /
+>>
+~~~~~~~~~~~
+
+Where:
+
+* true indicates that U expects an application profile response from V in EAD_2, see {{Section 5.1 of I-D.ietf-lake-app-profiles}}
+* APP-PROF-MINIMAL-CS-2 corresponds to a well-known EDHOC application profile (Method 3; Cipher Suite 2; CCS; kid), see {{Section 8 of I-D.ietf-lake-app-profiles}}
+* TBD1 and TBD2 correspond to the EAD labels registered in this document, see {{iana}}
+
+In the reply, V prepares EAD_2 containing an item where ead_label = TBD_EAD_LABEL and ead_value encodes a profile_id_with_eads, containing the following value:
+
+~~~~~~~~~~~
+<<
+   [e'APP-PROF-EXTENSIVE', TBD1, TBD2]  / profile_id_with_eads /
+>>
+~~~~~~~~~~~
+
+Where APP-PROF-EXTENSIVE corresponds to a well-known EDHOC application profile, see {{Section 8 of I-D.ietf-lake-app-profiles}}.
 
 ## V advertises support for ELA {#strat-advertise}
 
