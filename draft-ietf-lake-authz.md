@@ -381,7 +381,7 @@ The intermediate pseudo-random key PRK is derived using EDHOC_Extract():
     * where salt = 0x (the zero-length byte string)
     * Computation of IKM depends on the EDHOC method in use.
       * If the method is based on Diffie-Hellman, IKM is computed as an ECDH cofactor Diffie-Hellman shared secret from the public key of W, PK_W, and the private key corresponding to G_U (or v.v.), see Section 5.7.1.2 of {{NIST-800-56A}} and {{U-W}}.
-      * If the method is based on a Key Encapsulation Mechanism (KEM), IKM is the shared secret resulting from encapsulating PK_W, see Section 2.2 of {{NIST-800-227}}. For example, the use of ML-KEM in COSE is currently being specified at {{I-D.ietf-jose-pqc-kem}}.
+      * If the method is based on a Key Encapsulation Mechanism (KEM), IKM is the KEM shared secret resulting from encapsulating PK_W, see Section 2.2 of {{NIST-800-227}}. For example, the use of ML-KEM in COSE is currently being specified at {{I-D.ietf-jose-pqc-kem}}.
 
 The output keying material OKM is derived from PRK using EDHOC_Expand(), which is defined in terms of the EDHOC hash algorithm of the selected cipher suite SS, see {{Section 4.1.2 of RFC9528}}:
 
@@ -397,8 +397,9 @@ info = (
 )
 ~~~~~~~~~~
 
-Finally, since the ELA authorization flow happens in EDHOC message_3 and message_4, the ELA is also compatible with EDHOC application profiles, as defined in {{I-D.ietf-lake-app-profiles}} where advertisement of supported profiles happens in message_1 and message_2.
-This can be used, for example, to enable U or V to learn about each other's capability for executing the ELA protocol.
+Finally, since the ELA authorization flow happens in EDHOC message_3 and message_4, ELA is also compatible with EDHOC application profiles, as defined in {{I-D.ietf-lake-app-profiles}} where advertisement of supported profiles happens in message_1 and message_2.
+This can be used, for example, to enable U or V to learn about each other's capability for executing the ELA protocol, see {{ela-profile}}.
+Specifically, support for ELA can be advertised by indicating support for EAD items defined in this document.
 
 ## Device <-> Enrollment Server (U <-> W) {#U-W}
 
