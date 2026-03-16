@@ -259,9 +259,12 @@ To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Res
 
 V and W need to establish a secure (confidentiality and integrity protected) connection for the Voucher Request/Response protocol.
 Furthermore, W needs to access the same credential CRED_V that V uses with U (to compute the Voucher), and V needs to prove to W the possession of the private key corresponding to the public key of CRED_V.
-It is RECOMMENDED that V authenticates to W using the same credential CRED_V as with U.
+V MUST authenticate to W using the same credential CRED_V as with U.
 
-Note that the choice of protocols may affect which type of credential and methods should be used by V.
+Note that the type of credential used by V will depend on what is supported by U and W.
+U can signal its supported credential types by advertising EDHOC Application Profiles {{I-D.ietf-lake-app-profiles}}, specifically by using the "cred_types" element.
+
+Regarding the secure channel between V and W, the choice of protocols may affect which type of credential and methods should be used by V.
 For example, in case V and W select TLS for the secure channel and PoP, then CRED_V is a X.509 certificate, and the EDHOC method used by V is signature-based.
 Some of the possible combinations of protocols to secure the connection between V and W are listed in {{creds-table}} below.
 
