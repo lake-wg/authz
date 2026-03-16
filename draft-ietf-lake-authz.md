@@ -602,7 +602,7 @@ W extracts from Voucher_Request:
 * ID_CRED_I - the identifier of U.
 * Fetch_CRED_U - flag indicating whether V requests W to return CRED_U.
 
-W verifies that it supports the cipher suite SS, and uses it to determine whether EK_CT contains an ephemeral Diffie-Hellman public key or a KEM ciphertext.
+W verifies that it supports the cipher suite SS, and uses the corresponding EDHOC Key Exchange Algorithm to determine whether EK_CT contains an ephemeral Diffie-Hellman public key or a KEM ciphertext.
 
 W uses H_21 as a session identifier, and associates it to the device identifier ID_CRED_I.
 Note that EK_CT is unique, as the ephemeral key or the ciphertext MUST not be reused, therefore H_21 is expected to be unique.
@@ -958,7 +958,7 @@ For considerations about the ELA reverse flow, see {{reverse-u-responder}}.
 The Voucher_Info and Voucher structs are sent over authenticated channels that are confidentiality and integrity protected between U and V, i.e., in EDHOC fields EAD_3 and EAD_4.
 While ELA reuses several components of EDHOC, it does not reuse keys from EDHOC (such as the ephemeral key G_X when using DH) to protect fields Voucher_Info and Voucher.
 Reuse of G_X is avoided since ephemeral keys are expected to be used only once.
-For KEM-based methods, a fresh encapsulation is performed for each session.
+Similarly, for KEM-based methods a fresh encapsulation is performed for each session.
 
 ELA is compatible with the currently standardized Diffie-Hellman shared secret derivation of EDHOC.
 Considering cryptographic recommendations by government agencies and the industry, ELA is also compatible with post-quantum cryptography primitives for deriving a shared secret, namely via the EK_CT field which can contain a KEM ciphertext according to the selected cipher suite.
