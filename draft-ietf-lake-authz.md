@@ -863,7 +863,7 @@ Processing in W happens as specified in {{voucher_request}}.
 
 A Device (U) MUST implement one of the ELA flows, and it MAY choose to implement both.
 
-V MUST support the regular flow and MAY support the reverse flow.
+V MUST support both regular and reverse flows.
 
 From the point of view of W, there is no difference whether U and V run as EDHOC Initiator or Responder.
 
