@@ -945,7 +945,7 @@ V requests the public key certificate of U from W through the "/certrequest" pat
 To request U's authentication credential, V MUST issue a request such that:
 
 * Method is POST
-* Payload is the serialization of the ID_CRED_I object, as received in EDHOC message_3.
+* Payload is the serialization of the ID_CRED_I (ID_CRED_R) object, as received in EDHOC message_3 (message_2).
 * Content-Format (Content-Type) is set to "application/lake-authz-certrequest+cbor"
 
 In case of a successful lookup of the authentication credential at W, W MUST issue a response such that:
@@ -968,7 +968,7 @@ Similarly, for KEM-based methods a fresh encapsulation is performed for each ses
 
 ELA is compatible with the currently standardized Diffie-Hellman shared secret derivation of EDHOC.
 Considering cryptographic recommendations by government agencies and the industry, ELA is also compatible with post-quantum cryptography primitives for deriving a shared secret, namely via the EK_CT field which can contain a KEM ciphertext according to the selected cipher suite.
-Post-quantum cipher suites that could be used in EDHOC are currently under standardization in COSE {{I-D.ietf-jose-pqc-kem}}.
+Post-quantum KEMs that could be used in EDHOC are currently under standardization in COSE {{I-D.ietf-jose-pqc-kem}}.
 
 EDHOC provides identity protection of the Initiator, here the device.
 In ELA, the device U will share its identity with an authenticated V, albeit before knowing (via the Voucher received from W) whether U is authorized to interact with W.
@@ -1085,7 +1085,7 @@ IANA has added the media types "application/lake-authz-voucherrequest+cbor" to t
 
 IANA has added the following Content-Format number in the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".
 
-| Content Type | Content Encoding | ID | Reference |
+| Content Type | Content Coding | ID | Reference |
 | application/lake-authz-voucherrequest+cbor | - | TBD3 | [[this document]] |
 {: #coap-content-formats title="Addition to the CoAP Content-Formats registry" cols="l l l"}
 
