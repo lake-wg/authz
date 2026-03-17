@@ -1505,7 +1505,7 @@ See illustration in <a href="#fig-overview" class="auto internal xref">Figure 1<
         </h3>
 <p id="section-3.1-1">To authenticate to V, the device (U) runs EDHOC in the role of Initiator with authentication credential CRED_U, for example, an X.509 certificate <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span> or a CBOR Web Token (CWT, <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span>). CRED_U may, for example, be carried by value in ID_CRED_I of EDHOC message_3 or be provisioned to V over a non-constrained network, leveraging a credential identifier in ID_CRED_I (see <a href="#fig-protocol" class="auto internal xref">Figure 3</a>).<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.1-2">U also needs to identify itself to W, for which it reuses ID_CRED_I.
-This means that the value used by U in ID_CRED_I needs to be unique enough to be understood by both V and W.
+Note that while typically ID_CRED_I is treated as a field that only needs to be understood between two EDHOC peers (here U and V), in this case ID_CRED_I also MUST be formatted in a way that it is unambiguous to W.
 W will use ID_CRED_I to determine if the device with this identifier is authorized to enroll with V.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 <p id="section-3.1-3">U is also provisioned with information about W:<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
@@ -1526,10 +1526,12 @@ W will use ID_CRED_I to determine if the device with this identifier is authoriz
 <p id="section-3.2-1">To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Responder with an authentication credential CRED_V containing a public key of V, see <a href="#V_2" class="auto internal xref">Section 4.4.2.1</a>. This proves to U the possession of the private key corresponding to the public key of CRED_V. CRED_V typically needs to be transported to U in EDHOC (using  ID_CRED_R = CRED_V, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.2" class="relref">Section 3.5.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>) since there is no previous relation between U and V.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.2-2">V and W need to establish a secure (confidentiality and integrity protected) connection for the Voucher Request/Response protocol.
 Furthermore, W needs to access the same credential CRED_V that V uses with U (to compute the Voucher), and V needs to prove to W the possession of the private key corresponding to the public key of CRED_V.
-It is RECOMMENDED that V authenticates to W using the same credential CRED_V as with U.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
-<p id="section-3.2-3">Note that the choice of protocols may affect which type of credential and methods should be used by V.
+V MUST authenticate to W using the same credential CRED_V as with U.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">Note that the type of credential used by V will depend on what is supported by U and W.
+U can signal its supported credential types by advertising EDHOC Application Profiles <span>[<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span>, specifically by using the "cred_types" element.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-4">Regarding the secure channel between V and W, the choice of protocols may affect which type of credential and methods should be used by V.
 For example, in case V and W select TLS for the secure channel and PoP, then CRED_V is a X.509 certificate, and the EDHOC method used by V is signature-based.
-Some of the possible combinations of protocols to secure the connection between V and W are listed in <a href="#creds-table" class="auto internal xref">Table 1</a> below.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+Some of the possible combinations of protocols to secure the connection between V and W are listed in <a href="#creds-table" class="auto internal xref">Table 1</a> below.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
 <span id="name-examples-of-how-to-secure-t"></span><div id="creds-table">
 <table class="center" id="table-1">
           <caption>
@@ -1566,8 +1568,8 @@ Some of the possible combinations of protocols to secure the connection between 
           </tbody>
         </table>
 </div>
-<p id="section-3.2-5">Note also that the secure connection between V and W may be long-lived and reused for multiple voucher requests/responses.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
-<p id="section-3.2-6">Other details of proof-of-possession related to CRED_V and transport of CRED_V are out of scope of this document.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.2-6">Note also that the secure connection between V and W may be long-lived and reused for multiple voucher requests/responses.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.2-7">Other details of proof-of-possession related to CRED_V and transport of CRED_V are out of scope of this document.<a href="#section-3.2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authz-server">
@@ -1765,7 +1767,7 @@ In case U is Responder, CRED_V is transported in ID_CRED_I in message_3.<a href=
                     <p id="section-4.2-5.1.2.2.2.1.1">If the method is based on Diffie-Hellman, IKM is computed as an ECDH cofactor Diffie-Hellman shared secret from the public key of W, PK_W, and the private key corresponding to G_U (or v.v.), see Section 5.7.1.2 of <span>[<a href="#NIST-800-56A" class="cite xref">NIST-800-56A</a>]</span> and <a href="#U-W" class="auto internal xref">Section 4.3</a>.<a href="#section-4.2-5.1.2.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
                   <li class="normal" id="section-4.2-5.1.2.2.2.2">
-                    <p id="section-4.2-5.1.2.2.2.2.1">If the method is based on a Key Encapsulation Mechanism (KEM), IKM is the shared secret resulting from encapsulating PK_W, see Section 2.2 of <span>[<a href="#NIST-800-227" class="cite xref">NIST-800-227</a>]</span>. For example, the use of ML-KEM in COSE is currently being specified at <span>[<a href="#I-D.ietf-jose-pqc-kem" class="cite xref">I-D.ietf-jose-pqc-kem</a>]</span>.<a href="#section-4.2-5.1.2.2.2.2.1" class="pilcrow">¶</a></p>
+                    <p id="section-4.2-5.1.2.2.2.2.1">If the method is based on a Key Encapsulation Mechanism (KEM), IKM is the KEM shared secret resulting from encapsulating PK_W, see Section 2.2 of <span>[<a href="#NIST-800-227" class="cite xref">NIST-800-227</a>]</span>. For example, the use of ML-KEM in COSE is currently being specified at <span>[<a href="#I-D.ietf-jose-pqc-kem" class="cite xref">I-D.ietf-jose-pqc-kem</a>]</span>.<a href="#section-4.2-5.1.2.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
                 </ul>
 </li>
@@ -1789,8 +1791,9 @@ info = (
 )
 </pre><a href="#section-4.2-8" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2-9">Finally, since the ELA authorization flow happens in EDHOC message_3 and message_4, the ELA is also compatible with EDHOC application profiles, as defined in <span>[<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> where advertisement of supported profiles happens in message_1 and message_2.
-This can be used, for example, to enable U or V to learn about each other's capability for executing the ELA protocol.<a href="#section-4.2-9" class="pilcrow">¶</a></p>
+<p id="section-4.2-9">Finally, since the ELA authorization flow happens in EDHOC message_3 and message_4, ELA is also compatible with EDHOC application profiles, as defined in <span>[<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> where advertisement of supported profiles happens in message_1 and message_2.
+This can be used, for example, to enable U or V to learn about each other's capability for executing the ELA protocol, see <a href="#ela-profile" class="auto internal xref">Appendix A.1</a>.
+Specifically, support for ELA can be advertised by indicating support for EAD items defined in this document.<a href="#section-4.2-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="U-W">
@@ -2084,13 +2087,16 @@ Voucher_Request = [
                 <p id="section-4.5.1.1-4.1.1">SS is the selected cipher suite used in the EDHOC session between U and V.<a href="#section-4.5.1.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.1-4.2">
-                <p id="section-4.5.1.1-4.2.1">EK_CT is either an ephemeral public key or a KEM ciphertext set by U, as defined in <a href="#U-W" class="auto internal xref">Section 4.3</a>.<a href="#section-4.5.1.1-4.2.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.1-4.2.1">EK_CT is either an ephemeral DH public key or a KEM ciphertext set by U, as defined in <a href="#U-W" class="auto internal xref">Section 4.3</a>.<a href="#section-4.5.1.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.1-4.3">
                 <p id="section-4.5.1.1-4.3.1">H_12 corresponds to H(H(message_1), message_2). It is computed as defined in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-4.5.1.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.1-4.4">
-                <p id="section-4.5.1.1-4.4.1">Fetch_CRED_U is a flag indicating whether W should try to load and return the credential CRED_U corresponding to ID_CRED_I.<a href="#section-4.5.1.1-4.4.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.1-4.4.1">ID_CRED_I is an identifier of CRED_U and is used as the identity of U during ELA execution, see <a href="#device" class="auto internal xref">Section 3.1</a>.<a href="#section-4.5.1.1-4.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.5.1.1-4.5">
+                <p id="section-4.5.1.1-4.5.1">Fetch_CRED_U is a flag indicating whether W should try to load and return the credential CRED_U corresponding to ID_CRED_I.<a href="#section-4.5.1.1-4.5.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </section>
@@ -2107,10 +2113,10 @@ W extracts from Voucher_Request:<a href="#section-4.5.1.2-1" class="pilcrow">¶<
                 <p id="section-4.5.1.2-2.1.1">SS - the selected cipher suite.<a href="#section-4.5.1.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.2-2.2">
-                <p id="section-4.5.1.2-2.2.1">EK_CT - either an ephemeral public key or a KEM ciphertext.<a href="#section-4.5.1.2-2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.2-2.2.1">EK_CT - either an ephemeral DH public key or a KEM ciphertext.<a href="#section-4.5.1.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.2-2.3">
-                <p id="section-4.5.1.2-2.3.1">H_12 - the hash of message_2 and message_1.<a href="#section-4.5.1.2-2.3.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.2-2.3.1">H_12 - the hash of message_1 and message_2.<a href="#section-4.5.1.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.2-2.4">
                 <p id="section-4.5.1.2-2.4.1">ID_CRED_I - the identifier of U.<a href="#section-4.5.1.2-2.4.1" class="pilcrow">¶</a></p>
@@ -2119,7 +2125,7 @@ W extracts from Voucher_Request:<a href="#section-4.5.1.2-1" class="pilcrow">¶<
                 <p id="section-4.5.1.2-2.5.1">Fetch_CRED_U - flag indicating whether V requests W to return CRED_U.<a href="#section-4.5.1.2-2.5.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
-<p id="section-4.5.1.2-3">W verifies that it supports the cipher suite and parses the key or ciphertext in EK_CT.<a href="#section-4.5.1.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.5.1.2-3">W verifies that it supports the cipher suite SS, and uses the corresponding EDHOC Key Exchange Algorithm to determine whether EK_CT contains an ephemeral Diffie-Hellman public key or a KEM ciphertext.<a href="#section-4.5.1.2-3" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-4">W uses H_12 as a session identifier, and associates it to the device identifier ID_CRED_I.
 Note that EK_CT is unique, as the ephemeral key or the ciphertext MUST not be reused, therefore H_12 is expected to be unique.<a href="#section-4.5.1.2-4" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-5">If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.1.2-5" class="pilcrow">¶</a></p>
@@ -2226,16 +2232,24 @@ The ERR_INFO field contains error_content which is a CBOR Sequence consisting of
 <div class="lang-cddl sourcecode" id="section-4.6.1-4">
 <pre>
 error_content = (
-  REJECT_TYPE : int,
-  ? REJECT_INFO : bstr,
+  REJECT_TYPE:      int,
+  ? REJECT_INFO:    bstr,
 )
 </pre><a href="#section-4.6.1-4" class="pilcrow">¶</a>
 </div>
-<p id="section-4.6.1-5">The purpose of REJECT_INFO is for the sender to provide verifiable and actionable information to the receiver about the error, so that an automated action may be taken to enable access.<a href="#section-4.6.1-5" class="pilcrow">¶</a></p>
+<p id="section-4.6.1-5">Where:<a href="#section-4.6.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.6.1-6.1">
+              <p id="section-4.6.1-6.1.1">REJECT_TYPE specifies the type and handling of the optional REJECT_INFO field.<a href="#section-4.6.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4.6.1-6.2">
+              <p id="section-4.6.1-6.2.1">REJECT_INFO, if present, provides verifiable and actionable information to the receiver about the error, so that an automated action may be taken to try to obtain access, e.g. in the form of a retry request.<a href="#section-4.6.1-6.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
 <span id="name-reject_type-and-reject_info"></span><div id="fig-reject">
 <figure id="figure-5">
-            <div id="section-4.6.1-6.1">
-              <div class="alignLeft art-svg artwork" id="section-4.6.1-6.1.1">
+            <div id="section-4.6.1-7.1">
+              <div class="alignLeft art-svg artwork" id="section-4.6.1-7.1.1">
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="144" width="568" viewBox="0 0 568 144" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
                   <path d="M 8,32 L 8,128" fill="none" stroke="black"></path>
                   <path d="M 120,32 L 120,128" fill="none" stroke="black"></path>
@@ -2262,7 +2276,7 @@ error_content = (
                     <text x="480" y="116">third</text>
                     <text x="528" y="116">party</text>
                   </g>
-                </svg><a href="#section-4.6.1-6.1.1" class="pilcrow">¶</a>
+                </svg><a href="#section-4.6.1-7.1.1" class="pilcrow">¶</a>
 </div>
 </div>
 <figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
@@ -2608,7 +2622,7 @@ That is, here we only describe the differences in processing, when compared to t
 <a href="#section-4.7.3" class="section-number selfRef">4.7.3. </a><a href="#name-interoperability-considerat" class="section-name selfRef">Interoperability considerations</a>
           </h4>
 <p id="section-4.7.3-1">A Device (U) MUST implement one of the ELA flows, and it MAY choose to implement both.<a href="#section-4.7.3-1" class="pilcrow">¶</a></p>
-<p id="section-4.7.3-2">V MUST support the regular flow and MAY support the reverse flow.<a href="#section-4.7.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.7.3-2">V MUST support both regular and reverse flows.<a href="#section-4.7.3-2" class="pilcrow">¶</a></p>
 <p id="section-4.7.3-3">From the point of view of W, there is no difference whether U and V run as EDHOC Initiator or Responder.<a href="#section-4.7.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2726,10 +2740,10 @@ A valid URI in case of HTTP thus begins with<a href="#section-5.4-1" class="pilc
 <p id="section-5.4.1-5">In case of error, two cases should be considered:<a href="#section-5.4.1-5" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5.4.1-6.1">
-              <p id="section-5.4.1-6.1.1">U cannot be identified: this happens either if W fails to process the Voucher Request, or if it succeeds but ID_CRED_I is considered unknown to W. In this case, W MUST reply with 400 Bad Request if using HTTP, or 4.00 if using CoAP.<a href="#section-5.4.1-6.1.1" class="pilcrow">¶</a></p>
+              <p id="section-5.4.1-6.1.1">Voucher Request processing fails. In this case, W MUST reply with 400 Bad Request if using HTTP, or 4.00 if using CoAP.<a href="#section-5.4.1-6.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-5.4.1-6.2">
-              <p id="section-5.4.1-6.2.1">U is identified but unauthorized: this happens if W is able to process the Voucher Request, and W recognizes ID_CRED_I as a known device, but the access policies forbid enrollment. For example, the policy could enforce enrollment within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 403 Forbidden code if using HTTP, or 4.03 if using CoAP; the payload is the serialized error_content object, with Content-Format (Content-Type) set to "application/lake-authz-vouchererror+cbor". The payload MAY be used by V to prepare an EDHOC error "Access Denied", see <a href="#err-handling" class="auto internal xref">Section 4.6</a>.<a href="#section-5.4.1-6.2.1" class="pilcrow">¶</a></p>
+              <p id="section-5.4.1-6.2.1">U is not unauthorized: this happens if W is able to process the Voucher Request, but the access policies forbid authorization. For example, the policy could enforce enrollment to a restricted list of identities, within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 403 Forbidden code if using HTTP, or 4.03 if using CoAP; the payload is the serialized error_content object, with Content-Format (Content-Type) set to "application/lake-authz-vouchererror+cbor". The payload MAY be used by V to prepare an EDHOC error "Access Denied", see <a href="#err-handling" class="auto internal xref">Section 4.6</a>.<a href="#section-5.4.1-6.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -2746,7 +2760,7 @@ To request U's authentication credential, V MUST issue a request such that:<a hr
               <p id="section-5.4.2-2.1.1">Method is POST<a href="#section-5.4.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-5.4.2-2.2">
-              <p id="section-5.4.2-2.2.1">Payload is the serialization of the ID_CRED_I object, as received in EDHOC message_3.<a href="#section-5.4.2-2.2.1" class="pilcrow">¶</a></p>
+              <p id="section-5.4.2-2.2.1">Payload is the serialization of the ID_CRED_I (ID_CRED_R) object, as received in EDHOC message_3 (message_2).<a href="#section-5.4.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-5.4.2-2.3">
               <p id="section-5.4.2-2.3.1">Content-Format (Content-Type) is set to "application/lake-authz-certrequest+cbor"<a href="#section-5.4.2-2.3.1" class="pilcrow">¶</a></p>
@@ -2780,10 +2794,12 @@ The security considerations of EDHOC <span>[<a href="#RFC9528" class="cite xref"
 These considerations apply to the ELA regular flow.
 For considerations about the ELA reverse flow, see <a href="#reverse-u-responder" class="auto internal xref">Section 4.7</a>.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">The Voucher_Info and Voucher structs are sent over authenticated channels that are confidentiality and integrity protected between U and V, i.e., in EDHOC fields EAD_3 and EAD_4.
-While ELA reuses several components of EDHOC, it does not reuse keys from EDHOC (such as the ephemeral key G_X) to protect fields Voucher_Info and Voucher.<a href="#section-6-2" class="pilcrow">¶</a></p>
+While ELA reuses several components of EDHOC, it does not reuse keys from EDHOC (such as the ephemeral key G_X when using DH) to protect fields Voucher_Info and Voucher.
+Reuse of G_X is avoided since ephemeral keys are expected to be used only once.
+Similarly, for KEM-based methods a fresh encapsulation is performed for each session.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <p id="section-6-3">ELA is compatible with the currently standardized Diffie-Hellman shared secret derivation of EDHOC.
 Considering cryptographic recommendations by government agencies and the industry, ELA is also compatible with post-quantum cryptography primitives for deriving a shared secret, namely via the EK_CT field which can contain a KEM ciphertext according to the selected cipher suite.
-Post-quantum cipher suites that could be used in EDHOC are currently under standardization in COSE <span>[<a href="#I-D.ietf-jose-pqc-kem" class="cite xref">I-D.ietf-jose-pqc-kem</a>]</span>.<a href="#section-6-3" class="pilcrow">¶</a></p>
+Post-quantum KEMs that could be used in EDHOC are currently under standardization in COSE <span>[<a href="#I-D.ietf-jose-pqc-kem" class="cite xref">I-D.ietf-jose-pqc-kem</a>]</span>.<a href="#section-6-3" class="pilcrow">¶</a></p>
 <p id="section-6-4">EDHOC provides identity protection of the Initiator, here the device.
 In ELA, the device U will share its identity with an authenticated V, albeit before knowing (via the Voucher received from W) whether U is authorized to interact with W.<a href="#section-6-4" class="pilcrow">¶</a></p>
 <p id="section-6-5">W may be used for lookup of CRED_U from ID_CRED_I, or this credential lookup function may be separate from the authorization function of W, see <a href="#U-V" class="auto internal xref">Section 4.4</a>.
@@ -3021,7 +3037,7 @@ How should DNS Registries/Registrars treat requests to register this reserved do
 <thead>
             <tr>
               <th class="text-left" rowspan="1" colspan="1">Content Type</th>
-              <th class="text-left" rowspan="1" colspan="1">Content Encoding</th>
+              <th class="text-left" rowspan="1" colspan="1">Content Coding</th>
               <th class="text-left" rowspan="1" colspan="1">ID</th>
               <th class="text-left" rowspan="1" colspan="1">Reference</th>
             </tr>
