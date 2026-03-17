@@ -589,7 +589,7 @@ Voucher_Request = [
 where
 
 * SS is the selected cipher suite used in the EDHOC session between U and V.
-* EK_CT is either an ephemeral public key or a KEM ciphertext set by U, as defined in {{U-W}}.
+* EK_CT is either an ephemeral DH public key or a KEM ciphertext set by U, as defined in {{U-W}}.
 * H_21 corresponds to H(message_2, H(message_1)). It is computed as defined in {{voucher}}.
 * ID_CRED_I is an identifier of CRED_U and is used as the identity of U during ELA execution, see {{device}}.
 * Fetch_CRED_U is a flag indicating whether W should try to load and return the credential CRED_U corresponding to ID_CRED_I.
@@ -600,7 +600,7 @@ W receives and parses the voucher request received over the secure connection wi
 W extracts from Voucher_Request:
 
 * SS - the selected cipher suite.
-* EK_CT - either an ephemeral public key or a KEM ciphertext.
+* EK_CT - either an ephemeral DH public key or a KEM ciphertext.
 * H_21 - the hash of message_2 and message_1.
 * ID_CRED_I - the identifier of U.
 * Fetch_CRED_U - flag indicating whether V requests W to return CRED_U.
@@ -937,7 +937,7 @@ In case of successful processing at W, W MUST issue a response such that:
 In case of error, two cases should be considered:
 
 * Voucher Request processing fails. In this case, W MUST reply with 400 Bad Request if using HTTP, or 4.00 if using CoAP.
-* U is not unauthorized: this happens if W is able to process the Voucher Request, but the access policies forbid authorization. For example, the policy could enforce enrollment within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 403 Forbidden code if using HTTP, or 4.03 if using CoAP; the payload is the serialized error_content object, with Content-Format (Content-Type) set to "application/lake-authz-vouchererror+cbor". The payload MAY be used by V to prepare an EDHOC error "Access Denied", see {{err-handling}}.
+* U is not unauthorized: this happens if W is able to process the Voucher Request, but the access policies forbid authorization. For example, the policy could enforce enrollment to a restricted list of identities, within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 403 Forbidden code if using HTTP, or 4.03 if using CoAP; the payload is the serialized error_content object, with Content-Format (Content-Type) set to "application/lake-authz-vouchererror+cbor". The payload MAY be used by V to prepare an EDHOC error "Access Denied", see {{err-handling}}.
 
 ### Certificate Request (/certrequest)
 
