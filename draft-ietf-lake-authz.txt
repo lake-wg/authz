@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 3 September 2026                                     M. Vučinić
+Expires: 18 September 2026                                    M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                            2 March 2026
+                                                           17 March 2026
 
 
 Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 September 2026.
+   This Internet-Draft will expire on 18 September 2026.
 
 Copyright Notice
 
@@ -352,7 +352,7 @@ Table of Contents
 
    Authentication credentials and communication security with V is
    described in Section 3.2.  To calculate the voucher, W needs access
-   to the hash of EDHOC message_2 and message_1 (H_21), ID_CRED_I, and
+   to the hash of EDHOC message_1 and message_2 (H_12), ID_CRED_I, and
    CRED_V as used in the EDHOC session between U and V, see
    Section 4.3.2.
 
@@ -417,7 +417,7 @@ U                              V                                       W
 |                              |                                       |
 |                              |        Voucher Request (VREQ)         |
 |                              +-------------------------------------->|
-|                              |           (SS, EK_CT, H_21            |
+|                              |           (SS, EK_CT, H_12            |
 |                              |        ID_CRED_I, Fetch_CRED_U)       |
 |                              |                                       |
 |                              |        Voucher Response (VRES)        |
@@ -584,7 +584,7 @@ U                              V                                       W
    )
 
    external_aad = (
-       H_21:         bstr,
+       H_12:         bstr,
        ID_CRED_I:    bstr,
        CRED_V:       bstr,
    )
@@ -598,10 +598,10 @@ U                              V                                       W
       opaque to V, while the application in U and W can read its
       contents.
 
-   *  H_21 is H(message_2, H(message_1)), used to bind the voucher to
+   *  H_12 is H(H(message_1), message_2), used to bind the voucher to
       the current EDHOC session.  It is computed using the EDHOC hash
       algorithm of the selected cipher suite SS specified in SUITE_I of
-      EDHOC message_1.  H_21 is sent to W as part of the voucher
+      EDHOC message_1.  H_12 is sent to W as part of the voucher
       request, see Section 4.5.1.
 
    *  ID_CRED_I is the identifier of U transmitted via the voucher
@@ -734,7 +734,7 @@ U                              V                                       W
    EAD_4.
 
    If EAD_4 contains an EAD item with label = -TBD2, U MUST verify the
-   Voucher using H_21, ID_CRED_I, CRED_V, and the keys derived as in
+   Voucher using H_12, ID_CRED_I, CRED_V, and the keys derived as in
    Section 4.3.2.  If the verification fails then U MUST abort the EDHOC
    session.
 
@@ -763,7 +763,7 @@ U                              V                                       W
    Voucher_Request = [
        SS:             int,
        EK_CT:          bstr,
-       H_21:           bstr,
+       H_12:           bstr,
        ID_CRED_I:      bstr,
        Fetch_CRED_U    bool,
    ]
@@ -776,7 +776,7 @@ U                              V                                       W
    *  EK_CT is either an ephemeral public key or a KEM ciphertext set by
       U, as defined in Section 4.3.
 
-   *  H_21 corresponds to H(message_2, H(message_1)).  It is computed as
+   *  H_12 corresponds to H(H(message_1), message_2).  It is computed as
       defined in Section 4.3.2.
 
    *  Fetch_CRED_U is a flag indicating whether W should try to load and
@@ -791,7 +791,7 @@ U                              V                                       W
 
    *  EK_CT - either an ephemeral public key or a KEM ciphertext.
 
-   *  H_21 - the hash of message_2 and message_1.
+   *  H_12 - the hash of message_2 and message_1.
 
    *  ID_CRED_I - the identifier of U.
 
@@ -801,9 +801,9 @@ U                              V                                       W
    W verifies that it supports the cipher suite and parses the key or
    ciphertext in EK_CT.
 
-   W uses H_21 as a session identifier, and associates it to the device
+   W uses H_12 as a session identifier, and associates it to the device
    identifier ID_CRED_I.  Note that EK_CT is unique, as the ephemeral
-   key or the ciphertext MUST not be reused, therefore H_21 is expected
+   key or the ciphertext MUST not be reused, therefore H_12 is expected
    to be unique.
 
    If processing fails up until this point, the protocol SHALL be
@@ -927,7 +927,7 @@ U                              V                                       W
     )
 
    external_aad = (
-       H_21:          bstr,
+       H_12:          bstr,
     )
 
    where
@@ -936,7 +936,7 @@ U                              V                                       W
       information about the error.  It may contain, for example, a list
       of suggested Vs through which U should join instead.
 
-   *  H_21 is the hash of EDHOC message_2 and message_1, obtained from
+   *  H_12 is the hash of EDHOC message_1 and message_2, obtained from
       the associated voucher request, see Section 4.5.1.
 
 4.7.  Reverse flow with U as Responder
@@ -974,7 +974,7 @@ U                              V                                       W
         | EAD_3 = (-TBD1, Voucher_info) |                              |
         |                               |             VREQ             |
         |                               +----------------------------->|
-        |                               |        (SS, EK_CT, H_21,     |
+        |                               |        (SS, EK_CT, H_12,     |
         |                               |    ID_CRED_I, Fetch_CRED_U)  |
         |                               |                              |
         |                               |             VRES             |
@@ -1028,7 +1028,7 @@ U                              V                                       W
         | EAD_2 = (-TBD1, Voucher_info) |                              |
         |                               |             VREQ             |
         |                               +----------------------------->|
-        |                               |       (SS, EK_CT, H_21,      |
+        |                               |       (SS, EK_CT, H_12,      |
         |                               |    ID_CRED_I, Fetch_CRED_U)  |
         |                               |                              |
         |                               |             VRES             |

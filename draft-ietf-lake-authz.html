@@ -16,22 +16,22 @@ This document specifies Lightweight Authorization using EDHOC (ELA).
 The procedure allows authorizing enrollment of new devices using the extension point defined in EDHOC.
 ELA is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time. 
     " name="description">
-<meta content="xml2rfc 3.31.0" name="generator">
+<meta content="xml2rfc 3.32.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-lake-authz-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.31.0
+  xml2rfc 3.32.0
     Python 3.12.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
     lxml 6.0.2
-    platformdirs 4.5.1
+    platformdirs 4.9.4
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.32.5
-    wcwidth 0.3.0
+    wcwidth 0.6.0
 -->
 <link href="draft-ietf-lake-authz.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1056,7 +1056,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Selander, et al.</td>
-<td class="center">Expires 3 September 2026</td>
+<td class="center">Expires 18 September 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1069,12 +1069,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-lake-authz-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-03-02" class="published">2 March 2026</time>
+<time datetime="2026-03-17" class="published">17 March 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-09-03">3 September 2026</time></dd>
+<dd class="expires"><time datetime="2026-09-18">18 September 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1143,7 +1143,7 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 3 September 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 18 September 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1579,7 +1579,7 @@ Some of the possible combinations of protocols to secure the connection between 
 W provides to U the authorization decision for enrollment with V in the form of a voucher (see <a href="#voucher" class="auto internal xref">Section 4.3.2</a>).
 Authorization policies are out of scope for this document.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">Authentication credentials and communication security with V is described in <a href="#domain-auth" class="auto internal xref">Section 3.2</a>.
-To calculate the voucher, W needs access to the hash of EDHOC message_2 and message_1 (H_21), ID_CRED_I, and CRED_V as used in the EDHOC session between U and V, see <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+To calculate the voucher, W needs access to the hash of EDHOC message_1 and message_2 (H_12), ID_CRED_I, and CRED_V as used in the EDHOC session between U and V, see <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.3-3.1">
             <p id="section-3.3-3.1.1">W MUST verify that CRED_V is bound to the secure connection between W and V<a href="#section-3.3-3.1.1" class="pilcrow">¶</a></p>
@@ -1694,7 +1694,7 @@ To calculate the voucher, W needs access to the hash of EDHOC message_2 and mess
                   <text x="476" y="516">(VREQ)</text>
                   <text x="364" y="548">(SS,</text>
                   <text x="412" y="548">EK_CT,</text>
-                  <text x="460" y="548">H_21</text>
+                  <text x="460" y="548">H_12</text>
                   <text x="364" y="564">ID_CRED_I,</text>
                   <text x="464" y="564">Fetch_CRED_U)</text>
                   <text x="352" y="596">Voucher</text>
@@ -1871,7 +1871,7 @@ plaintext = (
 <div class="lang-cddl sourcecode" id="section-4.3.2-7">
 <pre>
 external_aad = (
-    H_21:         bstr,
+    H_12:         bstr,
     ID_CRED_I:    bstr,
     CRED_V:       bstr,
 )
@@ -1886,7 +1886,7 @@ Note that OPAQUE_INFO is opaque when viewed as an information element in EDHOC.
 It is opaque to V, while the application in U and W can read its contents.<a href="#section-4.3.2-9.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.3.2-9.2">
-              <p id="section-4.3.2-9.2.1">H_21 is H(message_2, H(message_1)), used to bind the voucher to the current EDHOC session. It is computed using the EDHOC hash algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1. H_21 is sent to W as part of the voucher request, see <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.<a href="#section-4.3.2-9.2.1" class="pilcrow">¶</a></p>
+              <p id="section-4.3.2-9.2.1">H_12 is H(H(message_1), message_2), used to bind the voucher to the current EDHOC session. It is computed using the EDHOC hash algorithm of the selected cipher suite SS specified in SUITE_I of EDHOC message_1. H_12 is sent to W as part of the voucher request, see <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.<a href="#section-4.3.2-9.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.3.2-9.3">
               <p id="section-4.3.2-9.3.1">ID_CRED_I is the identifier of U transmitted via the voucher request.<a href="#section-4.3.2-9.3.1" class="pilcrow">¶</a></p>
@@ -2038,7 +2038,7 @@ In this scenario, the EAD item in EAD_3 is processed as a pre-verification item 
 <a href="#section-4.4.4.2" class="section-number selfRef">4.4.4.2. </a><a href="#name-processing-in-u-4" class="section-name selfRef">Processing in U</a>
             </h5>
 <p id="section-4.4.4.2-1">U receives EDHOC message_4 from V and processes it as specified in <span><a href="https://rfc-editor.org/rfc/rfc9528#section-5.5.3" class="relref">Section 5.5.3</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, with the additional step of processing EAD_4.<a href="#section-4.4.4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.4.4.2-2">If EAD_4 contains an EAD item with label = -TBD2, U MUST verify the Voucher using H_21, ID_CRED_I, CRED_V, and the keys derived as in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.
+<p id="section-4.4.4.2-2">If EAD_4 contains an EAD item with label = -TBD2, U MUST verify the Voucher using H_12, ID_CRED_I, CRED_V, and the keys derived as in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.
 If the verification fails then U MUST abort the EDHOC session.<a href="#section-4.4.4.2-2" class="pilcrow">¶</a></p>
 <p id="section-4.4.4.2-3">If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.8" class="relref">Section 3.8</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.<a href="#section-4.4.4.2-3" class="pilcrow">¶</a></p>
 <p id="section-4.4.4.2-4">If OPAQUE_INFO is present, it is made available to the application.<a href="#section-4.4.4.2-4" class="pilcrow">¶</a></p>
@@ -2072,7 +2072,7 @@ The Voucher Request SHALL be a CBOR array as defined below:<a href="#section-4.5
 Voucher_Request = [
     SS:             int,
     EK_CT:          bstr,
-    H_21:           bstr,
+    H_12:           bstr,
     ID_CRED_I:      bstr,
     Fetch_CRED_U    bool,
 ]
@@ -2087,7 +2087,7 @@ Voucher_Request = [
                 <p id="section-4.5.1.1-4.2.1">EK_CT is either an ephemeral public key or a KEM ciphertext set by U, as defined in <a href="#U-W" class="auto internal xref">Section 4.3</a>.<a href="#section-4.5.1.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.1-4.3">
-                <p id="section-4.5.1.1-4.3.1">H_21 corresponds to H(message_2, H(message_1)). It is computed as defined in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-4.5.1.1-4.3.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.1-4.3.1">H_12 corresponds to H(H(message_1), message_2). It is computed as defined in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-4.5.1.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.1-4.4">
                 <p id="section-4.5.1.1-4.4.1">Fetch_CRED_U is a flag indicating whether W should try to load and return the credential CRED_U corresponding to ID_CRED_I.<a href="#section-4.5.1.1-4.4.1" class="pilcrow">¶</a></p>
@@ -2110,7 +2110,7 @@ W extracts from Voucher_Request:<a href="#section-4.5.1.2-1" class="pilcrow">¶<
                 <p id="section-4.5.1.2-2.2.1">EK_CT - either an ephemeral public key or a KEM ciphertext.<a href="#section-4.5.1.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.2-2.3">
-                <p id="section-4.5.1.2-2.3.1">H_21 - the hash of message_2 and message_1.<a href="#section-4.5.1.2-2.3.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.2-2.3.1">H_12 - the hash of message_2 and message_1.<a href="#section-4.5.1.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.2-2.4">
                 <p id="section-4.5.1.2-2.4.1">ID_CRED_I - the identifier of U.<a href="#section-4.5.1.2-2.4.1" class="pilcrow">¶</a></p>
@@ -2120,8 +2120,8 @@ W extracts from Voucher_Request:<a href="#section-4.5.1.2-1" class="pilcrow">¶<
 </li>
             </ul>
 <p id="section-4.5.1.2-3">W verifies that it supports the cipher suite and parses the key or ciphertext in EK_CT.<a href="#section-4.5.1.2-3" class="pilcrow">¶</a></p>
-<p id="section-4.5.1.2-4">W uses H_21 as a session identifier, and associates it to the device identifier ID_CRED_I.
-Note that EK_CT is unique, as the ephemeral key or the ciphertext MUST not be reused, therefore H_21 is expected to be unique.<a href="#section-4.5.1.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.5.1.2-4">W uses H_12 as a session identifier, and associates it to the device identifier ID_CRED_I.
+Note that EK_CT is unique, as the ephemeral key or the ciphertext MUST not be reused, therefore H_12 is expected to be unique.<a href="#section-4.5.1.2-4" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-5">If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.1.2-5" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-6">W uses ID_CRED_I to look up the associated authorization policies for U and enforces them. This is out of scope for the specification.<a href="#section-4.5.1.2-6" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-7">If ID_CRED_I is known by W, but authorization fails, the protocol SHALL be aborted with an error code signaling an access control issue, see <a href="#err-handling" class="auto internal xref">Section 4.6</a> and <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.1.2-7" class="pilcrow">¶</a></p>
@@ -2302,7 +2302,7 @@ plaintext = (
 <div class="lang-cddl sourcecode" id="section-4.6.2-5">
 <pre>
 external_aad = (
-    H_21:          bstr,
+    H_12:          bstr,
  )
 </pre><a href="#section-4.6.2-5" class="pilcrow">¶</a>
 </div>
@@ -2313,7 +2313,7 @@ external_aad = (
 It may contain, for example, a list of suggested Vs through which U should join instead.<a href="#section-4.6.2-7.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.6.2-7.2">
-              <p id="section-4.6.2-7.2.1">H_21 is the hash of EDHOC message_2 and message_1, obtained from the associated voucher request, see <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.<a href="#section-4.6.2-7.2.1" class="pilcrow">¶</a></p>
+              <p id="section-4.6.2-7.2.1">H_12 is the hash of EDHOC message_1 and message_2, obtained from the associated voucher request, see <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.<a href="#section-4.6.2-7.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -2384,7 +2384,7 @@ Note that Voucher_Info and Voucher are carried in EDHOC message_3 and message_4,
                     <text x="436" y="260">VREQ</text>
                     <text x="396" y="292">(SS,</text>
                     <text x="444" y="292">EK_CT,</text>
-                    <text x="496" y="292">H_21,</text>
+                    <text x="496" y="292">H_12,</text>
                     <text x="388" y="308">ID_CRED_I,</text>
                     <text x="488" y="308">Fetch_CRED_U)</text>
                     <text x="436" y="340">VRES</text>
@@ -2489,7 +2489,7 @@ That is, here we only describe the differences in processing, when compared to t
                     <text x="436" y="260">VREQ</text>
                     <text x="388" y="292">(SS,</text>
                     <text x="436" y="292">EK_CT,</text>
-                    <text x="488" y="292">H_21,</text>
+                    <text x="488" y="292">H_12,</text>
                     <text x="388" y="308">ID_CRED_I,</text>
                     <text x="488" y="308">Fetch_CRED_U)</text>
                     <text x="436" y="340">VRES</text>
