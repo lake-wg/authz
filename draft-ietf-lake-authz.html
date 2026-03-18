@@ -1056,7 +1056,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Selander, et al.</td>
-<td class="center">Expires 18 September 2026</td>
+<td class="center">Expires 19 September 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1069,12 +1069,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-lake-authz-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-03-17" class="published">17 March 2026</time>
+<time datetime="2026-03-18" class="published">18 March 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-09-18">18 September 2026</time></dd>
+<dd class="expires"><time datetime="2026-09-19">19 September 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1143,7 +1143,7 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 18 September 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 19 September 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -2017,6 +2017,7 @@ In this scenario, the EAD item in EAD_3 is processed as a post-verification item
 If the response contains CRED_U, V then continues processing EDHOC message_3 where it verifies the credential of U.
 Even upon reception of a successful voucher response from W, if the verification of CRED_U fails, the EDHOC session is aborted.
 In this scenario, the EAD item in EAD_3 is processed as a pre-verification item <span>[<a href="#I-D.ietf-lake-edhoc-impl-cons" class="cite xref">I-D.ietf-lake-edhoc-impl-cons</a>]</span>.<a href="#section-4.4.3.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.4.3.2-5">In case V fails to obtain CRED_U, the session is aborted.<a href="#section-4.4.3.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2131,7 +2132,7 @@ Note that EK_CT is unique, as the ephemeral key or the ciphertext MUST not be re
 <p id="section-4.5.1.2-5">If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.1.2-5" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-6">W uses ID_CRED_I to look up the associated authorization policies for U and enforces them. This is out of scope for the specification.<a href="#section-4.5.1.2-6" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-7">If ID_CRED_I is known by W, but authorization fails, the protocol SHALL be aborted with an error code signaling an access control issue, see <a href="#err-handling" class="auto internal xref">Section 4.6</a> and <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.1.2-7" class="pilcrow">¶</a></p>
-<p id="section-4.5.1.2-8">If Fetch_CRED_U is true, W uses ID_CRED_I to retrieve the corresponding credential CRED_U.
+<p id="section-4.5.1.2-8">If Fetch_CRED_U is true, W uses ID_CRED_I to try to retrieve the corresponding credential CRED_U.
 If retrieval succeeds, W MUST include CRED_U in the voucher response, see <a href="#voucher_response" class="auto internal xref">Section 4.5.2</a>.
 If the retrieval fails, W sends the voucher response without CRED_U.
 If Fetch_CRED_U is false, W MUST NOT include CRED_U in the voucher response.<a href="#section-4.5.1.2-8" class="pilcrow">¶</a></p>

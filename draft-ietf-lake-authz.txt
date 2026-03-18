@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 18 September 2026                                    M. Vučinić
+Expires: 19 September 2026                                    M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                           17 March 2026
+                                                           18 March 2026
 
 
 Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 September 2026.
+   This Internet-Draft will expire on 19 September 2026.
 
 Copyright Notice
 
@@ -723,6 +723,8 @@ U                              V                                       W
    In this scenario, the EAD item in EAD_3 is processed as a pre-
    verification item [I-D.ietf-lake-edhoc-impl-cons].
 
+   In case V fails to obtain CRED_U, the session is aborted.
+
 4.4.4.  Message 4
 
 4.4.4.1.  Processing in V
@@ -829,7 +831,7 @@ U                              V                                       W
    SHALL be aborted with an error code signaling an access control
    issue, see Section 4.6 and Section 5.4.1.
 
-   If Fetch_CRED_U is true, W uses ID_CRED_I to retrieve the
+   If Fetch_CRED_U is true, W uses ID_CRED_I to try to retrieve the
    corresponding credential CRED_U.  If retrieval succeeds, W MUST
    include CRED_U in the voucher response, see Section 4.5.2.  If the
    retrieval fails, W sends the voucher response without CRED_U.  If
