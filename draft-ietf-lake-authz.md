@@ -545,6 +545,8 @@ If the response contains CRED_U, V then continues processing EDHOC message_3 whe
 Even upon reception of a successful voucher response from W, if the verification of CRED_U fails, the EDHOC session is aborted.
 In this scenario, the EAD item in EAD_3 is processed as a pre-verification item {{I-D.ietf-lake-edhoc-impl-cons}}.
 
+In case V fails to obtain CRED_U, the session is aborted.
+
 ### Message 4 {#m4}
 
 #### Processing in V  {#V_4}
@@ -616,7 +618,7 @@ W uses ID_CRED_I to look up the associated authorization policies for U and enfo
 
 If ID_CRED_I is known by W, but authorization fails, the protocol SHALL be aborted with an error code signaling an access control issue, see {{err-handling}} and {{rest-voucher-request}}.
 
-If Fetch_CRED_U is true, W uses ID_CRED_I to retrieve the corresponding credential CRED_U.
+If Fetch_CRED_U is true, W uses ID_CRED_I to try to retrieve the corresponding credential CRED_U.
 If retrieval succeeds, W MUST include CRED_U in the voucher response, see {{voucher_response}}.
 If the retrieval fails, W sends the voucher response without CRED_U.
 If Fetch_CRED_U is false, W MUST NOT include CRED_U in the voucher response.
