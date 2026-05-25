@@ -989,9 +989,9 @@ Implementations MUST NOT omit message_4 when ELA is in use.
 IANA has registered the following entries in the "EDHOC External Authorization Data" registry under the group name "Ephemeral Diffie-
    Hellman Over COSE (EDHOC)".
 
-| Label | Value Type | Description |
-| TBD1 | bstr | Voucher_Info structure, prepared by the Device (U). |
-| TBD2 | bstr | Voucher structure, prepared by the Enrollment Server (W). |
+| Name | Label | Description |
+| Voucher_Info | TBD1 | Voucher_Info structure (a byte string), prepared by the Device (U). |
+| Voucher | TBD2 | Voucher structure (a byte string), prepared by the Enrollment Server (W). |
 {: #ead-table title="Addition to the EDHOC EAD registry" cols="r l l"}
 
 The ead_label = TBD1 corresponds to the ead_value = Voucher_Info, which can be carried in either EAD_2 or EAD_3, depending on whether U acts as EDHOC Initiator or Responder, see {{reverse-u-responder}}.
