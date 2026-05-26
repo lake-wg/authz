@@ -190,7 +190,7 @@ Note the cardinality of the involved parties. It is expected that the domain aut
 
 ~~~~~~~~~~~ aasvg
 
-                Voucher
+                Voucher_
                 Info
 +----------+      |     +---------------+           +---------------+
 |          +------+---->|               |  Voucher  |               |
@@ -202,7 +202,7 @@ Note the cardinality of the involved parties. It is expected that the domain aut
 +----------+    |       +---------------+           +---------------+
               Voucher
 ~~~~~~~~~~~
-{: #fig-overview title="Overview of the message flow. EDHOC is used on the constrained link between U and V. Voucher Info and Voucher are sent in EDHOC External Authorization Data (EAD). The link between V and W is not constrained." artwork-align="center"}
+{: #fig-overview title="Overview of the message flow. EDHOC is used on the constrained link between U and V. Voucher_Info and Voucher are sent in EDHOC External Authorization Data (EAD). The link between V and W is not constrained." artwork-align="center"}
 
 
 
@@ -408,7 +408,7 @@ Specifically, support for ELA can be advertised by indicating support for EAD it
 
 The protocol between U and W is carried between U and V in message_3 and message_4 ({{U-V}}), and between V and W in the Voucher Request/Response ({{V-W}}). The data is protected between the endpoints using secret keys derived from a shared secret (see {{reuse}}) as further detailed in this section.
 
-### Voucher Info {#voucher_info}
+### Voucher_Info {#voucher_info}
 
 The external authorization data EAD_3 contains a critical EAD item with ead_label = -TBD1 and ead_value = Voucher_Info, which is a CBOR byte string:
 
@@ -584,7 +584,7 @@ Voucher_Request = [
     EK_CT:          bstr,
     H_12:           bstr,
     ID_CRED_I:      bstr,
-    Fetch_CRED_U    bool,
+    Fetch_CRED_U:   bool,
 ]
 ~~~~~~~~~~~
 
@@ -732,7 +732,7 @@ For example, one use case is having V broadcast message_1, to which U responds w
 
 Note that this is different from the EDHOC reverse message flow defined in {{Appendix A.2.2 of RFC9528}}, since we make no assumption about whether U or V is a CoAP server.
 
-### U is the Initiator {#u-initiator}
+### Baseline: U is the Initiator {#u-initiator}
 
 For clarity, we first present the regular flow with U as Initiator, as described in {{protocol-overview}} and {{U-V}}.
 Note that Voucher_Info and Voucher are carried in EDHOC message_3 and message_4, respectively.
@@ -821,7 +821,7 @@ The following sections detail how the processing of ELA reverse flow changes in 
 
 The protocol between U and W is carried between U and V in message_2 and message_3, and between V and W in the Voucher Request/Response ({{V-W}}).
 
-Voucher Info:
+Voucher_Info:
 
 * Voucher_Info is carried in EAD_2.
 * It uses a critical EAD item with ead_label = -TBD1 and ead_value = Voucher_Info.
@@ -989,9 +989,9 @@ Implementations MUST NOT omit message_4 when ELA is in use.
 IANA has registered the following entries in the "EDHOC External Authorization Data" registry under the group name "Ephemeral Diffie-
    Hellman Over COSE (EDHOC)".
 
-| Label | Value Type | Description |
-| TBD1 | bstr | Voucher_Info structure, prepared by the Device (U). |
-| TBD2 | bstr | Voucher structure, prepared by the Enrollment Server (W). |
+| Name | Label | Description |
+| Voucher_Info | TBD1 | Voucher_Info structure (a byte string), prepared by the Device (U). |
+| Voucher | TBD2 | Voucher structure (a byte string), prepared by the Enrollment Server (W). |
 {: #ead-table title="Addition to the EDHOC EAD registry" cols="r l l"}
 
 The ead_label = TBD1 corresponds to the ead_value = Voucher_Info, which can be carried in either EAD_2 or EAD_3, depending on whether U acts as EDHOC Initiator or Responder, see {{reverse-u-responder}}.
