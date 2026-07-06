@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 27 November 2026                                     M. Vučinić
+Expires: 7 January 2027                                       M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                             26 May 2026
+                                                             6 July 2026
 
 
 Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 27 November 2026.
+   This Internet-Draft will expire on 7 January 2027.
 
 Copyright Notice
 
@@ -308,9 +308,10 @@ Table of Contents
    Regarding the secure channel between V and W, the choice of protocols
    may affect which type of credential and methods should be used by V.
    For example, in case V and W select TLS for the secure channel and
-   PoP, then CRED_V is a X.509 certificate, and the EDHOC method used by
-   V is signature-based.  Some of the possible combinations of protocols
-   to secure the connection between V and W are listed in Table 1 below.
+   PoP, then CRED_V is an X.509 certificate, and the EDHOC method used
+   by V is signature-based.  Some of the possible combinations of
+   protocols to secure the connection between V and W are listed in
+   Table 1 below.
 
    +=================+=====================+==============+============+
    | Secure channel  | Proof-of-Possession |Type of       |EDHOC method|
@@ -423,7 +424,7 @@ U                              V                                       W
 |                              |                                       |
 |                              |        Voucher Request (VREQ)         |
 |                              +-------------------------------------->|
-|                              |           (SS, EK_CT, H_12            |
+|                              |           (SS, EK_CT, H_12,           |
 |                              |        ID_CRED_I, Fetch_CRED_U)       |
 |                              |                                       |
 |                              |        Voucher Response (VRES)        |
@@ -487,8 +488,8 @@ U                              V                                       W
          o  If the method is based on Diffie-Hellman, IKM is computed as
             an ECDH cofactor Diffie-Hellman shared secret from the
             public key of W, PK_W, and the private key corresponding to
-            G_U (or v.v.), see Section 5.7.1.2 of [NIST-800-56A] and
-            Section 4.3.
+            G_U (or vice versa), see Section 5.7.1.2 of [NIST-800-56A]
+            and Section 4.3.
 
          o  If the method is based on a Key Encapsulation Mechanism
             (KEM), IKM is the KEM shared secret resulting from
@@ -569,7 +570,7 @@ U                              V                                       W
 
    The voucher is an assertion to U that W has authorized V.  It is
    encrypted using the EDHOC AEAD algorithm of the selected cipher suite
-   SS specified in SUITE_I of EDHOC message_1.  It consists of the
+   SS specified in SUITES_I of EDHOC message_1.  It consists of the
    'ciphertext' field of a COSE_Encrypt0 object [RFC9052], which is a
    byte string, as defined below.
 
@@ -608,7 +609,7 @@ U                              V                                       W
 
    *  H_12 is H(H(message_1), message_2), used to bind the voucher to
       the current EDHOC session.  It is computed using the EDHOC hash
-      algorithm of the selected cipher suite SS specified in SUITE_I of
+      algorithm of the selected cipher suite SS specified in SUITES_I of
       EDHOC message_1.  H_12 is sent to W as part of the voucher
       request, see Section 4.5.1.
 
@@ -664,7 +665,7 @@ U                              V                                       W
 
 4.4.2.1.  Processing in V
 
-   V composes EDHOC message_2 as specified in Section 5.3.3 of
+   V composes EDHOC message_2 as specified in Section 5.3.2 of
    [RFC9528].
 
    The type of CRED_V may depend on the selected mechanism for the
@@ -998,7 +999,7 @@ U                              V                                       W
         |                               |    ID_CRED_I, Fetch_CRED_U)  |
         |                               |                              |
         |                               |             VRES             |
-        |                               +<---------------------------->|
+        |                               |<-----------------------------+
         |                               |      (?Voucher, ?CRED_U)     |
         |                               |
         |       EDHOC message_4         |
@@ -1034,7 +1035,7 @@ U                              V                                       W
 
   +-----+-----+                   +-----------+
   |     U     |                   |     V     |
-  | Initiator |                   | Responder |
+  | Responder |                   | Initiator |
   +-----+-----+                   +-----+-----+
         |                               |
         |       Trigger Message         |
@@ -1052,7 +1053,7 @@ U                              V                                       W
         |                               |    ID_CRED_I, Fetch_CRED_U)  |
         |                               |                              |
         |                               |             VRES             |
-        |                               +<---------------------------->|
+        |                               |<-----------------------------+
         |                               |      (?Voucher, ?CRED_U)     |
         |                               |
         |     EDHOC message_3           |
@@ -1249,7 +1250,7 @@ U                              V                                       W
    *  Voucher Request processing fails.  In this case, W MUST reply with
       400 Bad Request if using HTTP, or 4.00 if using CoAP.
 
-   *  U is not unauthorized: this happens if W is able to process the
+   *  U is not authorized: this happens if W is able to process the
       Voucher Request, but the access policies forbid authorization.
       For example, the policy could enforce enrollment to a restricted
       list of identities, within a delimited time window, via a specific
@@ -1517,14 +1518,6 @@ U                              V                                       W
 
 8.1.  Normative References
 
-   [NIST-800-227]
-              Alagic, G., Barker, E., Chen, L., Moody, D., Robinson, A.,
-              Silberg, H., and N. Waller, "Recommendations for Key-
-              Encapsulation Mechanisms - NIST Special Publication
-              800-227", September 2025,
-              <https://nvlpubs.nist.gov/nistpubs/SpecialPublications/
-              NIST.SP.800-227.pdf>.
-
    [NIST-800-56A]
               Barker, E., Chen, L., Roginsky, A., Vassilev, A., and R.
               Davis, "Recommendation for Pair-Wise Key-Establishment
@@ -1532,6 +1525,14 @@ U                              V                                       W
               Special Publication 800-56A, Revision 3", April 2018,
               <https://nvlpubs.nist.gov/nistpubs/SpecialPublications/
               NIST.SP.800-56Ar3.pdf>.
+
+   [NIST-800-227]
+              Alagic, G., Barker, E., Chen, L., Moody, D., Robinson, A.,
+              Silberg, H., and N. Waller, "Recommendations for Key-
+              Encapsulation Mechanisms - NIST Special Publication
+              800-227", September 2025,
+              <https://nvlpubs.nist.gov/nistpubs/SpecialPublications/
+              NIST.SP.800-227.pdf>.
 
    [RFC8366]  Watsen, K., Richardson, M., Pritikin, M., and T. Eckert,
               "A Voucher Artifact for Bootstrapping Protocols",
@@ -1565,12 +1566,11 @@ U                              V                                       W
 8.2.  Informative References
 
    [I-D.ietf-jose-pqc-kem]
-              Reddy.K, T., Banerjee, A., and H. Tschofenig, "Post-
-              Quantum Key Encapsulation Mechanisms (PQ KEMs) for JOSE
-              and COSE", Work in Progress, Internet-Draft, draft-ietf-
-              jose-pqc-kem-05, 8 December 2025,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-jose-
-              pqc-kem-05>.
+              Reddy, T., Banerjee, A., and H. Tschofenig, "Post-Quantum
+              Key Encapsulation Mechanisms (PQ KEMs) for COSE", Work in
+              Progress, Internet-Draft, draft-ietf-jose-pqc-kem-06, 6
+              July 2026, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-jose-pqc-kem-06>.
 
    [I-D.ietf-lake-app-profiles]
               Tiloca, M. and R. Höglund, "Coordinating the Use of
@@ -1594,14 +1594,14 @@ U                              V                                       W
               8 June 2020, <https://datatracker.ietf.org/doc/html/draft-
               ietf-lake-reqs-04>.
 
-   [IEEE802.15.4]
-              IEEE standard for Information Technology, "IEEE Std
-              802.15.4 Standard for Low-Rate Wireless Networks", n.d..
-
    [IEEE802.1X]
               IEEE standard for Information Technology, "IEEE Standard
               for Local and metropolitan area networks - Port-Based
               Network Access Control", February 2010.
+
+   [IEEE802.15.4]
+              IEEE standard for Information Technology, "IEEE Std
+              802.15.4 Standard for Low-Rate Wireless Networks", n.d..
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1814,7 +1814,7 @@ A.2.2.  V_INFO in EAD_1
 
    The ELA reverse flow (see Section 4.7) allows implementing
    advertising where U first sends a trigger packet, in the format of a
-   CoAP request that is broadcasted to the newtork.  When a suitable V
+   CoAP request that is broadcasted to the network.  When a suitable V
    receives the solicitation, if it implements ELA, it should respond
    with an EDHOC message_1 whose EAD_1 has label -TBD4 and value V_INFO
    (see Appendix A.2).
