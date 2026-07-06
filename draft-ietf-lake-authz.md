@@ -786,7 +786,7 @@ Here is a summary of the changes needed in the ELA reverse flow:
 ~~~~~~~~~~~ aasvg
 +-----+-----+                   +-----------+
 |     U     |                   |     V     |
-| Initiator |                   | Responder |
+| Responder |                   | Initiator |
 +-----+-----+                   +-----+-----+
       |                               |
       |       Trigger Message         |
