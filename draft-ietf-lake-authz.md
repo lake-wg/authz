@@ -507,7 +507,7 @@ Note that as part of normal EDHOC processing, U and V negotiate a selected ciphe
 
 #### Processing in V  {#V_2}
 
-V composes EDHOC message_2 as specified in {{Section 5.3.3 of RFC9528}}.
+V composes EDHOC message_2 as specified in {{Section 5.3.2 of RFC9528}}.
 
 The type of CRED_V may depend on the selected mechanism for the establishment of a secure channel between V and W, See {{creds-table}}.
 
