@@ -16,23 +16,23 @@ This document specifies Lightweight Authorization using EDHOC (ELA).
 The procedure allows authorizing enrollment of new devices using the extension point defined in EDHOC.
 ELA is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time. 
     " name="description">
-<meta content="xml2rfc 3.34.0" name="generator">
+<meta content="xml2rfc 3.35.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-lake-authz-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.34.0
-    Python 3.14.5
-    ConfigArgParse 1.7.5
+  xml2rfc 3.35.0
+    Python 3.14.10
+    ConfigArgParse 1.9.0
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
     lxml 6.1.1
     natsort 8.4.0
-    platformdirs 4.10.0
+    platformdirs 4.14.3
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.8.2
+    wcwidth 0.9.4
 -->
 <link href="draft-ietf-lake-authz.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -68,7 +68,6 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
   src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
-
 @font-face {
   font-family: 'Lora';
   font-style: italic;
@@ -117,7 +116,6 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
   src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-
 @font-face {
   font-family: 'Lora';
   font-style: normal;
@@ -182,7 +180,6 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
 }
 
 @font-face {
@@ -1036,7 +1033,7 @@ svg {
   & :is([stroke="white"], [stroke^="#fff"]) {
     stroke: var(--background-color);
   }
-  & :is([fill="black"], [fill^="#000"], :not([fill])) {
+  & :is([fill="black"], [fill^="#000"], :not([fill], [fill] *)) {
     fill: var(--text-color);
   }
   & :is([fill="white"], [fill^="#fff"]) {
@@ -1051,11 +1048,11 @@ svg {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">ELA</td>
-<td class="right">July 2026</td>
+<td class="right">November 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Selander, et al.</td>
-<td class="center">Expires 7 January 2027</td>
+<td class="center">Expires 16 May 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1068,12 +1065,12 @@ svg {
 <dd class="internet-draft">draft-ietf-lake-authz-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-07-06" class="published">6 July 2026</time>
+<time datetime="2026-11-12" class="published">12 November 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-01-07">7 January 2027</time></dd>
+<dd class="expires"><time datetime="2027-05-16">16 May 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1142,7 +1139,7 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 7 January 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 16 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1318,7 +1315,7 @@ The device and domain authenticator perform mutual authentication and authorizat
 <p id="section-1-4">The enrollment server may represent the manufacturer of the device, or some other party with information about the device from which a trust anchor has been pre-provisioned into the device.
 The (domain) authenticator may represent the service provider or some other party controlling access to the network in which the device is enrolling.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <p id="section-1-5">ELA assumes that authentication between device and authenticator is performed with EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) fields defined in EDHOC.<a href="#section-1-5" class="pilcrow">¶</a></p>
-<p id="section-1-6">ELA enables a low message count by performing authorization and enrollment in parallel with authentication, instead of in sequence, which is common for network access.
+<p id="section-1-6">ELA enables a low message count by performing authorization in parallel with authentication during an enrollment process, instead of in sequence, which is common for network access.
 It further reuses protocol elements from EDHOC, leading to reduced message sizes on constrained links.<a href="#section-1-6" class="pilcrow">¶</a></p>
 <p id="section-1-7">This protocol is applicable to a wide variety of settings, and can be mapped to different authorization architectures.<a href="#section-1-7" class="pilcrow">¶</a></p>
 <div id="terminology">
@@ -3109,15 +3106,15 @@ How should DNS Registries/Registrars treat requests to register this reserved do
 <dl class="references">
 <dt id="I-D.ietf-jose-pqc-kem">[I-D.ietf-jose-pqc-kem]</dt>
         <dd>
-<span class="refAuthor">Reddy, T.</span>, <span class="refAuthor">Banerjee, A.</span>, and <span class="refAuthor">H. Tschofenig</span>, <span class="refTitle">"Post-Quantum Key Encapsulation Mechanisms (PQ KEMs) for COSE"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-jose-pqc-kem-06</span>, <time datetime="2026-07-06" class="refDate">6 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-jose-pqc-kem-06">https://datatracker.ietf.org/doc/html/draft-ietf-jose-pqc-kem-06</a>&gt;</span>. </dd>
+<span class="refAuthor">Reddy.K, T.</span>, <span class="refAuthor">Banerjee, A.</span>, and <span class="refAuthor">H. Tschofenig</span>, <span class="refTitle">"Post-Quantum Key Encapsulation Mechanisms (PQ KEMs) for COSE"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-jose-pqc-kem-06</span>, <time datetime="2026-07-06" class="refDate">6 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-jose-pqc-kem-06">https://datatracker.ietf.org/doc/html/draft-ietf-jose-pqc-kem-06</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-lake-app-profiles">[I-D.ietf-lake-app-profiles]</dt>
         <dd>
-<span class="refAuthor">Tiloca, M.</span> and <span class="refAuthor">R. Höglund</span>, <span class="refTitle">"Coordinating the Use of Application Profiles for Ephemeral Diffie-Hellman Over COSE (EDHOC)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lake-app-profiles-04</span>, <time datetime="2026-03-02" class="refDate">2 March 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-04">https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-04</a>&gt;</span>. </dd>
+<span class="refAuthor">Tiloca, M.</span> and <span class="refAuthor">R. Höglund</span>, <span class="refTitle">"Coordinating the Use of Application Profiles for the Lightweight Authenticated Key Exchange (LAKE) Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lake-app-profiles-07</span>, <time datetime="2026-10-26" class="refDate">26 October 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-07">https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-07</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-lake-edhoc-impl-cons">[I-D.ietf-lake-edhoc-impl-cons]</dt>
         <dd>
-<span class="refAuthor">Tiloca, M.</span>, <span class="refTitle">"Implementation Considerations for Ephemeral Diffie-Hellman Over COSE (EDHOC)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lake-edhoc-impl-cons-06</span>, <time datetime="2026-03-02" class="refDate">2 March 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-edhoc-impl-cons-06">https://datatracker.ietf.org/doc/html/draft-ietf-lake-edhoc-impl-cons-06</a>&gt;</span>. </dd>
+<span class="refAuthor">Tiloca, M.</span>, <span class="refTitle">"Implementation Considerations for the Lightweight Authenticated Key Exchange (LAKE) Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lake-edhoc-impl-cons-08</span>, <time datetime="2026-10-04" class="refDate">4 October 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-edhoc-impl-cons-08">https://datatracker.ietf.org/doc/html/draft-ietf-lake-edhoc-impl-cons-08</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-lake-reqs">[I-D.ietf-lake-reqs]</dt>
         <dd>
@@ -3204,7 +3201,7 @@ These strategies were developed to address scenarios where V's are radio gateway
         </h3>
 <p id="appendix-A.1-1">This section provides an example of how support for ELA can be advertised using EDHOC application profiles.<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
 <p id="appendix-A.1-2">Application Profiles for EDHOC <span>[<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> defines mechanisms to describe and distribute parameters regarding the supported capabilities of EDHOC peers.
-Specifically, <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-04#section-5" class="relref">Section 5</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> describes how EDHOC peers can advertise supported profiles by using fields EAD_1 and EAD_2 in EDHOC message_1 and message_2, respectively.<a href="#appendix-A.1-2" class="pilcrow">¶</a></p>
+Specifically, <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-07#section-5" class="relref">Section 5</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> describes how EDHOC peers can advertise supported profiles by using fields EAD_1 and EAD_2 in EDHOC message_1 and message_2, respectively.<a href="#appendix-A.1-2" class="pilcrow">¶</a></p>
 <p id="appendix-A.1-3">Since the ELA regular flow uses message_3 and message_4, peers can advertise support for ELA, and refrain from attempting the protocol in case one does not support it.
 In the case of the reverse flow, V can advertise a profile in message_1, while the protocol happens in message_2 and message_3.<a href="#appendix-A.1-3" class="pilcrow">¶</a></p>
 <p id="appendix-A.1-4">For example, to advertise support for ELA in the regular flow, U prepares EAD_1 containing an item where ead_label = TBD_EAD_LABEL and ead_value encodes a profile_id_with_eads, containing the following value:<a href="#appendix-A.1-4" class="pilcrow">¶</a></p>
@@ -3219,10 +3216,10 @@ In the case of the reverse flow, V can advertise a profile in message_1, while t
 <p id="appendix-A.1-6">Where:<a href="#appendix-A.1-6" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-A.1-7.1">
-            <p id="appendix-A.1-7.1.1">true indicates that U expects an application profile response from V in EAD_2, see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-04#section-5.1" class="relref">Section 5.1</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span><a href="#appendix-A.1-7.1.1" class="pilcrow">¶</a></p>
+            <p id="appendix-A.1-7.1.1">true indicates that U expects an application profile response from V in EAD_2, see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-07#section-5.1" class="relref">Section 5.1</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span><a href="#appendix-A.1-7.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-A.1-7.2">
-            <p id="appendix-A.1-7.2.1">APP-PROF-MINIMAL-CS-2 corresponds to a well-known EDHOC application profile (Method 3; Cipher Suite 2; CCS; kid), see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-04#section-8" class="relref">Section 8</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span><a href="#appendix-A.1-7.2.1" class="pilcrow">¶</a></p>
+            <p id="appendix-A.1-7.2.1">APP-PROF-MINIMAL-CS-2 corresponds to a well-known EDHOC application profile (Method 3; Cipher Suite 2; CCS; kid), see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-07#section-8" class="relref">Section 8</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span><a href="#appendix-A.1-7.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-A.1-7.3">
             <p id="appendix-A.1-7.3.1">TBD1 and TBD2 correspond to the EAD labels registered in this document, see <a href="#iana" class="auto internal xref">Section 7</a><a href="#appendix-A.1-7.3.1" class="pilcrow">¶</a></p>
@@ -3236,7 +3233,7 @@ In the case of the reverse flow, V can advertise a profile in message_1, while t
 &gt;&gt;
 </pre><a href="#appendix-A.1-9" class="pilcrow">¶</a>
 </div>
-<p id="appendix-A.1-10">Where APP-PROF-EXTENSIVE corresponds to a well-known EDHOC application profile, see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-04#section-8" class="relref">Section 8</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span>.<a href="#appendix-A.1-10" class="pilcrow">¶</a></p>
+<p id="appendix-A.1-10">Where APP-PROF-EXTENSIVE corresponds to a well-known EDHOC application profile, see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-07#section-8" class="relref">Section 8</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span>.<a href="#appendix-A.1-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="strat-advertise">

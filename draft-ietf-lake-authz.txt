@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 7 January 2027                                       M. Vučinić
+Expires: 16 May 2027                                          M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                             6 July 2026
+                                                        12 November 2026
 
 
 Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 7 January 2027.
+   This Internet-Draft will expire on 16 May 2027.
 
 Copyright Notice
 
@@ -149,11 +149,11 @@ Table of Contents
    lightweight authorization procedure using the External Authorization
    Data (EAD) fields defined in EDHOC.
 
-   ELA enables a low message count by performing authorization and
-   enrollment in parallel with authentication, instead of in sequence,
-   which is common for network access.  It further reuses protocol
-   elements from EDHOC, leading to reduced message sizes on constrained
-   links.
+   ELA enables a low message count by performing authorization in
+   parallel with authentication during an enrollment process, instead of
+   in sequence, which is common for network access.  It further reuses
+   protocol elements from EDHOC, leading to reduced message sizes on
+   constrained links.
 
    This protocol is applicable to a wide variety of settings, and can be
    mapped to different authorization architectures.
@@ -1566,26 +1566,27 @@ U                              V                                       W
 8.2.  Informative References
 
    [I-D.ietf-jose-pqc-kem]
-              Reddy, T., Banerjee, A., and H. Tschofenig, "Post-Quantum
-              Key Encapsulation Mechanisms (PQ KEMs) for COSE", Work in
-              Progress, Internet-Draft, draft-ietf-jose-pqc-kem-06, 6
-              July 2026, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-jose-pqc-kem-06>.
+              Reddy.K, T., Banerjee, A., and H. Tschofenig, "Post-
+              Quantum Key Encapsulation Mechanisms (PQ KEMs) for COSE",
+              Work in Progress, Internet-Draft, draft-ietf-jose-pqc-kem-
+              06, 6 July 2026, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-jose-pqc-kem-06>.
 
    [I-D.ietf-lake-app-profiles]
               Tiloca, M. and R. Höglund, "Coordinating the Use of
-              Application Profiles for Ephemeral Diffie-Hellman Over
-              COSE (EDHOC)", Work in Progress, Internet-Draft, draft-
-              ietf-lake-app-profiles-04, 2 March 2026,
+              Application Profiles for the Lightweight Authenticated Key
+              Exchange (LAKE) Protocol", Work in Progress, Internet-
+              Draft, draft-ietf-lake-app-profiles-07, 26 October 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-lake-
-              app-profiles-04>.
+              app-profiles-07>.
 
    [I-D.ietf-lake-edhoc-impl-cons]
-              Tiloca, M., "Implementation Considerations for Ephemeral
-              Diffie-Hellman Over COSE (EDHOC)", Work in Progress,
-              Internet-Draft, draft-ietf-lake-edhoc-impl-cons-06, 2
-              March 2026, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-lake-edhoc-impl-cons-06>.
+              Tiloca, M., "Implementation Considerations for the
+              Lightweight Authenticated Key Exchange (LAKE) Protocol",
+              Work in Progress, Internet-Draft, draft-ietf-lake-edhoc-
+              impl-cons-08, 4 October 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-lake-
+              edhoc-impl-cons-08>.
 
    [I-D.ietf-lake-reqs]
               Vučinić, M., Selander, G., Mattsson, J. P., and D. Garcia-
