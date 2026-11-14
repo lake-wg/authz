@@ -1052,7 +1052,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Selander, et al.</td>
-<td class="center">Expires 16 May 2027</td>
+<td class="center">Expires 18 May 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1065,12 +1065,12 @@ svg {
 <dd class="internet-draft">draft-ietf-lake-authz-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-11-12" class="published">12 November 2026</time>
+<time datetime="2026-11-14" class="published">14 November 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-05-16">16 May 2027</time></dd>
+<dd class="expires"><time datetime="2027-05-18">18 May 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1139,7 +1139,7 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 16 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 18 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1252,10 +1252,13 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
                 <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-well-known-name-under-arpa-" class="internal xref">Well-Known Name Under ".arpa" Name Space</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
-                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-media-types-registry" class="internal xref">Media Types Registry</a></p>
+                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-ela-voucher-response-parame" class="internal xref">ELA Voucher Response Parameters Registry</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.5">
-                <p id="section-toc.1-1.7.2.5.1"><a href="#section-7.5" class="auto internal xref">7.5</a>.  <a href="#name-coap-content-formats-regist" class="internal xref">CoAP Content-Formats Registry</a></p>
+                <p id="section-toc.1-1.7.2.5.1"><a href="#section-7.5" class="auto internal xref">7.5</a>.  <a href="#name-media-types-registry" class="internal xref">Media Types Registry</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.6">
+                <p id="section-toc.1-1.7.2.6.1"><a href="#section-7.6" class="auto internal xref">7.6</a>.  <a href="#name-coap-content-formats-regist" class="internal xref">CoAP Content-Formats Registry</a></p>
 </li>
             </ul>
 </li>
@@ -2148,25 +2151,29 @@ If Fetch_CRED_U is false, W MUST NOT include CRED_U in the voucher response.<a h
             </h5>
 <p id="section-4.5.2.1-1">In case a Voucher is needed (as determined by the application), W retrieves CRED_V associated with the secure connection with V, and constructs the Voucher for the device with identifier ID_CRED_I (see <a href="#voucher" class="auto internal xref">Section 4.3.2</a>).<a href="#section-4.5.2.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.5.2.1-2">W generates the voucher response and sends it to V over the secure connection.
-The Voucher_Response SHALL be a CBOR array as defined below:<a href="#section-4.5.2.1-2" class="pilcrow">¶</a></p>
+The Voucher_Response SHALL be a CBOR map as defined below:<a href="#section-4.5.2.1-2" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-4.5.2.1-3">
 <pre>
-Voucher_Response = [
-    ? Voucher:        bstr,
-    ? CRED_U:       bstr,
-]
+Voucher_Response = {
+    ? 1:            bstr,    ; Voucher
+    ? 2:            bstr,    ; CRED_U
+    * int =&gt; any,
+}
 </pre><a href="#section-4.5.2.1-3" class="pilcrow">¶</a>
 </div>
 <p id="section-4.5.2.1-4">where<a href="#section-4.5.2.1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.5.2.1-5.1">
-                <p id="section-4.5.2.1-5.1.1">The Voucher is defined in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>, if present.<a href="#section-4.5.2.1-5.1.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.2.1-5.1.1">Voucher, with label 1, is defined in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>, if present.<a href="#section-4.5.2.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.2.1-5.2">
-                <p id="section-4.5.2.1-5.2.1">CRED_U is the credential of U corresponding to ID_CRED_I passed in the voucher request. CRED_U is included only if Fetch_CRED_U was set in the voucher request and W successfully retrieved the credential.<a href="#section-4.5.2.1-5.2.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.2.1-5.2.1">CRED_U, with label 2, is the credential of U corresponding to ID_CRED_I passed in the voucher request. CRED_U is included only if Fetch_CRED_U was set in the voucher request and W successfully retrieved the credential.<a href="#section-4.5.2.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
-<p id="section-4.5.2.1-6">W signals the successful processing of Voucher_Request via a status code in the REST interface, as defined in <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.2.1-6" class="pilcrow">¶</a></p>
+<p id="section-4.5.2.1-6">The map labels are taken from the "ELA Voucher Response Parameters" registry, see <a href="#iana-vres" class="auto internal xref">Section 7.4</a>.
+Since both parameters are optional, the use of labels allows V to determine which of them is present in the Voucher_Response.
+The labels also allow extending the Voucher_Response with additional parameters.<a href="#section-4.5.2.1-6" class="pilcrow">¶</a></p>
+<p id="section-4.5.2.1-7">W signals the successful processing of Voucher_Request via a status code in the REST interface, as defined in <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.2.1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="processing-in-v-3">
@@ -2175,6 +2182,8 @@ Voucher_Response = [
 <a href="#section-4.5.2.2" class="section-number selfRef">4.5.2.2. </a><a href="#name-processing-in-v-6" class="section-name selfRef">Processing in V</a>
             </h5>
 <p id="section-4.5.2.2-1">V receives the voucher response from W over the secure connection.
+V parses Voucher_Response and extracts the Voucher and CRED_U, if present.
+V MUST ignore any parameter with a label that it does not recognize.
 If the voucher response is successfully received from W, then V responds to U with EDHOC message_4 as described in <a href="#V_4" class="auto internal xref">Section 4.4.4.1</a>.<a href="#section-4.5.2.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2941,76 +2950,154 @@ How should DNS Registries/Registrars treat requests to register this reserved do
 </div>
 </section>
 </div>
-<div id="media-types-registry">
+<div id="iana-vres">
 <section id="section-7.4">
-        <h3 id="name-media-types-registry">
-<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-media-types-registry" class="section-name selfRef">Media Types Registry</a>
+        <h3 id="name-ela-voucher-response-parame">
+<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-ela-voucher-response-parame" class="section-name selfRef">ELA Voucher Response Parameters Registry</a>
         </h3>
-<p id="section-7.4-1">IANA has added the media types "application/lake-authz-voucherrequest+cbor" to the "Media Types" registry.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<p id="section-7.4-1">IANA has created a new registry under the registry group "Ephemeral Diffie-Hellman Over COSE (EDHOC)" as follows:<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<p id="section-7.4-2">Registry Name: ELA Voucher Response Parameters<a href="#section-7.4-2" class="pilcrow">¶</a></p>
+<p id="section-7.4-3">Reference: [[this document]]<a href="#section-7.4-3" class="pilcrow">¶</a></p>
+<p id="section-7.4-4">The columns of the registry are Name, Label, CBOR Type, Description, Change Controller, and Reference, where Label is an integer and the other columns are text strings.
+The initial contents of the registry are shown in <a href="#vres-table" class="auto internal xref">Table 3</a>.
+For registrations made by IETF documents, the IETF is listed as Change Controller.<a href="#section-7.4-4" class="pilcrow">¶</a></p>
+<span id="name-ela-voucher-response-paramet"></span><div id="vres-table">
+<table class="center" id="table-3">
+          <caption>
+<a href="#table-3" class="selfRef">Table 3</a>:
+<a href="#name-ela-voucher-response-paramet" class="selfRef">ELA Voucher Response Parameters</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Name</th>
+              <th class="text-right" rowspan="1" colspan="1">Label</th>
+              <th class="text-left" rowspan="1" colspan="1">CBOR Type</th>
+              <th class="text-left" rowspan="1" colspan="1">Description</th>
+              <th class="text-left" rowspan="1" colspan="1">Change Controller</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Voucher</td>
+              <td class="text-right" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              <td class="text-left" rowspan="1" colspan="1">Voucher, prepared by the Enrollment Server (W)</td>
+              <td class="text-left" rowspan="1" colspan="1">IETF</td>
+              <td class="text-left" rowspan="1" colspan="1">[[this document]]</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">CRED_U</td>
+              <td class="text-right" rowspan="1" colspan="1">2</td>
+              <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              <td class="text-left" rowspan="1" colspan="1">Authentication credential of the Device (U)</td>
+              <td class="text-left" rowspan="1" colspan="1">IETF</td>
+              <td class="text-left" rowspan="1" colspan="1">[[this document]]</td>
+            </tr>
+          </tbody>
+        </table>
+</div>
+<span id="name-registration-procedures-for"></span><div id="vres-procedures">
+<table class="center" id="table-4">
+          <caption>
+<a href="#table-4" class="selfRef">Table 4</a>:
+<a href="#name-registration-procedures-for" class="selfRef">Registration Procedures for ELA Voucher Response Parameters</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Range</th>
+              <th class="text-left" rowspan="1" colspan="1">Registration Procedures</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">-65536 to -25</td>
+              <td class="text-left" rowspan="1" colspan="1">Specification Required</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">-24 to 23</td>
+              <td class="text-left" rowspan="1" colspan="1">Standards Action with Expert Review</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">24 to 65535</td>
+              <td class="text-left" rowspan="1" colspan="1">Specification Required</td>
+            </tr>
+          </tbody>
+        </table>
+</div>
+<p id="section-7.4-7">Expert reviewers should take into consideration the guidelines in <span><a href="https://rfc-editor.org/rfc/rfc9528#section-10.11" class="relref">Section 10.11</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.<a href="#section-7.4-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="media-types-registry">
+<section id="section-7.5">
+        <h3 id="name-media-types-registry">
+<a href="#section-7.5" class="section-number selfRef">7.5. </a><a href="#name-media-types-registry" class="section-name selfRef">Media Types Registry</a>
+        </h3>
+<p id="section-7.5-1">IANA has added the media types "application/lake-authz-voucherrequest+cbor" to the "Media Types" registry.<a href="#section-7.5-1" class="pilcrow">¶</a></p>
 <div id="applicationlake-authz-voucherrequestcbor-media-type-registration">
-<section id="section-7.4.1">
+<section id="section-7.5.1">
           <h4 id="name-application-lake-authz-vouc">
-<a href="#section-7.4.1" class="section-number selfRef">7.4.1. </a><a href="#name-application-lake-authz-vouc" class="section-name selfRef">application/lake-authz-voucherrequest+cbor Media Type Registration</a>
+<a href="#section-7.5.1" class="section-number selfRef">7.5.1. </a><a href="#name-application-lake-authz-vouc" class="section-name selfRef">application/lake-authz-voucherrequest+cbor Media Type Registration</a>
           </h4>
 <ul class="normal">
-<li class="normal" id="section-7.4.1-1.1">
-              <p id="section-7.4.1-1.1.1">Type name: application<a href="#section-7.4.1-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.5.1-1.1">
+              <p id="section-7.5.1-1.1.1">Type name: application<a href="#section-7.5.1-1.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.2">
-              <p id="section-7.4.1-1.2.1">Subtype name: lake-authz-voucherrequest+cbor<a href="#section-7.4.1-1.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.2">
+              <p id="section-7.5.1-1.2.1">Subtype name: lake-authz-voucherrequest+cbor<a href="#section-7.5.1-1.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.3">
-              <p id="section-7.4.1-1.3.1">Required parameters: N/A<a href="#section-7.4.1-1.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.3">
+              <p id="section-7.5.1-1.3.1">Required parameters: N/A<a href="#section-7.5.1-1.3.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.4">
-              <p id="section-7.4.1-1.4.1">Optional parameters: N/A<a href="#section-7.4.1-1.4.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.4">
+              <p id="section-7.5.1-1.4.1">Optional parameters: N/A<a href="#section-7.5.1-1.4.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.5">
-              <p id="section-7.4.1-1.5.1">Encoding considerations: binary (CBOR)<a href="#section-7.4.1-1.5.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.5">
+              <p id="section-7.5.1-1.5.1">Encoding considerations: binary (CBOR)<a href="#section-7.5.1-1.5.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.6">
-              <p id="section-7.4.1-1.6.1">Security considerations: See <a href="#sec-cons" class="auto internal xref">Section 6</a> of this document.<a href="#section-7.4.1-1.6.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.6">
+              <p id="section-7.5.1-1.6.1">Security considerations: See <a href="#sec-cons" class="auto internal xref">Section 6</a> of this document.<a href="#section-7.5.1-1.6.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.7">
-              <p id="section-7.4.1-1.7.1">Interoperability considerations: N/A<a href="#section-7.4.1-1.7.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.7">
+              <p id="section-7.5.1-1.7.1">Interoperability considerations: N/A<a href="#section-7.5.1-1.7.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.8">
-              <p id="section-7.4.1-1.8.1">Published specification: [[this document]] (this document)<a href="#section-7.4.1-1.8.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.8">
+              <p id="section-7.5.1-1.8.1">Published specification: [[this document]] (this document)<a href="#section-7.5.1-1.8.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.9">
-              <p id="section-7.4.1-1.9.1">Application that use this media type: To be identified<a href="#section-7.4.1-1.9.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.9">
+              <p id="section-7.5.1-1.9.1">Application that use this media type: To be identified<a href="#section-7.5.1-1.9.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.10">
-              <p id="section-7.4.1-1.10.1">Fragment identifier considerations: N/A<a href="#section-7.4.1-1.10.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.10">
+              <p id="section-7.5.1-1.10.1">Fragment identifier considerations: N/A<a href="#section-7.5.1-1.10.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.11">
-              <p id="section-7.4.1-1.11.1">Additional information:<a href="#section-7.4.1-1.11.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.11">
+              <p id="section-7.5.1-1.11.1">Additional information:<a href="#section-7.5.1-1.11.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.4.1-1.11.2.1">
-                  <p id="section-7.4.1-1.11.2.1.1">Magic number(s): N/A<a href="#section-7.4.1-1.11.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.5.1-1.11.2.1">
+                  <p id="section-7.5.1-1.11.2.1.1">Magic number(s): N/A<a href="#section-7.5.1-1.11.2.1.1" class="pilcrow">¶</a></p>
 </li>
-                <li class="normal" id="section-7.4.1-1.11.2.2">
-                  <p id="section-7.4.1-1.11.2.2.1">File extension(s): N/A<a href="#section-7.4.1-1.11.2.2.1" class="pilcrow">¶</a></p>
+                <li class="normal" id="section-7.5.1-1.11.2.2">
+                  <p id="section-7.5.1-1.11.2.2.1">File extension(s): N/A<a href="#section-7.5.1-1.11.2.2.1" class="pilcrow">¶</a></p>
 </li>
-                <li class="normal" id="section-7.4.1-1.11.2.3">
-                  <p id="section-7.4.1-1.11.2.3.1">Macintosh file type code(s): N/A<a href="#section-7.4.1-1.11.2.3.1" class="pilcrow">¶</a></p>
+                <li class="normal" id="section-7.5.1-1.11.2.3">
+                  <p id="section-7.5.1-1.11.2.3.1">Macintosh file type code(s): N/A<a href="#section-7.5.1-1.11.2.3.1" class="pilcrow">¶</a></p>
 </li>
               </ul>
 </li>
-            <li class="normal" id="section-7.4.1-1.12">
-              <p id="section-7.4.1-1.12.1">Person &amp; email address to contact for further information: IETF LAKE Working Group (lake@ietf.org)<a href="#section-7.4.1-1.12.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.12">
+              <p id="section-7.5.1-1.12.1">Person &amp; email address to contact for further information: IETF LAKE Working Group (lake@ietf.org)<a href="#section-7.5.1-1.12.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.13">
-              <p id="section-7.4.1-1.13.1">Intended usage: COMMON<a href="#section-7.4.1-1.13.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.13">
+              <p id="section-7.5.1-1.13.1">Intended usage: COMMON<a href="#section-7.5.1-1.13.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.14">
-              <p id="section-7.4.1-1.14.1">Restrictions on usage: N/A<a href="#section-7.4.1-1.14.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.14">
+              <p id="section-7.5.1-1.14.1">Restrictions on usage: N/A<a href="#section-7.5.1-1.14.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.15">
-              <p id="section-7.4.1-1.15.1">Author: LAKE WG<a href="#section-7.4.1-1.15.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.15">
+              <p id="section-7.5.1-1.15.1">Author: LAKE WG<a href="#section-7.5.1-1.15.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.4.1-1.16">
-              <p id="section-7.4.1-1.16.1">Change Controller: IETF<a href="#section-7.4.1-1.16.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-7.5.1-1.16">
+              <p id="section-7.5.1-1.16.1">Change Controller: IETF<a href="#section-7.5.1-1.16.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -3018,15 +3105,15 @@ How should DNS Registries/Registrars treat requests to register this reserved do
 </section>
 </div>
 <div id="coap-content-formats-registry">
-<section id="section-7.5">
+<section id="section-7.6">
         <h3 id="name-coap-content-formats-regist">
-<a href="#section-7.5" class="section-number selfRef">7.5. </a><a href="#name-coap-content-formats-regist" class="section-name selfRef">CoAP Content-Formats Registry</a>
+<a href="#section-7.6" class="section-number selfRef">7.6. </a><a href="#name-coap-content-formats-regist" class="section-name selfRef">CoAP Content-Formats Registry</a>
         </h3>
-<p id="section-7.5-1">IANA has added the following Content-Format number in the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".<a href="#section-7.5-1" class="pilcrow">¶</a></p>
+<p id="section-7.6-1">IANA has added the following Content-Format number in the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".<a href="#section-7.6-1" class="pilcrow">¶</a></p>
 <span id="name-addition-to-the-coap-conten"></span><div id="coap-content-formats">
-<table class="center" id="table-3">
+<table class="center" id="table-5">
           <caption>
-<a href="#table-3" class="selfRef">Table 3</a>:
+<a href="#table-5" class="selfRef">Table 5</a>:
 <a href="#name-addition-to-the-coap-conten" class="selfRef">Addition to the CoAP Content-Formats registry</a>
           </caption>
 <thead>
@@ -3047,7 +3134,7 @@ How should DNS Registries/Registrars treat requests to register this reserved do
           </tbody>
         </table>
 </div>
-<p id="section-7.5-3">Note for IANA reviewers: the preferred value range is 0-255 (Expert Review).<a href="#section-7.5-3" class="pilcrow">¶</a></p>
+<p id="section-7.6-3">Note for IANA reviewers: the preferred value range is 0-255 (Expert Review).<a href="#section-7.6-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -3151,6 +3238,10 @@ How should DNS Registries/Registrars treat requests to register this reserved do
 <dt id="RFC7593">[RFC7593]</dt>
         <dd>
 <span class="refAuthor">Wierenga, K.</span>, <span class="refAuthor">Winter, S.</span>, and <span class="refAuthor">T. Wolniewicz</span>, <span class="refTitle">"The eduroam Architecture for Network Roaming"</span>, <span class="seriesInfo">RFC 7593</span>, <span class="seriesInfo">DOI 10.17487/RFC7593</span>, <time datetime="2015-09" class="refDate">September 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7593">https://www.rfc-editor.org/info/rfc7593</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8126">[RFC8126]</dt>
+        <dd>
+<span class="refAuthor">Cotton, M.</span>, <span class="refAuthor">Leiba, B.</span>, and <span class="refAuthor">T. Narten</span>, <span class="refTitle">"Guidelines for Writing an IANA Considerations Section in RFCs"</span>, <span class="seriesInfo">BCP 26</span>, <span class="seriesInfo">RFC 8126</span>, <span class="seriesInfo">DOI 10.17487/RFC8126</span>, <time datetime="2017-06" class="refDate">June 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8126">https://www.rfc-editor.org/info/rfc8126</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8137">[RFC8137]</dt>
         <dd>

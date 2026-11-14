@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 16 May 2027                                          M. Vučinić
+Expires: 18 May 2027                                          M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                        12 November 2026
+                                                        14 November 2026
 
 
 Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 May 2027.
+   This Internet-Draft will expire on 18 May 2027.
 
 Copyright Notice
 
@@ -102,8 +102,9 @@ Table of Contents
      7.1.  EDHOC External Authorization Data Registry
      7.2.  The Well-Known URI Registry
      7.3.  Well-Known Name Under ".arpa" Name Space
-     7.4.  Media Types Registry
-     7.5.  CoAP Content-Formats Registry
+     7.4.  ELA Voucher Response Parameters Registry
+     7.5.  Media Types Registry
+     7.6.  CoAP Content-Formats Registry
    8.  References
      8.1.  Normative References
      8.2.  Informative References
@@ -849,31 +850,41 @@ U                              V                                       W
    Section 4.3.2).
 
    W generates the voucher response and sends it to V over the secure
-   connection.  The Voucher_Response SHALL be a CBOR array as defined
+   connection.  The Voucher_Response SHALL be a CBOR map as defined
    below:
 
-   Voucher_Response = [
-       ? Voucher:        bstr,
-       ? CRED_U:       bstr,
-   ]
+   Voucher_Response = {
+       ? 1:            bstr,    ; Voucher
+       ? 2:            bstr,    ; CRED_U
+       * int => any,
+   }
 
    where
 
-   *  The Voucher is defined in Section 4.3.2, if present.
+   *  Voucher, with label 1, is defined in Section 4.3.2, if present.
 
-   *  CRED_U is the credential of U corresponding to ID_CRED_I passed in
-      the voucher request.  CRED_U is included only if Fetch_CRED_U was
-      set in the voucher request and W successfully retrieved the
-      credential.
+   *  CRED_U, with label 2, is the credential of U corresponding to
+      ID_CRED_I passed in the voucher request.  CRED_U is included only
+      if Fetch_CRED_U was set in the voucher request and W successfully
+      retrieved the credential.
+
+   The map labels are taken from the "ELA Voucher Response Parameters"
+   registry, see Section 7.4.  Since both parameters are optional, the
+   use of labels allows V to determine which of them is present in the
+   Voucher_Response.  The labels also allow extending the
+   Voucher_Response with additional parameters.
 
    W signals the successful processing of Voucher_Request via a status
    code in the REST interface, as defined in Section 5.4.1.
 
 4.5.2.2.  Processing in V
 
-   V receives the voucher response from W over the secure connection.
-   If the voucher response is successfully received from W, then V
-   responds to U with EDHOC message_4 as described in Section 4.4.4.1.
+   V receives the voucher response from W over the secure connection.  V
+   parses Voucher_Response and extracts the Voucher and CRED_U, if
+   present.  V MUST ignore any parameter with a label that it does not
+   recognize.  If the voucher response is successfully received from W,
+   then V responds to U with EDHOC message_4 as described in
+   Section 4.4.4.1.
 
 4.6.  Error Handling
 
@@ -1448,12 +1459,59 @@ U                              V                                       W
 
    Any requests to register this domain name should be denied.
 
-7.4.  Media Types Registry
+7.4.  ELA Voucher Response Parameters Registry
+
+   IANA has created a new registry under the registry group "Ephemeral
+   Diffie-Hellman Over COSE (EDHOC)" as follows:
+
+   Registry Name: ELA Voucher Response Parameters
+
+   Reference: [[this document]]
+
+   The columns of the registry are Name, Label, CBOR Type, Description,
+   Change Controller, and Reference, where Label is an integer and the
+   other columns are text strings.  The initial contents of the registry
+   are shown in Table 3.  For registrations made by IETF documents, the
+   IETF is listed as Change Controller.
+
+    +=========+=======+====+================+============+============+
+    | Name    | Label |CBOR| Description    | Change     | Reference  |
+    |         |       |Type|                | Controller |            |
+    +=========+=======+====+================+============+============+
+    | Voucher |     1 |bstr| Voucher,       | IETF       | [[this     |
+    |         |       |    | prepared by    |            | document]] |
+    |         |       |    | the Enrollment |            |            |
+    |         |       |    | Server (W)     |            |            |
+    +---------+-------+----+----------------+------------+------------+
+    | CRED_U  |     2 |bstr| Authentication | IETF       | [[this     |
+    |         |       |    | credential of  |            | document]] |
+    |         |       |    | the Device (U) |            |            |
+    +---------+-------+----+----------------+------------+------------+
+
+                  Table 3: ELA Voucher Response Parameters
+
+          +===============+=====================================+
+          | Range         | Registration Procedures             |
+          +===============+=====================================+
+          | -65536 to -25 | Specification Required              |
+          +---------------+-------------------------------------+
+          | -24 to 23     | Standards Action with Expert Review |
+          +---------------+-------------------------------------+
+          | 24 to 65535   | Specification Required              |
+          +---------------+-------------------------------------+
+
+              Table 4: Registration Procedures for ELA Voucher
+                            Response Parameters
+
+   Expert reviewers should take into consideration the guidelines in
+   Section 10.11 of [RFC9528].
+
+7.5.  Media Types Registry
 
    IANA has added the media types "application/lake-authz-
    voucherrequest+cbor" to the "Media Types" registry.
 
-7.4.1.  application/lake-authz-voucherrequest+cbor Media Type
+7.5.1.  application/lake-authz-voucherrequest+cbor Media Type
         Registration
 
    *  Type name: application
@@ -1495,7 +1553,7 @@ U                              V                                       W
 
    *  Change Controller: IETF
 
-7.5.  CoAP Content-Formats Registry
+7.6.  CoAP Content-Formats Registry
 
    IANA has added the following Content-Format number in the "CoAP
    Content-Formats" registry under the registry group "Constrained
@@ -1509,7 +1567,7 @@ U                              V                                       W
      | voucherrequest+cbor            |         |      | document]] |
      +--------------------------------+---------+------+------------+
 
-          Table 3: Addition to the CoAP Content-Formats registry
+          Table 5: Addition to the CoAP Content-Formats registry
 
    Note for IANA reviewers: the preferred value range is 0-255 (Expert
    Review).
@@ -1633,6 +1691,11 @@ U                              V                                       W
               Architecture for Network Roaming", RFC 7593,
               DOI 10.17487/RFC7593, September 2015,
               <https://www.rfc-editor.org/info/rfc7593>.
+
+   [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
+              Writing an IANA Considerations Section in RFCs", BCP 26,
+              RFC 8126, DOI 10.17487/RFC8126, June 2017,
+              <https://www.rfc-editor.org/info/rfc8126>.
 
    [RFC8137]  Kivinen, T. and P. Kinney, "IEEE 802.15.4 Information
               Element for the IETF", RFC 8137, DOI 10.17487/RFC8137, May
