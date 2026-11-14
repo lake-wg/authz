@@ -280,8 +280,8 @@ Table of Contents
       communication with the enrollment server (see Section 4.3).
 
    *  Location information about the enrollment server (LOC_W) that can
-      be used by V to reach W.  This is typically a URI but may
-      alternatively be only the domain name.
+      be used by V to reach W, encoded as a Constrained Resource
+      Identifier (CRI) [I-D.ietf-core-href].
 
 3.2.  Domain Authenticator (V)
 
@@ -538,14 +538,14 @@ U                              V                                       W
    Voucher_Info = bstr .cborseq Voucher_Info_Seq
 
    Voucher_Info_Seq = [ ; used as a CBOR sequence, not array
-       LOC_W: tstr,
+       LOC_W: CRI,
        EK_CT: bstr,
    ]
 
    where
 
-   *  LOC_W is a text string used by V to locate W, e.g., a URI or a
-      domain name.
+   *  LOC_W is a CRI used by V to locate W, where CRI is defined in
+      Section 5.1 of [I-D.ietf-core-href].
 
    *  EK_CT is a field containing either an ephemeral Diffie-Hellman key
       or a KEM ciphertext, depending on the EDHOC method being used in
@@ -1171,7 +1171,7 @@ U                              V                                       W
    The interaction between V and W is enabled through a RESTful
    interface exposed by W.  This RESTful interface MAY be implemented
    using either HTTP or CoAP.  V SHOULD access the resources exposed by
-   W through the protocol indicated by the scheme in the LOC_W URI.
+   W through the protocol indicated by the scheme of LOC_W.
 
 5.1.  Scheme "https"
 
@@ -1575,6 +1575,13 @@ U                              V                                       W
 8.  References
 
 8.1.  Normative References
+
+   [I-D.ietf-core-href]
+              Bormann, C. and H. Birkholz, "Constrained Resource
+              Identifiers", Work in Progress, Internet-Draft, draft-
+              ietf-core-href-30, 21 November 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-core-
+              href-30>.
 
    [NIST-800-56A]
               Barker, E., Chen, L., Roginsky, A., Vassilev, A., and R.
