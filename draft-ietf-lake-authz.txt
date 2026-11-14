@@ -95,16 +95,15 @@ Table of Contents
    5.  REST Interface at W
      5.1.  Scheme "https"
      5.2.  Scheme "coaps"
-     5.3.  Scheme "coap"
+     5.3.  Schemes "coap" and "coap+tcp"
      5.4.  URIs
    6.  Security Considerations
    7.  IANA Considerations
      7.1.  EDHOC External Authorization Data Registry
      7.2.  The Well-Known URI Registry
-     7.3.  Well-Known Name Under ".arpa" Name Space
-     7.4.  ELA Voucher Response Parameters Registry
-     7.5.  Media Types Registry
-     7.6.  CoAP Content-Formats Registry
+     7.3.  ELA Voucher Response Parameters Registry
+     7.4.  Media Types Registry
+     7.5.  CoAP Content-Formats Registry
    8.  References
      8.1.  Normative References
      8.2.  Informative References
@@ -372,6 +371,13 @@ Table of Contents
 
    W needs to be available during the execution of the protocol between
    U and V.
+
+   W may hold more than one private key corresponding to a PK_W, for
+   example when PK_W is updated for newly provisioned devices while
+   devices provisioned with a previous PK_W are still deployed.  W
+   determines the private key to use from ID_CRED_I, see Section 4.5.1.
+   In this way, LOC_W does not need to change when a new PK_W is
+   introduced.
 
 4.  The Protocol
 
@@ -682,7 +688,10 @@ U                              V                                       W
 4.4.2.2.  Processing in U
 
    U receives EDHOC message_2 from V and processes it as specified in
-   Section 5.3.3 of [RFC9528].
+   Section 5.3.3 of [RFC9528].  At this stage, V has proven possession
+   of the private key corresponding to CRED_V, but U does not know
+   whether V is authorized.  If a Voucher is used, U learns this when it
+   verifies the Voucher in message_4, see Section 4.4.4.
 
 4.4.3.  Message 3
 
@@ -869,7 +878,7 @@ U                              V                                       W
       retrieved the credential.
 
    The map labels are taken from the "ELA Voucher Response Parameters"
-   registry, see Section 7.4.  Since both parameters are optional, the
+   registry, see Section 7.3.  Since both parameters are optional, the
    use of labels allows V to determine which of them is present in the
    Voucher_Response.  The labels also allow extending the
    Voucher_Response with additional parameters.
@@ -1159,12 +1168,18 @@ U                              V                                       W
 
 4.7.4.  Security implications
 
-   In the reverse flow, Voucher_Info is confidentiality and integrity
-   protected, while Voucher is also authenticated.  These properties are
-   inherited from EDHOC message_2 and message_3.  In contrast, the ELA
-   regular flow provides confidentiality, integrity protection, and
-   authentication to both Voucher_Info and Voucher, as inherited from
-   EDHOC message_3 and message_4.
+   Voucher_Info and Voucher inherit the protection of the EDHOC messages
+   that carry them: message_2 and message_3 in the reverse flow,
+   message_3 and message_4 in the regular flow.  In the reverse flow,
+   Voucher_Info is sent in EAD_2, which is encrypted, but the encryption
+   only provides confidentiality against passive attacks, see
+   Section 9.1 of [RFC9528].  In the regular flow, Voucher_Info is sent
+   in EAD_3, which is only readable by the holder of the private key
+   corresponding to CRED_V.  However, since there is no previous
+   relation between U and V (see Section 3.2), U does not know whether V
+   is authorized until it verifies the Voucher.  Thus, in both flows, U
+   may reveal Voucher_Info to a V that is not authorized.  The Voucher
+   is authenticated by W in both flows.
 
 5.  REST Interface at W
 
@@ -1204,14 +1219,14 @@ U                              V                                       W
    is replaced with DTLS.  As in Section 5.1, it is RECOMMENDED to allow
    reuse of the DTLS session.
 
-5.3.  Scheme "coap"
+5.3.  Schemes "coap" and "coap+tcp"
 
-   In case the scheme indicates "coap", V SHOULD perform an EDHOC
-   session with W, as specified in Appendix A of [RFC9528] and access
-   the resources defined in Section 5.4 using OSCORE [RFC8613] and CoAP.
-   The authentication credential in this EDHOC session MUST be CRED_V.
-   As in Section 5.1, it is RECOMMENDED to allow reuse of the EDHOC
-   session.
+   In case the scheme indicates "coap" or "coap+tcp" [RFC8323], V SHOULD
+   perform an EDHOC session with W, as specified in Appendix A of
+   [RFC9528] and access the resources defined in Section 5.4 using
+   OSCORE [RFC8613] and CoAP.  The authentication credential in this
+   EDHOC session MUST be CRED_V.  As in Section 5.1, it is RECOMMENDED
+   to allow reuse of the EDHOC session.
 
 5.4.  URIs
 
@@ -1229,6 +1244,8 @@ U                              V                                       W
    In case of EDHOC and OSCORE:
 
    *  "coap://example.com/.well-known/lake-authz"
+
+   *  "coap+tcp://example.com/.well-known/lake-authz"
 
    Each operation specified in the following is indicated by a path-
    suffix.
@@ -1326,7 +1343,7 @@ U                              V                                       W
    EDHOC provides identity protection of the Initiator, here the device.
    In ELA, the device U will share its identity with an authenticated V,
    albeit before knowing (via the Voucher received from W) whether U is
-   authorized to interact with W.
+   authorized to interact with V.
 
    W may be used for lookup of CRED_U from ID_CRED_I, or this credential
    lookup function may be separate from the authorization function of W,
@@ -1337,9 +1354,9 @@ U                              V                                       W
    communications can use a different identity under the already
    established secure channel.
 
-   In the ELA regular flow, EDHOC message_4 is mandatory since it
-   carries the Voucher.  Implementations MUST NOT omit message_4 when
-   ELA is in use.
+   In the ELA regular flow, EDHOC message_4 is mandatory if it carries
+   the Voucher.  Implementations MUST NOT omit message_4 when vouchers
+   in message_4 are in use.
 
 7.  IANA Considerations
 
@@ -1386,80 +1403,7 @@ U                              V                                       W
 
    *  Related information: None
 
-7.3.  Well-Known Name Under ".arpa" Name Space
-
-   This document allocates a well-known name under the .arpa name space
-   according to the rules given in [RFC3172] and [RFC6761].  The name
-   "lake-authz.arpa" is requested.  No subdomains are expected, and
-   addition of any such subdomains requires the publication of an IETF
-   Standards Track RFC.  No A, AAAA, or PTR record is requested.
-
-7.3.1.  Domain Name Reservation Considerations
-
-   As required by [RFC6761], the following considerations apply to the
-   reservation of "lake-authz.arpa":
-
-   1.  Users: Are human users expected to recognize these names as
-       special and use them differently?  In what way?
-
-   No.  This name is not intended for direct use or recognition by human
-   users.
-
-   1.  Application Software: Are writers of application software
-       expected to make their software recognize these names as special
-       and treat them differently?  In what way?  (For example, if a
-       human user enters such a name, should the application software
-       reject it with an error message?)
-
-   Yes. Applications that implement ELA and use CoAP may include "lake-
-   authz.arpa" in the URI-Host option when the Device (U) does not yet
-   know the address or identity of the Authenticator (V), such as during
-   zero-touch enrollment.
-
-   1.  Name Resolution APIs and Libraries: Are writers of name
-       resolution APIs and libraries expected to make their software
-       recognize these names as special and treat them differently?  If
-       so, how?
-
-   No.
-
-   1.  Caching DNS Servers: Are developers of caching domain name
-       servers expected to make their implementations recognize these
-       names as special and treat them differently?  If so, how?
-
-   No.
-
-   1.  Authoritative DNS Servers: Are developers of authoritative domain
-       name servers expected to make their implementations recognize
-       these names as special and treat them differently?  If so, how?
-
-   No.
-
-   1.  DNS Server Operators: Does this reserved Special-Use Domain Name
-       have any potential impact on DNS server operators?  If they try
-       to configure their authoritative DNS server as authoritative for
-       this reserved name, will compliant name server software reject it
-       as invalid?  Do DNS server operators need to know about that and
-       understand why?  Even if the name server software doesn't prevent
-       them from using this reserved name, are there other ways that it
-       may not work as expected, of which the DNS server operator should
-       be aware?
-
-   No.
-
-   1.  DNS Registries/Registrars: How should DNS Registries/Registrars
-       treat requests to register this reserved domain name?  Should
-       such requests be denied?  Should such requests be allowed, but
-       only to a specially designated entity?  (For example, the name
-       "www.example.org" is reserved for documentation examples and is
-       not available for registration; however, the name is in fact
-       registered; and there is even a website at that name, which
-       states circularly that the name is reserved for use in
-       documentation and cannot be registered!)
-
-   Any requests to register this domain name should be denied.
-
-7.4.  ELA Voucher Response Parameters Registry
+7.3.  ELA Voucher Response Parameters Registry
 
    IANA has created a new registry under the registry group "Ephemeral
    Diffie-Hellman Over COSE (EDHOC)" as follows:
@@ -1506,12 +1450,12 @@ U                              V                                       W
    Expert reviewers should take into consideration the guidelines in
    Section 10.11 of [RFC9528].
 
-7.5.  Media Types Registry
+7.4.  Media Types Registry
 
    IANA has added the media types "application/lake-authz-
    voucherrequest+cbor" to the "Media Types" registry.
 
-7.5.1.  application/lake-authz-voucherrequest+cbor Media Type
+7.4.1.  application/lake-authz-voucherrequest+cbor Media Type
         Registration
 
    *  Type name: application
@@ -1553,7 +1497,7 @@ U                              V                                       W
 
    *  Change Controller: IETF
 
-7.6.  CoAP Content-Formats Registry
+7.5.  CoAP Content-Formats Registry
 
    IANA has added the following Content-Format number in the "CoAP
    Content-Formats" registry under the registry group "Constrained
@@ -1598,6 +1542,12 @@ U                              V                                       W
               800-227", September 2025,
               <https://nvlpubs.nist.gov/nistpubs/SpecialPublications/
               NIST.SP.800-227.pdf>.
+
+   [RFC8323]  Bormann, C., Lemay, S., Tschofenig, H., Hartke, K.,
+              Silverajan, B., and B. Raymor, Ed., "CoAP (Constrained
+              Application Protocol) over TCP, TLS, and WebSockets",
+              RFC 8323, DOI 10.17487/RFC8323, February 2018,
+              <https://www.rfc-editor.org/info/rfc8323>.
 
    [RFC8366]  Watsen, K., Richardson, M., Pritikin, M., and T. Eckert,
               "A Voucher Artifact for Bootstrapping Protocols",
@@ -1674,20 +1624,11 @@ U                              V                                       W
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-   [RFC3172]  Huston, G., Ed., "Management Guidelines & Operational
-              Requirements for the Address and Routing Parameter Area
-              Domain ("arpa")", BCP 52, RFC 3172, DOI 10.17487/RFC3172,
-              September 2001, <https://www.rfc-editor.org/info/rfc3172>.
-
    [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
               Housley, R., and W. Polk, "Internet X.509 Public Key
               Infrastructure Certificate and Certificate Revocation List
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <https://www.rfc-editor.org/info/rfc5280>.
-
-   [RFC6761]  Cheshire, S. and M. Krochmal, "Special-Use Domain Names",
-              RFC 6761, DOI 10.17487/RFC6761, February 2013,
-              <https://www.rfc-editor.org/info/rfc6761>.
 
    [RFC7228]  Bormann, C., Ersue, M., and A. Keranen, "Terminology for
               Constrained-Node Networks", RFC 7228,
@@ -1766,12 +1707,12 @@ A.1.  Using EDHOC Application Profiles
    message_2 and message_3.
 
    For example, to advertise support for ELA in the regular flow, U
-   prepares EAD_1 containing an item where ead_label = TBD_EAD_LABEL and
-   ead_value encodes a profile_id_with_eads, containing the following
-   value:
+   prepares EAD_1 containing an item where ead_label = -TBD_EAD_LABEL
+   and ead_value encodes a profile_id_with_eads, containing the
+   following value:
 
    <<
-      true,                                   / reply_flag /
+      true,                                   / advertise_flag /
       [e'APP-PROF-MINIMAL-CS-2', TBD1, TBD2]  / profile_id_with_eads /
    >>
 
@@ -1788,7 +1729,7 @@ A.1.  Using EDHOC Application Profiles
       document, see Section 7
 
    In the reply, V prepares EAD_2 containing an item where ead_label =
-   TBD_EAD_LABEL and ead_value encodes a profile_id_with_eads,
+   -TBD_EAD_LABEL and ead_value encodes a profile_id_with_eads,
    containing the following value:
 
    <<
@@ -1797,6 +1738,12 @@ A.1.  Using EDHOC Application Profiles
 
    Where APP-PROF-EXTENSIVE corresponds to a well-known EDHOC
    application profile, see Section 8 of [I-D.ietf-lake-app-profiles].
+
+   Note to RFC Editor: Please replace all occurrences of TBD_EAD_LABEL
+   with the value assigned by IANA to the "Supported LAKE application
+   profiles" entry in the "EDHOC External Authorization Data" registry,
+   as requested in Section 11.5 of [I-D.ietf-lake-app-profiles].  Please
+   remove this note before publication.
 
 A.2.  V advertises support for ELA
 
