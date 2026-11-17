@@ -12,8 +12,8 @@
 <meta content="Michael Richardson" name="author">
 <meta content="
        Ephemeral Diffie-Hellman Over COSE (EDHOC) is a lightweight authenticated key exchange protocol intended for use in constrained scenarios.
-This document specifies Lightweight Authorization using EDHOC (ELA).
-The procedure allows authorizing enrollment of new devices using the extension point defined in EDHOC.
+This document specifies lightweight authorization using EDHOC (ELA).
+The procedure allows authorizing enrollment of new devices using the External Authorization Data (EAD) extension point defined in EDHOC.
 ELA is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time. 
     " name="description">
 <meta content="xml2rfc 3.35.0" name="generator">
@@ -1052,7 +1052,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Selander, et al.</td>
-<td class="center">Expires 18 May 2027</td>
+<td class="center">Expires 21 May 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1065,12 +1065,12 @@ svg {
 <dd class="internet-draft">draft-ietf-lake-authz-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-11-14" class="published">14 November 2026</time>
+<time datetime="2026-11-17" class="published">17 November 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-05-18">18 May 2027</time></dd>
+<dd class="expires"><time datetime="2027-05-21">21 May 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1100,8 +1100,8 @@ svg {
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">Ephemeral Diffie-Hellman Over COSE (EDHOC) is a lightweight authenticated key exchange protocol intended for use in constrained scenarios.
-This document specifies Lightweight Authorization using EDHOC (ELA).
-The procedure allows authorizing enrollment of new devices using the extension point defined in EDHOC.
+This document specifies lightweight authorization using EDHOC (ELA).
+The procedure allows authorizing enrollment of new devices using the External Authorization Data (EAD) extension point defined in EDHOC.
 ELA is applicable to zero-touch onboarding of new devices to a constrained network leveraging trust anchors installed at manufacture time.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
@@ -1139,7 +1139,7 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 18 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 21 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1307,14 +1307,14 @@ ELA is applicable to zero-touch onboarding of new devices to a constrained netwo
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">For constrained IoT deployments <span>[<a href="#RFC7228" class="cite xref">RFC7228</a>]</span> the overhead and processing contributed by security protocols may be significant, which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see <span>[<a href="#I-D.ietf-lake-reqs" class="cite xref">I-D.ietf-lake-reqs</a>]</span>).
-This document describes Lightweight Authorization using EDHOC (ELA), a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> with third party-assisted authorization.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">For constrained IoT deployments <span>[<a href="#I-D.ietf-iotops-7228bis" class="cite xref">I-D.ietf-iotops-7228bis</a>]</span> the overhead and processing contributed by security protocols may be significant, which motivates the specification of lightweight protocols that are optimizing, in particular, message overhead (see <span>[<a href="#I-D.ietf-lake-reqs" class="cite xref">I-D.ietf-lake-reqs</a>]</span>).
+This document describes lightweight authorization using EDHOC (ELA), a procedure for augmenting the lightweight authenticated Diffie-Hellman key exchange EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> with third party-assisted authorization.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">ELA involves a device, a domain authenticator, and an enrollment server.
 The device and domain authenticator perform mutual authentication and authorization, assisted by the enrollment server that provides relevant authorization information to the device (a "voucher") and to the authenticator. The high-level model is similar to BRSKI <span>[<a href="#RFC8995" class="cite xref">RFC8995</a>]</span>.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">In this document, we consider the target interaction for which authorization is needed to be "enrollment", for example joining a network for the first time (e.g., <span>[<a href="#RFC9031" class="cite xref">RFC9031</a>]</span>), but it can be applied to authorize other target interactions.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-3">In this document, the target interaction for which authorization is needed is "enrollment", for example joining a network for the first time (e.g., <span>[<a href="#RFC9031" class="cite xref">RFC9031</a>]</span>), but ELA can be applied to authorize other target interactions.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <p id="section-1-4">The enrollment server may represent the manufacturer of the device, or some other party with information about the device from which a trust anchor has been pre-provisioned into the device.
 The (domain) authenticator may represent the service provider or some other party controlling access to the network in which the device is enrolling.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">ELA assumes that authentication between device and authenticator is performed with EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) fields defined in EDHOC.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-5">ELA assumes that authentication between device and authenticator is performed with EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> and defines the integration of a lightweight authorization procedure using the External Authorization Data (EAD) fields defined in EDHOC.<a href="#section-1-5" class="pilcrow">¶</a></p>
 <p id="section-1-6">ELA enables a low message count by performing authorization in parallel with authentication during an enrollment process, instead of in sequence, which is common for network access.
 It further reuses protocol elements from EDHOC, leading to reduced message sizes on constrained links.<a href="#section-1-6" class="pilcrow">¶</a></p>
 <p id="section-1-7">This protocol is applicable to a wide variety of settings, and can be mapped to different authorization architectures.<a href="#section-1-7" class="pilcrow">¶</a></p>
@@ -1324,8 +1324,8 @@ It further reuses protocol elements from EDHOC, leading to reduced message sizes
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
         </h3>
 <p id="section-1.1-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
-<p id="section-1.1-2">Readers are expected to have an understanding of CBOR <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>, CDDL <span>[<a href="#RFC8610" class="cite xref">RFC8610</a>]</span>, and EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.
-Appendix C.1 of <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> contains some basic info about CBOR.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">Readers are expected to have an understanding of Concise Binary Object Representation (CBOR) <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>, Concise Data Definition Language (CDDL) <span>[<a href="#RFC8610" class="cite xref">RFC8610</a>]</span>, and EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.
+<span><a href="https://rfc-editor.org/rfc/rfc9528#appendix-C.1" class="relref">Appendix C.1</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> contains some basic info about CBOR.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1348,53 +1348,52 @@ See illustration in <a href="#fig-overview" class="auto internal xref">Figure 1<
 <figure id="figure-1">
         <div id="section-2-5.1">
           <div class="alignCenter art-svg artwork" id="section-2-5.1.1">
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="208" width="560" viewBox="0 0 560 208" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
-              <path d="M 8,64 L 8,176" fill="none" stroke="black"></path>
-              <path d="M 96,64 L 96,176" fill="none" stroke="black"></path>
-              <path d="M 136,120 L 136,176" fill="none" stroke="black"></path>
-              <path d="M 152,64 L 152,120" fill="none" stroke="black"></path>
-              <path d="M 200,64 L 200,176" fill="none" stroke="black"></path>
-              <path d="M 328,64 L 328,176" fill="none" stroke="black"></path>
-              <path d="M 424,64 L 424,176" fill="none" stroke="black"></path>
-              <path d="M 552,64 L 552,176" fill="none" stroke="black"></path>
-              <path d="M 8,64 L 96,64" fill="none" stroke="black"></path>
-              <path d="M 200,64 L 328,64" fill="none" stroke="black"></path>
-              <path d="M 424,64 L 552,64" fill="none" stroke="black"></path>
-              <path d="M 96,80 L 192,80" fill="none" stroke="black"></path>
-              <path d="M 104,96 L 200,96" fill="none" stroke="black"></path>
-              <path d="M 96,112 L 144,112" fill="none" stroke="black"></path>
-              <path d="M 160,112 L 192,112" fill="none" stroke="black"></path>
-              <path d="M 328,112 L 416,112" fill="none" stroke="black"></path>
-              <path d="M 104,128 L 128,128" fill="none" stroke="black"></path>
-              <path d="M 144,128 L 200,128" fill="none" stroke="black"></path>
-              <path d="M 336,128 L 424,128" fill="none" stroke="black"></path>
-              <path d="M 8,176 L 96,176" fill="none" stroke="black"></path>
-              <path d="M 200,176 L 328,176" fill="none" stroke="black"></path>
-              <path d="M 424,176 L 552,176" fill="none" stroke="black"></path>
-              <polygon class="arrowhead" points="424,112 412,106.4 412,117.6" fill="black" transform="rotate(0,416,112)"></polygon>
-              <polygon class="arrowhead" points="344,128 332,122.4 332,133.6" fill="black" transform="rotate(180,336,128)"></polygon>
-              <polygon class="arrowhead" points="200,112 188,106.4 188,117.6" fill="black" transform="rotate(0,192,112)"></polygon>
-              <polygon class="arrowhead" points="200,80 188,74.4 188,85.6" fill="black" transform="rotate(0,192,80)"></polygon>
-              <polygon class="arrowhead" points="112,128 100,122.4 100,133.6" fill="black" transform="rotate(180,104,128)"></polygon>
-              <polygon class="arrowhead" points="112,96 100,90.4 100,101.6" fill="black" transform="rotate(180,104,96)"></polygon>
-              <circle cx="136" cy="128" r="6" class="opendot" fill="white" stroke="black"></circle>
-              <circle cx="152" cy="112" r="6" class="opendot" fill="white" stroke="black"></circle>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="192" width="560" viewBox="0 0 560 192" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+              <path d="M 8,48 L 8,160" fill="none" stroke="black"></path>
+              <path d="M 96,48 L 96,160" fill="none" stroke="black"></path>
+              <path d="M 136,104 L 136,160" fill="none" stroke="black"></path>
+              <path d="M 152,40 L 152,104" fill="none" stroke="black"></path>
+              <path d="M 200,48 L 200,160" fill="none" stroke="black"></path>
+              <path d="M 328,48 L 328,160" fill="none" stroke="black"></path>
+              <path d="M 424,48 L 424,160" fill="none" stroke="black"></path>
+              <path d="M 552,48 L 552,160" fill="none" stroke="black"></path>
+              <path d="M 8,48 L 96,48" fill="none" stroke="black"></path>
+              <path d="M 200,48 L 328,48" fill="none" stroke="black"></path>
+              <path d="M 424,48 L 552,48" fill="none" stroke="black"></path>
+              <path d="M 96,64 L 192,64" fill="none" stroke="black"></path>
+              <path d="M 104,80 L 200,80" fill="none" stroke="black"></path>
+              <path d="M 96,96 L 144,96" fill="none" stroke="black"></path>
+              <path d="M 160,96 L 192,96" fill="none" stroke="black"></path>
+              <path d="M 328,96 L 416,96" fill="none" stroke="black"></path>
+              <path d="M 104,112 L 128,112" fill="none" stroke="black"></path>
+              <path d="M 144,112 L 200,112" fill="none" stroke="black"></path>
+              <path d="M 336,112 L 424,112" fill="none" stroke="black"></path>
+              <path d="M 8,160 L 96,160" fill="none" stroke="black"></path>
+              <path d="M 200,160 L 328,160" fill="none" stroke="black"></path>
+              <path d="M 424,160 L 552,160" fill="none" stroke="black"></path>
+              <polygon class="arrowhead" points="424,96 412,90.4 412,101.6" fill="black" transform="rotate(0,416,96)"></polygon>
+              <polygon class="arrowhead" points="344,112 332,106.4 332,117.6" fill="black" transform="rotate(180,336,112)"></polygon>
+              <polygon class="arrowhead" points="200,96 188,90.4 188,101.6" fill="black" transform="rotate(0,192,96)"></polygon>
+              <polygon class="arrowhead" points="200,64 188,58.4 188,69.6" fill="black" transform="rotate(0,192,64)"></polygon>
+              <polygon class="arrowhead" points="112,112 100,106.4 100,117.6" fill="black" transform="rotate(180,104,112)"></polygon>
+              <polygon class="arrowhead" points="112,80 100,74.4 100,85.6" fill="black" transform="rotate(180,104,80)"></polygon>
+              <circle cx="136" cy="112" r="6" class="opendot" fill="white" stroke="black"></circle>
+              <circle cx="152" cy="96" r="6" class="opendot" fill="white" stroke="black"></circle>
               <g class="text">
-                <text x="164" y="36">Voucher_</text>
-                <text x="148" y="52">Info</text>
-                <text x="376" y="84">Voucher</text>
-                <text x="260" y="100">Domain</text>
-                <text x="376" y="100">Request</text>
-                <text x="492" y="100">Enrollment</text>
-                <text x="52" y="116">Device</text>
-                <text x="264" y="116">Authenticator</text>
-                <text x="492" y="116">Server</text>
-                <text x="48" y="148">(U)</text>
-                <text x="264" y="148">(V)</text>
-                <text x="376" y="148">Voucher</text>
-                <text x="488" y="148">(W)</text>
-                <text x="380" y="164">Response</text>
-                <text x="144" y="196">Voucher</text>
+                <text x="148" y="36">Voucher_Info</text>
+                <text x="376" y="68">Voucher</text>
+                <text x="260" y="84">Domain</text>
+                <text x="376" y="84">Request</text>
+                <text x="492" y="84">Enrollment</text>
+                <text x="52" y="100">Device</text>
+                <text x="264" y="100">Authenticator</text>
+                <text x="492" y="100">Server</text>
+                <text x="48" y="132">(U)</text>
+                <text x="264" y="132">(V)</text>
+                <text x="376" y="132">Voucher</text>
+                <text x="488" y="132">(W)</text>
+                <text x="380" y="148">Response</text>
+                <text x="144" y="180">Voucher</text>
               </g>
             </svg><a href="#section-2-5.1.1" class="pilcrow">¶</a>
 </div>
@@ -1410,24 +1409,26 @@ See illustration in <a href="#fig-overview" class="auto internal xref">Figure 1<
       <h2 id="name-assumptions">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-assumptions" class="section-name selfRef">Assumptions</a>
       </h2>
-<p id="section-3-1">The protocol is based on the following pre-existing relations between the device (U), the domain authenticator (V) and the enrollment server (W), see <a href="#fig-trust" class="auto internal xref">Figure 2</a>.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">ELA supports both the case where U is the EDHOC Initiator and the case where U is the EDHOC Responder.
+For clarity, this document presents the protocol with U as the Initiator, except in <a href="#reverse-u-responder" class="auto internal xref">Section 4.7</a>, which presents the case where U is the Responder.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">The protocol is based on the following pre-existing relations between the device (U), the domain authenticator (V), and the enrollment server (W), see <a href="#fig-trust" class="auto internal xref">Figure 2</a>.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3-2.1">
-          <p id="section-3-2.1.1">U and W have an explicit relation: U is configured with a public key of W, see <a href="#device" class="auto internal xref">Section 3.1</a>.<a href="#section-3-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3-3.1">
+          <p id="section-3-3.1.1">U and W have an explicit relation: U is configured with a public key of W, see <a href="#device" class="auto internal xref">Section 3.1</a>.<a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-2.2">
-          <p id="section-3-2.2.1">V and W have an implicit relation, e.g., based on web PKI with trusted CA certificates, see <a href="#domain-auth" class="auto internal xref">Section 3.2</a>.<a href="#section-3-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-3.2">
+          <p id="section-3-3.2.1">V and W have an implicit relation, e.g., based on web PKI with trusted CA certificates, see <a href="#domain-auth" class="auto internal xref">Section 3.2</a>.<a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-2.3">
-          <p id="section-3-2.3.1">U and V need not have any previous relation. This protocol establishes a relation between U and V.<a href="#section-3-2.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-3.3">
+          <p id="section-3-3.3.1">U and V need not have any previous relation. This protocol establishes a relation between U and V.<a href="#section-3-3.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-3-3">Each of the three parties can gain protected communication with the other two during the protocol.<a href="#section-3-3" class="pilcrow">¶</a></p>
-<p id="section-3-4">V may be able to access credentials over non-constrained networks, but U may be limited to constrained networks. Implementations wishing to leverage the zero-touch capabilities of this protocol are expected to support transmission of credentials from V to U by value during the EDHOC exchange, which will impact the message size depending on the type of credential used.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-4">Each of the three parties can gain protected communication with the other two during the protocol.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-5">V may be able to access credentials over non-constrained networks, but U may be limited to constrained networks. Implementations wishing to leverage the zero-touch capabilities of this protocol are expected to support transmission of credentials from V to U by value during the EDHOC exchange, which will impact the message size depending on the type of credential used.<a href="#section-3-5" class="pilcrow">¶</a></p>
 <span id="name-overview-of-pre-existing-re"></span><div id="fig-trust">
 <figure id="figure-2">
-        <div id="section-3-5.1">
-          <div class="alignCenter art-svg artwork" id="section-3-5.1.1">
+        <div id="section-3-6.1">
+          <div class="alignCenter art-svg artwork" id="section-3-6.1.1">
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="272" width="568" viewBox="0 0 568 272" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
               <path d="M 8,96 L 8,192" fill="none" stroke="black"></path>
               <path d="M 48,64 L 48,96" fill="none" stroke="black"></path>
@@ -1487,7 +1488,7 @@ See illustration in <a href="#fig-overview" class="auto internal xref">Figure 1<
                 <text x="392" y="260">PKI</text>
                 <text x="436" y="260">based)</text>
               </g>
-            </svg><a href="#section-3-5.1.1" class="pilcrow">¶</a>
+            </svg><a href="#section-3-6.1.1" class="pilcrow">¶</a>
 </div>
 </div>
 <figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
@@ -1499,9 +1500,9 @@ See illustration in <a href="#fig-overview" class="auto internal xref">Figure 1<
         <h3 id="name-device-u">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-device-u" class="section-name selfRef">Device (U)</a>
         </h3>
-<p id="section-3.1-1">To authenticate to V, the device (U) runs EDHOC in the role of Initiator with authentication credential CRED_U, for example, an X.509 certificate <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span> or a CBOR Web Token (CWT, <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span>). CRED_U may, for example, be carried by value in ID_CRED_I of EDHOC message_3 or be provisioned to V over a non-constrained network, leveraging a credential identifier in ID_CRED_I (see <a href="#fig-protocol" class="auto internal xref">Figure 3</a>).<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">To authenticate to V, the device (U) runs EDHOC in the role of Initiator with authentication credential CRED_U, for example, an X.509 certificate <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>, a C509 certificate <span>[<a href="#I-D.ietf-cose-cbor-encoded-cert" class="cite xref">I-D.ietf-cose-cbor-encoded-cert</a>]</span>, or a CBOR Web Token (CWT, <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span>). CRED_U may, for example, be carried by value in ID_CRED_I of EDHOC message_3, or be provisioned to V over a non-constrained network thus leveraging a compact credential identifier in ID_CRED_I (see <a href="#fig-protocol" class="auto internal xref">Figure 3</a>).<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.1-2">U also needs to identify itself to W, for which it reuses ID_CRED_I.
-Note that while typically ID_CRED_I is treated as a field that only needs to be understood between two EDHOC peers (here U and V), in this case ID_CRED_I also MUST be formatted in a way that it is unambiguous to W.
+Note that while ID_CRED_I is typically treated as a field that only needs to be understood between two EDHOC peers (here U and V), in this case ID_CRED_I also MUST be formatted in a way that it is unambiguous to W.
 W will use ID_CRED_I to determine if the device with this identifier is authorized to enroll with V.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 <p id="section-3.1-3">U is also provisioned with information about W:<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
@@ -1519,14 +1520,14 @@ W will use ID_CRED_I to determine if the device with this identifier is authoriz
         <h3 id="name-domain-authenticator-v">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-domain-authenticator-v" class="section-name selfRef">Domain Authenticator (V)</a>
         </h3>
-<p id="section-3.2-1">To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Responder with an authentication credential CRED_V containing a public key of V, see <a href="#V_2" class="auto internal xref">Section 4.4.2.1</a>. This proves to U the possession of the private key corresponding to the public key of CRED_V. CRED_V typically needs to be transported to U in EDHOC (using  ID_CRED_R = CRED_V, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.2" class="relref">Section 3.5.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>) since there is no previous relation between U and V.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">To authenticate to U, the domain authenticator (V) runs EDHOC in the role of Responder with an authentication credential CRED_V containing a public key of V, see <a href="#V_2" class="auto internal xref">Section 4.4.2.1</a>. This proves to U the possession of the private key corresponding to the public key of CRED_V. CRED_V typically needs to be transported to U in an EDHOC message (using  ID_CRED_R = CRED_V, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.2" class="relref">Section 3.5.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>) since there is no previous relation between U and V.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.2-2">V and W need to establish a secure (confidentiality and integrity protected) connection for the Voucher Request/Response protocol.
 Furthermore, W needs to access the same credential CRED_V that V uses with U (to compute the Voucher), and V needs to prove to W the possession of the private key corresponding to the public key of CRED_V.
 V MUST authenticate to W using the same credential CRED_V as with U.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 <p id="section-3.2-3">Note that the type of credential used by V will depend on what is supported by U and W.
 U can signal its supported credential types by advertising EDHOC Application Profiles <span>[<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span>, specifically by using the "cred_types" element.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
-<p id="section-3.2-4">Regarding the secure channel between V and W, the choice of protocols may affect which type of credential and methods should be used by V.
-For example, in case V and W select TLS for the secure channel and PoP, then CRED_V is an X.509 certificate, and the EDHOC method used by V is signature-based.
+<p id="section-3.2-4">Regarding the secure channel between V and W, the choice of protocols may affect which type of credential and EDHOC methods should be used by V.
+For example, in case V and W select (D)TLS <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span> <span>[<a href="#RFC9147" class="cite xref">RFC9147</a>]</span> for the secure channel and PoP, then CRED_V is an X.509 certificate and the EDHOC method used by V is signature-based.
 Some of the possible combinations of protocols to secure the connection between V and W are listed in <a href="#creds-table" class="auto internal xref">Table 1</a> below.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
 <span id="name-examples-of-how-to-secure-t"></span><div id="creds-table">
 <table class="center" id="table-1">
@@ -1537,26 +1538,26 @@ Some of the possible combinations of protocols to secure the connection between 
 <thead>
             <tr>
               <th class="text-left" rowspan="1" colspan="1">Secure channel between V and W</th>
-              <th class="text-left" rowspan="1" colspan="1">Proof-of-Possession from V to W</th>
+              <th class="text-left" rowspan="1" colspan="1">Proof of Possession from V to W</th>
               <th class="text-left" rowspan="1" colspan="1">Type of CRED_V</th>
               <th class="text-left" rowspan="1" colspan="1">EDHOC method used by V</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">[D]TLS 1.3 with mutual authentication, where V is the client and W is the server.</td>
-              <td class="text-left" rowspan="1" colspan="1">Provided by [D]TLS.</td>
-              <td class="text-left" rowspan="1" colspan="1">Restricted to types that are supported by both [D]TLS and EDHOC, e.g., X.509 certificates.</td>
+              <td class="text-left" rowspan="1" colspan="1">(D)TLS 1.3 with mutual authentication, where V is the client and W is the server.</td>
+              <td class="text-left" rowspan="1" colspan="1">Provided by (D)TLS.</td>
+              <td class="text-left" rowspan="1" colspan="1">Restricted to types that are supported by both (D)TLS and EDHOC, e.g., X.509 certificates.</td>
               <td class="text-left" rowspan="1" colspan="1">V MUST authenticate using a signature.</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">[D]TLS 1.3, where V is the client and W is the server.</td>
+              <td class="text-left" rowspan="1" colspan="1">(D)TLS 1.3, where V is the client and W is the server.</td>
               <td class="text-left" rowspan="1" colspan="1">Run an EDHOC session on top of the TLS-protected channel.</td>
-              <td class="text-left" rowspan="1" colspan="1">Any type supported by EDHOC, e.g., X.509, C509, CWT, or CCS.</td>
+              <td class="text-left" rowspan="1" colspan="1">Any type supported by EDHOC, e.g., X.509 certificates, C509 certificates, CWT, or CCS.</td>
               <td class="text-left" rowspan="1" colspan="1">Any method may be used.</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">EDHOC and OSCORE, where V is the initiator and W is the responder.</td>
+              <td class="text-left" rowspan="1" colspan="1">EDHOC and OSCORE, where V is the Initiator and W is the Responder.</td>
               <td class="text-left" rowspan="1" colspan="1">Already provided by EDHOC during the setup of the secure channel.</td>
               <td class="text-left" rowspan="1" colspan="1">Any type supported by EDHOC.</td>
               <td class="text-left" rowspan="1" colspan="1">Any method may be used.</td>
@@ -1565,7 +1566,7 @@ Some of the possible combinations of protocols to secure the connection between 
         </table>
 </div>
 <p id="section-3.2-6">Note also that the secure connection between V and W may be long-lived and reused for multiple voucher requests/responses.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
-<p id="section-3.2-7">Other details of proof-of-possession related to CRED_V and transport of CRED_V are out of scope of this document.<a href="#section-3.2-7" class="pilcrow">¶</a></p>
+<p id="section-3.2-7">Other details about the proof of possession related to CRED_V and about the transport of CRED_V are out of the scope of this document.<a href="#section-3.2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authz-server">
@@ -1673,7 +1674,9 @@ In this way, LOC_W does not need to change when a new PK_W is introduced.<a href
                   <text x="412" y="116">with</text>
                   <text x="460" y="116">server</text>
                   <text x="516" y="116">cert.)</text>
-                  <text x="360" y="148">Proof-of-possession</text>
+                  <text x="304" y="148">Proof</text>
+                  <text x="340" y="148">of</text>
+                  <text x="396" y="148">possession</text>
                   <text x="468" y="148">w.r.t.</text>
                   <text x="524" y="148">CRED_V</text>
                   <text x="380" y="180">(e.g.,</text>
@@ -1713,7 +1716,7 @@ In this way, LOC_W does not need to change when a new PK_W is introduced.<a href
 </div>
 </div>
 <figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
-<a href="#name-overview-of-ela-w-assisted-" class="selfRef">Overview of ELA: W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, V and W are assumed to have established a secure channel and performed proof-of-possession of relevant keys. Credential lookup of CRED_U may involve W or other credential database.</a>
+<a href="#name-overview-of-ela-w-assisted-" class="selfRef">Overview of ELA: W-assisted authorization of U and V to each other: EDHOC between U and V, and Voucher Request/Response between V and W. Before the protocol, V and W are assumed to have established a secure channel and performed proof of possession of relevant keys. Credential lookup of CRED_U may involve W or other credential database.</a>
           </figcaption></figure>
 </div>
 </section>
@@ -1729,7 +1732,7 @@ In this way, LOC_W does not need to change when a new PK_W is introduced.<a href
             <p id="section-4.2-2.1.1">SUITES_I includes the cipher suite for EDHOC selected by U, and also defines the algorithms used between U and W (see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.6" class="relref">Section 3.6</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>):<a href="#section-4.2-2.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.2-2.1.2.1">
-                <p id="section-4.2-2.1.2.1.1">EDHOC AEAD algorithm: used to generate voucher<a href="#section-4.2-2.1.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-4.2-2.1.2.1.1">EDHOC AEAD algorithm: used to generate the voucher<a href="#section-4.2-2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.2-2.1.2.2">
                 <p id="section-4.2-2.1.2.2.1">EDHOC hash algorithm: used for key derivation<a href="#section-4.2-2.1.2.2.1" class="pilcrow">¶</a></p>
@@ -1741,13 +1744,11 @@ In this way, LOC_W does not need to change when a new PK_W is introduced.<a href
 </li>
           <li class="normal" id="section-4.2-2.2">
             <p id="section-4.2-2.2.1">EAD_3, EAD_4 are the External Authorization Data message fields of message_3 and message_4, respectively, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.8" class="relref">Section 3.8</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.
-In case U acts as Responder (see <a href="#reverse-u-responder" class="auto internal xref">Section 4.7</a>), EAD_2 and EAD_3 are used in message_2 and message_3, respectively.
 This document specifies two new EAD items, with ead_label = TBD1 and TBD2, see <a href="#iana-ead" class="auto internal xref">Section 7.1</a>.<a href="#section-4.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.2-2.3">
-            <p id="section-4.2-2.3.1">ID_CRED_I and ID_CRED_R are used to identify the authentication credentials CRED_U and CRED_V, respectively. As shown at the bottom of <a href="#fig-protocol" class="auto internal xref">Figure 3</a>, V may use W to obtain CRED_U.
-By default, CRED_V is transported in ID_CRED_R in message_2, see <a href="#V_2" class="auto internal xref">Section 4.4.2.1</a>.
-In case U is Responder, CRED_V is transported in ID_CRED_I in message_3.<a href="#section-4.2-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-4.2-2.3.1">ID_CRED_I and ID_CRED_R are used to identify the authentication credentials CRED_U and CRED_V, respectively. V may obtain CRED_U from W by setting the Fetch_CRED_U flag in the Voucher Request, see <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.
+By default, CRED_V is transported in ID_CRED_R in message_2, see <a href="#V_2" class="auto internal xref">Section 4.4.2.1</a>.<a href="#section-4.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-4.2-3">The protocol also reuses the EDHOC_Extract and EDHOC_Expand key derivation from EDHOC (see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-4" class="relref">Section 4</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>).<a href="#section-4.2-3" class="pilcrow">¶</a></p>
@@ -1760,13 +1761,13 @@ In case U is Responder, CRED_V is transported in ID_CRED_I in message_3.<a href=
                 <p id="section-4.2-5.1.2.1.1">where salt = 0x (the zero-length byte string)<a href="#section-4.2-5.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.2-5.1.2.2">
-                <p id="section-4.2-5.1.2.2.1">Computation of IKM depends on the EDHOC method in use.<a href="#section-4.2-5.1.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-4.2-5.1.2.2.1">Computation of IKM depends on the EDHOC key exchange algorithm of the selected cipher suite SS.<a href="#section-4.2-5.1.2.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.2-5.1.2.2.2.1">
-                    <p id="section-4.2-5.1.2.2.2.1.1">If the method is based on Diffie-Hellman, IKM is computed as an ECDH cofactor Diffie-Hellman shared secret from the public key of W, PK_W, and the private key corresponding to G_U (or vice versa), see Section 5.7.1.2 of <span>[<a href="#NIST-800-56A" class="cite xref">NIST-800-56A</a>]</span> and <a href="#U-W" class="auto internal xref">Section 4.3</a>.<a href="#section-4.2-5.1.2.2.2.1.1" class="pilcrow">¶</a></p>
+                    <p id="section-4.2-5.1.2.2.2.1.1">If the algorithm is based on Diffie-Hellman, IKM is computed as an ECDH cofactor Diffie-Hellman shared secret from the public key of W, PK_W, and the private key corresponding to G_U (or vice versa), see Section 5.7.1.2 of <span>[<a href="#NIST-800-56A" class="cite xref">NIST-800-56A</a>]</span> and <a href="#U-W" class="auto internal xref">Section 4.3</a>.<a href="#section-4.2-5.1.2.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
                   <li class="normal" id="section-4.2-5.1.2.2.2.2">
-                    <p id="section-4.2-5.1.2.2.2.2.1">If the method is based on a Key Encapsulation Mechanism (KEM), IKM is the KEM shared secret resulting from encapsulating PK_W, see Section 2.2 of <span>[<a href="#NIST-800-227" class="cite xref">NIST-800-227</a>]</span>. For example, the use of ML-KEM in COSE is currently being specified at <span>[<a href="#I-D.ietf-jose-pqc-kem" class="cite xref">I-D.ietf-jose-pqc-kem</a>]</span>.<a href="#section-4.2-5.1.2.2.2.2.1" class="pilcrow">¶</a></p>
+                    <p id="section-4.2-5.1.2.2.2.2.1">If the algorithm is a Key Encapsulation Mechanism (KEM), IKM is the KEM shared secret resulting from encapsulating PK_W, see Section 2.2 of <span>[<a href="#NIST-800-227" class="cite xref">NIST-800-227</a>]</span>. For example, the use of ML-KEM in COSE is currently being specified at <span>[<a href="#I-D.ietf-jose-pqc-kem" class="cite xref">I-D.ietf-jose-pqc-kem</a>]</span>.<a href="#section-4.2-5.1.2.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
                 </ul>
 </li>
@@ -1823,13 +1824,13 @@ Voucher_Info_Seq = [ ; used as a CBOR sequence, not array
               <p id="section-4.3.1-4.1.1">LOC_W is a CRI used by V to locate W, where CRI is defined in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-core-href-30#section-5.1" class="relref">Section 5.1</a> of [<a href="#I-D.ietf-core-href" class="cite xref">I-D.ietf-core-href</a>]</span>.<a href="#section-4.3.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.3.1-4.2">
-              <p id="section-4.3.1-4.2.1">EK_CT is a field containing either an ephemeral Diffie-Hellman key or a KEM ciphertext, depending on the EDHOC method being used in the current session:<a href="#section-4.3.1-4.2.1" class="pilcrow">¶</a></p>
+              <p id="section-4.3.1-4.2.1">EK_CT is a field containing either an ephemeral Diffie-Hellman key or a KEM ciphertext, depending on the EDHOC key exchange algorithm of the selected cipher suite SS:<a href="#section-4.3.1-4.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.3.1-4.2.2.1">
-                  <p id="section-4.3.1-4.2.2.1.1">if the method is based on Diffie-Hellman, the device generates an ephemeral Diffie-Hellman key pair, where the public part G_U is placed in the EK_CT field. The private part of G_U will be used to decrypt and verify the voucher, see <a href="#voucher" class="auto internal xref">Section 4.3.2</a> and <a href="#reuse" class="auto internal xref">Section 4.2</a>.<a href="#section-4.3.1-4.2.2.1.1" class="pilcrow">¶</a></p>
+                  <p id="section-4.3.1-4.2.2.1.1">if the algorithm is based on Diffie-Hellman, the device generates an ephemeral Diffie-Hellman key pair, where the public part G_U is placed in the EK_CT field. The private part of G_U will be used to decrypt and verify the voucher, see <a href="#voucher" class="auto internal xref">Section 4.3.2</a> and <a href="#reuse" class="auto internal xref">Section 4.2</a>.<a href="#section-4.3.1-4.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
                 <li class="normal" id="section-4.3.1-4.2.2.2">
-                  <p id="section-4.3.1-4.2.2.2.1">if the method is based on a PQC KEM, the device performs key encapsulation and places the resulting ciphertext CT in the EK_CT field. Here, the secret emitted by the encapsulation mechanism will be used to decrypt and verify the voucher, see <a href="#voucher" class="auto internal xref">Section 4.3.2</a> and <a href="#reuse" class="auto internal xref">Section 4.2</a>.<a href="#section-4.3.1-4.2.2.2.1" class="pilcrow">¶</a></p>
+                  <p id="section-4.3.1-4.2.2.2.1">if the algorithm is a KEM, the device performs key encapsulation using the public key of W, PK_W, and places the resulting ciphertext CT in the EK_CT field. Here, the secret emitted by the encapsulation mechanism will be used to decrypt and verify the voucher, see <a href="#voucher" class="auto internal xref">Section 4.3.2</a> and <a href="#reuse" class="auto internal xref">Section 4.2</a>.<a href="#section-4.3.1-4.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
               </ul>
 </li>
@@ -1851,7 +1852,7 @@ Voucher = bstr
 </pre><a href="#section-4.3.2-3" class="pilcrow">¶</a>
 </div>
 <p id="section-4.3.2-4">Its corresponding plaintext value consists of an opaque field that can be used by W to convey information to U, such as a voucher scope.
-The authentication tag present in the ciphertext is also bound to the current EDHOC handshake, the identity of U, and the credential of V as described below.<a href="#section-4.3.2-4" class="pilcrow">¶</a></p>
+The authentication tag present in the ciphertext is also bound to the current EDHOC session, the identity of U, and the credential of V as described below.<a href="#section-4.3.2-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.3.2-5.1">
               <p id="section-4.3.2-5.1.1">The encryption key K and nonce IV are derived as specified below.<a href="#section-4.3.2-5.1.1" class="pilcrow">¶</a></p>
@@ -1891,7 +1892,7 @@ It is opaque to V, while the application in U and W can read its contents.<a hre
               <p id="section-4.3.2-9.2.1">H_12 is H(H(message_1), message_2), used to bind the voucher to the current EDHOC session. It is computed using the EDHOC hash algorithm of the selected cipher suite SS specified in SUITES_I of EDHOC message_1. H_12 is sent to W as part of the voucher request, see <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.<a href="#section-4.3.2-9.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.3.2-9.3">
-              <p id="section-4.3.2-9.3.1">ID_CRED_I is the identifier of U transmitted via the voucher request.<a href="#section-4.3.2-9.3.1" class="pilcrow">¶</a></p>
+              <p id="section-4.3.2-9.3.1">ID_CRED_I is the identifier of CRED_U transmitted via the voucher request. It is a CBOR byte string whose value is the CBOR encoding of the ID_CRED_I map. This is the encoding of ID_CRED_I as used in context_3 (see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-5.4.2" class="relref">Section 5.4.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>), i.e., the full CBOR map, including when the compact encoding of <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.3.2" class="relref">Section 3.5.3.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> is used in message_3. Wrapping the map in a byte string lets V and W handle it as opaque bytes, so that W computes the same external_aad as U without decoding and re-encoding the map, which may not reproduce the encoding used by U (see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.3" class="relref">Section 3.5.3</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>). This follows the rationale for the COSE protected header in <span><a href="https://rfc-editor.org/rfc/rfc9052#section-3" class="relref">Section 3</a> of [<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>.<a href="#section-4.3.2-9.3.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.3.2-9.4">
               <p id="section-4.3.2-9.4.1">CRED_V is the credential used by V to authenticate to U and W, see <a href="#V_2" class="auto internal xref">Section 4.4.2.1</a> and <a href="#creds-table" class="auto internal xref">Table 1</a>.<a href="#section-4.3.2-9.4.1" class="pilcrow">¶</a></p>
@@ -1942,7 +1943,7 @@ It is opaque to V, while the application in U and W can read its contents.<a hre
 <a href="#section-4.4.1.1" class="section-number selfRef">4.4.1.1. </a><a href="#name-processing-in-u" class="section-name selfRef">Processing in U</a>
             </h5>
 <p id="section-4.4.1.1-1">U composes EDHOC message_1 using authentication method, identifiers, etc. according to an agreed application profile, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.9" class="relref">Section 3.9</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.
-The selected cipher suite, in this document denoted SS, applies also to the interaction with W as detailed in <a href="#reuse" class="auto internal xref">Section 4.2</a>, in particular, with respect to the key agreement algorithm used between U and W.
+The selected cipher suite, in this document denoted SS, applies also to the interaction with W as detailed in <a href="#reuse" class="auto internal xref">Section 4.2</a>, in particular, with respect to the key exchange algorithm used between U and W.
 U sends EDHOC message_1 to V.<a href="#section-4.4.1.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2000,7 +2001,7 @@ If a Voucher is used, U learns this when it verifies the Voucher in message_4, s
 The negative sign indicates that the EAD item is critical, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.8" class="relref">Section 3.8</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.<a href="#section-4.4.3.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="processing-in-v-1">
+<div id="V_3">
 <section id="section-4.4.3.2">
             <h5 id="name-processing-in-v-3">
 <a href="#section-4.4.3.2" class="section-number selfRef">4.4.3.2. </a><a href="#name-processing-in-v-3" class="section-name selfRef">Processing in V</a>
@@ -2008,9 +2009,10 @@ The negative sign indicates that the EAD item is critical, see <span><a href="ht
 <p id="section-4.4.3.2-1">V receives EDHOC message_3 from U and processes it as specified in <span><a href="https://rfc-editor.org/rfc/rfc9528#section-5.4.3" class="relref">Section 5.4.3</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, with the additional step of processing the EAD item in EAD_3.
 Since the EAD item is critical, if V does not recognize it or it contains information that V cannot process, then V MUST abort the EDHOC session, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.8" class="relref">Section 3.8</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.
 The ead_label = -TBD1 triggers the voucher request to W as described in <a href="#V-W" class="auto internal xref">Section 4.5</a>.
-The exchange between V and W needs to be completed successfully for the EDHOC session to be continued.<a href="#section-4.4.3.2-1" class="pilcrow">¶</a></p>
+The exchange between V and W needs to be completed successfully for the EDHOC session to be continued.
+That is, if V does not receive a valid Voucher Response from W, then V MUST abort the EDHOC session with U.<a href="#section-4.4.3.2-1" class="pilcrow">¶</a></p>
 <p id="section-4.4.3.2-2">As part of normal processing of EDHOC message_3, V must verify the credential of U.
-It is up to the application to decide whether to verify the credential of U before or after the voucher request to W, see pre and post -verification processing of EAD items in <span>[<a href="#I-D.ietf-lake-edhoc-impl-cons" class="cite xref">I-D.ietf-lake-edhoc-impl-cons</a>]</span>.<a href="#section-4.4.3.2-2" class="pilcrow">¶</a></p>
+It is up to the application to decide whether to verify the credential of U before or after the voucher request to W, see pre- and post-verification processing of EAD items in <span>[<a href="#I-D.ietf-lake-edhoc-impl-cons" class="cite xref">I-D.ietf-lake-edhoc-impl-cons</a>]</span>.<a href="#section-4.4.3.2-2" class="pilcrow">¶</a></p>
 <p id="section-4.4.3.2-3">In case V has access to a credential database, it MAY query it with ID_CRED_I to obtain a corresponding CRED_U and verify the identity of U before making the Voucher request to W.
 If the verification of CRED_U fails, the EDHOC session is aborted.
 In this scenario, the EAD item in EAD_3 is processed as a post-verification item <span>[<a href="#I-D.ietf-lake-edhoc-impl-cons" class="cite xref">I-D.ietf-lake-edhoc-impl-cons</a>]</span>.<a href="#section-4.4.3.2-3" class="pilcrow">¶</a></p>
@@ -2018,7 +2020,7 @@ In this scenario, the EAD item in EAD_3 is processed as a post-verification item
 If the response contains CRED_U, V then continues processing EDHOC message_3 where it verifies the credential of U.
 Even upon reception of a successful voucher response from W, if the verification of CRED_U fails, the EDHOC session is aborted.
 In this scenario, the EAD item in EAD_3 is processed as a pre-verification item <span>[<a href="#I-D.ietf-lake-edhoc-impl-cons" class="cite xref">I-D.ietf-lake-edhoc-impl-cons</a>]</span>.<a href="#section-4.4.3.2-4" class="pilcrow">¶</a></p>
-<p id="section-4.4.3.2-5">In case V fails to obtain CRED_U, the session is aborted.<a href="#section-4.4.3.2-5" class="pilcrow">¶</a></p>
+<p id="section-4.4.3.2-5">In case V fails to obtain CRED_U, V MUST abort the EDHOC session with U.<a href="#section-4.4.3.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2033,7 +2035,7 @@ In this scenario, the EAD item in EAD_3 is processed as a pre-verification item 
             <h5 id="name-processing-in-v-4">
 <a href="#section-4.4.4.1" class="section-number selfRef">4.4.4.1. </a><a href="#name-processing-in-v-4" class="section-name selfRef">Processing in V</a>
             </h5>
-<p id="section-4.4.4.1-1">At this point, V has authenticated U, and received a valid voucher response from W as described in <a href="#V-W" class="auto internal xref">Section 4.5</a>.<a href="#section-4.4.4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.4.4.1-1">At this point, V has authenticated U and received a valid voucher response from W as described in <a href="#V-W" class="auto internal xref">Section 4.5</a>.<a href="#section-4.4.4.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.4.4.1-2">V prepares EDHOC message_4 where, if the voucher response contains a voucher, V includes the critical EAD item (-TBD2, Voucher) in EAD_4, i.e., ead_label = -TBD2 and ead_value = Voucher, as specified in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-4.4.4.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2065,7 +2067,7 @@ V and W run the Voucher Request/Response protocol over the secure connection.<a 
           <h4 id="name-voucher-request">
 <a href="#section-4.5.1" class="section-number selfRef">4.5.1. </a><a href="#name-voucher-request" class="section-name selfRef">Voucher Request</a>
           </h4>
-<div id="processing-in-v-2">
+<div id="processing-in-v-1">
 <section id="section-4.5.1.1">
             <h5 id="name-processing-in-v-5">
 <a href="#section-4.5.1.1" class="section-number selfRef">4.5.1.1. </a><a href="#name-processing-in-v-5" class="section-name selfRef">Processing in V</a>
@@ -2095,10 +2097,10 @@ Voucher_Request = [
                 <p id="section-4.5.1.1-4.3.1">H_12 corresponds to H(H(message_1), message_2). It is computed as defined in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-4.5.1.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.1-4.4">
-                <p id="section-4.5.1.1-4.4.1">ID_CRED_I is an identifier of CRED_U and is used as the identity of U during ELA execution, see <a href="#device" class="auto internal xref">Section 3.1</a>.<a href="#section-4.5.1.1-4.4.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.1-4.4.1">ID_CRED_I is an identifier of CRED_U and is used as the identity of U during ELA execution, see <a href="#device" class="auto internal xref">Section 3.1</a>. It is encoded as in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-4.5.1.1-4.4.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.1-4.5">
-                <p id="section-4.5.1.1-4.5.1">Fetch_CRED_U is a flag indicating whether W should try to load and return the credential CRED_U corresponding to ID_CRED_I.<a href="#section-4.5.1.1-4.5.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.1-4.5.1">Fetch_CRED_U is a flag indicating whether W should try to retrieve and return the credential CRED_U corresponding to ID_CRED_I.<a href="#section-4.5.1.1-4.5.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </section>
@@ -2121,20 +2123,20 @@ W extracts from Voucher_Request:<a href="#section-4.5.1.2-1" class="pilcrow">¶<
                 <p id="section-4.5.1.2-2.3.1">H_12 - the hash of message_1 and message_2.<a href="#section-4.5.1.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.2-2.4">
-                <p id="section-4.5.1.2-2.4.1">ID_CRED_I - the identifier of U.<a href="#section-4.5.1.2-2.4.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.2-2.4.1">ID_CRED_I - the identity of U.<a href="#section-4.5.1.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.2-2.5">
                 <p id="section-4.5.1.2-2.5.1">Fetch_CRED_U - flag indicating whether V requests W to return CRED_U.<a href="#section-4.5.1.2-2.5.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 <p id="section-4.5.1.2-3">W verifies that it supports the cipher suite SS, and uses the corresponding EDHOC Key Exchange Algorithm to determine whether EK_CT contains an ephemeral Diffie-Hellman public key or a KEM ciphertext.<a href="#section-4.5.1.2-3" class="pilcrow">¶</a></p>
-<p id="section-4.5.1.2-4">W uses H_12 as a session identifier, and associates it to the device identifier ID_CRED_I.
-Note that EK_CT is unique, as the ephemeral key or the ciphertext MUST not be reused, therefore H_12 is expected to be unique.<a href="#section-4.5.1.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.5.1.2-4">W uses H_12 as a session identifier, and associates it with the device identity ID_CRED_I.
+Note that EK_CT is unique, as the ephemeral key or the ciphertext must not be reused, therefore H_12 is expected to be unique.<a href="#section-4.5.1.2-4" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-5">If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.1.2-5" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-6">W uses ID_CRED_I to look up the associated authorization policies for U and enforces them. This is out of scope for the specification.<a href="#section-4.5.1.2-6" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-7">If ID_CRED_I is known by W, but authorization fails, the protocol SHALL be aborted with an error code signaling an access control issue, see <a href="#err-handling" class="auto internal xref">Section 4.6</a> and <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.1.2-7" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-8">If Fetch_CRED_U is true, W uses ID_CRED_I to try to retrieve the corresponding credential CRED_U.
-If retrieval succeeds, W MUST include CRED_U in the voucher response, see <a href="#voucher_response" class="auto internal xref">Section 4.5.2</a>.
+If the retrieval succeeds, W MUST include CRED_U in the voucher response, see <a href="#voucher_response" class="auto internal xref">Section 4.5.2</a>.
 If the retrieval fails, W sends the voucher response without CRED_U.
 If Fetch_CRED_U is false, W MUST NOT include CRED_U in the voucher response.<a href="#section-4.5.1.2-8" class="pilcrow">¶</a></p>
 </section>
@@ -2178,7 +2180,7 @@ The labels also allow extending the Voucher_Response with additional parameters.
 <p id="section-4.5.2.1-7">W signals the successful processing of Voucher_Request via a status code in the REST interface, as defined in <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.2.1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="processing-in-v-3">
+<div id="processing-in-v-2">
 <section id="section-4.5.2.2">
             <h5 id="name-processing-in-v-6">
 <a href="#section-4.5.2.2" class="section-number selfRef">4.5.2.2. </a><a href="#name-processing-in-v-6" class="section-name selfRef">Processing in V</a>
@@ -2251,7 +2253,7 @@ error_content = (
               <p id="section-4.6.1-6.1.1">REJECT_TYPE specifies the type and handling of the optional REJECT_INFO field.<a href="#section-4.6.1-6.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.6.1-6.2">
-              <p id="section-4.6.1-6.2.1">REJECT_INFO, if present, provides verifiable and actionable information to the receiver about the error, so that an automated action may be taken to try to obtain access, e.g. in the form of a retry request.<a href="#section-4.6.1-6.2.1" class="pilcrow">¶</a></p>
+              <p id="section-4.6.1-6.2.1">REJECT_INFO, if present, provides verifiable and actionable information to the receiver about the error, so that an automated action may be taken to try to obtain access, e.g., in the form of a retry request.<a href="#section-4.6.1-6.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <span id="name-reject_type-and-reject_info"></span><div id="fig-reject">
@@ -2306,7 +2308,7 @@ If REJECT_TYPE is 1, then REJECT_INFO is encrypted from W to U using the EDHOC A
 W signals the error via an appropriate status code in the REST interface, as defined in <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.6.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.6.2-2.2">
-              <p id="section-4.6.2-2.2.1">V receives error_content, prepares an EDHOC "Access denied" error, and sends it to U.<a href="#section-4.6.2-2.2.1" class="pilcrow">¶</a></p>
+              <p id="section-4.6.2-2.2.1">V receives error_content, prepares an "Access denied" EDHOC error message, and sends it to U.<a href="#section-4.6.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.6.2-2.3">
               <p id="section-4.6.2-2.3.1">U receives the error message and extracts the error_content.
@@ -2350,13 +2352,13 @@ It may contain, for example, a list of suggested Vs through which U should join 
 <p id="section-4.7-1">This section presents a protocol variant in which U is the EDHOC Responder.
 This may allow optimizations in certain constrained network technologies.
 For example, one use case is having V broadcast message_1, to which U responds with a message_2 whose EAD_2 field contains Voucher_Info.<a href="#section-4.7-1" class="pilcrow">¶</a></p>
-<p id="section-4.7-2">Note that this is different from the EDHOC reverse message flow defined in <span><a href="https://rfc-editor.org/rfc/rfc9528#appendix-A.2.2" class="relref">Appendix A.2.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, since we make no assumption about whether U or V is a CoAP server.<a href="#section-4.7-2" class="pilcrow">¶</a></p>
+<p id="section-4.7-2">Note that this is different from the EDHOC reverse message flow defined in <span><a href="https://rfc-editor.org/rfc/rfc9528#appendix-A.2.2" class="relref">Appendix A.2.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, since no assumption is made about whether U or V is a CoAP server <span>[<a href="#RFC7252" class="cite xref">RFC7252</a>]</span>.<a href="#section-4.7-2" class="pilcrow">¶</a></p>
 <div id="_u-initiator">
 <section id="section-4.7.1">
           <h4 id="name-baseline-u-is-the-initiator">
 <a href="#section-4.7.1" class="section-number selfRef">4.7.1. </a><a href="#name-baseline-u-is-the-initiator" class="section-name selfRef">Baseline: U is the Initiator</a>
           </h4>
-<p id="section-4.7.1-1">For clarity, we first present the regular flow with U as Initiator, as described in <a href="#protocol-overview" class="auto internal xref">Section 4.1</a> and <a href="#U-V" class="auto internal xref">Section 4.4</a>.
+<p id="section-4.7.1-1">For clarity, the regular flow with U as Initiator, as described in <a href="#protocol-overview" class="auto internal xref">Section 4.1</a> and <a href="#U-V" class="auto internal xref">Section 4.4</a>, is presented first.
 Note that Voucher_Info and Voucher are carried in EDHOC message_3 and message_4, respectively.<a href="#section-4.7.1-1" class="pilcrow">¶</a></p>
 <span id="name-in-ela-regular-flow-u-is-th"></span><div id="fig-u-initiator">
 <figure id="figure-6">
@@ -2433,9 +2435,9 @@ Note that Voucher_Info and Voucher are carried in EDHOC message_3 and message_4,
           <h4 id="name-u-is-the-responder">
 <a href="#section-4.7.2" class="section-number selfRef">4.7.2. </a><a href="#name-u-is-the-responder" class="section-name selfRef">U is the Responder</a>
           </h4>
-<p id="section-4.7.2-1">ELA also works with U as the EDHOC Responder, a setup we refer to as the "ELA reverse flow", as shown in <a href="#fig-u-responder" class="auto internal xref">Figure 7</a>.<a href="#section-4.7.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.7.2-2">We present this variant as a set of changes to the regular protocol flow.
-That is, here we only describe the differences in processing, when compared to the ELA regular flow.<a href="#section-4.7.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.7.2-1">ELA also works with U as the EDHOC Responder, a setup referred to as the "ELA reverse flow", as shown in <a href="#fig-u-responder" class="auto internal xref">Figure 7</a>.<a href="#section-4.7.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.7.2-2">This variant is presented as a set of changes to the regular protocol flow.
+That is, this section only describes the differences in processing, when compared to the ELA regular flow.<a href="#section-4.7.2-2" class="pilcrow">¶</a></p>
 <p id="section-4.7.2-3">Here is a summary of the changes needed in the ELA reverse flow:<a href="#section-4.7.2-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.7.2-4.1">
@@ -2446,6 +2448,12 @@ That is, here we only describe the differences in processing, when compared to t
 </li>
             <li class="normal" id="section-4.7.2-4.3">
               <p id="section-4.7.2-4.3.1">The VREQ / VRES protocol takes place between message_2 and message_3.<a href="#section-4.7.2-4.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4.7.2-4.4">
+              <p id="section-4.7.2-4.4.1">CRED_V is transported in ID_CRED_I in message_3 (instead of ID_CRED_R in message_2).<a href="#section-4.7.2-4.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4.7.2-4.5">
+              <p id="section-4.7.2-4.5.1">SUITES_I is prepared by V (instead of U), hence the selected cipher suite SS is chosen by V (instead of U).<a href="#section-4.7.2-4.5.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <span id="name-ela-when-u-is-the-edhoc-res"></span><div id="fig-u-responder">
@@ -2655,7 +2663,7 @@ The Voucher is authenticated by W in both flows.<a href="#section-4.7.4-1" class
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-rest-interface-at-w" class="section-name selfRef">REST Interface at W</a>
       </h2>
 <p id="section-5-1">The interaction between V and W is enabled through a RESTful interface exposed by W.
-This RESTful interface MAY be implemented using either HTTP or CoAP.
+This RESTful interface MAY be implemented using either HTTP <span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span> <span>[<a href="#RFC9112" class="cite xref">RFC9112</a>]</span> or CoAP <span>[<a href="#RFC7252" class="cite xref">RFC7252</a>]</span>.
 V SHOULD access the resources exposed by W through the protocol indicated by the scheme of LOC_W.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <div id="scheme-https">
 <section id="section-5.1">
@@ -2663,12 +2671,12 @@ V SHOULD access the resources exposed by W through the protocol indicated by the
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-scheme-https" class="section-name selfRef">Scheme "https"</a>
         </h3>
 <p id="section-5.1-1">In case the scheme indicates "https", V MUST perform a TLS handshake with W and access the resources defined in <a href="#uris" class="auto internal xref">Section 5.4</a> using HTTP.
-If the authentication credential CRED_V can be used in a TLS handshake, e.g., an X.509 certificate of a signature public key, then V SHOULD use it to authenticate to W as a client.
-If the authentication credential CRED_V cannot be used in a TLS handshake, e.g., if the public key is a static key, then V SHOULD first perform a TLS handshake with W using available compatible keys.
-V MUST then perform an EDHOC session over the TLS connection proving to W the possession of the private key corresponding to CRED_V.
-Performing the EDHOC session is only necessary if V did not authenticate with CRED_V in the TLS handshake with W.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.1-2">The relationship between V and W is long-lived.  HTTP/1.1 and higher support persistent connections, and SHOULD be used in order to reduce overhead if a flood of new devices need to be onboarded.  Support for TLS session resumptions tickets <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>], <a href="https://rfc-editor.org/rfc/rfc8446#section-2.2" class="relref">Section 2.2</a></span> is appropriate for longer term associations.
-While a policy for renewal of the TLS connection should be applied, it is out of scope of this document.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+If the authentication credential CRED_V can be used in a TLS handshake, e.g., it is an X.509 certificate of a signature public key, then V SHOULD use it to authenticate to W as a client.
+If V does not do so (e.g., the format of CRED_V cannot be used in TLS, or the public key of CRED_V is a static key to use for key exchange), then V first performs a TLS handshake with W, potentially using an alternative, compatible authentication credential to authenticate to W.
+V MUST then perform an EDHOC session over the established TLS connection with W, using CRED_V as its authentication credential and thus proving to W the possession of the private key corresponding to CRED_V.
+Performing the EDHOC session is REQUIRED only if V did not authenticate with CRED_V in the TLS handshake with W.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-2">The relationship between V and W is long-lived.  HTTP/1.1 and higher support persistent connections and SHOULD be used in order to reduce overhead if a flood of new devices need to be onboarded.  Support for TLS session resumptions tickets <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>], <a href="https://rfc-editor.org/rfc/rfc9846#section-2.2" class="relref">Section 2.2</a></span> is appropriate for longer term associations.
+While a policy for renewal of the TLS connection should be applied, it is out of the scope of this document.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="scheme-coaps">
@@ -2676,7 +2684,7 @@ While a policy for renewal of the TLS connection should be applied, it is out of
         <h3 id="name-scheme-coaps">
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-scheme-coaps" class="section-name selfRef">Scheme "coaps"</a>
         </h3>
-<p id="section-5.2-1">In case the scheme indicates "coaps", V SHOULD perform a DTLS handshake with W and access the resources defined in <a href="#uris" class="auto internal xref">Section 5.4</a> using CoAP.
+<p id="section-5.2-1">In case the scheme indicates "coaps", V MUST perform a DTLS handshake <span>[<a href="#RFC9147" class="cite xref">RFC9147</a>]</span> with W and access the resources defined in <a href="#uris" class="auto internal xref">Section 5.4</a> using CoAP.
 The normative requirements in <a href="#scheme-https" class="auto internal xref">Section 5.1</a> on performing the DTLS handshake and EDHOC session remain the same, except that TLS is replaced with DTLS.
 As in <a href="#scheme-https" class="auto internal xref">Section 5.1</a>, it is RECOMMENDED to allow reuse of the DTLS session.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 </section>
@@ -2686,8 +2694,8 @@ As in <a href="#scheme-https" class="auto internal xref">Section 5.1</a>, it is 
         <h3 id="name-schemes-coap-and-coaptcp">
 <a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-schemes-coap-and-coaptcp" class="section-name selfRef">Schemes "coap" and "coap+tcp"</a>
         </h3>
-<p id="section-5.3-1">In case the scheme indicates "coap" or "coap+tcp" <span>[<a href="#RFC8323" class="cite xref">RFC8323</a>]</span>, V SHOULD perform an EDHOC session with W, as specified in <span><a href="https://rfc-editor.org/rfc/rfc9528#appendix-A" class="relref">Appendix A</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> and access the resources defined in <a href="#uris" class="auto internal xref">Section 5.4</a> using OSCORE <span>[<a href="#RFC8613" class="cite xref">RFC8613</a>]</span> and CoAP.
-The authentication credential in this EDHOC session MUST be CRED_V.
+<p id="section-5.3-1">In case the scheme indicates "coap" or "coap+tcp" <span>[<a href="#RFC8323" class="cite xref">RFC8323</a>]</span>, V MUST perform an EDHOC session with W, as specified in <span><a href="https://rfc-editor.org/rfc/rfc9528#appendix-A" class="relref">Appendix A</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> and access the resources defined in <a href="#uris" class="auto internal xref">Section 5.4</a> using OSCORE <span>[<a href="#RFC8613" class="cite xref">RFC8613</a>]</span> and CoAP.
+The authentication credential used by V in this EDHOC session MUST be CRED_V.
 As in <a href="#scheme-https" class="auto internal xref">Section 5.1</a>, it is RECOMMENDED to allow reuse of the EDHOC session.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2697,7 +2705,7 @@ As in <a href="#scheme-https" class="auto internal xref">Section 5.1</a>, it is 
 <a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-uris" class="section-name selfRef">URIs</a>
         </h3>
 <p id="section-5.4-1">The URIs defined below are valid for both HTTP and CoAP.
-W MUST support the use of the path-prefix "/.well-known/", as defined in <span>[<a href="#RFC8615" class="cite xref">RFC8615</a>]</span>, and the registered name "lake-authz".
+W MUST support the use of the path prefix "/.well-known/", as defined in <span>[<a href="#RFC8615" class="cite xref">RFC8615</a>]</span>, and the registered name "lake-authz" (see <a href="#iana-wk" class="auto internal xref">Section 7.2</a>).
 A valid URI in case of HTTP thus begins with<a href="#section-5.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5.4-2.1">
@@ -2728,7 +2736,7 @@ A valid URI in case of HTTP thus begins with<a href="#section-5.4-1" class="pilc
 <p id="section-5.4.1-1">To request a voucher, V MUST issue a request such that:<a href="#section-5.4.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5.4.1-2.1">
-              <p id="section-5.4.1-2.1.1">Method is POST<a href="#section-5.4.1-2.1.1" class="pilcrow">¶</a></p>
+              <p id="section-5.4.1-2.1.1">Request method is POST<a href="#section-5.4.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-5.4.1-2.2">
               <p id="section-5.4.1-2.2.1">Payload is the serialization of the Voucher Request object, as specified in <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.<a href="#section-5.4.1-2.2.1" class="pilcrow">¶</a></p>
@@ -2755,39 +2763,7 @@ A valid URI in case of HTTP thus begins with<a href="#section-5.4-1" class="pilc
               <p id="section-5.4.1-6.1.1">Voucher Request processing fails. In this case, W MUST reply with 400 Bad Request if using HTTP, or 4.00 if using CoAP.<a href="#section-5.4.1-6.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-5.4.1-6.2">
-              <p id="section-5.4.1-6.2.1">U is not authorized: this happens if W is able to process the Voucher Request, but the access policies forbid authorization. For example, the policy could enforce enrollment to a restricted list of identities, within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 403 Forbidden code if using HTTP, or 4.03 if using CoAP; the payload is the serialized error_content object, with Content-Format (Content-Type) set to "application/lake-authz-vouchererror+cbor". The payload MAY be used by V to prepare an EDHOC error "Access Denied", see <a href="#err-handling" class="auto internal xref">Section 4.6</a>.<a href="#section-5.4.1-6.2.1" class="pilcrow">¶</a></p>
-</li>
-          </ul>
-</section>
-</div>
-<div id="certificate-request-certrequest">
-<section id="section-5.4.2">
-          <h4 id="name-certificate-request-certreq">
-<a href="#section-5.4.2" class="section-number selfRef">5.4.2. </a><a href="#name-certificate-request-certreq" class="section-name selfRef">Certificate Request (/certrequest)</a>
-          </h4>
-<p id="section-5.4.2-1">V requests the public key certificate of U from W through the "/certrequest" path-suffix.
-To request U's authentication credential, V MUST issue a request such that:<a href="#section-5.4.2-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-5.4.2-2.1">
-              <p id="section-5.4.2-2.1.1">Method is POST<a href="#section-5.4.2-2.1.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-5.4.2-2.2">
-              <p id="section-5.4.2-2.2.1">Payload is the serialization of the ID_CRED_I (ID_CRED_R) object, as received in EDHOC message_3 (message_2).<a href="#section-5.4.2-2.2.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-5.4.2-2.3">
-              <p id="section-5.4.2-2.3.1">Content-Format (Content-Type) is set to "application/lake-authz-certrequest+cbor"<a href="#section-5.4.2-2.3.1" class="pilcrow">¶</a></p>
-</li>
-          </ul>
-<p id="section-5.4.2-3">In case of a successful lookup of the authentication credential at W, W MUST issue a response such that:<a href="#section-5.4.2-3" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-5.4.2-4.1">
-              <p id="section-5.4.2-4.1.1">Status code is 200 OK if using HTTP, or 2.04 Changed if using CoAP<a href="#section-5.4.2-4.1.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-5.4.2-4.2">
-              <p id="section-5.4.2-4.2.1">Payload is the serialized CRED_U<a href="#section-5.4.2-4.2.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-5.4.2-4.3">
-              <p id="section-5.4.2-4.3.1">Content-Format (Content-Type) is set to "application/lake-authz-certresponse+cbor"<a href="#section-5.4.2-4.3.1" class="pilcrow">¶</a></p>
+              <p id="section-5.4.1-6.2.1">U is not authorized: this happens if W is able to process the Voucher Request, but the access policies forbid authorization. For example, the policy could enforce enrollment to a restricted list of identities, within a delimited time window, via a specific V, etc. In this case, W MUST reply with a 403 Forbidden code if using HTTP, or 4.03 if using CoAP; the payload is the serialized error_content object, with Content-Format (Content-Type) set to "application/lake-authz-vouchererror+cbor". V processes the payload as specified in <a href="#err-handling" class="auto internal xref">Section 4.6</a>.<a href="#section-5.4.1-6.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -2806,15 +2782,15 @@ The security considerations of EDHOC <span>[<a href="#RFC9528" class="cite xref"
 These considerations apply to the ELA regular flow.
 For considerations about the ELA reverse flow, see <a href="#reverse-u-responder" class="auto internal xref">Section 4.7</a>.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">The Voucher_Info and Voucher structs are sent over authenticated channels that are confidentiality and integrity protected between U and V, i.e., in EDHOC fields EAD_3 and EAD_4.
-While ELA reuses several components of EDHOC, it does not reuse keys from EDHOC (such as the ephemeral key G_X when using DH) to protect fields Voucher_Info and Voucher.
+While ELA reuses several components of EDHOC, it does not reuse keys from EDHOC (such as the ephemeral key G_X when using DH) to protect the fields Voucher_Info and Voucher.
 Reuse of G_X is avoided since ephemeral keys are expected to be used only once.
-Similarly, for KEM-based methods a fresh encapsulation is performed for each session.<a href="#section-6-2" class="pilcrow">¶</a></p>
+Similarly, when the EDHOC key exchange algorithm is a KEM, a fresh encapsulation is performed for each session.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <p id="section-6-3">ELA is compatible with the currently standardized Diffie-Hellman shared secret derivation of EDHOC.
 Considering cryptographic recommendations by government agencies and the industry, ELA is also compatible with post-quantum cryptography primitives for deriving a shared secret, namely via the EK_CT field which can contain a KEM ciphertext according to the selected cipher suite.
 Post-quantum KEMs that could be used in EDHOC are currently under standardization in COSE <span>[<a href="#I-D.ietf-jose-pqc-kem" class="cite xref">I-D.ietf-jose-pqc-kem</a>]</span>.<a href="#section-6-3" class="pilcrow">¶</a></p>
 <p id="section-6-4">EDHOC provides identity protection of the Initiator, here the device.
-In ELA, the device U will share its identity with an authenticated V, albeit before knowing (via the Voucher received from W) whether U is authorized to interact with V.<a href="#section-6-4" class="pilcrow">¶</a></p>
-<p id="section-6-5">W may be used for lookup of CRED_U from ID_CRED_I, or this credential lookup function may be separate from the authorization function of W, see <a href="#U-V" class="auto internal xref">Section 4.4</a>.
+In ELA, the device U shares its identity with an authenticated V, albeit before knowing (via the Voucher received from W) whether U is authorized to interact with V.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-5">V may rely on W for lookup of CRED_U from ID_CRED_I, or this credential lookup function may be separate from the authorization function of W, see <a href="#V_3" class="auto internal xref">Section 4.4.3.2</a>.
 The trust model used here is that U reveals its identity to any V, before knowing if the ELA authorization flow will be successfully completed.
 In onboarding use cases, U MAY choose to use an onboarding-only identity, whereas future operational communications can use a different identity under the already established secure channel.<a href="#section-6-5" class="pilcrow">¶</a></p>
 <p id="section-6-6">In the ELA regular flow, EDHOC message_4 is mandatory if it carries the Voucher.
@@ -2826,6 +2802,7 @@ Implementations MUST NOT omit message_4 when vouchers in message_4 are in use.<a
       <h2 id="name-iana-considerations">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
+<p id="section-7-1">This document has the following actions for IANA.<a href="#section-7-1" class="pilcrow">¶</a></p>
 <div id="iana-ead">
 <section id="section-7.1">
         <h3 id="name-edhoc-external-authorizatio">
@@ -2844,6 +2821,7 @@ Implementations MUST NOT omit message_4 when vouchers in message_4 are in use.<a
               <th class="text-right" rowspan="1" colspan="1">Name</th>
               <th class="text-left" rowspan="1" colspan="1">Label</th>
               <th class="text-left" rowspan="1" colspan="1">Description</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
             </tr>
           </thead>
           <tbody>
@@ -2851,21 +2829,21 @@ Implementations MUST NOT omit message_4 when vouchers in message_4 are in use.<a
               <td class="text-right" rowspan="1" colspan="1">Voucher_Info</td>
               <td class="text-left" rowspan="1" colspan="1">TBD1</td>
               <td class="text-left" rowspan="1" colspan="1">Voucher_Info structure (a byte string), prepared by the Device (U).</td>
+              <td class="text-left" rowspan="1" colspan="1">[[this document]]</td>
             </tr>
             <tr>
               <td class="text-right" rowspan="1" colspan="1">Voucher</td>
               <td class="text-left" rowspan="1" colspan="1">TBD2</td>
               <td class="text-left" rowspan="1" colspan="1">Voucher structure (a byte string), prepared by the Enrollment Server (W).</td>
+              <td class="text-left" rowspan="1" colspan="1">[[this document]]</td>
             </tr>
           </tbody>
         </table>
 </div>
-<p id="section-7.1-3">The ead_label = TBD1 corresponds to the ead_value = Voucher_Info, which can be carried in either EAD_2 or EAD_3, depending on whether U acts as EDHOC Initiator or Responder, see <a href="#reverse-u-responder" class="auto internal xref">Section 4.7</a>.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
-<p id="section-7.1-4">The ead_label = TBD2 corresponds to ead_value = Voucher, and can be carried in either EAD_3 or EAD_4, see <a href="#reverse-u-responder" class="auto internal xref">Section 4.7</a>.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
-<p id="section-7.1-5">Note for IANA reviewers: the preferred value range is 0-23 (Standards Action with Expert Review).<a href="#section-7.1-5" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">Note for IANA reviewers: the preferred value range is 0-23 (Standards Action with Expert Review).<a href="#section-7.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="the-well-known-uri-registry">
+<div id="iana-wk">
 <section id="section-7.2">
         <h3 id="name-the-well-known-uri-registry">
 <a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-the-well-known-uri-registry" class="section-name selfRef">The Well-Known URI Registry</a>
@@ -2973,7 +2951,7 @@ For registrations made by IETF documents, the IETF is listed as Change Controlle
         <h3 id="name-media-types-registry">
 <a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-media-types-registry" class="section-name selfRef">Media Types Registry</a>
         </h3>
-<p id="section-7.4-1">IANA has added the media types "application/lake-authz-voucherrequest+cbor" to the "Media Types" registry.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<p id="section-7.4-1">IANA has added the media types "application/lake-authz-voucherrequest+cbor", "application/lake-authz-voucherresponse+cbor", and "application/lake-authz-vouchererror+cbor" to the "Media Types" registry.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
 <div id="applicationlake-authz-voucherrequestcbor-media-type-registration">
 <section id="section-7.4.1">
           <h4 id="name-application-lake-authz-vouc">
@@ -3005,7 +2983,7 @@ For registrations made by IETF documents, the IETF is listed as Change Controlle
               <p id="section-7.4.1-1.8.1">Published specification: [[this document]] (this document)<a href="#section-7.4.1-1.8.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-7.4.1-1.9">
-              <p id="section-7.4.1-1.9.1">Application that use this media type: To be identified<a href="#section-7.4.1-1.9.1" class="pilcrow">¶</a></p>
+              <p id="section-7.4.1-1.9.1">Applications that use this media type: To be identified<a href="#section-7.4.1-1.9.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-7.4.1-1.10">
               <p id="section-7.4.1-1.10.1">Fragment identifier considerations: N/A<a href="#section-7.4.1-1.10.1" class="pilcrow">¶</a></p>
@@ -3042,6 +3020,142 @@ For registrations made by IETF documents, the IETF is listed as Change Controlle
           </ul>
 </section>
 </div>
+<div id="applicationlake-authz-voucherresponsecbor-media-type-registration">
+<section id="section-7.4.2">
+          <h4 id="name-application-lake-authz-vouch">
+<a href="#section-7.4.2" class="section-number selfRef">7.4.2. </a><a href="#name-application-lake-authz-vouch" class="section-name selfRef">application/lake-authz-voucherresponse+cbor Media Type Registration</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-7.4.2-1.1">
+              <p id="section-7.4.2-1.1.1">Type name: application<a href="#section-7.4.2-1.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.2">
+              <p id="section-7.4.2-1.2.1">Subtype name: lake-authz-voucherresponse+cbor<a href="#section-7.4.2-1.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.3">
+              <p id="section-7.4.2-1.3.1">Required parameters: N/A<a href="#section-7.4.2-1.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.4">
+              <p id="section-7.4.2-1.4.1">Optional parameters: N/A<a href="#section-7.4.2-1.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.5">
+              <p id="section-7.4.2-1.5.1">Encoding considerations: binary (CBOR)<a href="#section-7.4.2-1.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.6">
+              <p id="section-7.4.2-1.6.1">Security considerations: See <a href="#sec-cons" class="auto internal xref">Section 6</a> of this document.<a href="#section-7.4.2-1.6.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.7">
+              <p id="section-7.4.2-1.7.1">Interoperability considerations: N/A<a href="#section-7.4.2-1.7.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.8">
+              <p id="section-7.4.2-1.8.1">Published specification: [[this document]] (this document)<a href="#section-7.4.2-1.8.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.9">
+              <p id="section-7.4.2-1.9.1">Applications that use this media type: To be identified<a href="#section-7.4.2-1.9.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.10">
+              <p id="section-7.4.2-1.10.1">Fragment identifier considerations: N/A<a href="#section-7.4.2-1.10.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.11">
+              <p id="section-7.4.2-1.11.1">Additional information:<a href="#section-7.4.2-1.11.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4.2-1.11.2.1">
+                  <p id="section-7.4.2-1.11.2.1.1">Magic number(s): N/A<a href="#section-7.4.2-1.11.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-7.4.2-1.11.2.2">
+                  <p id="section-7.4.2-1.11.2.2.1">File extension(s): N/A<a href="#section-7.4.2-1.11.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-7.4.2-1.11.2.3">
+                  <p id="section-7.4.2-1.11.2.3.1">Macintosh file type code(s): N/A<a href="#section-7.4.2-1.11.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              </ul>
+</li>
+            <li class="normal" id="section-7.4.2-1.12">
+              <p id="section-7.4.2-1.12.1">Person &amp; email address to contact for further information: IETF LAKE Working Group (lake@ietf.org)<a href="#section-7.4.2-1.12.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.13">
+              <p id="section-7.4.2-1.13.1">Intended usage: COMMON<a href="#section-7.4.2-1.13.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.14">
+              <p id="section-7.4.2-1.14.1">Restrictions on usage: N/A<a href="#section-7.4.2-1.14.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.15">
+              <p id="section-7.4.2-1.15.1">Author: LAKE WG<a href="#section-7.4.2-1.15.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.2-1.16">
+              <p id="section-7.4.2-1.16.1">Change Controller: IETF<a href="#section-7.4.2-1.16.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</section>
+</div>
+<div id="applicationlake-authz-vouchererrorcbor-media-type-registration">
+<section id="section-7.4.3">
+          <h4 id="name-application-lake-authz-vouche">
+<a href="#section-7.4.3" class="section-number selfRef">7.4.3. </a><a href="#name-application-lake-authz-vouche" class="section-name selfRef">application/lake-authz-vouchererror+cbor Media Type Registration</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-7.4.3-1.1">
+              <p id="section-7.4.3-1.1.1">Type name: application<a href="#section-7.4.3-1.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.2">
+              <p id="section-7.4.3-1.2.1">Subtype name: lake-authz-vouchererror+cbor<a href="#section-7.4.3-1.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.3">
+              <p id="section-7.4.3-1.3.1">Required parameters: N/A<a href="#section-7.4.3-1.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.4">
+              <p id="section-7.4.3-1.4.1">Optional parameters: N/A<a href="#section-7.4.3-1.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.5">
+              <p id="section-7.4.3-1.5.1">Encoding considerations: binary (CBOR)<a href="#section-7.4.3-1.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.6">
+              <p id="section-7.4.3-1.6.1">Security considerations: See <a href="#sec-cons" class="auto internal xref">Section 6</a> of this document.<a href="#section-7.4.3-1.6.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.7">
+              <p id="section-7.4.3-1.7.1">Interoperability considerations: N/A<a href="#section-7.4.3-1.7.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.8">
+              <p id="section-7.4.3-1.8.1">Published specification: [[this document]] (this document)<a href="#section-7.4.3-1.8.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.9">
+              <p id="section-7.4.3-1.9.1">Applications that use this media type: To be identified<a href="#section-7.4.3-1.9.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.10">
+              <p id="section-7.4.3-1.10.1">Fragment identifier considerations: N/A<a href="#section-7.4.3-1.10.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.11">
+              <p id="section-7.4.3-1.11.1">Additional information:<a href="#section-7.4.3-1.11.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4.3-1.11.2.1">
+                  <p id="section-7.4.3-1.11.2.1.1">Magic number(s): N/A<a href="#section-7.4.3-1.11.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-7.4.3-1.11.2.2">
+                  <p id="section-7.4.3-1.11.2.2.1">File extension(s): N/A<a href="#section-7.4.3-1.11.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-7.4.3-1.11.2.3">
+                  <p id="section-7.4.3-1.11.2.3.1">Macintosh file type code(s): N/A<a href="#section-7.4.3-1.11.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              </ul>
+</li>
+            <li class="normal" id="section-7.4.3-1.12">
+              <p id="section-7.4.3-1.12.1">Person &amp; email address to contact for further information: IETF LAKE Working Group (lake@ietf.org)<a href="#section-7.4.3-1.12.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.13">
+              <p id="section-7.4.3-1.13.1">Intended usage: COMMON<a href="#section-7.4.3-1.13.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.14">
+              <p id="section-7.4.3-1.14.1">Restrictions on usage: N/A<a href="#section-7.4.3-1.14.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.15">
+              <p id="section-7.4.3-1.15.1">Author: LAKE WG<a href="#section-7.4.3-1.15.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.4.3-1.16">
+              <p id="section-7.4.3-1.16.1">Change Controller: IETF<a href="#section-7.4.3-1.16.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</section>
+</div>
 </section>
 </div>
 <div id="coap-content-formats-registry">
@@ -3049,7 +3163,7 @@ For registrations made by IETF documents, the IETF is listed as Change Controlle
         <h3 id="name-coap-content-formats-regist">
 <a href="#section-7.5" class="section-number selfRef">7.5. </a><a href="#name-coap-content-formats-regist" class="section-name selfRef">CoAP Content-Formats Registry</a>
         </h3>
-<p id="section-7.5-1">IANA has added the following Content-Format number in the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".<a href="#section-7.5-1" class="pilcrow">¶</a></p>
+<p id="section-7.5-1">IANA has added the following Content-Format numbers in the "CoAP Content-Formats" registry under the registry group "Constrained RESTful Environments (CoRE) Parameters".<a href="#section-7.5-1" class="pilcrow">¶</a></p>
 <span id="name-addition-to-the-coap-conten"></span><div id="coap-content-formats">
 <table class="center" id="table-5">
           <caption>
@@ -3068,7 +3182,19 @@ For registrations made by IETF documents, the IETF is listed as Change Controlle
             <tr>
               <td class="text-left" rowspan="1" colspan="1">application/lake-authz-voucherrequest+cbor</td>
               <td class="text-left" rowspan="1" colspan="1">-</td>
-              <td class="text-left" rowspan="1" colspan="1">TBD3</td>
+              <td class="text-left" rowspan="1" colspan="1">TBD5</td>
+              <td class="text-left" rowspan="1" colspan="1">[[this document]]</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">application/lake-authz-voucherresponse+cbor</td>
+              <td class="text-left" rowspan="1" colspan="1">-</td>
+              <td class="text-left" rowspan="1" colspan="1">TBD6</td>
+              <td class="text-left" rowspan="1" colspan="1">[[this document]]</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">application/lake-authz-vouchererror+cbor</td>
+              <td class="text-left" rowspan="1" colspan="1">-</td>
+              <td class="text-left" rowspan="1" colspan="1">TBD7</td>
               <td class="text-left" rowspan="1" colspan="1">[[this document]]</td>
             </tr>
           </tbody>
@@ -3102,6 +3228,18 @@ For registrations made by IETF documents, the IETF is listed as Change Controlle
         <dd>
 <span class="refAuthor">Alagic, G.</span>, <span class="refAuthor">Barker, E.</span>, <span class="refAuthor">Chen, L.</span>, <span class="refAuthor">Moody, D.</span>, <span class="refAuthor">Robinson, A.</span>, <span class="refAuthor">Silberg, H.</span>, and <span class="refAuthor">N. Waller</span>, <span class="refTitle">"Recommendations for Key-Encapsulation Mechanisms - NIST Special Publication 800-227"</span>, <time datetime="2025-09" class="refDate">September 2025</time>, <span>&lt;<a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-227.pdf">https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-227.pdf</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7252">[RFC7252]</dt>
+        <dd>
+<span class="refAuthor">Shelby, Z.</span>, <span class="refAuthor">Hartke, K.</span>, and <span class="refAuthor">C. Bormann</span>, <span class="refTitle">"The Constrained Application Protocol (CoAP)"</span>, <span class="seriesInfo">RFC 7252</span>, <span class="seriesInfo">DOI 10.17487/RFC7252</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7252">https://www.rfc-editor.org/info/rfc7252</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC8323">[RFC8323]</dt>
         <dd>
 <span class="refAuthor">Bormann, C.</span>, <span class="refAuthor">Lemay, S.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Hartke, K.</span>, <span class="refAuthor">Silverajan, B.</span>, and <span class="refAuthor">B. Raymor, Ed.</span>, <span class="refTitle">"CoAP (Constrained Application Protocol) over TCP, TLS, and WebSockets"</span>, <span class="seriesInfo">RFC 8323</span>, <span class="seriesInfo">DOI 10.17487/RFC8323</span>, <time datetime="2018-02" class="refDate">February 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8323">https://www.rfc-editor.org/info/rfc8323</a>&gt;</span>. </dd>
@@ -3114,9 +3252,17 @@ For registrations made by IETF documents, the IETF is listed as Change Controlle
         <dd>
 <span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Wahlstroem, E.</span>, <span class="refAuthor">Erdtman, S.</span>, and <span class="refAuthor">H. Tschofenig</span>, <span class="refTitle">"CBOR Web Token (CWT)"</span>, <span class="seriesInfo">RFC 8392</span>, <span class="seriesInfo">DOI 10.17487/RFC8392</span>, <time datetime="2018-05" class="refDate">May 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8392">https://www.rfc-editor.org/info/rfc8392</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC8610">[RFC8610]</dt>
+        <dd>
+<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Vigano, C.</span>, and <span class="refAuthor">C. Bormann</span>, <span class="refTitle">"Concise Data Definition Language (CDDL): A Notational Convention to Express Concise Binary Object Representation (CBOR) and JSON Data Structures"</span>, <span class="seriesInfo">RFC 8610</span>, <span class="seriesInfo">DOI 10.17487/RFC8610</span>, <time datetime="2019-06" class="refDate">June 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8610">https://www.rfc-editor.org/info/rfc8610</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC8613">[RFC8613]</dt>
         <dd>
 <span class="refAuthor">Selander, G.</span>, <span class="refAuthor">Mattsson, J.</span>, <span class="refAuthor">Palombini, F.</span>, and <span class="refAuthor">L. Seitz</span>, <span class="refTitle">"Object Security for Constrained RESTful Environments (OSCORE)"</span>, <span class="seriesInfo">RFC 8613</span>, <span class="seriesInfo">DOI 10.17487/RFC8613</span>, <time datetime="2019-07" class="refDate">July 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8613">https://www.rfc-editor.org/info/rfc8613</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8615">[RFC8615]</dt>
+        <dd>
+<span class="refAuthor">Nottingham, M.</span>, <span class="refTitle">"Well-Known Uniform Resource Identifiers (URIs)"</span>, <span class="seriesInfo">RFC 8615</span>, <span class="seriesInfo">DOI 10.17487/RFC8615</span>, <time datetime="2019-05" class="refDate">May 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8615">https://www.rfc-editor.org/info/rfc8615</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8949">[RFC8949]</dt>
         <dd>
@@ -3126,9 +3272,25 @@ For registrations made by IETF documents, the IETF is listed as Change Controlle
         <dd>
 <span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE): Structures and Process"</span>, <span class="seriesInfo">STD 96</span>, <span class="seriesInfo">RFC 9052</span>, <span class="seriesInfo">DOI 10.17487/RFC9052</span>, <time datetime="2022-08" class="refDate">August 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9052">https://www.rfc-editor.org/info/rfc9052</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC9110">[RFC9110]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"HTTP Semantics"</span>, <span class="seriesInfo">STD 97</span>, <span class="seriesInfo">RFC 9110</span>, <span class="seriesInfo">DOI 10.17487/RFC9110</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9110">https://www.rfc-editor.org/info/rfc9110</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9112">[RFC9112]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"HTTP/1.1"</span>, <span class="seriesInfo">STD 99</span>, <span class="seriesInfo">RFC 9112</span>, <span class="seriesInfo">DOI 10.17487/RFC9112</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9112">https://www.rfc-editor.org/info/rfc9112</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9147">[RFC9147]</dt>
+        <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">N. Modadugu</span>, <span class="refTitle">"The Datagram Transport Layer Security (DTLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 9147</span>, <span class="seriesInfo">DOI 10.17487/RFC9147</span>, <time datetime="2022-04" class="refDate">April 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9147">https://www.rfc-editor.org/info/rfc9147</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC9528">[RFC9528]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Selander, G.</span>, <span class="refAuthor">Preuß Mattsson, J.</span>, and <span class="refAuthor">F. Palombini</span>, <span class="refTitle">"Ephemeral Diffie-Hellman Over COSE (EDHOC)"</span>, <span class="seriesInfo">RFC 9528</span>, <span class="seriesInfo">DOI 10.17487/RFC9528</span>, <time datetime="2024-03" class="refDate">March 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9528">https://www.rfc-editor.org/info/rfc9528</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9846">[RFC9846]</dt>
+      <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 9846</span>, <span class="seriesInfo">DOI 10.17487/RFC9846</span>, <time datetime="2026-07" class="refDate">July 2026</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9846">https://www.rfc-editor.org/info/rfc9846</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -3139,6 +3301,14 @@ For registrations made by IETF documents, the IETF is listed as Change Controlle
 <a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
+<dt id="I-D.ietf-cose-cbor-encoded-cert">[I-D.ietf-cose-cbor-encoded-cert]</dt>
+        <dd>
+<span class="refAuthor">Mattsson, J. P.</span>, <span class="refAuthor">Selander, G.</span>, <span class="refAuthor">Raza, S.</span>, <span class="refAuthor">Höglund, J.</span>, <span class="refAuthor">Furuhed, M.</span>, and <span class="refAuthor">L. Liao</span>, <span class="refTitle">"CBOR Encoded X.509 Certificates (C509 Certificates)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-cose-cbor-encoded-cert-21</span>, <time datetime="2026-09-24" class="refDate">24 September 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-cose-cbor-encoded-cert-21">https://datatracker.ietf.org/doc/html/draft-ietf-cose-cbor-encoded-cert-21</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-iotops-7228bis">[I-D.ietf-iotops-7228bis]</dt>
+        <dd>
+<span class="refAuthor">Bormann, C.</span>, <span class="refAuthor">Ersue, M.</span>, <span class="refAuthor">Keränen, A.</span>, and <span class="refAuthor">C. Gomez</span>, <span class="refTitle">"Terminology for Constrained-Node Networks"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-iotops-7228bis-10</span>, <time datetime="2026-07-06" class="refDate">6 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-iotops-7228bis-10">https://datatracker.ietf.org/doc/html/draft-ietf-iotops-7228bis-10</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="I-D.ietf-jose-pqc-kem">[I-D.ietf-jose-pqc-kem]</dt>
         <dd>
 <span class="refAuthor">Reddy.K, T.</span>, <span class="refAuthor">Banerjee, A.</span>, and <span class="refAuthor">H. Tschofenig</span>, <span class="refTitle">"Post-Quantum Key Encapsulation Mechanisms (PQ KEMs) for COSE"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-jose-pqc-kem-06</span>, <time datetime="2026-07-06" class="refDate">6 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-jose-pqc-kem-06">https://datatracker.ietf.org/doc/html/draft-ietf-jose-pqc-kem-06</a>&gt;</span>. </dd>
@@ -3163,45 +3333,17 @@ For registrations made by IETF documents, the IETF is listed as Change Controlle
         <dd>
 <span class="refAuthor">IEEE standard for Information Technology</span>, <span class="refTitle">"IEEE Std 802.15.4 Standard for Low-Rate Wireless Networks"</span>, <span>n.d.</span>. </dd>
 <dd class="break"></dd>
-<dt id="RFC2119">[RFC2119]</dt>
-        <dd>
-<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="RFC5280">[RFC5280]</dt>
         <dd>
 <span class="refAuthor">Cooper, D.</span>, <span class="refAuthor">Santesson, S.</span>, <span class="refAuthor">Farrell, S.</span>, <span class="refAuthor">Boeyen, S.</span>, <span class="refAuthor">Housley, R.</span>, and <span class="refAuthor">W. Polk</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile"</span>, <span class="seriesInfo">RFC 5280</span>, <span class="seriesInfo">DOI 10.17487/RFC5280</span>, <time datetime="2008-05" class="refDate">May 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5280">https://www.rfc-editor.org/info/rfc5280</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC7228">[RFC7228]</dt>
-        <dd>
-<span class="refAuthor">Bormann, C.</span>, <span class="refAuthor">Ersue, M.</span>, and <span class="refAuthor">A. Keranen</span>, <span class="refTitle">"Terminology for Constrained-Node Networks"</span>, <span class="seriesInfo">RFC 7228</span>, <span class="seriesInfo">DOI 10.17487/RFC7228</span>, <time datetime="2014-05" class="refDate">May 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7228">https://www.rfc-editor.org/info/rfc7228</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7593">[RFC7593]</dt>
         <dd>
 <span class="refAuthor">Wierenga, K.</span>, <span class="refAuthor">Winter, S.</span>, and <span class="refAuthor">T. Wolniewicz</span>, <span class="refTitle">"The eduroam Architecture for Network Roaming"</span>, <span class="seriesInfo">RFC 7593</span>, <span class="seriesInfo">DOI 10.17487/RFC7593</span>, <time datetime="2015-09" class="refDate">September 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7593">https://www.rfc-editor.org/info/rfc7593</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="RFC8126">[RFC8126]</dt>
-        <dd>
-<span class="refAuthor">Cotton, M.</span>, <span class="refAuthor">Leiba, B.</span>, and <span class="refAuthor">T. Narten</span>, <span class="refTitle">"Guidelines for Writing an IANA Considerations Section in RFCs"</span>, <span class="seriesInfo">BCP 26</span>, <span class="seriesInfo">RFC 8126</span>, <span class="seriesInfo">DOI 10.17487/RFC8126</span>, <time datetime="2017-06" class="refDate">June 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8126">https://www.rfc-editor.org/info/rfc8126</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="RFC8137">[RFC8137]</dt>
         <dd>
 <span class="refAuthor">Kivinen, T.</span> and <span class="refAuthor">P. Kinney</span>, <span class="refTitle">"IEEE 802.15.4 Information Element for the IETF"</span>, <span class="seriesInfo">RFC 8137</span>, <span class="seriesInfo">DOI 10.17487/RFC8137</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8137">https://www.rfc-editor.org/info/rfc8137</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC8174">[RFC8174]</dt>
-        <dd>
-<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC8446">[RFC8446]</dt>
-        <dd>
-<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8446">https://www.rfc-editor.org/info/rfc8446</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC8610">[RFC8610]</dt>
-        <dd>
-<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Vigano, C.</span>, and <span class="refAuthor">C. Bormann</span>, <span class="refTitle">"Concise Data Definition Language (CDDL): A Notational Convention to Express Concise Binary Object Representation (CBOR) and JSON Data Structures"</span>, <span class="seriesInfo">RFC 8610</span>, <span class="seriesInfo">DOI 10.17487/RFC8610</span>, <time datetime="2019-06" class="refDate">June 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8610">https://www.rfc-editor.org/info/rfc8610</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC8615">[RFC8615]</dt>
-        <dd>
-<span class="refAuthor">Nottingham, M.</span>, <span class="refTitle">"Well-Known Uniform Resource Identifiers (URIs)"</span>, <span class="seriesInfo">RFC 8615</span>, <span class="seriesInfo">DOI 10.17487/RFC8615</span>, <time datetime="2019-05" class="refDate">May 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8615">https://www.rfc-editor.org/info/rfc8615</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8995">[RFC8995]</dt>
         <dd>
@@ -3221,17 +3363,17 @@ For registrations made by IETF documents, the IETF is listed as Change Controlle
       <h2 id="name-optimization-strategies">
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-optimization-strategies" class="section-name selfRef">Optimization Strategies</a>
       </h2>
-<p id="appendix-A-1">When ELA is used for zero-touch enrollment of IoT devices, U may have little to no knowledge about V's available in its vicinity.
-This may lead to situations where U retries several times at different V's until it finds one that works.
+<p id="appendix-A-1">When ELA is used for zero-touch enrollment of IoT devices, U may have little to no knowledge about Vs that are available in its vicinity.
+This may lead to situations where U retries several times at different Vs until it finds one that works.
 This section presents two optimization strategies and different approaches to implement it.
-These strategies were developed to address scenarios where V's are radio gateways to which U wants to enroll, but may also be applicable to other use cases.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+These strategies were developed to address scenarios where Vs are radio gateways to which U wants to enroll, but may also be applicable to other use cases.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <div id="ela-profile">
 <section id="appendix-A.1">
         <h3 id="name-using-edhoc-application-pro">
 <a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-using-edhoc-application-pro" class="section-name selfRef">Using EDHOC Application Profiles</a>
         </h3>
-<p id="appendix-A.1-1">This section provides an example of how support for ELA can be advertised using EDHOC application profiles.<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
-<p id="appendix-A.1-2">Application Profiles for EDHOC <span>[<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> defines mechanisms to describe and distribute parameters regarding the supported capabilities of EDHOC peers.
+<p id="appendix-A.1-1">This section provides an example of how support for ELA can be advertised using EDHOC application profiles (see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.9" class="relref">Section 3.9</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>).<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.1-2">The specification at <span>[<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> defines mechanisms to describe and distribute parameters regarding the supported capabilities of EDHOC peers.
 Specifically, <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-07#section-5" class="relref">Section 5</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span> describes how EDHOC peers can advertise supported profiles by using fields EAD_1 and EAD_2 in EDHOC message_1 and message_2, respectively.<a href="#appendix-A.1-2" class="pilcrow">¶</a></p>
 <p id="appendix-A.1-3">Since the ELA regular flow uses message_3 and message_4, peers can advertise support for ELA, and refrain from attempting the protocol in case one does not support it.
 In the case of the reverse flow, V can advertise a profile in message_1, while the protocol happens in message_2 and message_3.<a href="#appendix-A.1-3" class="pilcrow">¶</a></p>
@@ -3247,7 +3389,7 @@ In the case of the reverse flow, V can advertise a profile in message_1, while t
 <p id="appendix-A.1-6">Where:<a href="#appendix-A.1-6" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-A.1-7.1">
-            <p id="appendix-A.1-7.1.1">true indicates that U expects an application profile response from V in EAD_2, see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-07#section-5.1" class="relref">Section 5.1</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span><a href="#appendix-A.1-7.1.1" class="pilcrow">¶</a></p>
+            <p id="appendix-A.1-7.1.1">true indicates that U expects an analogous advertisement from V in EAD_2, see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-07#section-5.1" class="relref">Section 5.1</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span><a href="#appendix-A.1-7.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-A.1-7.2">
             <p id="appendix-A.1-7.2.1">APP-PROF-MINIMAL-CS-2 corresponds to a well-known EDHOC application profile (Method 3; Cipher Suite 2; CCS; kid), see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-lake-app-profiles-07#section-8" class="relref">Section 8</a> of [<a href="#I-D.ietf-lake-app-profiles" class="cite xref">I-D.ietf-lake-app-profiles</a>]</span><a href="#appendix-A.1-7.2.1" class="pilcrow">¶</a></p>
@@ -3287,7 +3429,7 @@ For example, V_INFO may state that:<a href="#appendix-A.2-2" class="pilcrow">¶<
         </ul>
 <p id="appendix-A.2-4">V_INFO can be sent over a network beacon (see <a href="#adv-beacon" class="auto internal xref">Appendix A.2.1</a>), which may require technology specific profiling, e.g., the IEEE 802.15.4 enhanced beacon may be extended according to <span>[<a href="#RFC8137" class="cite xref">RFC8137</a>]</span>.
 Alternatively, V_INFO can be sent as part of an EAD field, as shown in <a href="#adv-ead1" class="auto internal xref">Appendix A.2.2</a>.<a href="#appendix-A.2-4" class="pilcrow">¶</a></p>
-<p id="appendix-A.2-5">As a guideline for implementers, we define the following field that can be included in a V_INFO structure:<a href="#appendix-A.2-5" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-5">As a guideline for implementers, this document defines the following field that can be included in a V_INFO structure:<a href="#appendix-A.2-5" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="appendix-A.2-6">
 <pre>
 DOMAIN_ID: bstr
@@ -3295,7 +3437,7 @@ DOMAIN_ID: bstr
 </div>
 <p id="appendix-A.2-7">The DOMAIN_ID field identifies the domain to which V belongs to, for example an URL or UUID.<a href="#appendix-A.2-7" class="pilcrow">¶</a></p>
 <p id="appendix-A.2-8">Below are three examples of how the advertisement strategy may be applied according to different application needs.
-The examples include sending V_INFO in network beacons, as part of EAD_1 in reverse message flow, or as part of a periodic CoAP multicast packet.
+The examples include sending V_INFO in network beacons, as part of EAD_1 in reverse message flow, or as part of a periodic CoAP message sent over multicast.
 The advantages, costs, and security impacts of each approach are also discussed.<a href="#appendix-A.2-8" class="pilcrow">¶</a></p>
 <div id="adv-beacon">
 <section id="appendix-A.2.1">
@@ -3403,7 +3545,7 @@ It requires, however, some profiling of the lower layer beacons.<a href="#append
 <a href="#appendix-A.2.2" class="section-number selfRef">A.2.2. </a><a href="#name-v_info-in-ead_1" class="section-name selfRef">V_INFO in EAD_1</a>
           </h4>
 <p id="appendix-A.2.2-1">The ELA reverse flow (see <a href="#reverse-u-responder" class="auto internal xref">Section 4.7</a>) allows implementing advertising where U first sends a trigger packet, in the format of a CoAP request that is broadcasted to the network.
-When a suitable V receives the solicitation, if it implements ELA, it should respond with an EDHOC message_1 whose EAD_1 has label -TBD4 and value V_INFO (see <a href="#strat-advertise" class="auto internal xref">Appendix A.2</a>).<a href="#appendix-A.2.2-1" class="pilcrow">¶</a></p>
+When a suitable V receives the solicitation, if it implements ELA, it should respond with an EDHOC message_1 whose EAD_1 has value V_INFO (see <a href="#strat-advertise" class="auto internal xref">Appendix A.2</a>).<a href="#appendix-A.2.2-1" class="pilcrow">¶</a></p>
 <span id="name-advertising-ela-using-v_info"></span><div id="fig-adv-ead1">
 <figure id="figure-9">
             <div id="appendix-A.2.2-2.1">
@@ -3466,18 +3608,20 @@ V_INFO = (
 )
 </pre><a href="#appendix-A.2.2-4" class="pilcrow">¶</a>
 </div>
-<p id="appendix-A.2.2-5">This approach enables a simple filtering mechanism, where only V's that support ELA will reply.
+<p id="appendix-A.2.2-5">This approach enables a simple filtering mechanism, where only Vs that support ELA will reply.
 In addition, it may not require layer-two profiling (in case the network allows transporting data before authorization).<a href="#appendix-A.2.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="adv-coap-mult">
 <section id="appendix-A.2.3">
-          <h4 id="name-v_info-in-a-coap-multicast-">
-<a href="#appendix-A.2.3" class="section-number selfRef">A.2.3. </a><a href="#name-v_info-in-a-coap-multicast-" class="section-name selfRef">V_INFO in a CoAP Multicast Packet</a>
+          <h4 id="name-v_info-in-a-coap-message-ov">
+<a href="#appendix-A.2.3" class="section-number selfRef">A.2.3. </a><a href="#name-v_info-in-a-coap-message-ov" class="section-name selfRef">V_INFO in a CoAP Message over Multicast</a>
           </h4>
-<p id="appendix-A.2.3-1">In this approach, V periodically multicasts a CoAP packet containing V_INFO, see <a href="#fig-adv-coap-mult" class="auto internal xref">Figure 10</a>.
+<p id="appendix-A.2.3-1">In this approach, V periodically sends a CoAP request message over multicast conveying V_INFO as its payload, see <a href="#fig-adv-coap-mult" class="auto internal xref">Figure 10</a>.
 Upon receiving one or more CoAP messages and processing V_INFO, U can decide whether or not to initiate the ELA protocol with a given V.
-Next, the application can either keep U acting as a server, and thus employ the EDHOC reverse flow, or implement a CoAP client and use the forward flow.<a href="#appendix-A.2.3-1" class="pilcrow">¶</a></p>
+Next, U can act as Initiator and start an EDHOC session with V by transporting EDHOC messages over CoAP (see <span><a href="https://rfc-editor.org/rfc/rfc9528#appendix-A.2" class="relref">Appendix A.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>).
+When doing so, the application can either keep U acting as a server and thus employ the EDHOC reverse message flow, or implement a CoAP client and thus employ the EDHOC forward message flow.
+The latter builds on the assumption that V also implements a CoAP server.<a href="#appendix-A.2.3-1" class="pilcrow">¶</a></p>
 <span id="name-advertising-ela-using-the-n"></span><div id="fig-adv-coap-mult">
 <figure id="figure-10">
             <div id="appendix-A.2.3-2.1">
