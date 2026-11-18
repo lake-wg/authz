@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 21 May 2027                                          M. Vučinić
+Expires: 22 May 2027                                          M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                        17 November 2026
+                                                        18 November 2026
 
 
 Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 21 May 2027.
+   This Internet-Draft will expire on 22 May 2027.
 
 Copyright Notice
 
@@ -101,10 +101,11 @@ Table of Contents
    6.  Security Considerations
    7.  IANA Considerations
      7.1.  EDHOC External Authorization Data Registry
-     7.2.  The Well-Known URI Registry
-     7.3.  ELA Voucher Response Parameters Registry
-     7.4.  Media Types Registry
-     7.5.  CoAP Content-Formats Registry
+     7.2.  EDHOC Error Codes Registry
+     7.3.  The Well-Known URI Registry
+     7.4.  ELA Voucher Response Parameters Registry
+     7.5.  Media Types Registry
+     7.6.  CoAP Content-Formats Registry
    8.  References
      8.1.  Normative References
      8.2.  Informative References
@@ -901,7 +902,7 @@ U                              V                                       W
       retrieved the credential.
 
    The map labels are taken from the "ELA Voucher Response Parameters"
-   registry, see Section 7.3.  Since both parameters are optional, the
+   registry, see Section 7.4.  Since both parameters are optional, the
    use of labels allows V to determine which of them is present in the
    Voucher_Response.  The labels also allow extending the
    Voucher_Response with additional parameters.
@@ -1265,7 +1266,7 @@ U                              V                                       W
 
    The URIs defined below are valid for both HTTP and CoAP.  W MUST
    support the use of the path prefix "/.well-known/", as defined in
-   [RFC8615], and the registered name "lake-authz" (see Section 7.2).  A
+   [RFC8615], and the registered name "lake-authz" (see Section 7.3).  A
    valid URI in case of HTTP thus begins with
 
    *  "https://www.example.com/.well-known/lake-authz"
@@ -1394,10 +1395,29 @@ U                              V                                       W
    Note for IANA reviewers: the preferred value range is 0-23 (Standards
    Action with Expert Review).
 
-7.2.  The Well-Known URI Registry
+7.2.  EDHOC Error Codes Registry
 
-   IANA has registered the following entry in "The Well-Known URI
-   Registry", using the template from [RFC8615]:
+   IANA has registered the following entry in the "EDHOC Error Codes"
+   registry under the group name "Ephemeral Diffie-Hellman Over COSE
+   (EDHOC)".
+
+   +==========+===============+=============+============+============+
+   | ERR_CODE | ERR_INFO Type | Description | Change     | Reference  |
+   |          |               |             | Controller |            |
+   +==========+===============+=============+============+============+
+   |     TBD3 | error_content | Access      | IETF       | [[this     |
+   |          |               | denied      |            | document]] |
+   +----------+---------------+-------------+------------+------------+
+
+           Table 3: Addition to the EDHOC Error Codes registry
+
+   Note for IANA reviewers: the preferred value range is -24 to 23
+   (Standards Action).
+
+7.3.  The Well-Known URI Registry
+
+   IANA has registered the following entry in the "Well-Known URIs"
+   registry, using the template from [RFC8615]:
 
    *  URI suffix: lake-authz
 
@@ -1409,7 +1429,7 @@ U                              V                                       W
 
    *  Related information: None
 
-7.3.  ELA Voucher Response Parameters Registry
+7.4.  ELA Voucher Response Parameters Registry
 
    IANA has created a new registry under the registry group "Ephemeral
    Diffie-Hellman Over COSE (EDHOC)" as follows:
@@ -1421,7 +1441,7 @@ U                              V                                       W
    The columns of the registry are Name, Label, CBOR Type, Description,
    Change Controller, and Reference, where Label is an integer and the
    other columns are text strings.  The initial contents of the registry
-   are shown in Table 3.  For registrations made by IETF documents, the
+   are shown in Table 4.  For registrations made by IETF documents, the
    IETF is listed as Change Controller.
 
     +=========+=======+====+================+============+============+
@@ -1438,7 +1458,7 @@ U                              V                                       W
     |         |       |    | the Device (U) |            |            |
     +---------+-------+----+----------------+------------+------------+
 
-                  Table 3: ELA Voucher Response Parameters
+                  Table 4: ELA Voucher Response Parameters
 
           +===============+=====================================+
           | Range         | Registration Procedures             |
@@ -1450,20 +1470,20 @@ U                              V                                       W
           | 24 to 65535   | Specification Required              |
           +---------------+-------------------------------------+
 
-              Table 4: Registration Procedures for ELA Voucher
+              Table 5: Registration Procedures for ELA Voucher
                             Response Parameters
 
    Expert reviewers should take into consideration the guidelines in
    Section 10.11 of [RFC9528].
 
-7.4.  Media Types Registry
+7.5.  Media Types Registry
 
    IANA has added the media types "application/lake-authz-
    voucherrequest+cbor", "application/lake-authz-voucherresponse+cbor",
    and "application/lake-authz-vouchererror+cbor" to the "Media Types"
    registry.
 
-7.4.1.  application/lake-authz-voucherrequest+cbor Media Type
+7.5.1.  application/lake-authz-voucherrequest+cbor Media Type
         Registration
 
    *  Type name: application
@@ -1505,7 +1525,7 @@ U                              V                                       W
 
    *  Change Controller: IETF
 
-7.4.2.  application/lake-authz-voucherresponse+cbor Media Type
+7.5.2.  application/lake-authz-voucherresponse+cbor Media Type
         Registration
 
    *  Type name: application
@@ -1547,7 +1567,7 @@ U                              V                                       W
 
    *  Change Controller: IETF
 
-7.4.3.  application/lake-authz-vouchererror+cbor Media Type Registration
+7.5.3.  application/lake-authz-vouchererror+cbor Media Type Registration
 
    *  Type name: application
 
@@ -1588,7 +1608,7 @@ U                              V                                       W
 
    *  Change Controller: IETF
 
-7.5.  CoAP Content-Formats Registry
+7.6.  CoAP Content-Formats Registry
 
    IANA has added the following Content-Format numbers in the "CoAP
    Content-Formats" registry under the registry group "Constrained
@@ -1608,7 +1628,7 @@ U                              V                                       W
      | vouchererror+cbor               |         |      | document]] |
      +---------------------------------+---------+------+------------+
 
-           Table 5: Addition to the CoAP Content-Formats registry
+           Table 6: Addition to the CoAP Content-Formats registry
 
    Note for IANA reviewers: the preferred value range is 0-255 (Expert
    Review).
