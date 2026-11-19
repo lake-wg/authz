@@ -276,12 +276,12 @@ Table of Contents
    constrained network thus leveraging a compact credential identifier
    in ID_CRED_I (see Figure 3).
 
-   U also needs to identify itself to W, for which it reuses ID_CRED_I.
-   Note that while ID_CRED_I is typically treated as a field that only
-   needs to be understood between two EDHOC peers (here U and V), in
-   this case ID_CRED_I also MUST be formatted in a way that it is
-   unambiguous to W.  W will use ID_CRED_I to determine if the device
-   with this identifier is authorized to enroll with V.
+   U also needs to identify itself to W, for which it reuses ID_CRED_U
+   (see Section 4.2).  Note that while ID_CRED_U is typically treated as
+   a field that only needs to be understood between two EDHOC peers
+   (here U and V), in this case ID_CRED_U also MUST be formatted in a
+   way that it is unambiguous to W.  W will use ID_CRED_U to determine
+   if the device with this identifier is authorized to enroll with V.
 
    U is also provisioned with information about W:
 
@@ -372,7 +372,7 @@ Table of Contents
 
    Authentication credentials and communication security with V is
    described in Section 3.2.  To calculate the voucher, W needs access
-   to the hash of EDHOC message_1 and message_2 (H_12), ID_CRED_I, and
+   to the hash of EDHOC message_1 and message_2 (H_12), ID_CRED_U, and
    CRED_V as used in the EDHOC session between U and V, see
    Section 4.3.2.
 
@@ -388,7 +388,7 @@ Table of Contents
    W may hold more than one private key corresponding to a PK_W, for
    example when PK_W is updated for newly provisioned devices while
    devices provisioned with a previous PK_W are still deployed.  W
-   determines the private key to use from ID_CRED_I, see Section 4.5.1.
+   determines the private key to use from ID_CRED_U, see Section 4.5.1.
    In this way, LOC_W does not need to change when a new PK_W is
    introduced.
 
@@ -445,7 +445,7 @@ U                              V                                       W
 |                              |        Voucher Request (VREQ)         |
 |                              +-------------------------------------->|
 |                              |           (SS, EK_CT, H_12,           |
-|                              |        ID_CRED_I, Fetch_CRED_U)       |
+|                              |        ID_CRED_U, Fetch_CRED_U)       |
 |                              |                                       |
 |                              |        Voucher Response (VRES)        |
 |                              |<--------------------------------------+
@@ -485,10 +485,13 @@ U                              V                                       W
       ead_label = TBD1 and TBD2, see Section 7.1.
 
    *  ID_CRED_I and ID_CRED_R are used to identify the authentication
-      credentials CRED_U and CRED_V, respectively.  V may obtain CRED_U
-      from W by setting the Fetch_CRED_U flag in the Voucher Request,
-      see Section 4.5.1.  By default, CRED_V is transported in ID_CRED_R
-      in message_2, see Section 4.4.2.1.
+      credentials CRED_U and CRED_V, respectively.  In this document,
+      ID_CRED_U denotes the identifier of CRED_U, i.e., ID_CRED_I when U
+      is the Initiator and ID_CRED_R when U is the Responder (see
+      Section 4.7).  V may obtain CRED_U from W by setting the
+      Fetch_CRED_U flag in the Voucher Request, see Section 4.5.1.  By
+      default, CRED_V is transported in ID_CRED_R in message_2, see
+      Section 4.4.2.1.
 
    The protocol also reuses the EDHOC_Extract and EDHOC_Expand key
    derivation from EDHOC (see Section 4 of [RFC9528]).
@@ -612,7 +615,7 @@ U                              V                                       W
 
    external_aad = (
        H_12:         bstr,
-       ID_CRED_I:    bstr,
+       ID_CRED_U:    bstr,
        CRED_V:       bstr,
    )
 
@@ -631,17 +634,19 @@ U                              V                                       W
       EDHOC message_1.  H_12 is sent to W as part of the voucher
       request, see Section 4.5.1.
 
-   *  ID_CRED_I is the identifier of CRED_U transmitted via the voucher
+   *  ID_CRED_U is the identifier of CRED_U transmitted via the voucher
       request.  It is a CBOR byte string whose value is the CBOR
-      encoding of the ID_CRED_I map.  This is the encoding of ID_CRED_I
-      as used in context_3 (see Section 5.4.2 of [RFC9528]), i.e., the
-      full CBOR map, including when the compact encoding of
-      Section 3.5.3.2 of [RFC9528] is used in message_3.  Wrapping the
-      map in a byte string lets V and W handle it as opaque bytes, so
-      that W computes the same external_aad as U without decoding and
-      re-encoding the map, which may not reproduce the encoding used by
-      U (see Section 3.5.3 of [RFC9528]).  This follows the rationale
-      for the COSE protected header in Section 3 of [RFC9052].
+      encoding of the ID_CRED_U map.  This is the encoding of ID_CRED_U
+      as used in context_3 or context_2 when U is the Initiator or the
+      Responder, respectively (see Section 5.4.2 of [RFC9528] and
+      Section 5.3.2 of [RFC9528]), i.e., the full CBOR map, including
+      when the compact encoding of Section 3.5.3.2 of [RFC9528] is used
+      in message_3 or message_2.  Wrapping the map in a byte string lets
+      V and W handle it as opaque bytes, so that W computes the same
+      external_aad as U without decoding and re-encoding the map, which
+      may not reproduce the encoding used by U (see Section 3.5.3 of
+      [RFC9528]).  This follows the rationale for the COSE protected
+      header in Section 3 of [RFC9052].
 
    *  CRED_V is the credential used by V to authenticate to U and W, see
       Section 4.4.2.1 and Table 1.
@@ -778,7 +783,7 @@ U                              V                                       W
    EAD_4.
 
    If EAD_4 contains an EAD item with label = -TBD2, U MUST verify the
-   Voucher using H_12, ID_CRED_I, CRED_V, and the keys derived as in
+   Voucher using H_12, ID_CRED_U, CRED_V, and the keys derived as in
    Section 4.3.2.  If the verification fails then U MUST abort the EDHOC
    session.
 
@@ -808,7 +813,7 @@ U                              V                                       W
        SS:             int,
        EK_CT:          bstr,
        H_12:           bstr,
-       ID_CRED_I:      bstr,
+       ID_CRED_U:      bstr,
        Fetch_CRED_U:   bool,
    ]
 
@@ -823,12 +828,12 @@ U                              V                                       W
    *  H_12 corresponds to H(H(message_1), message_2).  It is computed as
       defined in Section 4.3.2.
 
-   *  ID_CRED_I is an identifier of CRED_U and is used as the identity
+   *  ID_CRED_U is an identifier of CRED_U and is used as the identity
       of U during ELA execution, see Section 3.1.  It is encoded as in
       Section 4.3.2.
 
    *  Fetch_CRED_U is a flag indicating whether W should try to retrieve
-      and return the credential CRED_U corresponding to ID_CRED_I.
+      and return the credential CRED_U corresponding to ID_CRED_U.
 
 4.5.1.2.  Processing in W
 
@@ -841,7 +846,7 @@ U                              V                                       W
 
    *  H_12 - the hash of message_1 and message_2.
 
-   *  ID_CRED_I - the identity of U.
+   *  ID_CRED_U - the identity of U.
 
    *  Fetch_CRED_U - flag indicating whether V requests W to return
       CRED_U.
@@ -851,7 +856,7 @@ U                              V                                       W
    contains an ephemeral Diffie-Hellman public key or a KEM ciphertext.
 
    W uses H_12 as a session identifier, and associates it with the
-   device identity ID_CRED_I.  Note that EK_CT is unique, as the
+   device identity ID_CRED_U.  Note that EK_CT is unique, as the
    ephemeral key or the ciphertext must not be reused, therefore H_12 is
    expected to be unique.
 
@@ -859,14 +864,14 @@ U                              V                                       W
    aborted with an error code signaling a generic issue with the
    request, see Section 5.4.1.
 
-   W uses ID_CRED_I to look up the associated authorization policies for
+   W uses ID_CRED_U to look up the associated authorization policies for
    U and enforces them.  This is out of scope for the specification.
 
-   If ID_CRED_I is known by W, but authorization fails, the protocol
+   If ID_CRED_U is known by W, but authorization fails, the protocol
    SHALL be aborted with an error code signaling an access control
    issue, see Section 4.6 and Section 5.4.1.
 
-   If Fetch_CRED_U is true, W uses ID_CRED_I to try to retrieve the
+   If Fetch_CRED_U is true, W uses ID_CRED_U to try to retrieve the
    corresponding credential CRED_U.  If the retrieval succeeds, W MUST
    include CRED_U in the voucher response, see Section 4.5.2.  If the
    retrieval fails, W sends the voucher response without CRED_U.  If
@@ -879,7 +884,7 @@ U                              V                                       W
 
    In case a Voucher is needed (as determined by the application), W
    retrieves CRED_V associated with the secure connection with V, and
-   constructs the Voucher for the device with identifier ID_CRED_I (see
+   constructs the Voucher for the device with identifier ID_CRED_U (see
    Section 4.3.2).
 
    W generates the voucher response and sends it to V over the secure
@@ -897,7 +902,7 @@ U                              V                                       W
    *  Voucher, with label 1, is defined in Section 4.3.2, if present.
 
    *  CRED_U, with label 2, is the credential of U corresponding to
-      ID_CRED_I passed in the voucher request.  CRED_U is included only
+      ID_CRED_U passed in the voucher request.  CRED_U is included only
       if Fetch_CRED_U was set in the voucher request and W successfully
       retrieved the credential.
 
@@ -1040,7 +1045,7 @@ U                              V                                       W
         |                               |             VREQ             |
         |                               +----------------------------->|
         |                               |        (SS, EK_CT, H_12,     |
-        |                               |    ID_CRED_I, Fetch_CRED_U)  |
+        |                               |    ID_CRED_U, Fetch_CRED_U)  |
         |                               |                              |
         |                               |             VRES             |
         |                               |<-----------------------------+
@@ -1083,6 +1088,8 @@ U                              V                                       W
    *  SUITES_I is prepared by V (instead of U), hence the selected
       cipher suite SS is chosen by V (instead of U).
 
+   *  ID_CRED_U is ID_CRED_R (instead of ID_CRED_I).
+
   +-----+-----+                   +-----------+
   |     U     |                   |     V     |
   | Responder |                   | Initiator |
@@ -1100,7 +1107,7 @@ U                              V                                       W
         |                               |             VREQ             |
         |                               +----------------------------->|
         |                               |       (SS, EK_CT, H_12,      |
-        |                               |    ID_CRED_I, Fetch_CRED_U)  |
+        |                               |    ID_CRED_U, Fetch_CRED_U)  |
         |                               |                              |
         |                               |             VRES             |
         |                               |<-----------------------------+
@@ -1183,6 +1190,8 @@ U                              V                                       W
       Section 4.5.1, with the following changes:
 
       -  EK_CT is as extracted from the EAD_2 field of message_2.
+
+      -  ID_CRED_U is ID_CRED_R, as received in message_2.
 
    Processing in W happens as specified in Section 4.5.1.
 
@@ -1355,7 +1364,7 @@ U                              V                                       W
    albeit before knowing (via the Voucher received from W) whether U is
    authorized to interact with V.
 
-   V may rely on W for lookup of CRED_U from ID_CRED_I, or this
+   V may rely on W for lookup of CRED_U from ID_CRED_U, or this
    credential lookup function may be separate from the authorization
    function of W, see Section 4.4.3.2.  The trust model used here is
    that U reveals its identity to any V, before knowing if the ELA
@@ -2074,11 +2083,11 @@ B.1.  Minimal
 
    Premises:
 
-   *  device u1 has identity ID_CRED_I = key id = 14
+   *  device u1 has identity ID_CRED_U = key id = 14
 
    *  the access policy in W specifies, via a list of identities, that
       device u1 can enroll via any domain authenticator, i.e., the list
-      contains ID_CRED_I = 14.  In this case, the policy only specifies
+      contains ID_CRED_U = 14.  In this case, the policy only specifies
       a restriction in terms of U, effectively allowing enrollment via
       any V.
 
@@ -2091,7 +2100,7 @@ B.1.  Minimal
        Voucher Request using the information contained in the value of
        the EAD item
 
-   3.  upon receiving the request, W obtains ID_CRED_I = 14, authorizes
+   3.  upon receiving the request, W obtains ID_CRED_U = 14, authorizes
        the access, and replies with Voucher Response
 
 B.2.  Wrong gateway
@@ -2109,7 +2118,7 @@ B.2.  Wrong gateway
    *  devices and gateways communicate via Bluetooth Low Energy (BLE),
       therefore their network identifiers are MAC addresses (EUI-48)
 
-   *  device u1 has ID_CRED_I = key id = 14
+   *  device u1 has ID_CRED_U = key id = 14
 
    *  there are 3 gateways in the radio range of u1:
 
@@ -2120,7 +2129,7 @@ B.2.  Wrong gateway
       -  v3 with MAC address = 39-63-C9-D0-5C-62
 
    *  the access policy in W specifies, via a mapping of shape
-      (ID_CRED_I; MAC1, MAC2, ...) that device u1 can only join via
+      (ID_CRED_U; MAC1, MAC2, ...) that device u1 can only join via
       gateway v3, i.e., the mapping is: (14; 39-63-C9-D0-5C-62)
 
    *  W is able to map the PoP key of the gateways to their respective

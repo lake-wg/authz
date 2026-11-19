@@ -1504,9 +1504,9 @@ For clarity, this document presents the protocol with U as the Initiator, except
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-device-u" class="section-name selfRef">Device (U)</a>
         </h3>
 <p id="section-3.1-1">To authenticate to V, the device (U) runs EDHOC in the role of Initiator with authentication credential CRED_U, for example, an X.509 certificate <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>, a C509 certificate <span>[<a href="#I-D.ietf-cose-cbor-encoded-cert" class="cite xref">I-D.ietf-cose-cbor-encoded-cert</a>]</span>, or a CBOR Web Token (CWT, <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span>). CRED_U may, for example, be carried by value in ID_CRED_I of EDHOC message_3, or be provisioned to V over a non-constrained network thus leveraging a compact credential identifier in ID_CRED_I (see <a href="#fig-protocol" class="auto internal xref">Figure 3</a>).<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">U also needs to identify itself to W, for which it reuses ID_CRED_I.
-Note that while ID_CRED_I is typically treated as a field that only needs to be understood between two EDHOC peers (here U and V), in this case ID_CRED_I also MUST be formatted in a way that it is unambiguous to W.
-W will use ID_CRED_I to determine if the device with this identifier is authorized to enroll with V.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">U also needs to identify itself to W, for which it reuses ID_CRED_U (see <a href="#reuse" class="auto internal xref">Section 4.2</a>).
+Note that while ID_CRED_U is typically treated as a field that only needs to be understood between two EDHOC peers (here U and V), in this case ID_CRED_U also MUST be formatted in a way that it is unambiguous to W.
+W will use ID_CRED_U to determine if the device with this identifier is authorized to enroll with V.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 <p id="section-3.1-3">U is also provisioned with information about W:<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.1-4.1">
@@ -1581,7 +1581,7 @@ Some of the possible combinations of protocols to secure the connection between 
 W provides to U the authorization decision for enrollment with V in the form of a voucher (see <a href="#voucher" class="auto internal xref">Section 4.3.2</a>).
 Authorization policies are out of scope for this document.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">Authentication credentials and communication security with V is described in <a href="#domain-auth" class="auto internal xref">Section 3.2</a>.
-To calculate the voucher, W needs access to the hash of EDHOC message_1 and message_2 (H_12), ID_CRED_I, and CRED_V as used in the EDHOC session between U and V, see <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+To calculate the voucher, W needs access to the hash of EDHOC message_1 and message_2 (H_12), ID_CRED_U, and CRED_V as used in the EDHOC session between U and V, see <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.3-3.1">
             <p id="section-3.3-3.1.1">W MUST verify that CRED_V is bound to the secure connection between W and V<a href="#section-3.3-3.1.1" class="pilcrow">¶</a></p>
@@ -1592,7 +1592,7 @@ To calculate the voucher, W needs access to the hash of EDHOC message_1 and mess
         </ul>
 <p id="section-3.3-4">W needs to be available during the execution of the protocol between U and V.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
 <p id="section-3.3-5">W may hold more than one private key corresponding to a PK_W, for example when PK_W is updated for newly provisioned devices while devices provisioned with a previous PK_W are still deployed.
-W determines the private key to use from ID_CRED_I, see <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.
+W determines the private key to use from ID_CRED_U, see <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.
 In this way, LOC_W does not need to change when a new PK_W is introduced.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1702,7 +1702,7 @@ In this way, LOC_W does not need to change when a new PK_W is introduced.<a href
                   <text x="364" y="548">(SS,</text>
                   <text x="412" y="548">EK_CT,</text>
                   <text x="464" y="548">H_12,</text>
-                  <text x="364" y="564">ID_CRED_I,</text>
+                  <text x="364" y="564">ID_CRED_U,</text>
                   <text x="464" y="564">Fetch_CRED_U)</text>
                   <text x="352" y="596">Voucher</text>
                   <text x="420" y="596">Response</text>
@@ -1750,7 +1750,9 @@ In this way, LOC_W does not need to change when a new PK_W is introduced.<a href
 This document specifies two new EAD items, with ead_label = TBD1 and TBD2, see <a href="#iana-ead" class="auto internal xref">Section 7.1</a>.<a href="#section-4.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.2-2.3">
-            <p id="section-4.2-2.3.1">ID_CRED_I and ID_CRED_R are used to identify the authentication credentials CRED_U and CRED_V, respectively. V may obtain CRED_U from W by setting the Fetch_CRED_U flag in the Voucher Request, see <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.
+            <p id="section-4.2-2.3.1">ID_CRED_I and ID_CRED_R are used to identify the authentication credentials CRED_U and CRED_V, respectively.
+In this document, ID_CRED_U denotes the identifier of CRED_U, i.e., ID_CRED_I when U is the Initiator and ID_CRED_R when U is the Responder (see <a href="#reverse-u-responder" class="auto internal xref">Section 4.7</a>).
+V may obtain CRED_U from W by setting the Fetch_CRED_U flag in the Voucher Request, see <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.
 By default, CRED_V is transported in ID_CRED_R in message_2, see <a href="#V_2" class="auto internal xref">Section 4.4.2.1</a>.<a href="#section-4.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
@@ -1878,7 +1880,7 @@ plaintext = (
 <pre>
 external_aad = (
     H_12:         bstr,
-    ID_CRED_I:    bstr,
+    ID_CRED_U:    bstr,
     CRED_V:       bstr,
 )
 </pre><a href="#section-4.3.2-7" class="pilcrow">¶</a>
@@ -1895,7 +1897,7 @@ It is opaque to V, while the application in U and W can read its contents.<a hre
               <p id="section-4.3.2-9.2.1">H_12 is H(H(message_1), message_2), used to bind the voucher to the current EDHOC session. It is computed using the EDHOC hash algorithm of the selected cipher suite SS specified in SUITES_I of EDHOC message_1. H_12 is sent to W as part of the voucher request, see <a href="#voucher_request" class="auto internal xref">Section 4.5.1</a>.<a href="#section-4.3.2-9.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.3.2-9.3">
-              <p id="section-4.3.2-9.3.1">ID_CRED_I is the identifier of CRED_U transmitted via the voucher request. It is a CBOR byte string whose value is the CBOR encoding of the ID_CRED_I map. This is the encoding of ID_CRED_I as used in context_3 (see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-5.4.2" class="relref">Section 5.4.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>), i.e., the full CBOR map, including when the compact encoding of <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.3.2" class="relref">Section 3.5.3.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> is used in message_3. Wrapping the map in a byte string lets V and W handle it as opaque bytes, so that W computes the same external_aad as U without decoding and re-encoding the map, which may not reproduce the encoding used by U (see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.3" class="relref">Section 3.5.3</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>). This follows the rationale for the COSE protected header in <span><a href="https://rfc-editor.org/rfc/rfc9052#section-3" class="relref">Section 3</a> of [<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>.<a href="#section-4.3.2-9.3.1" class="pilcrow">¶</a></p>
+              <p id="section-4.3.2-9.3.1">ID_CRED_U is the identifier of CRED_U transmitted via the voucher request. It is a CBOR byte string whose value is the CBOR encoding of the ID_CRED_U map. This is the encoding of ID_CRED_U as used in context_3 or context_2 when U is the Initiator or the Responder, respectively (see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-5.4.2" class="relref">Section 5.4.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> and <span><a href="https://rfc-editor.org/rfc/rfc9528#section-5.3.2" class="relref">Section 5.3.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>), i.e., the full CBOR map, including when the compact encoding of <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.3.2" class="relref">Section 3.5.3.2</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> is used in message_3 or message_2. Wrapping the map in a byte string lets V and W handle it as opaque bytes, so that W computes the same external_aad as U without decoding and re-encoding the map, which may not reproduce the encoding used by U (see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.5.3" class="relref">Section 3.5.3</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>). This follows the rationale for the COSE protected header in <span><a href="https://rfc-editor.org/rfc/rfc9052#section-3" class="relref">Section 3</a> of [<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>.<a href="#section-4.3.2-9.3.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.3.2-9.4">
               <p id="section-4.3.2-9.4.1">CRED_V is the credential used by V to authenticate to U and W, see <a href="#V_2" class="auto internal xref">Section 4.4.2.1</a> and <a href="#creds-table" class="auto internal xref">Table 1</a>.<a href="#section-4.3.2-9.4.1" class="pilcrow">¶</a></p>
@@ -2048,7 +2050,7 @@ In this scenario, the EAD item in EAD_3 is processed as a pre-verification item 
 <a href="#section-4.4.4.2" class="section-number selfRef">4.4.4.2. </a><a href="#name-processing-in-u-4" class="section-name selfRef">Processing in U</a>
             </h5>
 <p id="section-4.4.4.2-1">U receives EDHOC message_4 from V and processes it as specified in <span><a href="https://rfc-editor.org/rfc/rfc9528#section-5.5.3" class="relref">Section 5.5.3</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>, with the additional step of processing EAD_4.<a href="#section-4.4.4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.4.4.2-2">If EAD_4 contains an EAD item with label = -TBD2, U MUST verify the Voucher using H_12, ID_CRED_I, CRED_V, and the keys derived as in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.
+<p id="section-4.4.4.2-2">If EAD_4 contains an EAD item with label = -TBD2, U MUST verify the Voucher using H_12, ID_CRED_U, CRED_V, and the keys derived as in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.
 If the verification fails then U MUST abort the EDHOC session.<a href="#section-4.4.4.2-2" class="pilcrow">¶</a></p>
 <p id="section-4.4.4.2-3">If U does not recognize the EAD item or the EAD item contains information that U cannot process, then U MUST abort the EDHOC session, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.8" class="relref">Section 3.8</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.<a href="#section-4.4.4.2-3" class="pilcrow">¶</a></p>
 <p id="section-4.4.4.2-4">If OPAQUE_INFO is present, it is made available to the application.<a href="#section-4.4.4.2-4" class="pilcrow">¶</a></p>
@@ -2083,7 +2085,7 @@ Voucher_Request = [
     SS:             int,
     EK_CT:          bstr,
     H_12:           bstr,
-    ID_CRED_I:      bstr,
+    ID_CRED_U:      bstr,
     Fetch_CRED_U:   bool,
 ]
 </pre><a href="#section-4.5.1.1-2" class="pilcrow">¶</a>
@@ -2100,10 +2102,10 @@ Voucher_Request = [
                 <p id="section-4.5.1.1-4.3.1">H_12 corresponds to H(H(message_1), message_2). It is computed as defined in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-4.5.1.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.1-4.4">
-                <p id="section-4.5.1.1-4.4.1">ID_CRED_I is an identifier of CRED_U and is used as the identity of U during ELA execution, see <a href="#device" class="auto internal xref">Section 3.1</a>. It is encoded as in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-4.5.1.1-4.4.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.1-4.4.1">ID_CRED_U is an identifier of CRED_U and is used as the identity of U during ELA execution, see <a href="#device" class="auto internal xref">Section 3.1</a>. It is encoded as in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>.<a href="#section-4.5.1.1-4.4.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.1-4.5">
-                <p id="section-4.5.1.1-4.5.1">Fetch_CRED_U is a flag indicating whether W should try to retrieve and return the credential CRED_U corresponding to ID_CRED_I.<a href="#section-4.5.1.1-4.5.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.1-4.5.1">Fetch_CRED_U is a flag indicating whether W should try to retrieve and return the credential CRED_U corresponding to ID_CRED_U.<a href="#section-4.5.1.1-4.5.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </section>
@@ -2126,19 +2128,19 @@ W extracts from Voucher_Request:<a href="#section-4.5.1.2-1" class="pilcrow">¶<
                 <p id="section-4.5.1.2-2.3.1">H_12 - the hash of message_1 and message_2.<a href="#section-4.5.1.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.2-2.4">
-                <p id="section-4.5.1.2-2.4.1">ID_CRED_I - the identity of U.<a href="#section-4.5.1.2-2.4.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.1.2-2.4.1">ID_CRED_U - the identity of U.<a href="#section-4.5.1.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.1.2-2.5">
                 <p id="section-4.5.1.2-2.5.1">Fetch_CRED_U - flag indicating whether V requests W to return CRED_U.<a href="#section-4.5.1.2-2.5.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 <p id="section-4.5.1.2-3">W verifies that it supports the cipher suite SS, and uses the corresponding EDHOC Key Exchange Algorithm to determine whether EK_CT contains an ephemeral Diffie-Hellman public key or a KEM ciphertext.<a href="#section-4.5.1.2-3" class="pilcrow">¶</a></p>
-<p id="section-4.5.1.2-4">W uses H_12 as a session identifier, and associates it with the device identity ID_CRED_I.
+<p id="section-4.5.1.2-4">W uses H_12 as a session identifier, and associates it with the device identity ID_CRED_U.
 Note that EK_CT is unique, as the ephemeral key or the ciphertext must not be reused, therefore H_12 is expected to be unique.<a href="#section-4.5.1.2-4" class="pilcrow">¶</a></p>
 <p id="section-4.5.1.2-5">If processing fails up until this point, the protocol SHALL be aborted with an error code signaling a generic issue with the request, see <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.1.2-5" class="pilcrow">¶</a></p>
-<p id="section-4.5.1.2-6">W uses ID_CRED_I to look up the associated authorization policies for U and enforces them. This is out of scope for the specification.<a href="#section-4.5.1.2-6" class="pilcrow">¶</a></p>
-<p id="section-4.5.1.2-7">If ID_CRED_I is known by W, but authorization fails, the protocol SHALL be aborted with an error code signaling an access control issue, see <a href="#err-handling" class="auto internal xref">Section 4.6</a> and <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.1.2-7" class="pilcrow">¶</a></p>
-<p id="section-4.5.1.2-8">If Fetch_CRED_U is true, W uses ID_CRED_I to try to retrieve the corresponding credential CRED_U.
+<p id="section-4.5.1.2-6">W uses ID_CRED_U to look up the associated authorization policies for U and enforces them. This is out of scope for the specification.<a href="#section-4.5.1.2-6" class="pilcrow">¶</a></p>
+<p id="section-4.5.1.2-7">If ID_CRED_U is known by W, but authorization fails, the protocol SHALL be aborted with an error code signaling an access control issue, see <a href="#err-handling" class="auto internal xref">Section 4.6</a> and <a href="#rest-voucher-request" class="auto internal xref">Section 5.4.1</a>.<a href="#section-4.5.1.2-7" class="pilcrow">¶</a></p>
+<p id="section-4.5.1.2-8">If Fetch_CRED_U is true, W uses ID_CRED_U to try to retrieve the corresponding credential CRED_U.
 If the retrieval succeeds, W MUST include CRED_U in the voucher response, see <a href="#voucher_response" class="auto internal xref">Section 4.5.2</a>.
 If the retrieval fails, W sends the voucher response without CRED_U.
 If Fetch_CRED_U is false, W MUST NOT include CRED_U in the voucher response.<a href="#section-4.5.1.2-8" class="pilcrow">¶</a></p>
@@ -2156,7 +2158,7 @@ If Fetch_CRED_U is false, W MUST NOT include CRED_U in the voucher response.<a h
             <h5 id="name-processing-in-w-2">
 <a href="#section-4.5.2.1" class="section-number selfRef">4.5.2.1. </a><a href="#name-processing-in-w-2" class="section-name selfRef">Processing in W</a>
             </h5>
-<p id="section-4.5.2.1-1">In case a Voucher is needed (as determined by the application), W retrieves CRED_V associated with the secure connection with V, and constructs the Voucher for the device with identifier ID_CRED_I (see <a href="#voucher" class="auto internal xref">Section 4.3.2</a>).<a href="#section-4.5.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.5.2.1-1">In case a Voucher is needed (as determined by the application), W retrieves CRED_V associated with the secure connection with V, and constructs the Voucher for the device with identifier ID_CRED_U (see <a href="#voucher" class="auto internal xref">Section 4.3.2</a>).<a href="#section-4.5.2.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.5.2.1-2">W generates the voucher response and sends it to V over the secure connection.
 The Voucher_Response SHALL be a CBOR map as defined below:<a href="#section-4.5.2.1-2" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-4.5.2.1-3">
@@ -2174,7 +2176,7 @@ Voucher_Response = {
                 <p id="section-4.5.2.1-5.1.1">Voucher, with label 1, is defined in <a href="#voucher" class="auto internal xref">Section 4.3.2</a>, if present.<a href="#section-4.5.2.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.5.2.1-5.2">
-                <p id="section-4.5.2.1-5.2.1">CRED_U, with label 2, is the credential of U corresponding to ID_CRED_I passed in the voucher request. CRED_U is included only if Fetch_CRED_U was set in the voucher request and W successfully retrieved the credential.<a href="#section-4.5.2.1-5.2.1" class="pilcrow">¶</a></p>
+                <p id="section-4.5.2.1-5.2.1">CRED_U, with label 2, is the credential of U corresponding to ID_CRED_U passed in the voucher request. CRED_U is included only if Fetch_CRED_U was set in the voucher request and W successfully retrieved the credential.<a href="#section-4.5.2.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 <p id="section-4.5.2.1-6">The map labels are taken from the "ELA Voucher Response Parameters" registry, see <a href="#iana-vres" class="auto internal xref">Section 7.4</a>.
@@ -2411,7 +2413,7 @@ Note that Voucher_Info and Voucher are carried in EDHOC message_3 and message_4,
                     <text x="396" y="292">(SS,</text>
                     <text x="444" y="292">EK_CT,</text>
                     <text x="496" y="292">H_12,</text>
-                    <text x="388" y="308">ID_CRED_I,</text>
+                    <text x="388" y="308">ID_CRED_U,</text>
                     <text x="488" y="308">Fetch_CRED_U)</text>
                     <text x="436" y="340">VRES</text>
                     <text x="404" y="372">(?Voucher,</text>
@@ -2457,6 +2459,9 @@ That is, this section only describes the differences in processing, when compare
 </li>
             <li class="normal" id="section-4.7.2-4.5">
               <p id="section-4.7.2-4.5.1">SUITES_I is prepared by V (instead of U), hence the selected cipher suite SS is chosen by V (instead of U).<a href="#section-4.7.2-4.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4.7.2-4.6">
+              <p id="section-4.7.2-4.6.1">ID_CRED_U is ID_CRED_R (instead of ID_CRED_I).<a href="#section-4.7.2-4.6.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <span id="name-ela-when-u-is-the-edhoc-res"></span><div id="fig-u-responder">
@@ -2521,7 +2526,7 @@ That is, this section only describes the differences in processing, when compare
                     <text x="388" y="292">(SS,</text>
                     <text x="436" y="292">EK_CT,</text>
                     <text x="488" y="292">H_12,</text>
-                    <text x="388" y="308">ID_CRED_I,</text>
+                    <text x="388" y="308">ID_CRED_U,</text>
                     <text x="488" y="308">Fetch_CRED_U)</text>
                     <text x="436" y="340">VRES</text>
                     <text x="404" y="372">(?Voucher,</text>
@@ -2624,6 +2629,9 @@ That is, this section only describes the differences in processing, when compare
 <ul class="normal">
 <li class="normal" id="section-4.7.2.3-2.1.2.1">
                     <p id="section-4.7.2.3-2.1.2.1.1">EK_CT is as extracted from the EAD_2 field of message_2.<a href="#section-4.7.2.3-2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="normal" id="section-4.7.2.3-2.1.2.2">
+                    <p id="section-4.7.2.3-2.1.2.2.1">ID_CRED_U is ID_CRED_R, as received in message_2.<a href="#section-4.7.2.3-2.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
                 </ul>
 </li>
@@ -2793,7 +2801,7 @@ Considering cryptographic recommendations by government agencies and the industr
 Post-quantum KEMs that could be used in EDHOC are currently under standardization in COSE <span>[<a href="#I-D.ietf-jose-pqc-kem" class="cite xref">I-D.ietf-jose-pqc-kem</a>]</span>.<a href="#section-6-3" class="pilcrow">¶</a></p>
 <p id="section-6-4">EDHOC provides identity protection of the Initiator, here the device.
 In ELA, the device U shares its identity with an authenticated V, albeit before knowing (via the Voucher received from W) whether U is authorized to interact with V.<a href="#section-6-4" class="pilcrow">¶</a></p>
-<p id="section-6-5">V may rely on W for lookup of CRED_U from ID_CRED_I, or this credential lookup function may be separate from the authorization function of W, see <a href="#V_3" class="auto internal xref">Section 4.4.3.2</a>.
+<p id="section-6-5">V may rely on W for lookup of CRED_U from ID_CRED_U, or this credential lookup function may be separate from the authorization function of W, see <a href="#V_3" class="auto internal xref">Section 4.4.3.2</a>.
 The trust model used here is that U reveals its identity to any V, before knowing if the ELA authorization flow will be successfully completed.
 In onboarding use cases, U MAY choose to use an onboarding-only identity, whereas future operational communications can use a different identity under the already established secure channel.<a href="#section-6-5" class="pilcrow">¶</a></p>
 <p id="section-6-6">In the ELA regular flow, EDHOC message_4 is mandatory if it carries the Voucher.
@@ -3755,10 +3763,10 @@ V_INFO = (
 <p id="appendix-B.1-2">Premises:<a href="#appendix-B.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-B.1-3.1">
-            <p id="appendix-B.1-3.1.1">device u1 has identity ID_CRED_I = key id = 14<a href="#appendix-B.1-3.1.1" class="pilcrow">¶</a></p>
+            <p id="appendix-B.1-3.1.1">device u1 has identity ID_CRED_U = key id = 14<a href="#appendix-B.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-B.1-3.2">
-            <p id="appendix-B.1-3.2.1">the access policy in W specifies, via a list of identities, that device u1 can enroll via any domain authenticator, i.e., the list contains ID_CRED_I = 14.
+            <p id="appendix-B.1-3.2.1">the access policy in W specifies, via a list of identities, that device u1 can enroll via any domain authenticator, i.e., the list contains ID_CRED_U = 14.
 In this case, the policy only specifies a restriction in terms of U, effectively allowing enrollment via any V.<a href="#appendix-B.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
@@ -3771,7 +3779,7 @@ In this case, the policy only specifies a restriction in terms of U, effectively
             <p id="appendix-B.1-5.2.1">gateway v1 identifies the zero-touch join attempt by checking that the label of the EAD item in EAD_3 is -TBD1, and prepares a Voucher Request using the information contained in the value of the EAD item<a href="#appendix-B.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="appendix-B.1-5.3">
-            <p id="appendix-B.1-5.3.1">upon receiving the request, W obtains ID_CRED_I = 14, authorizes the access, and replies with Voucher Response<a href="#appendix-B.1-5.3.1" class="pilcrow">¶</a></p>
+            <p id="appendix-B.1-5.3.1">upon receiving the request, W obtains ID_CRED_U = 14, authorizes the access, and replies with Voucher Response<a href="#appendix-B.1-5.3.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -3789,7 +3797,7 @@ In this case, the policy only specifies a restriction in terms of U, effectively
             <p id="appendix-B.2-4.1.1">devices and gateways communicate via Bluetooth Low Energy (BLE), therefore their network identifiers are MAC addresses (EUI-48)<a href="#appendix-B.2-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-B.2-4.2">
-            <p id="appendix-B.2-4.2.1">device u1 has ID_CRED_I = key id = 14<a href="#appendix-B.2-4.2.1" class="pilcrow">¶</a></p>
+            <p id="appendix-B.2-4.2.1">device u1 has ID_CRED_U = key id = 14<a href="#appendix-B.2-4.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-B.2-4.3">
             <p id="appendix-B.2-4.3.1">there are 3 gateways in the radio range of u1:<a href="#appendix-B.2-4.3.1" class="pilcrow">¶</a></p>
@@ -3806,7 +3814,7 @@ In this case, the policy only specifies a restriction in terms of U, effectively
             </ul>
 </li>
           <li class="normal" id="appendix-B.2-4.4">
-            <p id="appendix-B.2-4.4.1">the access policy in W specifies, via a mapping of shape (ID_CRED_I; MAC1, MAC2, ...) that device u1 can only join via gateway v3, i.e., the mapping is: (14; 39-63-C9-D0-5C-62)<a href="#appendix-B.2-4.4.1" class="pilcrow">¶</a></p>
+            <p id="appendix-B.2-4.4.1">the access policy in W specifies, via a mapping of shape (ID_CRED_U; MAC1, MAC2, ...) that device u1 can only join via gateway v3, i.e., the mapping is: (14; 39-63-C9-D0-5C-62)<a href="#appendix-B.2-4.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-B.2-4.5">
             <p id="appendix-B.2-4.5.1">W is able to map the PoP key of the gateways to their respective MAC addresses<a href="#appendix-B.2-4.5.1" class="pilcrow">¶</a></p>
