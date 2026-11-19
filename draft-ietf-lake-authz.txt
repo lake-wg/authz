@@ -5,12 +5,12 @@
 LAKE Working Group                                           G. Selander
 Internet-Draft                                         J. Preuß Mattsson
 Intended status: Standards Track                             Ericsson AB
-Expires: 22 May 2027                                          M. Vučinić
+Expires: 23 May 2027                                          M. Vučinić
                                                           G. Fedrecheski
                                                                    INRIA
                                                            M. Richardson
                                                 Sandelman Software Works
-                                                        18 November 2026
+                                                        19 November 2026
 
 
 Lightweight Authorization using Ephemeral Diffie-Hellman Over COSE (ELA)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 May 2027.
+   This Internet-Draft will expire on 23 May 2027.
 
 Copyright Notice
 
@@ -939,13 +939,13 @@ U                              V                                       W
 
    Error code TBD3 is used to indicate to the receiver that access
    control has been applied and the sender has aborted the EDHOC
-   session.  The ERR_INFO field contains error_content which is a CBOR
-   Sequence consisting of an integer and an optional byte string.
+   session.  The ERR_INFO field is of type error_content, which is a
+   CBOR array consisting of an integer and an optional byte string.
 
-   error_content = (
+   error_content = [
      REJECT_TYPE:      int,
      ? REJECT_INFO:    bstr,
-   )
+   ]
 
    Where:
 
